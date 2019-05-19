@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>你好！Kubernetes - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文連結如下：Refer to QWIKLABS official website   本篇將會做什麼？ 建立一個 Node.js server">
+<meta name="keywords" content="GCP,Kubernetes,QUIKLABS,Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你好！Kubernetes">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/Kubernetes/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文連結如下：Refer to QWIKLABS official website   本篇將會做什麼？ 建立一個 Node.js server">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/lLAZTuk.png">
+<meta property="og:image" content="https://i.imgur.com/G0Y8mi6.png">
+<meta property="og:image" content="https://i.imgur.com/Zqb6UpU.png">
+<meta property="og:image" content="https://i.imgur.com/Y02cj2y.png">
+<meta property="og:image" content="https://i.imgur.com/Oada6gU.png">
+<meta property="og:image" content="https://i.imgur.com/XRCkS9j.png">
+<meta property="og:image" content="https://i.imgur.com/QStCZUo.png">
+<meta property="og:image" content="https://i.imgur.com/QHMCIt2.png">
+<meta property="og:image" content="https://i.imgur.com/BGXAP5h.png">
+<meta property="og:image" content="https://i.imgur.com/AYrauID.png">
+<meta property="og:image" content="https://i.imgur.com/WZacVJK.png">
+<meta property="og:image" content="https://i.imgur.com/XA3xjVF.png">
+<meta property="og:image" content="https://i.imgur.com/kY7lfe6.png">
+<meta property="og:image" content="https://i.imgur.com/9NzaVco.png">
+<meta property="og:image" content="https://i.imgur.com/omwnEtM.png">
+<meta property="og:image" content="https://i.imgur.com/2Mmxecr.png">
+<meta property="og:image" content="https://i.imgur.com/74uzP4O.png">
+<meta property="og:image" content="https://i.imgur.com/jmNioqz.png">
+<meta property="og:image" content="https://i.imgur.com/luJw5q4.png">
+<meta property="og:updated_time" content="2019-04-01T06:49:19.411Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="你好！Kubernetes">
+<meta name="twitter:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文連結如下：Refer to QWIKLABS official website   本篇將會做什麼？ 建立一個 Node.js server">
+<meta name="twitter:image" content="https://i.imgur.com/lLAZTuk.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/Kubernetes/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文連結如下：Refer to QWIKLABS official website   本篇將會做什麼？ 建立一個 Node.js server">
+<meta name="keywords" content="GCP,Kubernetes,QUIKLABS,Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你好！Kubernetes">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/Kubernetes/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文連結如下：Refer to QWIKLABS official website   本篇將會做什麼？ 建立一個 Node.js server">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/lLAZTuk.png">
+<meta property="og:image" content="https://i.imgur.com/G0Y8mi6.png">
+<meta property="og:image" content="https://i.imgur.com/Zqb6UpU.png">
+<meta property="og:image" content="https://i.imgur.com/Y02cj2y.png">
+<meta property="og:image" content="https://i.imgur.com/Oada6gU.png">
+<meta property="og:image" content="https://i.imgur.com/XRCkS9j.png">
+<meta property="og:image" content="https://i.imgur.com/QStCZUo.png">
+<meta property="og:image" content="https://i.imgur.com/QHMCIt2.png">
+<meta property="og:image" content="https://i.imgur.com/BGXAP5h.png">
+<meta property="og:image" content="https://i.imgur.com/AYrauID.png">
+<meta property="og:image" content="https://i.imgur.com/WZacVJK.png">
+<meta property="og:image" content="https://i.imgur.com/XA3xjVF.png">
+<meta property="og:image" content="https://i.imgur.com/kY7lfe6.png">
+<meta property="og:image" content="https://i.imgur.com/9NzaVco.png">
+<meta property="og:image" content="https://i.imgur.com/omwnEtM.png">
+<meta property="og:image" content="https://i.imgur.com/2Mmxecr.png">
+<meta property="og:image" content="https://i.imgur.com/74uzP4O.png">
+<meta property="og:image" content="https://i.imgur.com/jmNioqz.png">
+<meta property="og:image" content="https://i.imgur.com/luJw5q4.png">
+<meta property="og:updated_time" content="2019-04-01T06:49:19.411Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="你好！Kubernetes">
+<meta name="twitter:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文連結如下：Refer to QWIKLABS official website   本篇將會做什麼？ 建立一個 Node.js server">
+<meta name="twitter:image" content="https://i.imgur.com/lLAZTuk.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#本篇將會做什麼？">2&nbsp;&nbsp;<b>本篇將會做什麼？</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">3&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#需熟悉Linux內建的編輯器，像是vim-emacs-或是nano">3.1&nbsp;&nbsp;需熟悉Linux內建的編輯器，像是vim, emacs, 或是nano</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Qwiklabs-setup">3.2&nbsp;&nbsp;Qwiklabs setup</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#在你按下-Start-Lab-按鈕之前">3.2.1&nbsp;&nbsp;在你按下 Start Lab 按鈕之前</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#你需要什麼？">3.2.2&nbsp;&nbsp;你需要什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Google-Cloud-Platform-Console">3.3&nbsp;&nbsp;Google Cloud Platform Console</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#如何開始你的-lab-，然後登入-Console">3.3.1&nbsp;&nbsp;如何開始你的 lab ，然後登入 Console?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cloud-Shell">3.4&nbsp;&nbsp;Cloud Shell</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-Google-Cloud-Shell">3.4.1&nbsp;&nbsp;啟動 Google Cloud Shell</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立Node-js-應用">4&nbsp;&nbsp;<b>建立Node.js 應用</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一個Docker-container-image">5&nbsp;&nbsp;<b>建立一個Docker container image</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#停止Docker-container">6&nbsp;&nbsp;<b>停止Docker container</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立cluster">7&nbsp;&nbsp;<b>建立cluster</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立pod">8&nbsp;&nbsp;<b>建立pod</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#允許外部連結">9&nbsp;&nbsp;<b>允許外部連結</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#擴充服務">10&nbsp;&nbsp;<b>擴充服務</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#升級服務">11&nbsp;&nbsp;<b>升級服務</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes圖形化面板-optional">12&nbsp;&nbsp;<b>Kubernetes圖形化面板 (optional)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#習題測驗">13&nbsp;&nbsp;<b>習題測驗</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#非必要指令">14&nbsp;&nbsp;<b>非必要指令</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/Kubernetes/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/Kubernetes/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            你好！Kubernetes
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-02-17T02:46:40.000Z" itemprop="datePublished">2月 17 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            23 分钟 讀完 (大概 3385 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><br>本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記<br>原文連結如下：<br><br><a href="https://www.qwiklabs.com/focuses/564?parent=catalog" target="_blank" rel="noopener">Refer to QWIKLABS official website</a><br></p>
+
+<p><img src="https://i.imgur.com/lLAZTuk.png" alt></p>
+<h2 id="本篇將會做什麼？"><a href="#本篇將會做什麼？" class="headerlink" title="本篇將會做什麼？"></a>本篇將會做什麼？</h2><ul>
+<li>建立一個 Node.js server    <a id="more"></a> </li>
+<li>建立一個 Docker container image</li>
+<li>建立一個 container cluster</li>
+<li>建立一個 Kubernetes pod</li>
+<li>擴大服務</li>
+</ul>
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><h3 id="需熟悉Linux內建的編輯器，像是vim-emacs-或是nano"><a href="#需熟悉Linux內建的編輯器，像是vim-emacs-或是nano" class="headerlink" title="需熟悉Linux內建的編輯器，像是vim, emacs, 或是nano"></a>需熟悉Linux內建的編輯器，像是vim, emacs, 或是nano</h3><h3 id="Qwiklabs-setup"><a href="#Qwiklabs-setup" class="headerlink" title="Qwiklabs setup"></a>Qwiklabs setup</h3><h4 id="在你按下-Start-Lab-按鈕之前"><a href="#在你按下-Start-Lab-按鈕之前" class="headerlink" title="在你按下 Start Lab 按鈕之前"></a>在你按下 Start Lab 按鈕之前</h4><p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Quiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Quiclabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<h4 id="你需要什麼？"><a href="#你需要什麼？" class="headerlink" title="你需要什麼？"></a>你需要什麼？</h4><p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p>備註： 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<h3 id="Google-Cloud-Platform-Console"><a href="#Google-Cloud-Platform-Console" class="headerlink" title="Google Cloud Platform Console"></a>Google Cloud Platform Console</h3><h4 id="如何開始你的-lab-，然後登入-Console"><a href="#如何開始你的-lab-，然後登入-Console" class="headerlink" title="如何開始你的 lab ，然後登入 Console?"></a>如何開始你的 lab ，然後登入 Console?</h4><ol>
+<li>按下 Start Lab 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://i.imgur.com/G0Y8mi6.png" alt></p>
+<ol start="2">
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p>tip: 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://i.imgur.com/Zqb6UpU.png" alt></p>
+<ol start="4">
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ol>
+<p>重要：必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://i.imgur.com/Y02cj2y.png" alt></p>
+<h3 id="Cloud-Shell"><a href="#Cloud-Shell" class="headerlink" title="Cloud Shell"></a>Cloud Shell</h3><h4 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h4><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://i.imgur.com/Oada6gU.png" alt></p>
+<ol start="2">
+<li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://i.imgur.com/XRCkS9j.png" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
+<p><img src="https://i.imgur.com/QStCZUo.png" alt></p>
+<p><code>gcloud</code> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command ,你可以列出有效帳戶名稱:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure></p>
+<p>輸出:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure></p>
+<p>範例輸出:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure></p>
+<p>你可以使用以下 command 來列出專案 ID<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure></p>
+<p>輸出：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure></p>
+<p>範例輸出：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure></p>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<h2 id="建立Node-js-應用"><a href="#建立Node-js-應用" class="headerlink" title="建立Node.js 應用"></a>建立Node.js 應用</h2><ul>
+<li>建立server.js檔案<ul>
+<li>vim server.js</li>
+</ul>
+</li>
+<li><p>在檔案內新增以下代碼</p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"> <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);</span><br><span class="line"><span class="hljs-keyword">var</span> handleRequest = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">request, response</span>) </span>&#123;</span><br><span class="line">  response.writeHead(<span class="hljs-number">200</span>);</span><br><span class="line">  response.end(<span class="hljs-string">"Hello World!"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-keyword">var</span> www = http.createServer(handleRequest);</span><br><span class="line">www.listen(<span class="hljs-number">8080</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Cloud Shell以內建node，直接執行node server</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">node server.js</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用Cloud Shell內建的Web預覽功能，開一個新的視窗並發請求到port 8080，如下圖：<br><img src="https://i.imgur.com/QHMCIt2.png" alt></p>
+</li>
+<li><p>結果如下：</p>
+</li>
+</ul>
+<p><img src="https://i.imgur.com/BGXAP5h.png" alt></p>
+<ul>
+<li>在更進一步之前，讓我們先到Cloud Shell按下Ctrl+c停止正在運行中的node server，我們將打包這個運用，並置於Docker container內</li>
+</ul>
+<h2 id="建立一個Docker-container-image"><a href="#建立一個Docker-container-image" class="headerlink" title="建立一個Docker container image"></a>建立一個Docker container image</h2><ul>
+<li><p>接下來，建立一個Dockerfile來敘述我們想要建立的image，Docker container images可以是已經存在image的延伸，所以我們將從已經存在的Node image來延伸</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim Dockerfile</span><br></pre></td></tr></table></figure>
+<ul>
+<li>增加以下內容<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">FROM node:6.9.2</span><br><span class="line">EXPOSE 8080</span><br><span class="line">COPY server.js .</span><br><span class="line">CMD node server.js</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>上面的內容將：</p>
+<ul>
+<li>從Docker hub中開始一個找到的node image</li>
+<li>開啟port 8080</li>
+<li>複製server.js檔案到此docker image</li>
+<li>如之前操作般，手動開始node server</li>
+</ul>
+</li>
+<li><p>輸入以下的指令以建立image，將下面的PROJECT_ID替換成你的GCP Project ID，可以從主控台以及Connection Details區找到</p>
+<figure class="highlight docker hljs"><table><tr><td class="code"><pre><span class="line">docker build -t gcr.io/PROJECT_ID/hello-node:v1 .</span><br></pre></td></tr></table></figure>
+<ul>
+<li>接下來會花一些時間來下載以及擷取需要的東西，但你可以從進度條看到image建立的進度</li>
+</ul>
+</li>
+<li><p>完成之後，於本地端使用下面的指令測試一下這個image，這個指令會從剛新建立的container image中，將Docker container以常駐的方式跑在port 8080，(將下面的PROJECT_ID替換成你的GCP Project ID，可以從主控台以及Connection Details區找到)</p>
+</li>
+</ul>
+<figure class="highlight docker hljs"><table><tr><td class="code"><pre><span class="line">docker <span class="hljs-keyword">run</span><span class="hljs-bash"> -d -p 8080:8080 gcr.io/PROJECT_ID/hello-node:v1</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>結果大概如下<ul>
+<li><code>325301e6b2bffd1d0049c621866831316d653c0b25a496d04ce0ec6854cb7998</code></li>
+</ul>
+</li>
+<li>可使用Web預覽功能    <ul>
+<li><img src="https://i.imgur.com/AYrauID.png" alt></li>
+</ul>
+</li>
+<li>或在Cloud Shell中使用curl<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kcurl http://localhost:8080</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="停止Docker-container"><a href="#停止Docker-container" class="headerlink" title="停止Docker container"></a>停止Docker container</h2><ul>
+<li><p>尋找Docker container ID</p>
+<figure class="highlight docker hljs"><table><tr><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>結果大概如下</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CONTAINER ID        IMAGE                              COMMAND</span><br><span class="line">2c66d0efcbd4        gcr.io/PROJECT_ID/hello-node:v1    &quot;/bin/sh -c &apos;node</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>關閉docker container </p>
+<figure class="highlight docker hljs"><table><tr><td class="code"><pre><span class="line">docker stop containerID</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>結果會輸出你的container ID，如下：</p>
+<ul>
+<li><code>2c66d0efcbd4</code></li>
+</ul>
+</li>
+<li><p>現在，image如我們預期般的運作著，接下來我們將它推到<code>Google Container Registry</code>，一個可倍Google Cloud Projects存取的Docker image私人資料夾, 執行下面的指令(將下面的PROJECT_ID替換成你的GCP Project ID，可以從主控台以及Connection Details區找到)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud docker -- push gcr.io/PROJECT_ID/hello-node:v1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>Container image將會被列在主控台中，可從Navigation menu &gt; Container Registry找到<br><img src="https://i.imgur.com/WZacVJK.png" alt></p>
+</li>
+<li><p>現在我們擁有project-wide的Docker image，可供Kubernetes存取以及編排<br><img src="https://i.imgur.com/XA3xjVF.png" alt></p>
+</li>
+</ul>
+<h2 id="建立cluster"><a href="#建立cluster" class="headerlink" title="建立cluster"></a>建立cluster</h2><ul>
+<li>現在我們已經準備好可以建立Kubernetes Engine cluster。一個cluster內，有由Google的Kubernetes master API server，以及一組worker nodes。Woker nodes是Compute Engine virtual machines.</li>
+<li><p>確保我們已經使用gcould來設定我們的專案(將下面的PROJECT_ID替換成你的GCP Project ID，可以從主控台以及Connection Details區找到)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> project PROJECT_ID</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用兩個n1-standard-1 nodes來建立cluster(將會耗費幾分鐘) </p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters create hello-world \</span><br><span class="line">            --num-nodes 2 \</span><br><span class="line">            --machine-type n1-standard-1 \</span><br><span class="line">            --zone us-central1-a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你也可以透過主控台來建立cluster:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Kubernetes Engine &gt; Kubernetes cluster &gt; Create cluster</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>cluster建立的區域，建議跟container registry使用的儲存區的所在區域一樣</li>
+<li><code>Vavigation menu &gt; Kubernetes Engine</code> 可以看到，現在有一個由Kubernetes Engine驅動的完全運作的Kubernetes clsuter<br><img src="https://i.imgur.com/kY7lfe6.png" alt></li>
+<li>接下來，是時候將我們容器化的application部署到Kubernetes cluster，從現在開始，我們將使用<code>kubectl</code>命令行（在Cloud Shell環境中，這已經被設定完畢）</li>
+</ul>
+<h2 id="建立pod"><a href="#建立pod" class="headerlink" title="建立pod"></a>建立pod</h2><ul>
+<li><p>Kubernetes pod由多個container組成，用於管理以及連結。它可以容納單一或多個containers。這邊我們將會使用儲存於私人的container registry，由Node.js image 建立的container。內容將會用在8080 port</p>
+</li>
+<li><p>使用<code>kubectl run</code> 指令來建立一個pod(將下面的PROJECT_ID替換成你的GCP Project ID，可以從主控台以及Connection Details區找到)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"> kubectl run hello-node \</span><br><span class="line">--image=gcr.io/PROJECT_ID/hello-node:v1 \</span><br><span class="line">--port=8080</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以看到，我們已經建立一個deployment物件。Deployments是建立跟擴大pods推薦的方法。這邊，一個新的deployment管理一個執行<code>hello-node:v1</code> image的pod</p>
+</li>
+</ul>
+<h2 id="允許外部連結"><a href="#允許外部連結" class="headerlink" title="允許外部連結"></a>允許外部連結</h2><ul>
+<li>在預設中，pod只可被cluster內部的ip存取。為了要讓hello-node container可倍Kubernetes virtual network之外的來源存取，我們必須設定pod成可被存取的Kubernates的服務</li>
+<li>在Cloud Shell，透過使用kubectl expose指令，並結合<code>--type=&quot;LoadBalancer&quot; flag</code>, 我們可以讓pod可被公用網路存取。要建立一個外部存取IP，這個flag是必須的。<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl expose deployment hello-node --<span class="hljs-built_in">type</span>=<span class="hljs-string">"LoadBalancer"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>這個flag指定我們將使用underlying infrostructure提供的load-balancer (在此範例中，為Compute Engine load balancer)。需注意我們是使deployment可視化，並非直接暴露pod。這代表，產生的服務將會讀取所有由此depolyment管理的pod(於此範例中，為一個pod，但我們之後可以增加)</p>
+</li>
+<li><p>此Kubernetes master建立了load balancer，相關的Compute Engline 轉發規格，target pools，以及防火牆規則， 所以服務可被Google Cloud Platform之外的來源所存取</p>
+</li>
+<li><p>若要找公開可存取IP，可要求kubectl列出所有的cluster服務</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get services</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>結果如下：</p>
+</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME         CLUSTER-IP     EXTERNAL-IP      PORT(S)    AGE</span><br><span class="line">hello-node   10.3.250.149   104.154.90.147   8080/TCP   1m</span><br><span class="line">kubernetes   10.3.240.1     &lt;none&gt;           443/TCP    5m</span><br></pre></td></tr></table></figure>
+<ul>
+<li>上圖可以看到，hello-node service有兩組IP，兩組都使用port 8080，CLUSTER-IP 是內部IP，只可被內部cloud vertial network所見，EXTERNAL-IP為外部load-balanced IP</li>
+<li>外部IP可能需要幾分鐘生效</li>
+<li>通過輸入IP來存取<ul>
+<li>http://&lt;EXTERNAL_IP&gt;:8080</li>
+</ul>
+</li>
+</ul>
+<h2 id="擴充服務"><a href="#擴充服務" class="headerlink" title="擴充服務"></a>擴充服務</h2><ul>
+<li>通過指令來擴充服務<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl scale deployment hello-node --replicas=4</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>查看deployment</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看所有pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>以下圖示顯示Kubernetes的大概運作方式:<br><img src="https://i.imgur.com/9NzaVco.png" alt></li>
+</ul>
+<h2 id="升級服務"><a href="#升級服務" class="headerlink" title="升級服務"></a>升級服務</h2><ul>
+<li>某些時候，已經被部署的應用需要debug或增加新的功能。Kubernetes幫我們部署新的版本，並且不影響使用者</li>
+<li><p>首先，修改應用，編輯server.js</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim server.js</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更新回覆訊息</p>
+<ul>
+<li><code>response.end(&quot;Hello Kubernetes World!&quot;);</code></li>
+</ul>
+</li>
+<li><p>現在，我們可以透過往上增加的版本號，建立以及發布一個新的container image到registry。</p>
+</li>
+<li><p>使用以下指令(將下面的PROJECT_ID替換成你的GCP Project ID，可以從主控台以及Connection Details區找到)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker build -t gcr.io/PROJECT_ID/hello-node:v2 .</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud docker -- push gcr.io/PROJECT_ID/hello-node:v2</span><br></pre></td></tr></table></figure>
+<ul>
+<li>編輯已經存在的hello-node deployment以及將image由<code>gcr.io/PROJECT_ID/hello-node:v1</code>變更為<code>gcr.io/PROJECT_ID/hello-node:v2</code><ul>
+<li><code>kubectl edit deployment hello-node</code></li>
+</ul>
+</li>
+<li>修改如下：<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># Please edit the object below. Lines beginning with a '#' will be ignored,</span></span><br><span class="line"><span class="hljs-comment"># and an empty file will abort the edit. If an error occurs while saving this file will be</span></span><br><span class="line"><span class="hljs-comment"># reopened with the relevant failures.</span></span><br><span class="line"><span class="hljs-comment">#</span></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  annotations:</span><br><span class="line">    deployment.kubernetes.io/revision: <span class="hljs-string">"1"</span></span><br><span class="line">  creationTimestamp: 2016-03-24T17:55:28Z</span><br><span class="line">  generation: 3</span><br><span class="line">  labels:</span><br><span class="line">    run: hello-node</span><br><span class="line">  name: hello-node</span><br><span class="line">  namespace: default</span><br><span class="line">  resourceVersion: <span class="hljs-string">"151017"</span></span><br><span class="line">  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/hello-node</span><br><span class="line">  uid: 981fe302-f1e9-11e5-9a78-42010af00005</span><br><span class="line">spec:</span><br><span class="line">  replicas: 4</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      run: hello-node</span><br><span class="line">  strategy:</span><br><span class="line">    rollingUpdate:</span><br><span class="line">      maxSurge: 1</span><br><span class="line">      maxUnavailable: 1</span><br><span class="line">    <span class="hljs-built_in">type</span>: RollingUpdate</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      creationTimestamp: null</span><br><span class="line">      labels:</span><br><span class="line">        run: hello-node</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: gcr.io/PROJECT_ID/hello-node:v1 <span class="hljs-comment">## Update this line ##</span></span><br><span class="line">        imagePullPolicy: IfNotPresent</span><br><span class="line">        name: hello-node</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br><span class="line">          protocol: TCP</span><br><span class="line">        resources: &#123;&#125;</span><br><span class="line">        terminationMessagePath: /dev/termination-log</span><br><span class="line">      dnsPolicy: ClusterFirst</span><br><span class="line">      restartPolicy: Always</span><br><span class="line">      securityContext: &#123;&#125;</span><br><span class="line">      terminationGracePeriodSeconds: 30</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>更新新的image到deployment，新的pods將被建立，舊的將被刪除<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deployments</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Kubernetes圖形化面板-optional"><a href="#Kubernetes圖形化面板-optional" class="headerlink" title="Kubernetes圖形化面板 (optional)"></a>Kubernetes圖形化面板 (optional)</h2><ul>
+<li><p>取得cluster層級權限</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>權限已經取得，建立新的面板服務</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>編輯面板服務的表面形式</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl -n kube-system edit service kubernetes-dashboard</span><br></pre></td></tr></table></figure>
+<ul>
+<li>將<code>type: ClusterIP</code>改成<code>type: NodePort</code></li>
+</ul>
+</li>
+<li><p>要登入Kubernetes面板，需要經過token驗證，產生token如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl -n kube-system describe $(kubectl -n kube-system \</span><br><span class="line">get secret -n kube-system -o name | grep namespace) | grep token:</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打開連線</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl proxy --port 8081</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>使用Cloud Shell Web 預覽功能來改變port到8081<br><img src="https://i.imgur.com/omwnEtM.png" alt></li>
+<li><p>我們將收到一串API endpoint，要連結到面板，將<code>/?authuser=0</code>移除，然後加上下面的url:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=default</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然後你會被帶到一個網頁預覽<br><img src="https://i.imgur.com/2Mmxecr.png" alt></p>
+</li>
+<li>點選Token radio，然後貼上剛剛拿到的token，然後Sign in<br><img src="https://i.imgur.com/74uzP4O.png" alt></li>
+<li>你可以從主控台存取面板服務，Navigation menu &gt; Kubernetes Engine，然後選擇Connect按鈕連接到我們想要連接的cluster<br><img src="https://i.imgur.com/jmNioqz.png" alt></li>
+</ul>
+<p><img src="https://i.imgur.com/luJw5q4.png" alt></p>
+<h2 id="習題測驗"><a href="#習題測驗" class="headerlink" title="習題測驗"></a>習題測驗</h2><ul>
+<li>which of the following are features of the Kubernetes Engine?<ul>
+<li style="list-style: none"><input type="checkbox" checked> Identity and Access Management</li>
+<li style="list-style: none"><input type="checkbox" checked> Integrated Logging and Monitoring</li>
+<li style="list-style: none"><input type="checkbox"> None of these</li>
+<li style="list-style: none"><input type="checkbox" checked> Stateful Application Support</li>
+</ul>
+</li>
+</ul>
+<h2 id="非必要指令"><a href="#非必要指令" class="headerlink" title="非必要指令"></a>非必要指令</h2><ul>
+<li><p>如果想要檢視這個deployment，可以使用以下指令：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deployments</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>若想檢視由deployment建立的pod，可以使用以下指令:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以下也是一些有趣的kubectl指令：</p>
+<ul>
+<li>kubectl cluster-info</li>
+<li>kubectl config view</li>
+<li>kubectl get events</li>
+<li>kubectl logs podName</li>
+</ul>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP/">#GCP</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QUIKLABS/">#QUIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Docker/">#Docker</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/Stackdriver/">Stackdriver 快速開始</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/createAPersistentDisk/">在GCP建立一個persistent disk</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/Kubernetes/';
+        this.page.identifier = 'zh-tw/Kubernetes/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Deploy Supervisor on AWS and MacOS - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="IntroductionHere are what this article is going to cover: Deploy Supervisor on MacOS Deploy Supervisor on AWS  What is Supervisor?Supervisor is a process monitor and control system. Because Ray do use">
+<meta name="keywords" content="AWS,Supervisor,MacOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deploy Supervisor on AWS and MacOS">
+<meta property="og:url" content="https://tn710617.github.io/supervisor/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionHere are what this article is going to cover: Deploy Supervisor on MacOS Deploy Supervisor on AWS  What is Supervisor?Supervisor is a process monitor and control system. Because Ray do use">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/JIPDDUt.png">
+<meta property="og:image" content="https://i.imgur.com/J9RUdy4.png">
+<meta property="og:updated_time" content="2019-03-27T09:26:05.561Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deploy Supervisor on AWS and MacOS">
+<meta name="twitter:description" content="IntroductionHere are what this article is going to cover: Deploy Supervisor on MacOS Deploy Supervisor on AWS  What is Supervisor?Supervisor is a process monitor and control system. Because Ray do use">
+<meta name="twitter:image" content="https://i.imgur.com/JIPDDUt.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/supervisor/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="IntroductionHere are what this article is going to cover: Deploy Supervisor on MacOS Deploy Supervisor on AWS  What is Supervisor?Supervisor is a process monitor and control system. Because Ray do use">
+<meta name="keywords" content="AWS,Supervisor,MacOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deploy Supervisor on AWS and MacOS">
+<meta property="og:url" content="https://tn710617.github.io/supervisor/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionHere are what this article is going to cover: Deploy Supervisor on MacOS Deploy Supervisor on AWS  What is Supervisor?Supervisor is a process monitor and control system. Because Ray do use">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/JIPDDUt.png">
+<meta property="og:image" content="https://i.imgur.com/J9RUdy4.png">
+<meta property="og:updated_time" content="2019-03-27T09:26:05.561Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deploy Supervisor on AWS and MacOS">
+<meta name="twitter:description" content="IntroductionHere are what this article is going to cover: Deploy Supervisor on MacOS Deploy Supervisor on AWS  What is Supervisor?Supervisor is a process monitor and control system. Because Ray do use">
+<meta name="twitter:image" content="https://i.imgur.com/JIPDDUt.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b>Introduction</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Here-are-what-this-article-is-going-to-cover">1.1&nbsp;&nbsp;Here are what this article is going to cover:</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#What-is-Supervisor">1.2&nbsp;&nbsp;What is Supervisor?</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Mac-OS">2&nbsp;&nbsp;<b>Mac OS</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Install">2.1&nbsp;&nbsp;Install</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Deployment">2.2&nbsp;&nbsp;Deployment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Launch">2.3&nbsp;&nbsp;Launch</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#AWS">3&nbsp;&nbsp;<b>AWS</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Install-1">3.1&nbsp;&nbsp;Install</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuration">3.2&nbsp;&nbsp;Configuration</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Launch-1">3.3&nbsp;&nbsp;Launch</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Automatic-start-after-system-reboot">3.4&nbsp;&nbsp;Automatic start after system reboot</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Conclusion">4&nbsp;&nbsp;<b>Conclusion</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/supervisor/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/supervisor/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Deploy Supervisor on AWS and MacOS
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-03-22T08:02:06.000Z" itemprop="datePublished">Mar 22 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Deployment/">Deployment</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            7 minutes read (About 1035 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><h3 id="Here-are-what-this-article-is-going-to-cover"><a href="#Here-are-what-this-article-is-going-to-cover" class="headerlink" title="Here are what this article is going to cover:"></a>Here are what this article is going to cover:</h3><ol>
+<li>Deploy <code>Supervisor</code> on <code>MacOS</code></li>
+<li>Deploy <code>Supervisor</code> on <code>AWS</code></li>
+</ol>
+<h3 id="What-is-Supervisor"><a href="#What-is-Supervisor" class="headerlink" title="What is Supervisor?"></a>What is <code>Supervisor</code>?</h3><p><code>Supervisor</code> is a process monitor and control system. Because Ray do use Laravel Queue on a project, and queue worker has to be running on the background continuously. So what if the queue work fails and disconnect? With <code>Supervisor</code>, we will be able to restart them after they either fail or close.<br><a id="more"></a></p>
+<h2 id="Mac-OS"><a href="#Mac-OS" class="headerlink" title="Mac OS"></a>Mac OS</h2><h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><ul>
+<li>Install <code>Supervisor</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">brew install supervisor</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h3><ul>
+<li><p>Enter the default configuration file</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /usr/local/etc/supervisord.ini</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Change the default <code>include</code> directory at the end as follows:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[include]</span><br><span class="line">files = /usr/local/etc/supervisor.d/*.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Add a customized directory and configuration file</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">mkdir /usr/local/etc/supervisor.d;</span><br><span class="line">vim /usr/local/etc/supervisor.d/processNameYouLike.conf;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Give the setting below</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[program:programNameYouLike]</span><br><span class="line">process_name=%(program_name)s_%(process_num)02d</span><br><span class="line">command=php absoluteAddressOfYourProject/artisan queue:work sqs --sleep=3 --tries=3 --daemon</span><br><span class="line">autostart=true</span><br><span class="line">autorestart=true</span><br><span class="line">user=ray</span><br><span class="line">numprocs=8</span><br><span class="line">redirect_stderr=true</span><br><span class="line">stdout_logfile=/absoluteAddressOfLocationYouWouldLikeToPutTheLog/worker.log</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Launch"><a href="#Launch" class="headerlink" title="Launch"></a>Launch</h3><ul>
+<li><p>Launch the service</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo supervisord -c /usr/local/etc/supervisord.ini</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Go into service control</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo supervisorctl -c /usr/local/etc/supervisord.ini</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Update the configuration</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Check the status</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">status</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>It should look like that<br><img src="https://i.imgur.com/JIPDDUt.png" alt></p>
+<h2 id="AWS"><a href="#AWS" class="headerlink" title="AWS"></a>AWS</h2><p>Here is the specification of the instance we use</p>
+<ul>
+<li>Amazon Linux 2 AMI (HVM), SSD Volume Type - ami-0f9ae750e8274075b</li>
+<li>t2.micro (Variable ECUs, 1 vCPUs, 2.5 GHz, Intel Xeon Family, 1 GiB memory, EBS only)</li>
+</ul>
+<h3 id="Install-1"><a href="#Install-1" class="headerlink" title="Install"></a>Install</h3><ul>
+<li>Install <code>Supervisor</code><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install -y supervisor</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><ul>
+<li><p>Go to the default configuration file</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/supervisord.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Change the <code>include</code> directory at the end</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[include]</span><br><span class="line">files = supervisord.d/*.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Add a new configuration file. If the directory doesn’t exist, then make one.</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir /etc/supervisord.d;</span><br><span class="line">sudo vim /etc/supervisord.d/projectFileNameYouLike.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Give the setting.</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[program:laravel-worker]</span><br><span class="line">process_name=%(program_name)s_%(process_num)02d</span><br><span class="line">command=sudo php absoluteAddressOfYourProject/artisan queue:work sqs --sleep=3 --tries=3 --daemon</span><br><span class="line">autostart=true</span><br><span class="line">autorestart=true</span><br><span class="line">user=root</span><br><span class="line">numprocs=8</span><br><span class="line">redirect_stderr=true</span><br><span class="line">stdout_logfile=absoluteAddressOfYourProject/worker.log</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Launch-1"><a href="#Launch-1" class="headerlink" title="Launch"></a>Launch</h3><ul>
+<li><p>Launch <code>Supervisor</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo supervisord -c /etc/supervisord.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Apply new setting and check the status</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo supervisorctl update;</span><br><span class="line">sudo supervisorctl status</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="https://i.imgur.com/J9RUdy4.png" alt></p>
+<h3 id="Automatic-start-after-system-reboot"><a href="#Automatic-start-after-system-reboot" class="headerlink" title="Automatic start after system reboot"></a>Automatic start after system reboot</h3><ul>
+<li><p>Add a new configuration of restart <code>Supervisor</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/init.d/supervisord</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Give the setting as follows:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">#! /bin/sh</span><br><span class="line">### BEGIN INIT INFO</span><br><span class="line"># Provides:          supervisord</span><br><span class="line"># Required-Start:    $remote_fs</span><br><span class="line"># Required-Stop:     $remote_fs</span><br><span class="line"># Default-Start:     2 3 4 5</span><br><span class="line"># Default-Stop:      0 1 6</span><br><span class="line"># Short-Description: Example initscript</span><br><span class="line"># Description:       This file should be used to construct scripts to be</span><br><span class="line">#                    placed in /etc/init.d.</span><br><span class="line">### END INIT INFO</span><br><span class="line"></span><br><span class="line"># Author: Dan MacKinlay &lt;danielm@phm.gov.au&gt;</span><br><span class="line"># Based on instructions by Bertrand Mathieu</span><br><span class="line"># http://zebert.blogspot.com/2009/05/installing-django-solr-varnish-and.html</span><br><span class="line"></span><br><span class="line"># Do NOT &quot;set -e&quot;</span><br><span class="line"></span><br><span class="line"># PATH should only include /usr/* if it runs after the mountnfs.sh script</span><br><span class="line">PATH=/sbin:/usr/sbin:/bin:/usr/bin</span><br><span class="line">DESC=&quot;Description of the service&quot;</span><br><span class="line">NAME=supervisord</span><br><span class="line">DAEMON=/usr/local/bin/supervisord</span><br><span class="line">DAEMON_ARGS=&quot;&quot;</span><br><span class="line">PIDFILE=/var/run/$NAME.pid</span><br><span class="line">SCRIPTNAME=/etc/init.d/$NAME</span><br><span class="line"></span><br><span class="line"># Exit if the package is not installed</span><br><span class="line">[ -x &quot;$DAEMON&quot; ] || exit 0</span><br><span class="line"></span><br><span class="line"># Read configuration variable file if it is present</span><br><span class="line">[ -r /etc/default/$NAME ] &amp;&amp; . /etc/default/$NAME</span><br><span class="line"></span><br><span class="line"># Load the VERBOSE setting and other rcS variables</span><br><span class="line">. /lib/init/vars.sh</span><br><span class="line"></span><br><span class="line"># Define LSB log_* functions.</span><br><span class="line"># Depend on lsb-base (&gt;= 3.0-6) to ensure that this file is present.</span><br><span class="line">. /lib/lsb/init-functions</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Function that starts the daemon/service</span><br><span class="line">#</span><br><span class="line">do_start()</span><br><span class="line">&#123;</span><br><span class="line">	# Return</span><br><span class="line">	#   0 if daemon has been started</span><br><span class="line">	#   1 if daemon was already running</span><br><span class="line">	#   2 if daemon could not be started</span><br><span class="line">	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test &gt; /dev/null \</span><br><span class="line">		|| return 1</span><br><span class="line">	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \</span><br><span class="line">		$DAEMON_ARGS \</span><br><span class="line">		|| return 2</span><br><span class="line">	# Add code here, if necessary, that waits for the process to be ready</span><br><span class="line">	# to handle requests from services started subsequently which depend</span><br><span class="line">	# on this one.  As a last resort, sleep for some time.</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Function that stops the daemon/service</span><br><span class="line">#</span><br><span class="line">do_stop()</span><br><span class="line">&#123;</span><br><span class="line">	# Return</span><br><span class="line">	#   0 if daemon has been stopped</span><br><span class="line">	#   1 if daemon was already stopped</span><br><span class="line">	#   2 if daemon could not be stopped</span><br><span class="line">	#   other if a failure occurred</span><br><span class="line">	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME</span><br><span class="line">	RETVAL=&quot;$?&quot;</span><br><span class="line">	[ &quot;$RETVAL&quot; = 2 ] &amp;&amp; return 2</span><br><span class="line">	# Wait for children to finish too if this is a daemon that forks</span><br><span class="line">	# and if the daemon is only ever run from this initscript.</span><br><span class="line">	# If the above conditions are not satisfied then add some other code</span><br><span class="line">	# that waits for the process to drop all resources that could be</span><br><span class="line">	# needed by services started subsequently.  A last resort is to</span><br><span class="line">	# sleep for some time.</span><br><span class="line">	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON</span><br><span class="line">	[ &quot;$?&quot; = 2 ] &amp;&amp; return 2</span><br><span class="line">	# Many daemons don&apos;t delete their pidfiles when they exit.</span><br><span class="line">	rm -f $PIDFILE</span><br><span class="line">	return &quot;$RETVAL&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Function that sends a SIGHUP to the daemon/service</span><br><span class="line">#</span><br><span class="line">do_reload() &#123;</span><br><span class="line">	#</span><br><span class="line">	# If the daemon can reload its configuration without</span><br><span class="line">	# restarting (for example, when it is sent a SIGHUP),</span><br><span class="line">	# then implement that here.</span><br><span class="line">	#</span><br><span class="line">	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME</span><br><span class="line">	return 0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">  start)</span><br><span class="line">	[ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_daemon_msg &quot;Starting $DESC&quot; &quot;$NAME&quot;</span><br><span class="line">	do_start</span><br><span class="line">	case &quot;$?&quot; in</span><br><span class="line">		0|1) [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_end_msg 0 ;;</span><br><span class="line">		2) [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_end_msg 1 ;;</span><br><span class="line">	esac</span><br><span class="line">	;;</span><br><span class="line">  stop)</span><br><span class="line">	[ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_daemon_msg &quot;Stopping $DESC&quot; &quot;$NAME&quot;</span><br><span class="line">	do_stop</span><br><span class="line">	case &quot;$?&quot; in</span><br><span class="line">		0|1) [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_end_msg 0 ;;</span><br><span class="line">		2) [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_end_msg 1 ;;</span><br><span class="line">	esac</span><br><span class="line">	;;</span><br><span class="line">  #reload|force-reload)</span><br><span class="line">	#</span><br><span class="line">	# If do_reload() is not implemented then leave this commented out</span><br><span class="line">	# and leave &apos;force-reload&apos; as an alias for &apos;restart&apos;.</span><br><span class="line">	#</span><br><span class="line">	#log_daemon_msg &quot;Reloading $DESC&quot; &quot;$NAME&quot;</span><br><span class="line">	#do_reload</span><br><span class="line">	#log_end_msg $?</span><br><span class="line">	#;;</span><br><span class="line">  restart|force-reload)</span><br><span class="line">	#</span><br><span class="line">	# If the &quot;reload&quot; option is implemented then remove the</span><br><span class="line">	# &apos;force-reload&apos; alias</span><br><span class="line">	#</span><br><span class="line">	log_daemon_msg &quot;Restarting $DESC&quot; &quot;$NAME&quot;</span><br><span class="line">	do_stop</span><br><span class="line">	case &quot;$?&quot; in</span><br><span class="line">	  0|1)</span><br><span class="line">		do_start</span><br><span class="line">		case &quot;$?&quot; in</span><br><span class="line">			0) log_end_msg 0 ;;</span><br><span class="line">			1) log_end_msg 1 ;; # Old process is still running</span><br><span class="line">			*) log_end_msg 1 ;; # Failed to start</span><br><span class="line">		esac</span><br><span class="line">		;;</span><br><span class="line">	  *)</span><br><span class="line">	  	# Failed to stop</span><br><span class="line">		log_end_msg 1</span><br><span class="line">		;;</span><br><span class="line">	esac</span><br><span class="line">	;;</span><br><span class="line">  *)</span><br><span class="line">	#echo &quot;Usage: $SCRIPTNAME &#123;start|stop|restart|reload|force-reload&#125;&quot; &gt;&amp;2</span><br><span class="line">	echo &quot;Usage: $SCRIPTNAME &#123;start|stop|restart|force-reload&#125;&quot; &gt;&amp;2</span><br><span class="line">	exit 3</span><br><span class="line">	;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">:</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><a href="https://gist.github.com/danmackinlay/176149" target="_blank" rel="noopener">script source</a></p>
+<ul>
+<li><p>Add execute authority</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod +x /etc/init.d/supervisord</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Add the configuration into system</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chkconfig --add supervisord</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Switch on the configuration and start</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chkconfig supervisord on</span><br><span class="line">sudo service supervisord start</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>After the configuration, whenever <code>AWS</code> is rebooted, <code>Supervisor</code> will automatically restart</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/AWS/">#AWS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Supervisor/">#Supervisor</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/MacOS/">#MacOS</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/LaravelQueueWithSQS/">Implement Laravel Queue with AWS SQS</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/flexibleGitFlow/">A flexible git flow</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/supervisor/';
+        this.page.identifier = 'supervisor/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

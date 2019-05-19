@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Laravel串接歐付寶第三方金流支付 - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="建立Laravel專案Laravel new AllPay 一開始先Git，這幾乎是一定要的啊！git init 下載歐付寶SDK，本篇使用PHP SDKgit clone https://github.com/o-pay/Payment_PHP 將SDK移到Laravel裡頭的app底下">
+<meta name="keywords" content="Laravel Transaction,Laravel Log,ngrok,Laravel Middleware,歐付寶,歐付寶 付款,歐付寶 退款">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel串接歐付寶第三方金流支付">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/AllPayPaymentService/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="建立Laravel專案Laravel new AllPay 一開始先Git，這幾乎是一定要的啊！git init 下載歐付寶SDK，本篇使用PHP SDKgit clone https://github.com/o-pay/Payment_PHP 將SDK移到Laravel裡頭的app底下">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/v26RmZj.png">
+<meta property="og:updated_time" content="2019-03-17T09:38:32.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel串接歐付寶第三方金流支付">
+<meta name="twitter:description" content="建立Laravel專案Laravel new AllPay 一開始先Git，這幾乎是一定要的啊！git init 下載歐付寶SDK，本篇使用PHP SDKgit clone https://github.com/o-pay/Payment_PHP 將SDK移到Laravel裡頭的app底下">
+<meta name="twitter:image" content="https://i.imgur.com/v26RmZj.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/AllPayPaymentService/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="建立Laravel專案Laravel new AllPay 一開始先Git，這幾乎是一定要的啊！git init 下載歐付寶SDK，本篇使用PHP SDKgit clone https://github.com/o-pay/Payment_PHP 將SDK移到Laravel裡頭的app底下">
+<meta name="keywords" content="Laravel Transaction,Laravel Log,ngrok,Laravel Middleware,歐付寶,歐付寶 付款,歐付寶 退款">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel串接歐付寶第三方金流支付">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/AllPayPaymentService/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="建立Laravel專案Laravel new AllPay 一開始先Git，這幾乎是一定要的啊！git init 下載歐付寶SDK，本篇使用PHP SDKgit clone https://github.com/o-pay/Payment_PHP 將SDK移到Laravel裡頭的app底下">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/v26RmZj.png">
+<meta property="og:updated_time" content="2019-03-17T09:38:32.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel串接歐付寶第三方金流支付">
+<meta name="twitter:description" content="建立Laravel專案Laravel new AllPay 一開始先Git，這幾乎是一定要的啊！git init 下載歐付寶SDK，本篇使用PHP SDKgit clone https://github.com/o-pay/Payment_PHP 將SDK移到Laravel裡頭的app底下">
+<meta name="twitter:image" content="https://i.imgur.com/v26RmZj.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立Laravel專案">1&nbsp;&nbsp;<b>建立Laravel專案</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#一開始先Git，這幾乎是一定要的啊！">2&nbsp;&nbsp;<b>一開始先Git，這幾乎是一定要的啊！</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#下載歐付寶SDK，本篇使用PHP-SDK">3&nbsp;&nbsp;<b>下載歐付寶SDK，本篇使用PHP SDK</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#將SDK移到Laravel裡頭的app底下">4&nbsp;&nbsp;<b>將SDK移到Laravel裡頭的app底下</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立等等測試用的Controller">5&nbsp;&nbsp;<b>建立等等測試用的Controller</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#從剛剛的SDK包裡面，複製example到我們的controller裡，本篇使用All的example，如下：">6&nbsp;&nbsp;<b>從剛剛的SDK包裡面，複製example到我們的controller裡，本篇使用All的example，如下：</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#我們將上面一些機敏資訊，移到Laravel的-env檔裡面，如下">7&nbsp;&nbsp;<b>我們將上面一些機敏資訊，移到Laravel的.env檔裡面，如下:</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用use代替include">8&nbsp;&nbsp;<b>使用use代替include</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立金流訂單-這部分屬個人表格設計，帶入參數每個人都不同">9&nbsp;&nbsp;<b>建立金流訂單 (這部分屬個人表格設計，帶入參數每個人都不同)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#為PaymentsController建立一支API">10&nbsp;&nbsp;<b>為PaymentsController建立一支API</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一頁最簡單的的html">11&nbsp;&nbsp;<b>建立一頁最簡單的的html</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#簡單傳送測試">12&nbsp;&nbsp;<b>簡單傳送測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立Log">13&nbsp;&nbsp;<b>建立Log</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立public-url">14&nbsp;&nbsp;<b>建立public url</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立接收的function">15&nbsp;&nbsp;<b>建立接收的function</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定ReturnURL">16&nbsp;&nbsp;<b>設定ReturnURL</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#付款測試">17&nbsp;&nbsp;<b>付款測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#驗證">18&nbsp;&nbsp;<b>驗證</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#驗證之後呢？">19&nbsp;&nbsp;<b>驗證之後呢？</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#一些沒說到的事">20&nbsp;&nbsp;<b>一些沒說到的事</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#退款">21&nbsp;&nbsp;<b>退款</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/AllPayPaymentService/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/AllPayPaymentService/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel串接歐付寶第三方金流支付
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-02-08T01:06:45.000Z" itemprop="datePublished">2月 8 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/金流/">金流</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            19 分钟 讀完 (大概 2863 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h3 id="建立Laravel專案"><a href="#建立Laravel專案" class="headerlink" title="建立Laravel專案"></a>建立Laravel專案</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Laravel new AllPay</span><br></pre></td></tr></table></figure>
+<h3 id="一開始先Git，這幾乎是一定要的啊！"><a href="#一開始先Git，這幾乎是一定要的啊！" class="headerlink" title="一開始先Git，這幾乎是一定要的啊！"></a>一開始先Git，這幾乎是一定要的啊！</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<h3 id="下載歐付寶SDK，本篇使用PHP-SDK"><a href="#下載歐付寶SDK，本篇使用PHP-SDK" class="headerlink" title="下載歐付寶SDK，本篇使用PHP SDK"></a>下載歐付寶SDK，本篇使用PHP SDK</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/o-pay/Payment_PHP</span><br></pre></td></tr></table></figure>
+<h3 id="將SDK移到Laravel裡頭的app底下"><a href="#將SDK移到Laravel裡頭的app底下" class="headerlink" title="將SDK移到Laravel裡頭的app底下"></a>將SDK移到Laravel裡頭的app底下</h3><a id="more"></a> 
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">cp Payment_PHP/sdk/AllPay.Payment.Integration.php AllPay/app/</span><br></pre></td></tr></table></figure>
+<h3 id="建立等等測試用的Controller"><a href="#建立等等測試用的Controller" class="headerlink" title="建立等等測試用的Controller"></a>建立等等測試用的Controller</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:controller PaymentsController</span><br></pre></td></tr></table></figure>
+<h3 id="從剛剛的SDK包裡面，複製example到我們的controller裡，本篇使用All的example，如下："><a href="#從剛剛的SDK包裡面，複製example到我們的controller裡，本篇使用All的example，如下：" class="headerlink" title="從剛剛的SDK包裡面，複製example到我們的controller裡，本篇使用All的example，如下："></a>從剛剛的SDK包裡面，複製example到我們的controller裡，本篇使用All的example，如下：</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">*</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">//載入SDK(路徑可依系統規劃自行調整)</span></span><br><span class="line">    <span class="hljs-keyword">include</span>(<span class="hljs-string">'AllPay.Payment.Integration.php'</span>);</span><br><span class="line">    <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">        </span><br><span class="line">    	$obj = <span class="hljs-keyword">new</span> AllInOne();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//服務參數</span></span><br><span class="line">        $obj-&gt;ServiceURL  = <span class="hljs-string">"https://payment-stage.opay.tw/Cashier/AioCheckOut/V5"</span>;         </span><br><span class="line">        <span class="hljs-comment">//服務位置</span></span><br><span class="line">        $obj-&gt;HashKey     = <span class="hljs-string">'5294y06JbISpM5x9'</span> ;                                            </span><br><span class="line">        <span class="hljs-comment">//測試用Hashkey，請自行帶入AllPay提供的HashKey</span></span><br><span class="line">        $obj-&gt;HashIV      = <span class="hljs-string">'v77hoKGq4kWxNNIS'</span> ;                                            </span><br><span class="line">        <span class="hljs-comment">//測試用HashIV，請自行帶入AllPay提供的HashIV</span></span><br><span class="line">        $obj-&gt;MerchantID  = <span class="hljs-string">'2000132'</span>;                                                      </span><br><span class="line">        <span class="hljs-comment">//測試用MerchantID，請自行帶入AllPay提供的MerchantID</span></span><br><span class="line">        $obj-&gt;EncryptType = EncryptType::ENC_SHA256;                                        </span><br><span class="line">        <span class="hljs-comment">//CheckMacValue加密類型，請固定填入1，使用SHA256加密</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//基本參數(請依系統規劃自行調整)</span></span><br><span class="line">        $MerchantTradeNo = <span class="hljs-string">"Test"</span>.time();</span><br><span class="line"></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'ReturnURL'</span>]         = <span class="hljs-string">'http://localhost/simple_ServerReplyPaymentStatus.php'</span> ;    </span><br><span class="line">        <span class="hljs-comment">//付款完成通知回傳的網址</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'ReturnURL'</span>]         = <span class="hljs-string">'http://gw.grazia.tw/sdk/op_sdk/op_payment/example/simple_ServerReplyPaymentStatus.php'</span> ;    </span><br><span class="line">        <span class="hljs-comment">//付款完成通知回傳的網址</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'MerchantTradeNo'</span>]   = $MerchantTradeNo;                                 </span><br><span class="line">        <span class="hljs-comment">//訂單編號</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'MerchantTradeDate'</span>] = date(<span class="hljs-string">'Y/m/d H:i:s'</span>);                              </span><br><span class="line">        <span class="hljs-comment">//交易時間</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'TotalAmount'</span>]       = <span class="hljs-number">2000</span>;                                             </span><br><span class="line">        <span class="hljs-comment">//交易金額</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'TradeDesc'</span>]         = <span class="hljs-string">"good to drink"</span>;                                  </span><br><span class="line">        <span class="hljs-comment">//交易描述</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'ChoosePayment'</span>]     = PaymentMethod::ALL;                               </span><br><span class="line">        <span class="hljs-comment">//付款方式:全功能</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//訂單的商品資料</span></span><br><span class="line">        array_push($obj-&gt;Send[<span class="hljs-string">'Items'</span>], <span class="hljs-keyword">array</span>(<span class="hljs-string">'Name'</span> =&gt; <span class="hljs-string">"歐付寶黑芝麻豆漿"</span>, <span class="hljs-string">'Price'</span> =&gt; (int)<span class="hljs-string">"2000"</span>,</span><br><span class="line">                   <span class="hljs-string">'Currency'</span> =&gt; <span class="hljs-string">"元"</span>, <span class="hljs-string">'Quantity'</span> =&gt; (int) <span class="hljs-string">"1"</span>, <span class="hljs-string">'URL'</span> =&gt; <span class="hljs-string">"dedwed"</span>));</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># 電子發票參數</span></span><br><span class="line">        <span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;Send['InvoiceMark'] = InvoiceState::Yes;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['RelateNumber'] = $MerchantTradeNo;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['CustomerEmail'] = 'test<span class="hljs-doctag">@opay</span>.tw';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['CustomerPhone'] = '0911222333';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['TaxType'] = TaxType::Dutiable;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['CustomerAddr'] = '台北市南港區三重路19-2號5樓D棟';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['InvoiceItems'] = array();</span></span><br><span class="line"><span class="hljs-comment">        // 將商品加入電子發票商品列表陣列</span></span><br><span class="line"><span class="hljs-comment">        foreach ($obj-&gt;Send['Items'] as $info)</span></span><br><span class="line"><span class="hljs-comment">        &#123;</span></span><br><span class="line"><span class="hljs-comment">            array_push($obj-&gt;SendExtend['InvoiceItems'],array('Name' =&gt; $info['Name'],'Count' =&gt;</span></span><br><span class="line"><span class="hljs-comment">                $info['Quantity'],'Word' =&gt; '個','Price' =&gt; $info['Price'],'TaxType' =&gt; TaxType::Dutiable));</span></span><br><span class="line"><span class="hljs-comment">        &#125;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['InvoiceRemark'] = '測試發票備註';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['DelayDay'] = '0';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['InvType'] = InvType::General;</span></span><br><span class="line"><span class="hljs-comment">        */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//產生訂單(auto submit至AllPay)</span></span><br><span class="line">        $obj-&gt;CheckOut();</span><br><span class="line">      </span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (<span class="hljs-keyword">Exception</span> $e) &#123;</span><br><span class="line">    	<span class="hljs-keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="我們將上面一些機敏資訊，移到Laravel的-env檔裡面，如下"><a href="#我們將上面一些機敏資訊，移到Laravel的-env檔裡面，如下" class="headerlink" title="我們將上面一些機敏資訊，移到Laravel的.env檔裡面，如下:"></a>我們將上面一些機敏資訊，移到Laravel的.env檔裡面，如下:</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">//服務位置</span></span><br><span class="line">$obj-&gt;HashKey = env(<span class="hljs-string">'HASHKEY'</span>);                                            </span><br><span class="line"><span class="hljs-comment">//測試用Hashkey，請自行帶入AllPay提供的HashKey</span></span><br><span class="line">$obj-&gt;HashIV = env(<span class="hljs-string">'HASHIV'</span>);                                            </span><br><span class="line"><span class="hljs-comment">//測試用HashIV，請自行帶入AllPay提供的HashIV</span></span><br><span class="line">$obj-&gt;MerchantID = env(<span class="hljs-string">'MERCHANTID'</span>);                                                      </span><br><span class="line"><span class="hljs-comment">//測試用MerchantID，請自行帶入AllPay提供的MerchantID</span></span><br><span class="line"></span><br><span class="line">$obj-&gt;Send[<span class="hljs-string">'ReturnURL'</span>] = env(<span class="hljs-string">'ALLPAYRETURNURL'</span>);</span><br><span class="line"><span class="hljs-comment">//付款完成通知回傳的網址</span></span><br><span class="line">$obj-&gt;Send[<span class="hljs-string">'ClientBackURL'</span>] = $request-&gt;ClintBackURL;</span><br><span class="line"><span class="hljs-comment">//付款完成後，於第三方頁面顯示回到我們服務的網址</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>.env檔內如下：<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">ALLPAYRETURNURL=https:<span class="hljs-comment">//163be100.ngrok.io/api/paymentsResponse</span></span><br><span class="line"></span><br><span class="line">HASHKEY=<span class="hljs-number">5294</span>y06JbISpM5x9</span><br><span class="line">HASHIV=v77hoKGq4kWxNNIS</span><br><span class="line">MERCHANTID=<span class="hljs-number">2000132</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="使用use代替include"><a href="#使用use代替include" class="headerlink" title="使用use代替include"></a>使用<code>use</code>代替<code>include</code></h3><ul>
+<li><p>刪除</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">//載入SDK(路徑可依系統規劃自行調整)</span></span><br><span class="line"><span class="hljs-keyword">include</span>(<span class="hljs-string">'AllPay.Payment.Integration.php'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>新增AllPay.Payment.Integration.php到composer.json file</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">"autoload-dev"</span>: &#123;</span><br><span class="line">    <span class="hljs-string">"psr-4"</span>: &#123;</span><br><span class="line">        <span class="hljs-string">"Tests\\"</span>: <span class="hljs-string">"tests/"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="hljs-string">"files"</span>: [</span><br><span class="line">        <span class="hljs-string">"app/Helpers.php"</span>,</span><br><span class="line">        <span class="hljs-string">"app/AllPay.Payment.Integration.php"</span></span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在terminal下達</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">composer dump-autoload`</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在controller檔案裡，use新的class</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">AllInOne</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">EncryptType</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Exception</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">PaymentMethod</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="建立金流訂單-這部分屬個人表格設計，帶入參數每個人都不同"><a href="#建立金流訂單-這部分屬個人表格設計，帶入參數每個人都不同" class="headerlink" title="建立金流訂單 (這部分屬個人表格設計，帶入參數每個人都不同)"></a>建立金流訂單 (這部分屬個人表格設計，帶入參數每個人都不同)</h3><p>因為會一次性的寫入兩張表格，所以這邊會使用 Laravel 的 transaction 來寫入資料<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">//總金額</span><br><span class="line">$totalAmount = Order::getTotalAmountForPayments($orders);</span><br><span class="line">//商品訂單編號</span><br><span class="line">$ordersName = Order::getOrdersNameForPayments($orders);</span><br><span class="line">//金流訂單編號</span><br><span class="line">$MerchantTradeNo = time() . Helpers::createAUniqueNumber();</span><br><span class="line">//金流訂單建立時間</span><br><span class="line">$MerchantTradeDate = date(&apos;Y/m/d H:i:s&apos;);</span><br><span class="line">//金流訂單敘述</span><br><span class="line">$TradeDesc = &apos;BuyBuyGo&apos;;</span><br><span class="line">//數量</span><br><span class="line">$quantity = 1;</span><br><span class="line"></span><br><span class="line">//因為同時建立兩張表格，這邊使用Laravel的transaction功能來防止資料庫資料不一</span><br><span class="line">//transaction開始</span><br><span class="line">DB::beginTransaction();</span><br><span class="line"></span><br><span class="line">//以下動作需全部完成無錯誤，否則終止並回朔</span><br><span class="line">try</span><br><span class="line">&#123;</span><br><span class="line">    $payment_service_order = new PaymentServiceOrders();</span><br><span class="line"></span><br><span class="line">    $payment_service_order-&gt;user_id = User::getUserID($request);</span><br><span class="line">    //金流服務商ID</span><br><span class="line">    $payment_service_order-&gt;payment_service_id = $thirdPartyPaymentService-&gt;id;</span><br><span class="line">    $payment_service_order-&gt;expiry_time = (new Carbon())-&gt;now()-&gt;addDay(1)-&gt;toDateTimeString();</span><br><span class="line">    $payment_service_order-&gt;MerchantID = env(&apos;MERCHANTID&apos;);</span><br><span class="line">    $payment_service_order-&gt;MerchantTradeNo = $MerchantTradeNo;</span><br><span class="line">    $payment_service_order-&gt;MerchantTradeDate = $MerchantTradeDate;</span><br><span class="line">    $payment_service_order-&gt;TotalAmount = $totalAmount;</span><br><span class="line">    $payment_service_order-&gt;TradeDesc = $TradeDesc;</span><br><span class="line">    //商品訂單的編號</span><br><span class="line">    $payment_service_order-&gt;ItemName = $ordersName;</span><br><span class="line">    $payment_service_order-&gt;save();</span><br><span class="line"></span><br><span class="line">    foreach ($orders as $order)</span><br><span class="line">    &#123;</span><br><span class="line">        $order_relations = new OrderRelations();</span><br><span class="line">        $order_relations-&gt;payment_service_id = $thirdPartyPaymentService-&gt;id;</span><br><span class="line">        $order_relations-&gt;payment_service_order_id = $payment_service_order-&gt;id;</span><br><span class="line">        $order_relations-&gt;order_id = $order-&gt;id;</span><br><span class="line">        $order_relations-&gt;save();</span><br><span class="line">    &#125;</span><br><span class="line">    //若有錯誤，則停止並回朔，回報自訂錯誤訊息</span><br><span class="line">&#125; catch (Exception $e)</span><br><span class="line">&#123;</span><br><span class="line">    DB::rollBack();</span><br><span class="line"></span><br><span class="line">    return Helpers::result(&apos;false&apos;, &apos;Something went wrong with DB&apos;, 400);</span><br><span class="line">&#125;</span><br><span class="line">//若無錯誤，則寫入資料庫</span><br><span class="line">DB::commit();</span><br></pre></td></tr></table></figure></p>
+<h3 id="為PaymentsController建立一支API"><a href="#為PaymentsController建立一支API" class="headerlink" title="為PaymentsController建立一支API"></a>為PaymentsController建立一支API</h3><ul>
+<li>到routes資料夾底下的api.php</li>
+<li>增加route<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Route::post(&apos;pay&apos;, &apos;PaymentsController@pay&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="建立一頁最簡單的的html"><a href="#建立一頁最簡單的的html" class="headerlink" title="建立一頁最簡單的的html"></a>建立一頁最簡單的的html</h3><ul>
+<li>直接更改Laravel內建welcome.blade的內容，如下：<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Facebook Login JavaScript Example&lt;/title&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">// 這邊需輸入PaymentsController的API</span><br><span class="line">&lt;form action=&quot;/api/pay&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">    @csrf()</span><br><span class="line">    &lt;input type=&quot;checkbox&quot; value=&quot;1&quot; name=&quot;order_id[]&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;checkbox&quot; value=&quot;2&quot; name=&quot;order_id[]&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;checkbox&quot; value=&quot;3&quot; name=&quot;order_id[]&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;hidden&quot; value=&quot;https://64b30ea0.ngrok.io/&quot; name=&quot;ClintBackURL&quot;&gt;</span><br><span class="line">    &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="簡單傳送測試"><a href="#簡單傳送測試" class="headerlink" title="簡單傳送測試"></a>簡單傳送測試</h3><ul>
+<li>到Laravel首頁，此時此頁面應已經變更為我們剛剛建立的簡單form頁面</li>
+<li>什麼都不要勾選，點選submit</li>
+<li>成功到了歐付寶的付款頁面<br><img src="https://i.imgur.com/v26RmZj.png" alt></li>
+</ul>
+<h3 id="建立Log"><a href="#建立Log" class="headerlink" title="建立Log"></a>建立Log</h3><ul>
+<li>為了要知道當我們成功付款之後，歐付寶會回傳什麼給我們，我們需要用Log來看看回傳的東西</li>
+<li>有沒有一個地方，是所有的請求跟回饋都一定會進出通過，而且可以讓我們控制的？ 這似乎是個完美記log的地方</li>
+<li>我們可以建立一個middleware，然後在middleware裏頭使用Laravel的Log功能，將所有進來的請求跟我們回饋的東西全都記下來</li>
+<li><p>建立middleware</p>
+<ul>
+<li>於terminal頁面<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:middleware TestLog</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>註冊middleware</p>
+<ul>
+<li>到<code>/app/Http/Kernel.php</code>檔案裡頭，加上我們剛剛建立的middleware</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">protected $middleware = [</span><br><span class="line">    \App\Http\Middleware\CheckForMaintenanceMode::class,</span><br><span class="line">    \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,</span><br><span class="line">    \App\Http\Middleware\TrimStrings::class,</span><br><span class="line">    \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,</span><br><span class="line">    \App\Http\Middleware\TrustProxies::class,</span><br><span class="line">    \App\Http\Middleware\TestLog::class,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>建立Log<ul>
+<li>到我們剛剛建立的TestLog檔案裡頭，新增：</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$response = $next($request);</span><br><span class="line">log::info([</span><br><span class="line">$request-&gt;header(),</span><br><span class="line">$request-&gt;getMethod(),</span><br><span class="line">$request-&gt;getRequestUri(),</span><br><span class="line">$request-&gt;all(),</span><br><span class="line">$response-&gt;getStatusCode(),</span><br><span class="line">$response-&gt;getContent()</span><br><span class="line">]);</span><br><span class="line">return $response;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>實際上，Log要記些什麼視乎每個人的需求</li>
+</ul>
+<h3 id="建立public-url"><a href="#建立public-url" class="headerlink" title="建立public url"></a>建立public url</h3><ul>
+<li>我們要取得第三方回傳的資訊，所以我們必須要有一個public url來接收第三方的response</li>
+<li>我們可以使用ngrok來取得public url</li>
+<li>至<a href="https://ngrok.com/" target="_blank" rel="noopener">ngrok官網</a>安裝ngrok</li>
+<li>將ngrok變更為可全域執行<ul>
+<li>mv ngrok /usr/local/bin</li>
+</ul>
+</li>
+<li>先取得public url，在terminal中</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ngrok http 8000</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在terminal中，位於AllPay專案資料夾內，開啟本機通道</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan serve 8000`</span><br></pre></td></tr></table></figure>
+<ul>
+<li>複製ngrok產生的public https url</li>
+</ul>
+<h3 id="建立接收的function"><a href="#建立接收的function" class="headerlink" title="建立接收的function"></a>建立接收的function</h3><ul>
+<li><p>我們準備要來接歐付寶回傳的訊息了，我們需要建立一個function，並且接到之後，可以在裡面做我們想做的事</p>
+<ul>
+<li>在PaymentsController裡頭，我們先建一個function <code>receive</code>，如下：<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">public function receive()</span><br><span class="line">&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>針對此function，建立一個API</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Route::post(&apos;pay&apos;, &apos;PaymentsController@pay&apos;);</span><br><span class="line">Route::post(&apos;receive&apos;, &apos;PaymentsController@receive&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="設定ReturnURL"><a href="#設定ReturnURL" class="headerlink" title="設定ReturnURL"></a>設定ReturnURL</h3><ul>
+<li><p>於.env檔內，如有照之前步驟，應有以下參數，將複製的public url 貼上 </p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ALLPAYRETURNURL=https://163be100.ngrok.io/api/recevie</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你的連結跟我的不一樣哦，別貼我的</p>
+</li>
+</ul>
+<h3 id="付款測試"><a href="#付款測試" class="headerlink" title="付款測試"></a>付款測試</h3><ul>
+<li>再次連到歐付寶付款頁面</li>
+<li><p>登入歐付寶提供的買家測試帳號</p>
+<ul>
+<li><p>帳號：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">stageuser001</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>密碼：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">test1234</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>使用歐付寶提供的測試信用卡付款</p>
+<ul>
+<li><p>卡號：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">4311-9522-2222-2222</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>有效期限：請大於目前月/年，例：12 / 20</p>
+</li>
+<li>末三碼：<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">222</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>付款後，我們到log去看一下有沒有收到歐付寶的回饋，於terminal，位於AllPay的資料夾內</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">cat storage/logs/laravel-2019-02-08.log`</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>咦，有收到歐付寶的回饋了！</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&apos;MerchantID&apos; =&gt; &apos;2000132&apos;,</span><br><span class="line">    &apos;MerchantTradeNo&apos; =&gt; &apos;Test1549597724&apos;,</span><br><span class="line">    &apos;PayAmt&apos; =&gt; &apos;2000&apos;,</span><br><span class="line">    &apos;PaymentDate&apos; =&gt; &apos;2019/02/08 11:49:03&apos;,</span><br><span class="line">    &apos;PaymentType&apos; =&gt; &apos;Credit_CreditCard&apos;,</span><br><span class="line">    &apos;PaymentTypeChargeFee&apos; =&gt; &apos;20&apos;,</span><br><span class="line">    &apos;RedeemAmt&apos; =&gt; &apos;0&apos;,</span><br><span class="line">    &apos;RtnCode&apos; =&gt; &apos;1&apos;,</span><br><span class="line">    &apos;RtnMsg&apos; =&gt; &apos;交易成功&apos;,</span><br><span class="line">    &apos;SimulatePaid&apos; =&gt; &apos;0&apos;,</span><br><span class="line">    &apos;TradeAmt&apos; =&gt; &apos;2000&apos;,</span><br><span class="line">    &apos;TradeDate&apos; =&gt; &apos;2019/02/08 11:48:44&apos;,</span><br><span class="line">    &apos;TradeNo&apos; =&gt; &apos;1902081148440800&apos;,</span><br><span class="line">    &apos;CheckMacValue&apos; =&gt; &apos;5B1EE24B0E9D600C65578DD82D3168E2ED56799453577E17E1EBEFC536BD7EAF&apos;,</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h3><ul>
+<li>試想，如果有人不小心知道了你的API，然後對方也是開發者，他如果跑到你的服務購買商品，然後呼叫你的API結帳，你如何辨別？</li>
+<li>所以說，第三方跟廠商會有一套只有雙方身份對了，驗證才能通過的機制</li>
+<li>驗證機制大概就是，所以你傳出去的資料，每一項欄位，會經過一套只有雙方適用的公式下去計算，最後會得出一串CheckMacValue，眼尖的朋友應該已經看到，在我們收到的訊息最下面一個欄位帶的就是這串資料。</li>
+<li>詳細的公式各位朋友可參照官方網站。</li>
+<li><p>由於本篇使用官方的SDK，所以本篇將教大家如何使用官方SDK來驗證收到的資訊</p>
+<ul>
+<li>首先，我們到官方SDK的檔案中<code>app/AllPay.Payment.Integration.php</code>，搜尋名為<code>CheckMacValue</code>的class</li>
+<li><code>CheckMacValue</code> class裡頭，有一個名為<code>generate</code>的function，大家可以看一下它是怎麼寫的，這就是產生這串CheckMacValue的公式。</li>
+<li>所以說，我們只要通過這套公式，驗證我們收到的訊息之中，除了<code>CheckMacValue</code>這個欄位的資訊，那理應得到跟回傳的<code>CheckMacValue</code>一模一樣的值</li>
+<li><p>先取得回傳資訊中，除了<code>CheckMacValue</code>之外的所有資訊，我們可以使用以下的code</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$parameters = $paymentResponse-&gt;except(&apos;CheckMacValue&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再來，取得歐付寶回傳的<code>CheckMacValue</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$receivedCheckMacValue = $paymentResponse-&gt;CheckMacValue;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下來，使用官方的generate function，帶入我們收到的資訊，來產出正確的<code>CheckMacValue</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$calculatedCheckMacValue = CheckMacValue::generate($parameters, env(&apos;HASHKEY&apos;), env(&apos;HASHIV&apos;), EncryptType::ENC_SHA256);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最後，比較兩者的值是否一樣？如果一樣，表示這則訊息的確來自歐付寶，如果不同，那此資訊沒有可信度</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">if($receivedCheckMacValue == $calculatedCheckMacValue)</span><br><span class="line">    return true;</span><br><span class="line">return false;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="驗證之後呢？"><a href="#驗證之後呢？" class="headerlink" title="驗證之後呢？"></a>驗證之後呢？</h3><ul>
+<li>確認資訊來源正確之後，我們就可以依據收到的資訊下去做事了！ </li>
+<li>比方說，付款了做些什麼，付款失敗又做些什麼</li>
+<li><p>本篇範例為收到付款之後，將資料庫內訂單標記付款，並發email通知買家，如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">if (PaymentServiceOrders::checkIfCheckMacValueCorrect($request) &amp;&amp; PaymentServiceOrders::checkIfPaymentPaid($request-&gt;RtnCode))</span><br><span class="line">&#123;</span><br><span class="line">    $paymentServiceOrder = (new PaymentServiceOrders)-&gt;where(&apos;MerchantTradeNo&apos;, $request-&gt;MerchantTradeNo)-&gt;first();</span><br><span class="line">    $paymentServiceOrder-&gt;update([&apos;status&apos; =&gt; 1, &apos;expiry_time&apos; =&gt; null]);</span><br><span class="line"></span><br><span class="line">    $orderRelations = $paymentServiceOrder-&gt;where(&apos;MerchantTradeNo&apos;, $request-&gt;MerchantTradeNo)-&gt;first()-&gt;orderRelations;</span><br><span class="line">    Order::updateStatus($orderRelations);</span><br><span class="line"></span><br><span class="line">    $payerEmail = $paymentServiceOrder-&gt;user-&gt;email;</span><br><span class="line"></span><br><span class="line">    if ($payerEmail !== null)</span><br><span class="line">    Mail::to($payerEmail)-&gt;send(new PaymentReceived($paymentServiceOrder, $orderRelations));</span><br><span class="line"></span><br><span class="line">    return &apos;1|OK&apos;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最後記得別忘記return ‘1|OK’, 通知歐付寶我們已經收到付款囉！</p>
+</li>
+</ul>
+<h3 id="一些沒說到的事"><a href="#一些沒說到的事" class="headerlink" title="一些沒說到的事"></a>一些沒說到的事</h3><ul>
+<li>歐付寶測試帳號中，除了信用卡之外，也支援多種其他方式付款哦！可於登入買家測試帳號之後使用。</li>
+<li><p>超商或轉帳付款方式，需特別登入歐付寶提供的後台測試帳號，方可達到模擬付款！</p>
+<ul>
+<li><p>帳號：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">StageTest</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>密碼：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">test1234</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="退款"><a href="#退款" class="headerlink" title="退款"></a>退款</h3><ul>
+<li><p>退款範例如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">public static function refund($order, $paymentServiceInstance, $orderRelation)</span><br><span class="line">&#123;</span><br><span class="line">    try</span><br><span class="line">    &#123;</span><br><span class="line">        $obj = new AllInOne();</span><br><span class="line"></span><br><span class="line">        $obj-&gt;ServiceURL = &quot;https://payment-stage.opay.tw/Cashier/AioChargeback&quot;;</span><br><span class="line">        // 服務位置</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;HashKey = env(&apos;HASHKEY&apos;);</span><br><span class="line">        // 測試用Hashkey，請自行帶入AllPay提供的HashKey</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;HashIV = env(&apos;HASHIV&apos;);</span><br><span class="line">        // 測試用HashIV，請自行帶入AllPay提供的HashIV</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;MerchantID = env(&apos;MERCHANTID&apos;);                                                      </span><br><span class="line">        // 測試用MerchantID，請自行帶入AllPay提供的MerchantID</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;EncryptType = EncryptType::ENC_SHA256;                                        </span><br><span class="line">        // CheckMacValue加密類型，請固定填入1，使用SHA256加密</span><br><span class="line"></span><br><span class="line">        $obj-&gt;ChargeBack[&apos;MerchantTradeNo&apos;] = $paymentServiceInstance-&gt;MerchantTradeNo;</span><br><span class="line">        // 當初訂單成立時，提供的訂單號碼</span><br><span class="line"></span><br><span class="line">        $obj-&gt;ChargeBack[&apos;TradeNo&apos;] = $paymentServiceInstance-&gt;TradeNo;</span><br><span class="line">        // AllPay提供的訂單號碼</span><br><span class="line">        $obj-&gt;ChargeBack[&apos;ChargeBackTotalAmount&apos;] = $order-&gt;total_amount;</span><br><span class="line">        // 退款金額</span><br><span class="line">        $obj-&gt;AioChargeback();</span><br><span class="line"></span><br><span class="line">    &#125; catch (Exception $e)</span><br><span class="line">    &#123;</span><br><span class="line">        // 若錯誤，return</span><br><span class="line">        return Helpers::result(true, &apos;Something wrong happened&apos;, 200);</span><br><span class="line">        </span><br><span class="line">        // Debug模式，印出錯誤</span><br><span class="line">        echo $e-&gt;getMessage();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>帶入參數可參考<a href="https://www.opay.tw/Content/files/O_Pay_011.pdf" target="_blank" rel="noopener">官方文件</a>，選項12，會員通知退款。</p>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Transaction/">#Laravel Transaction</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Log/">#Laravel Log</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/ngrok/">#ngrok</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Middleware/">#Laravel Middleware</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/歐付寶/">#歐付寶</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/歐付寶-付款/">#歐付寶 付款</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/歐付寶-退款/">#歐付寶 退款</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/getINFOViaFBToken/">串接Facebook graph API</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/taskSchedulingInLaravel/">使用Laravel任務排程</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/AllPayPaymentService/';
+        this.page.identifier = 'zh-tw/AllPayPaymentService/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
