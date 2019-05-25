@@ -24,7 +24,7 @@
 <meta property="og:image" content="https://i.imgur.com/R93HoCB.png">
 <meta property="og:image" content="https://i.imgur.com/Izad8Ix.png">
 <meta property="og:image" content="https://i.imgur.com/StDKTwU.png">
-<meta property="og:updated_time" content="2019-05-21T04:46:37.088Z">
+<meta property="og:updated_time" content="2019-05-25T05:44:16.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Node.js">
 <meta name="twitter:description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
@@ -63,7 +63,7 @@
 <meta property="og:image" content="https://i.imgur.com/R93HoCB.png">
 <meta property="og:image" content="https://i.imgur.com/Izad8Ix.png">
 <meta property="og:image" content="https://i.imgur.com/StDKTwU.png">
-<meta property="og:updated_time" content="2019-05-21T04:46:37.088Z">
+<meta property="og:updated_time" content="2019-05-25T05:44:16.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Node.js">
 <meta name="twitter:description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
@@ -298,6 +298,10 @@
                     
                     <a class="navbar-item" href="#時間">2.12.11&nbsp;&nbsp;時間</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#同時異步多請求">2.12.12&nbsp;&nbsp;同時異步多請求</a>
+                    
                 </div>
             </div>
             
@@ -358,7 +362,7 @@
         <span class="column is-narrow">
             
             
-            44 分钟 讀完 (大概 6672 字)
+            1 小时 讀完 (大概 6847 字)
         </span>
         
     </div>
@@ -521,6 +525,7 @@
 </li>
 </ul>
 <h4 id="時間"><a href="#時間" class="headerlink" title="時間"></a>時間</h4><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">var</span> moment = <span class="hljs-built_in">require</span>(<span class="hljs-string">'moment-timezone'</span>);</span><br><span class="line"><span class="hljs-keyword">var</span> test = moment(createdDate).tz(<span class="hljs-string">"Asia/Taipei"</span>).format(<span class="hljs-string">'YYYY-MM-DD HH:MM:SS'</span>);</span><br><span class="line"><span class="hljs-built_in">console</span>.log(test); </span><br><span class="line"><span class="hljs-comment">// 2019-05-21 08:05:44</span></span><br></pre></td></tr></table></figure>
+<h4 id="同時異步多請求"><a href="#同時異步多請求" class="headerlink" title="同時異步多請求"></a>同時異步多請求</h4><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">// 需安裝兩個套件 `request-promise` 以及 `p-limit`</span></span><br><span class="line"><span class="hljs-keyword">const</span> request = <span class="hljs-built_in">require</span>(<span class="hljs-string">'request-promise'</span>);</span><br><span class="line"><span class="hljs-keyword">const</span> pLimit = <span class="hljs-built_in">require</span>(<span class="hljs-string">'p-limit'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HealthCheckService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">static</span> <span class="hljs-keyword">async</span> getHealthCheckResults(sites) &#123;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 指定 limit 同時最多發十個 request</span></span><br><span class="line">        <span class="hljs-keyword">const</span> limit = pLimit(<span class="hljs-number">10</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 利用 map 從 sites 中拿到我們要發請求的 url</span></span><br><span class="line"><span class="hljs-comment">// 然後利用套件 `limit` 來限制同時發請求的數量，再來使用 `request-promise` 套件來對上面拿到的 url 發請求</span></span><br><span class="line">        <span class="hljs-keyword">let</span> promises = sites.map(<span class="hljs-function">(<span class="hljs-params">site</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="hljs-keyword">let</span> url = <span class="hljs-string">`https://asia-northeast1-qcdn-20180401.cloudfunctions.net/qcdn-monitor/site/dig_and_test?host=<span class="hljs-subst">$&#123;site.host&#125;</span>&amp;cname=<span class="hljs-subst">$&#123;site.cname&#125;</span>`</span>;</span><br><span class="line">            <span class="hljs-keyword">return</span> limit(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> request(url));</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 上面的每一個 promises, 都是一個請求。 現在我們利用 `Promise.all`, 待所有的結果都回來之後，在 return</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(promises);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     
     </div>
