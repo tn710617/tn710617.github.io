@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Easy Payment Gateway with PayPal REST API - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="IntroductionIn this article, we are going to share how to do the follows with PayPal REST API  Create authorization order Authorization Capture Refund Place funds on hold  Since it’s a learning techni">
+<meta name="keywords" content="PayPal REST API,PayPal refund,PayPal authorization,PayPal capture,PayPal void,PayPal create order,PayPal place funds on hold">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Easy Payment Gateway with PayPal REST API">
+<meta property="og:url" content="https://tn710617.github.io/PayPalRestAPI/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionIn this article, we are going to share how to do the follows with PayPal REST API  Create authorization order Authorization Capture Refund Place funds on hold  Since it’s a learning techni">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/3UoIFHW.png">
+<meta property="og:image" content="https://i.imgur.com/OXoJrkx.png">
+<meta property="og:updated_time" content="2019-03-14T08:48:28.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Easy Payment Gateway with PayPal REST API">
+<meta name="twitter:description" content="IntroductionIn this article, we are going to share how to do the follows with PayPal REST API  Create authorization order Authorization Capture Refund Place funds on hold  Since it’s a learning techni">
+<meta name="twitter:image" content="https://i.imgur.com/3UoIFHW.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/PayPalRestAPI/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="IntroductionIn this article, we are going to share how to do the follows with PayPal REST API  Create authorization order Authorization Capture Refund Place funds on hold  Since it’s a learning techni">
+<meta name="keywords" content="PayPal REST API,PayPal refund,PayPal authorization,PayPal capture,PayPal void,PayPal create order,PayPal place funds on hold">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Easy Payment Gateway with PayPal REST API">
+<meta property="og:url" content="https://tn710617.github.io/PayPalRestAPI/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionIn this article, we are going to share how to do the follows with PayPal REST API  Create authorization order Authorization Capture Refund Place funds on hold  Since it’s a learning techni">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/3UoIFHW.png">
+<meta property="og:image" content="https://i.imgur.com/OXoJrkx.png">
+<meta property="og:updated_time" content="2019-03-14T08:48:28.542Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Easy Payment Gateway with PayPal REST API">
+<meta name="twitter:description" content="IntroductionIn this article, we are going to share how to do the follows with PayPal REST API  Create authorization order Authorization Capture Refund Place funds on hold  Since it’s a learning techni">
+<meta name="twitter:image" content="https://i.imgur.com/3UoIFHW.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b>Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Install-PayPal-REST-API-official-SDK">2&nbsp;&nbsp;<b>Install PayPal REST API official SDK</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Install">2.1&nbsp;&nbsp;Install</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Setting">3&nbsp;&nbsp;<b>Setting</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Personal-setting">3.1&nbsp;&nbsp;Personal setting</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Let’s-begin">4&nbsp;&nbsp;<b>Let’s begin</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#The-difference-between-order-and-payment">5&nbsp;&nbsp;<b>The difference between order and payment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-an-order">6&nbsp;&nbsp;<b>Create an order</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Please-refer-to-the-RequestBody-for-creating-an-order-as-follows">6.1&nbsp;&nbsp;Please refer to the RequestBody for creating an order as follows:</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Authorization">7&nbsp;&nbsp;<b>Authorization</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Here-is-the-authorization-example-as-follows">7.1&nbsp;&nbsp;Here is the authorization example as follows.</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Capture">8&nbsp;&nbsp;<b>Capture</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Here-is-the-capture-example">8.1&nbsp;&nbsp;Here is the capture example</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Here-is-RequestBody-for-capture">8.2&nbsp;&nbsp;Here is RequestBody for capture.</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Here-is-the-logic-of-capture-as-follows">8.3&nbsp;&nbsp;Here is the logic of capture as follows:</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Refund">9&nbsp;&nbsp;<b>Refund</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-following-is-the-RequestBody-for-refund">9.1&nbsp;&nbsp;The following is the RequestBody for refund.</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-logic-for-refund">9.2&nbsp;&nbsp;The logic for refund.</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Cancel-an-authorization">10&nbsp;&nbsp;<b>Cancel an authorization.</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Get-authorization-data">11&nbsp;&nbsp;<b>Get authorization data.</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Getting-capture-data">12&nbsp;&nbsp;<b>Getting capture data</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Conclusion">13&nbsp;&nbsp;<b>Conclusion</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/PayPalRestAPI/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/PayPalRestAPI/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Easy Payment Gateway with PayPal REST API
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-03-13T07:21:37.000Z" itemprop="datePublished">Mar 13 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Payment-Gateway/">Payment Gateway</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            17 minutes read (About 2518 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>In this article, we are going to share how to do the follows with PayPal REST API</p>
+<ol>
+<li>Create authorization order</li>
+<li>Authorization</li>
+<li>Capture</li>
+<li>Refund</li>
+<li>Place funds on hold</li>
+</ol>
+<p>Since it’s a learning technical diary, it will contain my personal project. You could selectively refer to this article.<br><a id="more"></a></p>
+<h2 id="Install-PayPal-REST-API-official-SDK"><a href="#Install-PayPal-REST-API-official-SDK" class="headerlink" title="Install PayPal REST API official SDK"></a>Install PayPal REST API official SDK</h2><p>In this article, we use the latest released version of the official <a href="https://github.com/paypal/Checkout-PHP-SDK" target="_blank" rel="noopener">SDK</a></p>
+<h4 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer require paypal/paypal-checkout-sdk</span><br></pre></td></tr></table></figure>
+<h2 id="Setting"><a href="#Setting" class="headerlink" title="Setting"></a>Setting</h2><h4 id="Personal-setting"><a href="#Personal-setting" class="headerlink" title="Personal setting"></a>Personal setting</h4><ul>
+<li><p>After installation, you could find the example under SDK directory as photo below:<br><img src="https://i.imgur.com/3UoIFHW.png" alt></p>
+</li>
+<li><p>Configure <code>PayPal Client.php</code> as follows:</p>
+<ol>
+<li><a href="https://developer.paypal.com/developer/applications" target="_blank" rel="noopener">Apply for a developer account and login</a></li>
+<li><a href="https://developer.paypal.com/developer/applications/create" target="_blank" rel="noopener">Create an App</a></li>
+<li>Get your Client ID and Secret<br><img src="https://i.imgur.com/OXoJrkx.png" alt></li>
+<li>Fill in with the got Client ID and Secret, Ray set them as environment variables.</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">environment</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $clientId = env(<span class="hljs-string">'PAYPAL_SANDBOX_API_ClientID'</span>);</span><br><span class="line">    $clientSecret = env(<span class="hljs-string">'PAYPAL_SANDBOX_API_SECRET'</span>);</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> SandboxEnvironment($clientId, $clientSecret);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Let’s-begin"><a href="#Let’s-begin" class="headerlink" title="Let’s begin"></a>Let’s begin</h2><p>As mentioned previously, we could find almost all of the examples for every situation in the official sample directory. You could customize it according to your need. The following will be Ray’s version.<br>If you have any questions, feel free to refer to the samples under <code>sample</code> directory, and the official document as follows:<br><a href="https://developer.paypal.com/docs/api/orders/v2/" target="_blank" rel="noopener">order</a><br><a href="https://developer.paypal.com/docs/api/payments/v2/" target="_blank" rel="noopener">payment</a></p>
+<h2 id="The-difference-between-order-and-payment"><a href="#The-difference-between-order-and-payment" class="headerlink" title="The difference between order and payment"></a>The difference between order and payment</h2><p>Here are some main differences:</p>
+<ul>
+<li>order： It only supports members of PayPal. You could delay your payment, and partially capture the payment upon what you need.</li>
+<li><p>payment: You could delay the payment, but you can’t partially capture it.</p>
+<p>For more information, you could refer to the <a href="https://developer.paypal.com/docs/faq/#what-is-the-difference-between-an-order-authorizationcapture-and-payments-authorizationcapture" target="_blank" rel="noopener">official document</a></p>
+</li>
+</ul>
+<h2 id="Create-an-order"><a href="#Create-an-order" class="headerlink" title="Create an order"></a>Create an order</h2><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createOrder</span><span class="hljs-params">($toBeSavedInfo, Recipient $recipient, $debug = false)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Use SDK</span></span><br><span class="line">    $request = <span class="hljs-keyword">new</span> OrdersCreateRequest();</span><br><span class="line">    $request-&gt;headers[<span class="hljs-string">"prefer"</span>] = <span class="hljs-string">"return=representation"</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// We will show this part later.</span></span><br><span class="line">    $request-&gt;body = <span class="hljs-keyword">self</span>::buildRequestBody($toBeSavedInfo, $recipient);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// We use the PayPalClient we just set up</span></span><br><span class="line">    $client = PayPalClient::client();</span><br><span class="line">    $response = $client-&gt;execute($request);</span><br><span class="line">    <span class="hljs-keyword">if</span> ($debug)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status Code: &#123;$response-&gt;statusCode&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status: &#123;$response-&gt;result-&gt;status&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Order ID: &#123;$response-&gt;result-&gt;id&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Intent: &#123;$response-&gt;result-&gt;intent&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Links:\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($response-&gt;result-&gt;links <span class="hljs-keyword">as</span> $link)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">print</span> <span class="hljs-string">"\t&#123;$link-&gt;rel&#125;: &#123;$link-&gt;href&#125;\tCall Type: &#123;$link-&gt;method&#125;\n"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-comment">// To toggle printing the whole response body comment/uncomment below line</span></span><br><span class="line">        <span class="hljs-keyword">echo</span> json_encode($response-&gt;result, JSON_PRETTY_PRINT), <span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// After the order is created, I only take the approve link. In default, PayPal provides several links for difference usage. However, we could achieve others except for approve with REST API.</span></span><br><span class="line">    <span class="hljs-keyword">foreach</span> (($response-&gt;result-&gt;links) <span class="hljs-keyword">as</span> $link)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> ($link-&gt;rel === <span class="hljs-string">'approve'</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            $linkForApproval = $link-&gt;href;</span><br><span class="line">            <span class="hljs-keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// We get some information which we are going to use later, and return.</span></span><br><span class="line">    $toBeSavedInfo[<span class="hljs-string">'payment_id'</span>] = $response-&gt;result-&gt;id;</span><br><span class="line">    $toBeSavedInfo[<span class="hljs-string">'statusCode'</span>] = $response-&gt;statusCode;</span><br><span class="line">    $toBeSavedInfo[<span class="hljs-string">'custom_id'</span>] = $response-&gt;result-&gt;purchase_units[<span class="hljs-number">0</span>]-&gt;custom_id;</span><br><span class="line">    $toBeSavedInfo[<span class="hljs-string">'PayPal_total_amount'</span>] = $response-&gt;result-&gt;purchase_units[<span class="hljs-number">0</span>]-&gt;amount-&gt;value;</span><br><span class="line">    $toBeSavedInfo[<span class="hljs-string">'orderStatus'</span>] = $response-&gt;result-&gt;status;</span><br><span class="line">    $toBeSavedInfo[<span class="hljs-string">'linkForApproval'</span>] = $linkForApproval;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> $toBeSavedInfo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Please-refer-to-the-RequestBody-for-creating-an-order-as-follows"><a href="#Please-refer-to-the-RequestBody-for-creating-an-order-as-follows" class="headerlink" title="Please refer to the RequestBody for creating an order as follows:"></a>Please refer to the RequestBody for creating an order as follows:</h4><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildRequestBody</span><span class="hljs-params">($toBeSavedInfo, Recipient $recipient)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// The setting here allows us to see items in detail in PayPal payment page</span></span><br><span class="line">    $item = [];</span><br><span class="line">    $i = <span class="hljs-number">1</span>;</span><br><span class="line">    <span class="hljs-keyword">foreach</span> ($toBeSavedInfo[<span class="hljs-string">'orders'</span>] <span class="hljs-keyword">as</span> $order)</span><br><span class="line">    &#123;</span><br><span class="line">        $item[] = [</span><br><span class="line">            <span class="hljs-string">'name'</span>        =&gt; $order-&gt;item_name,</span><br><span class="line">            <span class="hljs-string">'description'</span> =&gt; $order-&gt;item_description,</span><br><span class="line">            <span class="hljs-string">'sku'</span>         =&gt; $i,</span><br><span class="line">            <span class="hljs-string">'unit_amount'</span> =&gt; [</span><br><span class="line">                <span class="hljs-string">'currency_code'</span> =&gt; $toBeSavedInfo[<span class="hljs-string">'mc_currency'</span>],</span><br><span class="line">                <span class="hljs-string">'value'</span>         =&gt; $order-&gt;unit_price,</span><br><span class="line">            ],</span><br><span class="line">            <span class="hljs-string">'quantity'</span>    =&gt; $order-&gt;quantity,</span><br><span class="line">        ];</span><br><span class="line">        $i ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Here we specify the intent, which I had set as a environment variable</span></span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'intent'</span>              =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_INTENT_OF_CREATED_ORDERS'</span>),</span><br><span class="line">        <span class="hljs-string">'application_context'</span> =&gt;</span><br><span class="line">            [</span><br><span class="line">                <span class="hljs-string">'return_url'</span>           =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_RETURN_URL'</span>),</span><br><span class="line">                <span class="hljs-string">'cancel_url'</span>           =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_CANCEL_URL'</span>),</span><br><span class="line">                <span class="hljs-string">'brand_name'</span>           =&gt; env(<span class="hljs-string">'APP_NAME'</span>),</span><br><span class="line">                <span class="hljs-string">'locale'</span>               =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_LOCALE'</span>),</span><br><span class="line">                <span class="hljs-string">'landing_page'</span>         =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_LANDING_PAGE'</span>),</span><br><span class="line">                <span class="hljs-string">'shipping_preferences'</span> =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_SHIPPING_PREFERENCES'</span>),</span><br><span class="line">                <span class="hljs-string">'user_action'</span>          =&gt; env(<span class="hljs-string">'PAYPAL_SANDBOX_USER_ACTION'</span>),</span><br><span class="line">            ],</span><br><span class="line">            <span class="hljs-comment">// Here we could set purchase_unit. We could set tax, shipping fee, etc... under purchase_unit. We will skip those here.</span></span><br><span class="line">        <span class="hljs-string">'purchase_units'</span>      =&gt;</span><br><span class="line">            [</span><br><span class="line">                [</span><br><span class="line">                    <span class="hljs-string">'custom_id'</span> =&gt; $toBeSavedInfo[<span class="hljs-string">'merchant_trade_no'</span>],</span><br><span class="line">                    <span class="hljs-string">'amount'</span>    =&gt;</span><br><span class="line">                        [</span><br><span class="line">                            <span class="hljs-string">'currency_code'</span> =&gt; $toBeSavedInfo[<span class="hljs-string">'mc_currency'</span>],</span><br><span class="line">                            <span class="hljs-string">'value'</span>         =&gt; $toBeSavedInfo[<span class="hljs-string">'total_amount'</span>],</span><br><span class="line">                            <span class="hljs-string">'breakdown'</span>     =&gt;</span><br><span class="line">                                [</span><br><span class="line">                                    <span class="hljs-string">'item_total'</span> =&gt;</span><br><span class="line">                                        [</span><br><span class="line">                                            <span class="hljs-string">'currency_code'</span> =&gt; $toBeSavedInfo[<span class="hljs-string">'mc_currency'</span>],</span><br><span class="line">                                            <span class="hljs-string">'value'</span>         =&gt; $toBeSavedInfo[<span class="hljs-string">'total_amount'</span>],</span><br><span class="line">                                        ],</span><br><span class="line">                                ],</span><br><span class="line">                        ],</span><br><span class="line"></span><br><span class="line">                    <span class="hljs-string">'items'</span>    =&gt; $item,</span><br><span class="line">                    <span class="hljs-comment">// We could specify the recipient here.</span></span><br><span class="line">                    <span class="hljs-string">'shipping'</span> =&gt;</span><br><span class="line">                        <span class="hljs-keyword">array</span>(</span><br><span class="line">                            <span class="hljs-string">'name'</span>    =&gt;</span><br><span class="line">                                <span class="hljs-keyword">array</span>(</span><br><span class="line">                                    <span class="hljs-string">'full_name'</span> =&gt; $recipient-&gt;name,</span><br><span class="line">                                ),</span><br><span class="line">                            <span class="hljs-string">'address'</span> =&gt;</span><br><span class="line">                                <span class="hljs-keyword">array</span>(</span><br><span class="line">                                    <span class="hljs-string">'address_line_1'</span> =&gt; $recipient-&gt;others,</span><br><span class="line">                                    <span class="hljs-string">'admin_area_2'</span>   =&gt; $recipient-&gt;district,</span><br><span class="line">                                    <span class="hljs-string">'admin_area_1'</span>   =&gt; $recipient-&gt;city,</span><br><span class="line">                                    <span class="hljs-string">'postal_code'</span>    =&gt; $recipient-&gt;postcode,</span><br><span class="line">                                    <span class="hljs-string">'country_code'</span>   =&gt; $recipient-&gt;country_code,</span><br><span class="line">                                ),</span><br><span class="line">                        ),</span><br><span class="line">                ],</span><br><span class="line">            ],</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Authorization"><a href="#Authorization" class="headerlink" title="Authorization"></a>Authorization</h2><p>Now, we are going to use one of the important functions in REST API, authorization.</p>
+<ul>
+<li>After authorization, we will be able to capture the authorized amount within 29 days. However, PayPal only guarantees that the authorized amount will be available for three days right after a single authorization.</li>
+<li>It means that PayPal will temporarily place authorized funds on hold within buyer’s account for only three days after authorization. Please note that it’s only for three days, and it’s called Honor Period.</li>
+<li>After the first authorization, we will be able to apply for multiple authorization up to 10 times, which is called reauthorize<br>If you think the number is too less, you could contact <a href="https://www.paypal.com/contactus" target="_blank" rel="noopener">PayPal</a>, and raise the number to up to 99 times.</li>
+<li>Actually if you count the time properly and precisely, 10-time authorization should be enough. If you authorize once every three days, you could place funds on hold for a month with 10-time authorization, which is even enough for sea fright.</li>
+<li>You will be allowed to change the order amount for up to 115% or not more than USD 75. You could use this feature when there are some required changes on tax or shipping fee. </li>
+<li>You could refer to <a href="https://developer.paypal.com/docs/classic/admin/auth-capture/" target="_blank" rel="noopener">official document</a></li>
+</ul>
+<h4 id="Here-is-the-authorization-example-as-follows"><a href="#Here-is-the-authorization-example-as-follows" class="headerlink" title="Here is the authorization example as follows."></a>Here is the authorization example as follows.</h4><p>Please note that it’s Ray’s version. You could refer to official version and then modify it according to your need, or make one on our own with a reference on its SDK, which I think might be the best solution.</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * This function can be used to perform authorization on the approved order.</span></span><br><span class="line"><span class="hljs-comment"> * Valid Approved order id should be passed as an argument.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"> <span class="hljs-comment">// Here we could revise the authorized amount upon your need.</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">authorizeOrder</span><span class="hljs-params">($orderId, $amount = null, $debug = false)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $request = <span class="hljs-keyword">new</span> OrdersAuthorizeRequest($orderId);</span><br><span class="line">    <span class="hljs-comment">// RequestBody as mentioned above. You could refer to the official example.</span></span><br><span class="line">    $request-&gt;body = <span class="hljs-keyword">self</span>::buildRequestBodyForAuthorizeOrder($amount);</span><br><span class="line"></span><br><span class="line">    $client = PayPalClient::client();</span><br><span class="line">    $response = $client-&gt;execute($request);</span><br><span class="line">    <span class="hljs-keyword">if</span> ($debug)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status Code: &#123;$response-&gt;statusCode&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status: &#123;$response-&gt;result-&gt;status&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Order ID: &#123;$response-&gt;result-&gt;id&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Authorization ID: &#123;$response-&gt;result-&gt;purchase_units[0]-&gt;payments-&gt;authorizations[0]-&gt;id&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Links:\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($response-&gt;result-&gt;links <span class="hljs-keyword">as</span> $link)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">print</span> <span class="hljs-string">"\t&#123;$link-&gt;rel&#125;: &#123;$link-&gt;href&#125;\tCall Type: &#123;$link-&gt;method&#125;\n"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Authorization Links:\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($response-&gt;result-&gt;purchase_units[<span class="hljs-number">0</span>]-&gt;payments-&gt;authorizations[<span class="hljs-number">0</span>]-&gt;links <span class="hljs-keyword">as</span> $link)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">print</span> <span class="hljs-string">"\t&#123;$link-&gt;rel&#125;: &#123;$link-&gt;href&#125;\tCall Type: &#123;$link-&gt;method&#125;\n"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-comment">// To toggle printing the whole response body comment/uncomment below line</span></span><br><span class="line">        <span class="hljs-keyword">echo</span> json_encode($response-&gt;result, JSON_PRETTY_PRINT), <span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> $response;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>After authorization, we need to check if the authorization is successful, and therefore Ray made a validation function with the response got from the SDK<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkIfAuthorizedSuccessfully</span><span class="hljs-params">($response)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $newPayPal = (<span class="hljs-keyword">new</span> NewPayPal())-&gt;where(<span class="hljs-string">'payment_id'</span>, request()-&gt;token)-&gt;first();</span><br><span class="line">    <span class="hljs-comment">// Check if the authorization is completed</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (($response-&gt;result-&gt;status) !== <span class="hljs-string">'COMPLETED'</span>)</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">'Authorization isn\'t completed'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Check if the authorization has started.</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (($response-&gt;result-&gt;purchase_units[<span class="hljs-number">0</span>]-&gt;payments-&gt;authorizations[<span class="hljs-number">0</span>]-&gt;status) !== <span class="hljs-string">'CREATED'</span>)</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">'Authorization was not created'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Check if the currency is matched</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (($response-&gt;result-&gt;purchase_units[<span class="hljs-number">0</span>]-&gt;payments-&gt;authorizations[<span class="hljs-number">0</span>]-&gt;amount-&gt;currency_code) !== ($newPayPal-&gt;mc_currency))</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">'The currency is mismatched'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Check if authorized amount is correct. Here is my own version, and you could revise the amount if you need.</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (intval($response-&gt;result-&gt;purchase_units[<span class="hljs-number">0</span>]-&gt;payments-&gt;authorizations[<span class="hljs-number">0</span>]-&gt;amount-&gt;value) !== ($newPayPal-&gt;total_amount))</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">'The total amount is not correct'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Capture"><a href="#Capture" class="headerlink" title="Capture"></a>Capture</h2><ul>
+<li>Just like mentioned above, we will be allowed to capture the order after a successful authorization.</li>
+<li>However, PayPal only guarantees the authorized amount will be available for three days, which is also called honor period.</li>
+<li>Generally speaking, a proper and precise time counting with authorization and reauthorizing will be able to temporarily place funds on hold for 30 days.</li>
+</ul>
+<h4 id="Here-is-the-capture-example"><a href="#Here-is-the-capture-example" class="headerlink" title="Here is the capture example"></a>Here is the capture example</h4><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">captureAuthorization</span><span class="hljs-params">(NewPayPal $newPayPal, $final_capture = false, $debug = false)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $NewPayPal = (<span class="hljs-keyword">new</span> NewPayPal)-&gt;where(<span class="hljs-string">'merchant_trade_no'</span>, $newPayPal-&gt;merchant_trade_no)-&gt;first();</span><br><span class="line">    <span class="hljs-comment">// Capture function requires an authorization id</span></span><br><span class="line">    $request = <span class="hljs-keyword">new</span> AuthorizationsCaptureRequest($newPayPal-&gt;authorization_id);</span><br><span class="line">    <span class="hljs-comment">// Here we need to fill in to-be-captured amount. As mentioned above, amount capture could be partial. If final_capture is set to true, this authorization will end, and reauthorizing will be required for any further capture.</span></span><br><span class="line">    $request-&gt;body = <span class="hljs-keyword">self</span>::buildRequestBodyForCaptureAuthorization($NewPayPal-&gt;to_be_captured_amount, $final_capture, $newPayPal-&gt;mc_currency);</span><br><span class="line">    $client = PayPalClient::client();</span><br><span class="line">    $response = $client-&gt;execute($request);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> ($debug)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status Code: &#123;$response-&gt;statusCode&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status: &#123;$response-&gt;result-&gt;status&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Capture ID: &#123;$response-&gt;result-&gt;id&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Links:\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($response-&gt;result-&gt;links <span class="hljs-keyword">as</span> $link)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">print</span> <span class="hljs-string">"\t&#123;$link-&gt;rel&#125;: &#123;$link-&gt;href&#125;\tCall Type: &#123;$link-&gt;method&#125;\n"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-comment">// To toggle printing the whole response body comment/uncomment below line</span></span><br><span class="line">        <span class="hljs-keyword">echo</span> json_encode($response-&gt;result, JSON_PRETTY_PRINT), <span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> $response;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Here-is-RequestBody-for-capture"><a href="#Here-is-RequestBody-for-capture" class="headerlink" title="Here is RequestBody for capture."></a>Here is RequestBody for capture.</h4><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildRequestBodyForCaptureAuthorization</span><span class="hljs-params">($amount = null, $final_capture = false, $currency = <span class="hljs-string">'USD'</span>)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> ($amount != <span class="hljs-keyword">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="hljs-comment">// We specify the amount and currency of capture, which need to match the ones for authorization.</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [</span><br><span class="line">            <span class="hljs-string">"amount"</span>        =&gt; [</span><br><span class="line">                <span class="hljs-string">'currency_code'</span> =&gt; $currency,</span><br><span class="line">                <span class="hljs-string">'value'</span>         =&gt; $amount,</span><br><span class="line">            ],</span><br><span class="line">            <span class="hljs-string">'final_capture'</span> =&gt; $final_capture</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">"&#123;&#125;"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Here-is-the-logic-of-capture-as-follows"><a href="#Here-is-the-logic-of-capture-as-follows" class="headerlink" title="Here is the logic of capture as follows:"></a>Here is the logic of capture as follows:</h4><p>Ray’s logic is to set a to-be-captured amount to decide when the amount will be captured, which could save handing fee because each time a refund request will cost some handing fee. So Ray’s logic is to place funds on hold, and only revise to-be-captured amount when a refund request is made before to-be-captured date. Therefore, we could at the most extend save the handing fee on the seller side. The allowable refund period is 7 days in Ray’s logic, and capture the authorization with the final to-be-captured amount.<br>So the following function only runs once a day. If the current time is beyond the to-be-captured date, the authorization will be captured and update order state accordingly.<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">public static function dailyCaptureAuthorization()</span><br><span class="line">&#123;</span><br><span class="line">    $toBeCapturedPayments = NewPayPal::whereNotNull(&apos;authorization_id&apos;)-&gt;whereNull(&apos;capture_id&apos;)-&gt;where(&apos;to_be_captured_date&apos;, &apos;&lt;&apos;, Carbon::now()-&gt;toDateTimeString())-&gt;get();</span><br><span class="line">    foreach ($toBeCapturedPayments as $toBeCapturedPayment)</span><br><span class="line">    &#123;</span><br><span class="line">        $response = NewPayPal::captureAuthorization($toBeCapturedPayment);</span><br><span class="line">        if (($response-&gt;result-&gt;status) === &apos;COMPLETED&apos;)</span><br><span class="line">        &#123;</span><br><span class="line">            $toBeCapturedPayment-&gt;update([&apos;capture_id&apos; =&gt; $response-&gt;result-&gt;id, &apos;status&apos; =&gt; 7]);</span><br><span class="line">            foreach ($toBeCapturedPayment-&gt;orderRelations as $orderRelation)</span><br><span class="line">            &#123;</span><br><span class="line">                if (($orderRelation-&gt;status == 5) || ($orderRelation-&gt;status == 6))</span><br><span class="line">                &#123;</span><br><span class="line">                    $orderRelation-&gt;order-&gt;update([&apos;status&apos; =&gt; 7]);</span><br><span class="line">                    $orderRelation-&gt;update([&apos;status&apos; =&gt; 7]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Refund"><a href="#Refund" class="headerlink" title="Refund"></a>Refund</h2><ul>
+<li>The rule of refund is to refund an amount of money partially or one-time towards specific authorization.</li>
+<li>If you specify an amount, you refund the order partially.</li>
+<li>If you would like to fund it at a time, you could leave a empty RequestBody as the official example.<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">refundOrder</span><span class="hljs-params">($captureId, $amount, $currency, $debug = false)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $request = <span class="hljs-keyword">new</span> CapturesRefundRequest($captureId);</span><br><span class="line">    <span class="hljs-comment">// The required to-be-refunded amount and currency should match the ones of the authorization.</span></span><br><span class="line">    $request-&gt;body = <span class="hljs-keyword">self</span>::buildRequestBodyForRefundOrder($amount, $currency);</span><br><span class="line">    $client = PayPalClient::client();</span><br><span class="line">    $response = $client-&gt;execute($request);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> ($debug)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status Code: &#123;$response-&gt;statusCode&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Status: &#123;$response-&gt;result-&gt;status&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Order ID: &#123;$response-&gt;result-&gt;id&#125;\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">print</span> <span class="hljs-string">"Links:\n"</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($response-&gt;result-&gt;links <span class="hljs-keyword">as</span> $link)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">print</span> <span class="hljs-string">"\t&#123;$link-&gt;rel&#125;: &#123;$link-&gt;href&#125;\tCall Type: &#123;$link-&gt;method&#125;\n"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-comment">// To toggle printing the whole response body comment/uncomment below line</span></span><br><span class="line">        <span class="hljs-keyword">echo</span> json_encode($response-&gt;result, JSON_PRETTY_PRINT), <span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> $response;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="The-following-is-the-RequestBody-for-refund"><a href="#The-following-is-the-RequestBody-for-refund" class="headerlink" title="The following is the RequestBody for refund."></a>The following is the RequestBody for refund.</h4><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildRequestBodyForRefundOrder</span><span class="hljs-params">($amount = null, $currency = <span class="hljs-string">'USD'</span>, $final_capture = false)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// If the amount is specified, it will be a specified amount. If not, it will be default setting.</span></span><br><span class="line">    <span class="hljs-keyword">if</span> ($amount != <span class="hljs-keyword">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> [</span><br><span class="line">            <span class="hljs-string">"amount"</span>        =&gt; [</span><br><span class="line">                <span class="hljs-string">'currency_code'</span> =&gt; $currency,</span><br><span class="line">                <span class="hljs-string">'value'</span>         =&gt; $amount,</span><br><span class="line">            ],</span><br><span class="line">            <span class="hljs-string">'final_capture'</span> =&gt; $final_capture</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">"&#123;&#125;"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="The-logic-for-refund"><a href="#The-logic-for-refund" class="headerlink" title="The logic for refund."></a>The logic for refund.</h4><ul>
+<li>Corresponding to the capture action, before the seller make any capture to buyers, all those refund requests from buyers are only to revise numbers in the database.</li>
+<li>If 7 days have passed, but in a particular case, a refund request still raised by a buyer, the amount could still be refunded with inevitable handing fee.</li>
+<li>All logic mentioned above is only for PayPal. Since this project integrate with two payment gateway, the above mentioned logic doens’t suit AllPay. However, generally speaking, it makes no difference to buyers.<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">public static function refund(Order $order, NewPayPal $paymentServiceInstance, OrderRelations $orderRelation)</span><br><span class="line">&#123;</span><br><span class="line">    // When the order is authorized but not yet captured.</span><br><span class="line">    if (($paymentServiceInstance-&gt;capture_id === null) &amp;&amp; ($paymentServiceInstance-&gt;authorization_id !== null))</span><br><span class="line">    &#123;</span><br><span class="line">        // As mentioned above, we only revise to-be-captured amount in the database.</span><br><span class="line">        $paymentServiceInstance-&gt;update([</span><br><span class="line">            &apos;to_be_captured_amount&apos; =&gt; $paymentServiceInstance-&gt;to_be_captured_amount - $order-&gt;total_amount,</span><br><span class="line">            &apos;total_amount&apos;          =&gt; $paymentServiceInstance-&gt;total_amount - $order-&gt;total_amount</span><br><span class="line">        ]);</span><br><span class="line">        $order-&gt;update([&apos;status&apos; =&gt; 4]);</span><br><span class="line">        $orderRelation-&gt;update([&apos;status&apos; =&gt; 4]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // When the order has been captured</span><br><span class="line">    if ($paymentServiceInstance-&gt;capture_id !== null)</span><br><span class="line">    &#123;</span><br><span class="line">        // We do implement refund API, returning the amount to buyers.</span><br><span class="line">        $response = self::refundOrder($paymentServiceInstance-&gt;capture_id, $order-&gt;total_amount, $paymentServiceInstance-&gt;mc_currency);</span><br><span class="line">        // If the refund is completed, the order state will be updated.</span><br><span class="line">        if ($response-&gt;result-&gt;status == &apos;COMPLETED&apos;)</span><br><span class="line">        &#123;</span><br><span class="line">            $order-&gt;update([&apos;status&apos; =&gt; 4]);</span><br><span class="line">            $orderRelation-&gt;update([&apos;status&apos; =&gt; 4]);</span><br><span class="line">            $paymentServiceInstance-&gt;update([</span><br><span class="line">                &apos;total_amount&apos; =&gt; $paymentServiceInstance-&gt;total_amount - $order-&gt;total_amount</span><br><span class="line">            ]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Cancel-an-authorization"><a href="#Cancel-an-authorization" class="headerlink" title="Cancel an authorization."></a>Cancel an authorization.</h2><p>Cancelling an authorization is pretty easy with official example. You only have to provide authorization ID with required format, we are not going to explain explicitly.<br>The authorization ID will be returned after a successful authorization, so remember to save it.</p>
+<h2 id="Get-authorization-data"><a href="#Get-authorization-data" class="headerlink" title="Get authorization data."></a>Get authorization data.</h2><p>Getting an authorization is pretty easy with official example. You only have to provide authorization ID with required format, we are not going to explain explicitly.<br>The authorization ID will be returned after a successful authorization, so remember to save it.</p>
+<h2 id="Getting-capture-data"><a href="#Getting-capture-data" class="headerlink" title="Getting capture data"></a>Getting capture data</h2><p>Getting a capture data is pretty easy with official example. You only have to provide authorization ID with required format, we are not going to explain explicitly.<br>The capture ID will be returned after a successful authorization, so remember to save it.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>According to the official document, you could use Smart Button of JavaScript SDK with PayPal REST APIO. However, Ray is responsible for backend, so this part wasn’t deeply dug.<br>It looks interesting. If you are interested, you could spend some time on it.<br>PayPal is veritably an international payment gateway. It provides various features and supports. What a pity that PayPal has taken back its service from Taiwan. However, as far as I know, it happened due to tax safeguarding in Taiwan. It’s hard to judge good or bad.<br>I’ve spent some time those days digging in PayPal gateway. Surely there are still some dedicate features that I haven’t tried. I will write another article for that after I give it a shot!</p>
+<p>You are free to share this article wherever you want, but kindly cite the source. Thanks!</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-REST-API/">#PayPal REST API</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-refund/">#PayPal refund</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-authorization/">#PayPal authorization</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-capture/">#PayPal capture</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-void/">#PayPal void</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-create-order/">#PayPal create order</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-place-funds-on-hold/">#PayPal place funds on hold</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/flexibleGitFlow/">A flexible git flow</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/implementATransactionViaPayPalIPN/">Implement a transaction via PayPal Payment Standard and PayPal IPN Message</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/PayPalRestAPI/';
+        this.page.identifier = 'PayPalRestAPI/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

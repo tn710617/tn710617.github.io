@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>My learning journey in Docker - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
+<meta name="keywords" content="Docker Image,Docker Container,Docker Swarm,Docker Multi Stage,Docker Compose,Docker Service,Docker Rolling Update,Docker Push,Docker Deployment">
+<meta property="og:type" content="article">
+<meta property="og:title" content="My learning journey in Docker">
+<meta property="og:url" content="https://tn710617.github.io/docker/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/DmPAq2F.png">
+<meta property="og:image" content="https://i.imgur.com/vutGwyU.png">
+<meta property="og:image" content="https://i.imgur.com/3JMwS1e.png">
+<meta property="og:image" content="https://i.imgur.com/FVqToOL.png">
+<meta property="og:image" content="https://i.imgur.com/rvXklxG.png">
+<meta property="og:image" content="https://i.imgur.com/I47eC9I.png">
+<meta property="og:image" content="https://i.imgur.com/ofPsRZo.png">
+<meta property="og:updated_time" content="2019-05-25T10:01:26.485Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="My learning journey in Docker">
+<meta name="twitter:description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
+<meta name="twitter:image" content="https://i.imgur.com/DmPAq2F.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/docker/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
+<meta name="keywords" content="Docker Image,Docker Container,Docker Swarm,Docker Multi Stage,Docker Compose,Docker Service,Docker Rolling Update,Docker Push,Docker Deployment">
+<meta property="og:type" content="article">
+<meta property="og:title" content="My learning journey in Docker">
+<meta property="og:url" content="https://tn710617.github.io/docker/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/DmPAq2F.png">
+<meta property="og:image" content="https://i.imgur.com/vutGwyU.png">
+<meta property="og:image" content="https://i.imgur.com/3JMwS1e.png">
+<meta property="og:image" content="https://i.imgur.com/FVqToOL.png">
+<meta property="og:image" content="https://i.imgur.com/rvXklxG.png">
+<meta property="og:image" content="https://i.imgur.com/I47eC9I.png">
+<meta property="og:image" content="https://i.imgur.com/ofPsRZo.png">
+<meta property="og:updated_time" content="2019-05-25T10:01:26.485Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="My learning journey in Docker">
+<meta name="twitter:description" content="前言This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article">
+<meta name="twitter:image" content="https://i.imgur.com/DmPAq2F.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#環境">2&nbsp;&nbsp;<b>環境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#安裝">3&nbsp;&nbsp;<b>安裝</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#從-Docker-倉庫安裝">3.1&nbsp;&nbsp;從 Docker 倉庫安裝</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#解除安裝">4&nbsp;&nbsp;<b>解除安裝</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#基本指令">5&nbsp;&nbsp;<b>基本指令</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Docker">5.1&nbsp;&nbsp;Docker</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Docker-container">5.2&nbsp;&nbsp;Docker container</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Multi-Stage">5.3&nbsp;&nbsp;Multi Stage</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Docker-image">5.4&nbsp;&nbsp;Docker image</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Docker-push">5.5&nbsp;&nbsp;Docker push</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Docker-Compose">5.6&nbsp;&nbsp;Docker-Compose</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一個-Swarm">6&nbsp;&nbsp;<b>建立一個 Swarm</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#開啟一個-SERVICE">7&nbsp;&nbsp;<b>開啟一個 SERVICE</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#滾動升級-rolling-update">8&nbsp;&nbsp;<b>滾動升級 rolling update</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Composer">9&nbsp;&nbsp;<b>Composer</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#TEST">10&nbsp;&nbsp;<b>TEST</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#利用-Docker-compose-部署-Laravel">11&nbsp;&nbsp;<b>利用 Docker-compose 部署 Laravel</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#環境-1">11.1&nbsp;&nbsp;環境</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-docker-compose">11.2&nbsp;&nbsp;安裝 docker-compose</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#利用-Docker-來安裝環境">12&nbsp;&nbsp;<b>利用 Docker 來安裝環境</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MySQL">12.1&nbsp;&nbsp;MySQL</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#製作-Docker-image">12.2&nbsp;&nbsp;製作 Docker image</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Debug">12.3&nbsp;&nbsp;Debug</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/docker/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/docker/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            My learning journey in Docker
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-04-08T02:04:43.000Z" itemprop="datePublished">Apr 8 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/部署/">部署</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            26 minutes read (About 3848 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article</p>
+<a id="more"></a>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>GCP - ubuntu 18.04</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><ul>
+<li>移除舊版本<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="從-Docker-倉庫安裝"><a href="#從-Docker-倉庫安裝" class="headerlink" title="從 Docker 倉庫安裝"></a>從 Docker 倉庫安裝</h3><ul>
+<li><p>更新 <code>apt</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安裝以下套件，使 <code>apt</code> 可以經由 HTTPS 使用倉庫</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install -y \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>增加 Docker 的正式 GPG 密鑰</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>核對一下我們現在擁有含有 <code>9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88</code> 指印的密鑰，我們可以搜尋最後八碼</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-key fingerprint 0EBFCD88</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>理應得到輸出如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">      9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>將 <code>Docker 倉庫</code> 設定為 <code>stable</code> 版，若要設定為 <code>nightly</code> 或 <code>test</code> 版，可在以下的指令中自由取代 <code>stable</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository \</span><br><span class="line">   <span class="hljs-string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="hljs-string">   <span class="hljs-variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="hljs-string">   stable"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安裝最新的 <code>Docker CE</code> 版本</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io -y</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你也可以安裝特定版本的 <code>Docker</code>:</p>
+</li>
+</ul>
+<ol>
+<li><p>列出版本</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-cache madison docker-ce</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>應該會得到輸出如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker-ce | 5:18.09.1~3-0~ubuntu-xenial | https://download.docker.com/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">  docker-ce | 5:18.09.0~3-0~ubuntu-xenial | https://download.docker.com/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">  docker-ce | 18.06.1~ce~3-0~ubuntu       | https://download.docker.com/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">  docker-ce | 18.06.0~ce~3-0~ubuntu       | https://download.docker.com/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用上面輸出的第二欄位版本號，結合下面的指令來安裝特定版本</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install docker-ce=&lt;VERSION_STRING&gt; docker-ce-cli=&lt;VERSION_STRING&gt; containerd.io</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li><p>運行鏡像 <code>hello-world</code> 來驗證 <code>Docker CE</code> 是否已經正確安裝</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果要使用非 <code>root</code> 身份運行 <code>Docker</code> 的話，可以把你的使用者加到 <code>Docker</code> 群組</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG docker your-user</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="解除安裝"><a href="#解除安裝" class="headerlink" title="解除安裝"></a>解除安裝</h2><ul>
+<li><p>解除安裝 <code>Docker CE</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get purge docker-ce</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除所有的 <code>image</code>, <code>containers</code>, <code>volumes</code>, 可以使用以下指令。慎用！此指令適合解除安裝後使用。</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo rm -rf /var/lib/docker/</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="基本指令"><a href="#基本指令" class="headerlink" title="基本指令"></a>基本指令</h2><h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><ul>
+<li><p>列出 <code>Docker</code> 的指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看 <code>Docker</code> 版本</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker version</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看 <code>Docker</code> 完美安裝資訊</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker info</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以 root 身份登入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker <span class="hljs-built_in">exec</span> -it --user root &lt;container id&gt; /bin/bash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>開啟防火牆</p>
+</li>
+</ul>
+<ol>
+<li><p>登入 gcloud auth 帳號</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth login</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸入網頁上得到的驗證碼</p>
+</li>
+<li>登入成功後，利用 <code>gcloud</code> 身份，開啟防火牆<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create ruleName --allow tcp:thePortYouWantToExpose</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li>傳檔案進 container<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker cp file containerName:/location</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Docker-container"><a href="#Docker-container" class="headerlink" title="Docker container"></a>Docker container</h3><ul>
+<li>運行 <code>container</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container run -it ubuntu:latest /bin/bash</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol>
+<li><code>Docker container run</code> 告訴 <code>Docker daemon</code> 開始一個新的 <code>container</code></li>
+<li><code>-i</code> 告訴 <code>Docker daeman</code> 讓 <code>container</code> 可以互動 </li>
+<li><code>-t</code> 使目前的 terminal 視窗連接 <code>container</code> 的 <code>shell</code></li>
+<li><code>ubuntu:latest</code> 為開始這個 <code>container</code> 的 <code>image</code></li>
+<li><code>/bin/bash</code> 指定了我們想要運行 <code>container</code> 裡頭的哪一個程序</li>
+</ol>
+<ul>
+<li>確認 <code>Docker daemon</code> 運行狀況<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">service docker status</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemctl is-active docker</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>離開 <code>container</code> 但不關掉它</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">CTRL + PQ</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>連接還在運行中的 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container <span class="hljs-built_in">exec</span> -it yourContainerIDOrContainerName bash</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>exec</code> 在運行中的 <code>container</code> 中運行一個新的程序</p>
+<ul>
+<li><p>列出運行中的 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container ls</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>列出所有的 <code>container</code> ， 包含已停止的</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container ls -a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>列出 <code>hello-world</code> <code>container</code>（由 <code>image</code> 產生），他們在顯示訊息之後就退出了，如果他們還在運行中的話，以下指令中的 <code>--all</code> 可以不用加</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container ls --all</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>or<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps -a</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>理應得到輸出如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">CONTAINER ID     IMAGE           COMMAND      CREATED            STATUS</span><br><span class="line">54f4984ed6a8     hello-world     <span class="hljs-string">"/hello"</span>     20 seconds ago     Exited (0) 19 seconds ago</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>停止 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container stop containerIdOrContainerName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新開始停止中的 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container start containerName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker rm containerID</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除所有的 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker rm $(docker container ls -aq) -f</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根據指定的 <code>image</code> 運行 <code>container</code> 並指定 <code>port</code>, 賦予 container name。若想自定義 <code>port</code> 的話， <code>Dockerfile</code> 跟 <code>server</code> 的 <code>port</code> 需一致，且防火牆要開啟該 <code>port</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker container run -d \</span><br><span class="line">--name web1 \ </span><br><span class="line">-p 8080:8080 \</span><br><span class="line"><span class="hljs-built_in">test</span>:latest</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>-d</code> 表示讓 <code>container</code> 運行在背景 ， 與 <code>-it</code> 相反，無法共存<br><code>--name</code> 指定 <code>container</code> 的名稱<br><code>-p</code> 指定 <code>port</code> ， 左邊的是外部可以從瀏覽器存取的 port ，右邊的是 container 向外暴露的 port</p>
+<ul>
+<li>將現有的 container 存成一個新的 image<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker commit -m <span class="hljs-string">'imageMessage'</span> -a <span class="hljs-string">'AuthorName'</span> containerSHA imageName:imageTag</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Multi-Stage"><a href="#Multi-Stage" class="headerlink" title="Multi Stage"></a>Multi Stage</h3><ul>
+<li><code>Multi Stage Build</code> 範本<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">FROM node:latest AS storefront</span><br><span class="line">WORKDIR /usr/src/atsea/app/react-app</span><br><span class="line">COPY react-app .</span><br><span class="line">RUN npm install</span><br><span class="line">RUN npm run build</span><br><span class="line"></span><br><span class="line">FROM maven:latest AS appserver</span><br><span class="line">WORKDIR /usr/src/atsea</span><br><span class="line">COPY pom.xml .</span><br><span class="line">RUN mvn -B -f pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve</span><br><span class="line">COPY . .</span><br><span class="line">RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests</span><br><span class="line"></span><br><span class="line">FROM java:8-jdk-alpine</span><br><span class="line">RUN adduser -Dh /home/gordon gordon</span><br><span class="line">WORKDIR /static</span><br><span class="line">COPY --from=storefront /usr/src/atsea/app/react-app/build/ .</span><br><span class="line">WORKDIR /app</span><br><span class="line">COPY --from=appserver /usr/src/atsea/target/AtSea-0.0.1-SNAPSHOT.jar .</span><br><span class="line">ENTRYPOINT [<span class="hljs-string">"java"</span>, <span class="hljs-string">"-jar"</span>, <span class="hljs-string">"/app/AtSea-0.0.1-SNAPSHOT.jar"</span>]</span><br><span class="line">CMD [<span class="hljs-string">"--spring.profiles.active=postgres"</span>]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>-t</code> 用來指定 <code>image</code> 的名字<br><code>-f</code> 可以用來指定名稱不是 <code>Dockfile</code> 的 <code>Dockerfile</code><br><code>From</code> 指定基礎 <code>image</code> 來源<br><code>RUN</code> 可以在 <code>image</code> 內執行 <code>command</code> 並建立新的 <code>layer</code> ，每一個 <code>RUN</code> 都會建立一層 <code>layer</code><br><code>COPY</code> 可以增加複製檔案到你的 <code>image</code> 內<br><code>EXPOSE</code> 暴露 APP 用的 <code>port</code><br><code>ENTRYPOINT</code> 設定當 <code>image</code> 被啟動為一個 <code>container</code> 時，預設執行的指令</p>
+<h3 id="Docker-image"><a href="#Docker-image" class="headerlink" title="Docker image"></a>Docker image</h3><ul>
+<li><p>拉下 <code>image</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image pull ubuntu:latest</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根據 <code>digests</code> 拉下 <code>image</code> </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image pull imageNane@sha256:specificDigests</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>列出下載過的 <code>image</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image ls</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除 <code>image</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker rmi imageID</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除所有的 <code>image</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image rm $(docker image ls -q) -f</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>建立 <code>image</code> </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image build -t imageName:tagName .</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>列出下載過的 <code>image</code> 以及 <code>digest</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image ls --digests</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>列出一個 <code>image</code> 的結構</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image inspect inamgeID</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>將 image 存成映像檔</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker save -o outputFileName imageName:imageTag</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>-o</code> 代表 output</p>
+<ul>
+<li>架設一個私有倉庫<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker run -d -p 5000:5000 registry</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我們也可以將上傳的映像檔備份一份到容器外<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker run -d -p 5000:5000 -v outsideAddress:insideAddress registry</span><br></pre></td></tr></table></figure></p>
+<h3 id="Docker-push"><a href="#Docker-push" class="headerlink" title="Docker push"></a>Docker push</h3><ol>
+<li><p>首先， tag 本地的 image 一個可以用來推上 DockerHub 的名字</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker tag localImageName:localTagName userAccount/toBeTaggedImageName:toBeTaggedImageTagName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>推上 DockerHub</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker push userAccount/taggedImageName:taggedImageTag</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker-Compose"></a>Docker-Compose</h3><ul>
+<li>安裝 <code>Docker Compose</code>, 儘管我們可以從官方的 <code>ubuntu 倉庫</code> 安裝 <code>Docker Compose</code> ，但因為最新的版本中有很多細小的版本差異，所以我們從 <code>Docker GitHub</code> 來安裝。 先到<a href="https://github.com/docker/compose/releases" target="_blank" rel="noopener">官方頁面</a>確認版本，並且視需求更新下面指令的版本號。</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="hljs-built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>設定權限</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod +x /usr/<span class="hljs-built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>確認 <code>Docker-compose</code> 版本</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker-compose --version</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>建立 <code>yaml</code> 檔案</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim docker-compose.yml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸入內容如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">my-test:</span><br><span class="line">image: hello-world</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>建立一個 <code>container</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker-compose up</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出理應如下：<br><img src="https://i.imgur.com/DmPAq2F.png" alt></p>
+</li>
+</ul>
+<h2 id="建立一個-Swarm"><a href="#建立一個-Swarm" class="headerlink" title="建立一個 Swarm"></a>建立一個 Swarm</h2><ul>
+<li>開啟 <code>docker swarm</code> 模式<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm init \</span><br><span class="line">--advertise-addr 0.0.0.1:8080 \</span><br><span class="line">--listen-addr 0.0.0.1:8080</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>上面的 <code>IP</code> 跟 <code>PORT</code> 自己訂的<br><code>--advertise-addr</code>: 指定別的節點要連接這個 manager 時該使用的 <code>IP</code> 以及 <code>port</code>。這不是個必要的選項，但是你可以對哪個 <code>IP</code> 被使用有完全的控制權，並且你也可以訂一個不存在於節點上的 <code>IP</code> ，像是負載平衡的 <code>IP</code></p>
+<p><code>--listen-addr</code>: 讓你可以指定用來聽 <code>swarm</code> traffic 的 <code>IP</code> 以及 <code>port</code> ，通常他會跟 <code>--advertise-addr</code> 相同，但如果你想要限制 <code>swarm</code> 在特定的 <code>IP</code>，就特別有用。 還有一種情況，當 <code>advertise-addr</code> 是一個遠端的 <code>IP</code> ，像是平衡負載器，那這個也是必要的。</p>
+<p>建議總是使用兩個附加選項。</p>
+<ul>
+<li><p>從一個 <code>node</code> 開始 <code>swarm mode</code> ，並且設為 leader</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm init \</span><br><span class="line">--advertise-addr yourInternalIP:yourPort \</span><br><span class="line">--listen-addr yourInternalIP:yourPort</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取得新增 <code>manager</code> 的 token </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm join-token manager</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>輸出大概如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm join \</span><br><span class="line">token SWMTKN-1-0uahebax...c87tu8dx2c \</span><br><span class="line">10.0.0.1:2377</span><br></pre></td></tr></table></figure>
+<ul>
+<li>取得新增 <code>worker</code> 的 token<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm join-token token</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>輸出大概如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm join \</span><br><span class="line">token SWMTKN-1-0uahebax...c87tu8dx2c \</span><br><span class="line">10.0.0.1:2377</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>重新產生 token</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm join-token --rotate managerOrWorker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>開啟並且登入一台新的 <code>instance</code> ， 輸入上面的 token 還有自己的 IP 位址</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm join \</span><br><span class="line">token SWMTKN-1-0uahebax...c87tu8dx2c \</span><br><span class="line">10.0.0.1:2377 \</span><br><span class="line">advertise-addr yourInternalIP:yourPort \</span><br><span class="line">listen-addr yourInternalIP:yourPort</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不管你是想加入成為 <code>manager</code> 或是 <code>workder</code> ，只要輸入相對應的 token 就可以加入。</p>
+</li>
+<li><p>在 Leader 的 <code>node</code> 上可以查看 <code>swarm</code> 的詳細資料</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm node ls</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>離開當前的 <code>swarm</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker swarm leave --force</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="開啟一個-SERVICE"><a href="#開啟一個-SERVICE" class="headerlink" title="開啟一個 SERVICE"></a>開啟一個 SERVICE</h2><ul>
+<li>要開立 <code>service</code> 首先必須確定， <code>swarm</code> 已建立。<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service create --name web-fe \</span><br><span class="line">-p 8080:8080 \</span><br><span class="line">--replicas 5 \</span><br><span class="line">nigelpoulton/pluralsight-docker-ci</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>docker service create</code>: 建立一個 <code>service</code><br><code>--name</code>: 指定 <code>service</code> 的名稱<br><code>-p</code>: 指定 <code>container</code> 內以及連接外部的 <code>port</code><br><code>--replicas</code>: 在這個服務內，至少要有 5 個 <code>container</code><br><code>nigelpoulton/pluralsight-docker-ci</code>: <code>image</code> 以及 <code>tag</code></p>
+<p>開立 <code>service</code> 之後， <code>swarm</code> 會一直的監看真實的狀態是否跟我的理想的狀態一致，如果一致的話那很好，如果不， <code>swarm</code> 會採取相對應的動作。<br>舉例來說，如果五個 <code>container</code> 裡面有一個關閉了， <code>swarm</code> 會自動在啟動一個</p>
+<p><img src="https://i.imgur.com/vutGwyU.png" alt></p>
+<ul>
+<li><p>查看 <code>service</code> 清單</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service ls</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看 <code>service</code> 內的任務狀態</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service ps serviceName</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="https://i.imgur.com/3JMwS1e.png" alt></p>
+<ul>
+<li><p>更詳盡的資訊</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service inspect --pretty serviceName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>擴展規模</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service scale web-fe=10</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="https://i.imgur.com/FVqToOL.png" alt></p>
+<p><img src="https://i.imgur.com/rvXklxG.png" alt></p>
+<ul>
+<li><p>刪除 <code>service</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service rm web-fe</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>建立一個 overlay <code>network</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker network create -d overlay uber-net</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>連接到相同 overlay <code>network</code> 的 <code>container</code> ， 儘管他們的 <code>docker host</code> 連接的網路不同，彼此也可以互相溝通連接。</p>
+<ul>
+<li><p>列出 <code>network</code> 資料</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除一個 <code>network</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker network rm networkName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>依據指定的 <code>network</code> 建立一個新的服務</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service create --name uber-svc \</span><br><span class="line">--network uber-net \</span><br><span class="line">-p 80:80 --replicas 12 \</span><br><span class="line">nigelpoulton/tu-demo:v1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>--network</code>: 指定 <code>network</code></p>
+<h2 id="滾動升級-rolling-update"><a href="#滾動升級-rolling-update" class="headerlink" title="滾動升級 rolling update"></a>滾動升級 rolling update</h2><ul>
+<li>滾動升級運行中的服務<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service update \</span><br><span class="line">--image nigelpoulton/tu-demo:v2 \</span><br><span class="line">--update-parallelism 2 \</span><br><span class="line">--update-delay 20s uber-svc</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>docker service update</code>: 升級 <code>service</code><br><code>--image</code>: 升級的 <code>image</code> 來源<br><code>--update-parallelism 2</code>: 一次升級兩個 <code>container</code><br><code>--update-delay 20s uber-svc</code>: 每批次的等待時間為 20 秒 ， 需等當前批次的升級完成，時間才會開始計算。 最後指定要升級的 <code>service</code> 名稱</p>
+<ul>
+<li>查看上次升級的參數<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker service inspect --pretty serviceName</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="https://i.imgur.com/I47eC9I.png" alt></p>
+<p>如上圖，前一次升級的參數都會被保留下來，除非你再次升級去覆蓋它</p>
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><ul>
+<li>利用 <code>container</code> 安裝 <code>Composer</code> <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker run --rm -v $(<span class="hljs-built_in">pwd</span>):/app composer install</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>--rm</code>: 當 <code>container</code> 關閉後，自動刪除<br><code>-v</code>: 使用 <code>volumes</code><br><code>$(pwd):/app</code>: <code>$(pwd)</code> 表示當前資料夾, <code>/app</code> 表示 <code>container</code> 裡頭一個叫做 <code>app</code> 的資料夾, 所以這個指令代表 <code>:</code> 前後的兩個資料夾會在 <code>container</code> 關閉之前，同步所有資料<br><code>composer install</code>: 安裝 <code>composer</code></p>
+<p>所以這個指令實際上做的事情，就是從 <code>Docker Hub</code> 拉下官方的 composer <code>image</code> ，然後開啟一個 <code>container</code> 並執行安裝， composer 會依照資料夾內 <code>composer.json</code> 或 <code>composer.lock</code> 來安裝相對應的 package 。 package 會被安裝在 app 這個資料夾內，但因為 <code>volumes</code> 的關係，所以兩個資料夾會同步， <code>$(pwd)</code> 內也會有安裝的 package 。 當安裝結束後， <code>container</code> 關閉，因為 <code>--rm</code> 的作用， <code>container</code> 會自動刪除。</p>
+<h2 id="TEST"><a href="#TEST" class="headerlink" title="TEST"></a>TEST</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc &amp;&amp; sudo apt-get update &amp;&amp; sudo apt-get install -y \apt-transport-https \ca-certificates \curl \gnupg-agent \software-properties-common &amp;&amp; curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - &amp;&amp;</span><br><span class="line">sudo add-apt-repository \</span><br><span class="line"><span class="hljs-string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="hljs-string"><span class="hljs-variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="hljs-string">stable"</span> &amp;&amp; sudo apt-get install docker-ce docker-ce-cli containerd.io -y &amp;&amp; sudo usermod -aG docker tn710617</span><br></pre></td></tr></table></figure>
+<h2 id="利用-Docker-compose-部署-Laravel"><a href="#利用-Docker-compose-部署-Laravel" class="headerlink" title="利用 Docker-compose 部署 Laravel"></a>利用 Docker-compose 部署 Laravel</h2><h3 id="環境-1"><a href="#環境-1" class="headerlink" title="環境"></a>環境</h3><p>環境為 <code>Ubuntu 18.04</code> </p>
+<h3 id="安裝-docker-compose"><a href="#安裝-docker-compose" class="headerlink" title="安裝 docker-compose"></a>安裝 docker-compose</h3><ul>
+<li>安裝 <code>Docker Compose</code>, 儘管我們可以從官方的 <code>ubuntu 倉庫</code> 安裝 <code>Docker Compose</code> ，但因為最新的版本中有很多細小的版本差異，所以我們從 <code>Docker GitHub</code> 來安裝。 先到<a href="https://github.com/docker/compose/releases" target="_blank" rel="noopener">官方頁面</a>確認版本，並且視需求更新下面指令的版本號。</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="hljs-built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+<ul>
+<li>設定權限<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod +x /usr/<span class="hljs-built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="利用-Docker-來安裝環境"><a href="#利用-Docker-來安裝環境" class="headerlink" title="利用 Docker 來安裝環境"></a>利用 Docker 來安裝環境</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><ul>
+<li>安裝 MySQL ， 並指定連接一個外部不同的 port 號 ， 像是 52000<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker run --name serviceName -e MYSQL_ROOT_PASSWORD=yourPassword -d -p 52000:3306 mysql:5.7</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>docker run</code>: 啟動一個 container<br><code>--name</code>: 指定這個服務的名稱<br><code>-e MYSQL_ROOT_PASSWORD</code>: 指定環境參數<br><code>-d</code>: 使這個服務跑在 container 當中<br><code>-p</code>: 指定外跟內的 port 號， container 內部的 3306 連接外部的 52000<br><code>mysql:5.7</code>: 指定 image 以及 tag</p>
+<ul>
+<li>連接本地安裝的 MySQL 以及 Docker container 內的 MySQL</li>
+</ul>
+<ol>
+<li><p>本地安裝的</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mysql -uroot</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Docker Container</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mysql -h 127.0.0.1 -uroot -p2434 -P52000</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="製作-Docker-image"><a href="#製作-Docker-image" class="headerlink" title="製作 Docker image"></a>製作 Docker image</h3><ul>
+<li>時區問題<br>我的第一個目標，是利用 Docker commit 來做一個專屬的 image。簡單來說，就是起一個純淨的 container ，然後在這個 container 裡頭部署完之後，再使用 docker commit 將這個 container 變成一個 image ， 結果發現在安裝 <code>php7.2-imagick</code> 中會出現 <code>Configuring tzdata</code> ，會彈出一個視窗並要求選擇時區，如下圖<br><img src="https://i.imgur.com/ofPsRZo.png" alt></li>
+</ul>
+<p>後來找到解決方法，是在安裝 <code>php7.2-imagick</code> 之前就把時區設定好，所以在一開始就加入<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DEBIAN_FRONTEND=noninteractive &amp;&amp; apt-get install -y tzdata &amp;&amp; ln -fs /usr/share/zoneinfo/Asia/Taipei /etc/localtime &amp;&amp; dpkg-reconfigure --frontend noninteractive tzdata</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>MySQL 問題<br>接下來，又遇到一個問題，在我利用我製作好的 image 開一個 container 時， MySQL 無法成功啟動，會一直出現 Failed<br>後來的解決方法非常的奇怪，我是到 /var/www/mysql/mysql 中，下 <code>chown -R mysql:mysql .</code> 的指令，然後它就好了…<br>可問題是，我仔細地確認過，在我下這指令之前，這個資料夾下的所有 user 以及 group 早就已經是 mysql:mysql 了</p>
+</li>
+<li><p>Apache 以及 MySQL 無法設定自動重啟的問題<br>所以我們必須要在 container 裏頭啟動這些服務，需要啟動的服務如下：</p>
+<ul>
+<li>Apache</li>
+<li>MySQL</li>
+</ul>
+</li>
+</ul>
+<p>所以從目前的進度看來， container 啟動之後，我們必須要執行三個指令，如下：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">chown -R mysql:mysql /var/www/mysql/mysql</span><br><span class="line">service apache restart</span><br><span class="line">service mysql restart</span><br></pre></td></tr></table></figure></p>
+<p>沒想到實際執行之後，我們遇到了一個新的問題…</p>
+<ul>
+<li><p>Container 自動退出的問題<br>Container 的特性，是只要 command 執行完畢後，就會自動退出。 container 一旦退出了，我們原本建構的環境當然也就不在了。<br>我們怎麼可以容許這種事情發生呢？<br>因此，我們需要給 container 一個會一直持續存在的指令，好比是 /bin/bash</p>
+</li>
+<li><p>該怎麼樣讓 container 在啟動的時候又執行多個指令呢？<br>在 container 啟動時， 我們需要執行多個指令來啟動 container 裡面的服務，但是 entrypoint 只能帶一個指令進去，所以我們要寫一個 shell script ，然後當 container 開啟之後去執行這個 shell script ，當然，這個 shell script 裡頭的指令就是上述提到的指令，如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">chown -R mysql:mysql /var/www/mysql/mysql</span><br><span class="line">service apache2 restart</span><br><span class="line">service mysql restart</span><br><span class="line">/bin/bash</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>假設這個 shell script 叫做 test.sh ，然後放在 /usr/sbin/ 之下，那我們的 docker 指令如下：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker run -dt --entrypoint <span class="hljs-string">"/usr/sbin/test.sh"</span> -p 8880:80 --name containerName yourAccount/imageName:tagName</span><br></pre></td></tr></table></figure></p>
+<h3 id="Debug"><a href="#Debug" class="headerlink" title="Debug"></a>Debug</h3><ul>
+<li>查 log<figure class="highlight docker hljs"><table><tr><td class="code"><pre><span class="line">docker logs -f containerID</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Image/">#Docker Image</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Container/">#Docker Container</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Swarm/">#Docker Swarm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Multi-Stage/">#Docker Multi Stage</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Compose/">#Docker Compose</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Service/">#Docker Service</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Rolling-Update/">#Docker Rolling Update</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Push/">#Docker Push</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker-Deployment/">#Docker Deployment</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/Linux/">My learning journey in Linux</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/KubernetesEngineQuickStart/">Kubernetes Engine - Quick Start</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/docker/';
+        this.page.identifier = 'docker/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
