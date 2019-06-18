@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Deploy Laravel project on Server - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="IntroductionThis article is mainly about how to deploy Laravel on AWS EC2Here are some points:  LAMP deployment Composer deployment Laravel deployment">
+<meta name="keywords" content="Apache,MySQL,Composer,Laravel,PHP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deploy Laravel project on Server">
+<meta property="og:url" content="https://tn710617.github.io/AWSLaravelDeployment/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionThis article is mainly about how to deploy Laravel on AWS EC2Here are some points:  LAMP deployment Composer deployment Laravel deployment">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
+<meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
+<meta property="og:updated_time" content="2019-05-25T01:35:33.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deploy Laravel project on Server">
+<meta name="twitter:description" content="IntroductionThis article is mainly about how to deploy Laravel on AWS EC2Here are some points:  LAMP deployment Composer deployment Laravel deployment">
+<meta name="twitter:image" content="https://i.imgur.com/G4OzdqM.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/AWSLaravelDeployment/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="IntroductionThis article is mainly about how to deploy Laravel on AWS EC2Here are some points:  LAMP deployment Composer deployment Laravel deployment">
+<meta name="keywords" content="Apache,MySQL,Composer,Laravel,PHP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deploy Laravel project on Server">
+<meta property="og:url" content="https://tn710617.github.io/AWSLaravelDeployment/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionThis article is mainly about how to deploy Laravel on AWS EC2Here are some points:  LAMP deployment Composer deployment Laravel deployment">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
+<meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
+<meta property="og:updated_time" content="2019-05-25T01:35:33.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deploy Laravel project on Server">
+<meta name="twitter:description" content="IntroductionThis article is mainly about how to deploy Laravel on AWS EC2Here are some points:  LAMP deployment Composer deployment Laravel deployment">
+<meta name="twitter:image" content="https://i.imgur.com/G4OzdqM.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b>Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Specification">2&nbsp;&nbsp;<b>Specification</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#LAMP">3&nbsp;&nbsp;<b>LAMP</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#PHP">3.1&nbsp;&nbsp;PHP</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Apache">3.2&nbsp;&nbsp;Apache</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MySQL">3.3&nbsp;&nbsp;MySQL</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Set-up-authority">4&nbsp;&nbsp;<b>Set up authority</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Test-LAMP-Web-server">5&nbsp;&nbsp;<b>Test LAMP Web server</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Composer">6&nbsp;&nbsp;<b>Composer</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Git">7&nbsp;&nbsp;<b>Git</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Deploy-project">8&nbsp;&nbsp;<b>Deploy project</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Lazy-version">9&nbsp;&nbsp;<b>Lazy version</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Check-your-OS-version-in-Linux">10&nbsp;&nbsp;<b>Check your OS version in Linux</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/AWSLaravelDeployment/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/AWSLaravelDeployment/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Deploy Laravel project on Server
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-03-27T07:21:59.000Z" itemprop="datePublished">Mar 27 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Deployment/">Deployment</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            9 minutes read (About 1290 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>This article is mainly about how to deploy <code>Laravel</code> on <code>AWS EC2</code><br>Here are some points:</p>
+<ol>
+<li><code>LAMP</code> deployment</li>
+<li><code>Composer</code> deployment</li>
+<li><code>Laravel</code> deployment</li>
+</ol>
+<a id="more"></a>
+<h2 id="Specification"><a href="#Specification" class="headerlink" title="Specification"></a>Specification</h2><ul>
+<li>Amazon Linux AMI 2018.03.0 (HVM), SSD Volume Type</li>
+</ul>
+<h2 id="LAMP"><a href="#LAMP" class="headerlink" title="LAMP"></a>LAMP</h2><h3 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h3><ul>
+<li><p>PHP Installation</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php72;php -v</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install PHP Extension</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php72-mbstring</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php72-bcmath</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php72-pdo</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php72-mysqlnd</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php72-gd.x86_64</span><br></pre></td></tr></table></figure>
+<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><ul>
+<li><p>Install Apache</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install httpd24</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Launch Apache</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service httpd start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Set up automatic start after reboot</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chkconfig httpd on</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Check if httpd is enabled</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">chkconfig --list httpd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Set AWS security inbound<br><img src="https://i.imgur.com/G4OzdqM.png" alt></p>
+</li>
+<li><p>Test Apache by visiting the <code>IP</code></p>
+</li>
+<li><p>Install SSL module</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install mod24_ssl</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><ul>
+<li><p>Install MySQL</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install mysql57-server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Launch MySQL</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service mysqld start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Set up MySQL to automatic start after reboot</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chkconfig mysqld on</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>執行 mysql_secure_installation</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mysql_secure_installation</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Set up MySQL to support remote connection with Sequel Pro</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER <span class="hljs-string">'root'</span>@<span class="hljs-string">'%'</span> IDENTIFIED BY <span class="hljs-string">''</span>;</span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">'root'</span>@<span class="hljs-string">'%'</span>  WITH GRANT OPTION;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Set-up-authority"><a href="#Set-up-authority" class="headerlink" title="Set up authority"></a>Set up authority</h2><ul>
+<li>Add your user (in this case, ec2-user) to the apache group.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo usermod -a -G apache ec2-user</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Log out and then log back in again to pick up the new group, and then verify your membership.</li>
+</ul>
+<ol>
+<li>Log out (use the exit command or close the terminal window):</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>To verify your membership in the apache group, reconnect to your instance, and then run the following command:</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">groups</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Change the group ownership of /var/www and its contents to the apache group.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chown -R ec2-user:apache /var/www</span><br></pre></td></tr></table></figure>
+<ul>
+<li>To add group write permissions and to set the group ID on future subdirectories, change the directory permissions of /var/www and its subdirectories.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod 2775 /var/www</span><br><span class="line">find /var/www -<span class="hljs-built_in">type</span> d -<span class="hljs-built_in">exec</span> sudo chmod 2775 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>To add group write permissions, recursively change the file permissions of /var/www and its subdirectories:</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">find /var/www -<span class="hljs-built_in">type</span> f -<span class="hljs-built_in">exec</span> sudo chmod 0664 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<h2 id="Test-LAMP-Web-server"><a href="#Test-LAMP-Web-server" class="headerlink" title="Test LAMP Web server"></a>Test LAMP Web server</h2><ul>
+<li>Create a PHP file in the Apache document root.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-string">"&lt;?php phpinfo(); ?&gt;"</span> &gt; /var/www/html/phpinfo.php</span><br></pre></td></tr></table></figure>
+<ul>
+<li>In a web browser, type the URL of the file that you just created. This URL is the public DNS address of your instance followed by a forward slash and the file name. For example:<br><code>http://my.public.dns.amazonaws.com/phpinfo.php</code></li>
+</ul>
+<ul>
+<li>Delete the phpinfo.php file. Although this can be useful information, it should not be broadcast to the internet for security reasons.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">rm /var/www/html/phpinfo.php</span><br></pre></td></tr></table></figure>
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><ul>
+<li><p>Install Composer</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php -r <span class="hljs-string">"copy('https://getcomposer.org/installer', 'composer-setup.php');"</span></span><br><span class="line">php -r <span class="hljs-string">"if (hash_file('sha384', 'composer-setup.php') === '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5') &#123; echo 'Installer verified'; &#125; else &#123; echo 'Installer corrupt'; unlink('composer-setup.php'); &#125; echo PHP_EOL;"</span></span><br><span class="line">php composer-setup.php</span><br><span class="line">php -r <span class="hljs-string">"unlink('composer-setup.php');"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Make composer global</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mv composer.phar /usr/<span class="hljs-built_in">local</span>/bin/composer</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><ul>
+<li>Install Git<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install -y git</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Deploy-project"><a href="#Deploy-project" class="headerlink" title="Deploy project"></a>Deploy project</h2><ul>
+<li><p>Clone project</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> repositoryAddress</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Deploy <code>.env</code> file</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cp .env.example .env</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install Composer </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Generate key</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan key:generate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create database</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mysql -uroot</span><br><span class="line">create database databaseName;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create tables</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan migrate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>If it lacks memory, you could assign some hard-drive to memory.</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo dd <span class="hljs-keyword">if</span>=/dev/zero of=/swapfile bs=1M count=2000;</span><br><span class="line">sudo chmod 600 /swapfile;</span><br><span class="line">sudo mkswap /swapfile;</span><br><span class="line">sudo swapon /swapfile;</span><br><span class="line">swapon -s;</span><br><span class="line">sudo vim /etc/fstab;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Add the following code<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">/swapfile swap swap defaults 0 0</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Change teh default document root location<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">&lt;Direction <span class="hljs-string">"/var/www/html"</span>&gt;</span><br><span class="line">    Allow Override All</span><br><span class="line">&lt;/Direction&gt;</span><br></pre></td></tr></table></figure>
+<p><hr><br>The above is normal process. You could also refer to lazy version as follows:</p>
+<h2 id="Lazy-version"><a href="#Lazy-version" class="headerlink" title="Lazy version"></a>Lazy version</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install -y php72;</span><br><span class="line">sudo yum install -y php72-mbstring;</span><br><span class="line">sudo yum install -y php72-bcmath;</span><br><span class="line">sudo yum install -y php72-pdo;</span><br><span class="line">sudo yum install php72-gd.x86_64</span><br><span class="line">sudo yum install -y php72-mysqlnd;</span><br><span class="line">sudo yum install -y httpd24;</span><br><span class="line">sudo service httpd start;</span><br><span class="line">sudo chkconfig httpd on;</span><br><span class="line">sudo yum install -y mod24_ssl;</span><br><span class="line">sudo yum install -y mysql57-server;</span><br><span class="line">sudo service mysqld start;</span><br><span class="line">sudo chkconfig mysqld on;</span><br><span class="line">sudo usermod -a -G apache ec2-user;</span><br><span class="line">sudo chown -R ec2-user:apache /var/www;</span><br><span class="line">sudo chmod 2775 /var/www</span><br><span class="line">find /var/www -<span class="hljs-built_in">type</span> d -<span class="hljs-built_in">exec</span> sudo chmod 2775 &#123;&#125; \;</span><br><span class="line">find /var/www -<span class="hljs-built_in">type</span> f -<span class="hljs-built_in">exec</span> sudo chmod 0664 &#123;&#125; \;</span><br><span class="line">php -r <span class="hljs-string">"copy('https://getcomposer.org/installer', 'composer-setup.php');"</span></span><br><span class="line">php -r <span class="hljs-string">"if (hash_file('sha384', 'composer-setup.php') === '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5') &#123; echo 'Installer verified'; &#125; else &#123; echo 'Installer corrupt'; unlink('composer-setup.php'); &#125; echo PHP_EOL;"</span></span><br><span class="line">php composer-setup.php;</span><br><span class="line">php -r <span class="hljs-string">"unlink('composer-setup.php');"</span>;</span><br><span class="line">sudo mv composer.phar /usr/<span class="hljs-built_in">local</span>/bin/composer;</span><br><span class="line">sudo yum install -y git;</span><br><span class="line">sudo php -v</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Set AWS security inbound<br><img src="https://i.imgur.com/G4OzdqM.png" alt></p>
+</li>
+<li><p>Test Apache by visiting the <code>IP</code></p>
+</li>
+<li><p>Execute mysql_secure_installation</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mysql_secure_installation</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Set up MySQL to support Sequel Pro remote connection</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER <span class="hljs-string">'root'</span>@<span class="hljs-string">'%'</span> IDENTIFIED BY <span class="hljs-string">'yourPassword'</span>;GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">'root'</span>@<span class="hljs-string">'%'</span>  WITH GRANT OPTION;FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Log out and then log back in again to pick up the new group, and then verify your membership.</p>
+</li>
+</ul>
+<ol>
+<li>Log out (use the exit command or close the terminal window):</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span>;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>To verify your membership in the apache group, reconnect to your instance, and then run the following command:</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">groups</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Create a PHP file in the Apache document root.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-string">"&lt;?php phpinfo(); ?&gt;"</span> &gt; /var/www/html/phpinfo.php</span><br></pre></td></tr></table></figure>
+<ul>
+<li>In a web browser, type the URL of the file that you just created. This URL is the public DNS address of your instance followed by a forward slash and the file name. For example:<br><code>http://my.public.dns.amazonaws.com/phpinfo.php</code></li>
+</ul>
+<ul>
+<li>Delete the phpinfo.php file. Although this can be useful information, it should not be broadcast to the internet for security reasons.</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">rm /var/www/html/phpinfo.php</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Clone project</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> repositoryAddress</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Deploy <code>.env</code> file</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cp .env.example .env</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install Composer </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Generate key</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan key:generate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create database</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mysql -uroot</span><br><span class="line">create database databaseName;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create tables</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan migrate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>If it lacks memory, you could assign some hard-drive to memory.</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo dd <span class="hljs-keyword">if</span>=/dev/zero of=/swapfile bs=1M count=2000;</span><br><span class="line">sudo chmod 600 /swapfile;</span><br><span class="line">sudo mkswap /swapfile;</span><br><span class="line">sudo swapon /swapfile;</span><br><span class="line">swapon -s;</span><br><span class="line">sudo vim /etc/fstab;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Add the following code<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">/swapfile swap swap defaults 0 0</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Change teh default document root location<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">&lt;Direction <span class="hljs-string">"/var/www/html"</span>&gt;</span><br><span class="line">    Allow Override All</span><br><span class="line">&lt;/Direction&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Restart Apache<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service httpd restart</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Check-your-OS-version-in-Linux"><a href="#Check-your-OS-version-in-Linux" class="headerlink" title="Check your OS version in Linux"></a>Check your OS version in Linux</h2><ul>
+<li><p>Use <code>lsb_release</code> , If it shows <code>command not found</code>, install it</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install lsb-release</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Get its usage</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">lsb_release --<span class="hljs-built_in">help</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Example output：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">-h, --<span class="hljs-built_in">help</span>         show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span></span><br><span class="line">-v, --version      show LSB modules this system supports</span><br><span class="line">-i, --id           show distributor ID</span><br><span class="line">-d, --description  show description of this distribution</span><br><span class="line">-r, --release      show release number of this distribution</span><br><span class="line">-c, --codename     show code name of this distribution</span><br><span class="line">-a, --all          show all of the above information</span><br><span class="line">-s, --short        show requested information <span class="hljs-keyword">in</span> short format</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>Per the information above, if you would like to check the detail:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">lsb_release -a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>If you just want to know the version of the Kernel:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">uname -r</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Apache/">#Apache</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/MySQL/">#MySQL</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Composer/">#Composer</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PHP/">#PHP</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/KubernetesEngineQuickStart/">Kubernetes Engine - Quick Start</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/LaravelView/">Use `Laravel` `template` and `blade`</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/AWSLaravelDeployment/';
+        this.page.identifier = 'AWSLaravelDeployment/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

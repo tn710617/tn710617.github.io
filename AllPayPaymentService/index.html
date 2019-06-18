@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Handle AllPay third party payment service with Laravel - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Create Laravel ProjectLaravel new AllPay Let’s initialize git, it’s a must be!git init Download AllPay SDK, in this article, we will use AllPay PHP SDKgit clone https://github.com/o-pay/Payment_PHP">
+<meta name="keywords" content="AllPay,Laravel Transaction,Laravel Log,ngrok,Laravel Middleware">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Handle AllPay third party payment service with Laravel">
+<meta property="og:url" content="https://tn710617.github.io/AllPayPaymentService/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="Create Laravel ProjectLaravel new AllPay Let’s initialize git, it’s a must be!git init Download AllPay SDK, in this article, we will use AllPay PHP SDKgit clone https://github.com/o-pay/Payment_PHP">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/v26RmZj.png">
+<meta property="og:updated_time" content="2019-03-17T09:42:33.718Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Handle AllPay third party payment service with Laravel">
+<meta name="twitter:description" content="Create Laravel ProjectLaravel new AllPay Let’s initialize git, it’s a must be!git init Download AllPay SDK, in this article, we will use AllPay PHP SDKgit clone https://github.com/o-pay/Payment_PHP">
+<meta name="twitter:image" content="https://i.imgur.com/v26RmZj.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/AllPayPaymentService/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="Create Laravel ProjectLaravel new AllPay Let’s initialize git, it’s a must be!git init Download AllPay SDK, in this article, we will use AllPay PHP SDKgit clone https://github.com/o-pay/Payment_PHP">
+<meta name="keywords" content="AllPay,Laravel Transaction,Laravel Log,ngrok,Laravel Middleware">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Handle AllPay third party payment service with Laravel">
+<meta property="og:url" content="https://tn710617.github.io/AllPayPaymentService/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="Create Laravel ProjectLaravel new AllPay Let’s initialize git, it’s a must be!git init Download AllPay SDK, in this article, we will use AllPay PHP SDKgit clone https://github.com/o-pay/Payment_PHP">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://i.imgur.com/v26RmZj.png">
+<meta property="og:updated_time" content="2019-03-17T09:42:33.718Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Handle AllPay third party payment service with Laravel">
+<meta name="twitter:description" content="Create Laravel ProjectLaravel new AllPay Let’s initialize git, it’s a must be!git init Download AllPay SDK, in this article, we will use AllPay PHP SDKgit clone https://github.com/o-pay/Payment_PHP">
+<meta name="twitter:image" content="https://i.imgur.com/v26RmZj.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Create-Laravel-Project">1&nbsp;&nbsp;<b>Create Laravel Project</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Let’s-initialize-git-it’s-a-must-be">2&nbsp;&nbsp;<b>Let’s initialize git, it’s a must be!</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Download-AllPay-SDK-in-this-article-we-will-use-AllPay-PHP-SDK">3&nbsp;&nbsp;<b>Download AllPay SDK, in this article, we will use AllPay PHP SDK</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Move-SDK-Laravel’s-app-folder">4&nbsp;&nbsp;<b>Move SDK Laravel’s app folder</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-a-testing-controller">5&nbsp;&nbsp;<b>Create a testing controller</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Move-the-example-in-the-SDK-package-to-our-Controller-as-follows">6&nbsp;&nbsp;<b>Move the example in the SDK package to our Controller as follows:</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Let’s-move-some-sensitive-information-into-env-file">7&nbsp;&nbsp;<b>Let’s move some sensitive information into .env file</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Use-use-to-replace-include">8&nbsp;&nbsp;<b>Use use to replace include</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-payment-order-It-depends-on-your-need">9&nbsp;&nbsp;<b>Create payment order (It depends on your need.)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-an-API-for-PaymentsController">10&nbsp;&nbsp;<b>Create an API for PaymentsController</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-a-simplest-HTML">11&nbsp;&nbsp;<b>Create a simplest HTML</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Simple-test">12&nbsp;&nbsp;<b>Simple test</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-a-log">13&nbsp;&nbsp;<b>Create a log</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-a-public-url">14&nbsp;&nbsp;<b>Create a public url</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-receive-function">15&nbsp;&nbsp;<b>Create receive function</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Set-up-client-return-url">16&nbsp;&nbsp;<b>Set up client return url</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Test-payment">17&nbsp;&nbsp;<b>Test payment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Validation">18&nbsp;&nbsp;<b>Validation</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#What’s-next">19&nbsp;&nbsp;<b>What’s next?</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Those-I-didn’t-mentioned">20&nbsp;&nbsp;<b>Those I didn’t mentioned</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Refund">21&nbsp;&nbsp;<b>Refund</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/AllPayPaymentService/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/AllPayPaymentService/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Handle AllPay third party payment service with Laravel
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-02-08T01:06:45.000Z" itemprop="datePublished">Feb 8 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Payment-Gateway/">Payment Gateway</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 minutes read (About 1861 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h3 id="Create-Laravel-Project"><a href="#Create-Laravel-Project" class="headerlink" title="Create Laravel Project"></a>Create Laravel Project</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Laravel new AllPay</span><br></pre></td></tr></table></figure>
+<h3 id="Let’s-initialize-git-it’s-a-must-be"><a href="#Let’s-initialize-git-it’s-a-must-be" class="headerlink" title="Let’s initialize git, it’s a must be!"></a>Let’s initialize git, it’s a must be!</h3><pre><code>git init
+</code></pre><h3 id="Download-AllPay-SDK-in-this-article-we-will-use-AllPay-PHP-SDK"><a href="#Download-AllPay-SDK-in-this-article-we-will-use-AllPay-PHP-SDK" class="headerlink" title="Download AllPay SDK, in this article, we will use AllPay PHP SDK"></a>Download AllPay SDK, in this article, we will use AllPay PHP SDK</h3><pre><code>git clone https://github.com/o-pay/Payment_PHP 
+</code></pre>  <a id="more"></a>
+<h3 id="Move-SDK-Laravel’s-app-folder"><a href="#Move-SDK-Laravel’s-app-folder" class="headerlink" title="Move SDK Laravel’s app folder"></a>Move SDK Laravel’s app folder</h3><pre><code>cp Payment_PHP/sdk/AllPay.Payment.Integration.php AllPay/app/ 
+</code></pre><h3 id="Create-a-testing-controller"><a href="#Create-a-testing-controller" class="headerlink" title="Create a testing controller"></a>Create a testing controller</h3><pre><code>php artisan make:controller PaymentsController
+</code></pre><h3 id="Move-the-example-in-the-SDK-package-to-our-Controller-as-follows"><a href="#Move-the-example-in-the-SDK-package-to-our-Controller-as-follows" class="headerlink" title="Move the example in the SDK package to our Controller as follows:"></a>Move the example in the SDK package to our Controller as follows:</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">*</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">//SDK address(You could manage it yourself)</span></span><br><span class="line">    <span class="hljs-keyword">include</span>(<span class="hljs-string">'AllPay.Payment.Integration.php'</span>);</span><br><span class="line">    <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">        </span><br><span class="line">    	$obj = <span class="hljs-keyword">new</span> AllInOne();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//Service parameters</span></span><br><span class="line">        $obj-&gt;ServiceURL  = <span class="hljs-string">"https://payment-stage.opay.tw/Cashier/AioCheckOut/V5"</span>;         </span><br><span class="line">        <span class="hljs-comment">//Service location</span></span><br><span class="line">        $obj-&gt;HashKey     = <span class="hljs-string">'5294y06JbISpM5x9'</span> ;                                            </span><br><span class="line">        <span class="hljs-comment">//Testing Hashkey, in real case, please use the one provided by AllPay</span></span><br><span class="line">        $obj-&gt;HashIV      = <span class="hljs-string">'v77hoKGq4kWxNNIS'</span> ;                                            </span><br><span class="line">        <span class="hljs-comment">//Testing HashIV, in real case, please use the one provided by AllPay</span></span><br><span class="line">        $obj-&gt;MerchantID  = <span class="hljs-string">'2000132'</span>;                                                      </span><br><span class="line">        <span class="hljs-comment">//Testing MerchantID, in real case, please use the one provided by AllPay</span></span><br><span class="line">        $obj-&gt;EncryptType = EncryptType::ENC_SHA256;                                        </span><br><span class="line">        <span class="hljs-comment">//CheckMacValue encrypted type, please stay 1, using SHA256</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//Basic parameters(It depends on your need)</span></span><br><span class="line">        $MerchantTradeNo = <span class="hljs-string">"Test"</span>.time();</span><br><span class="line"></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'ReturnURL'</span>]         = <span class="hljs-string">'http://localhost/simple_ServerReplyPaymentStatus.php'</span> ;    </span><br><span class="line">        <span class="hljs-comment">//The URL AllPay will return after the payment is paid</span></span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'MerchantTradeNo'</span>]   = $MerchantTradeNo;                                 </span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'MerchantTradeDate'</span>] = date(<span class="hljs-string">'Y/m/d H:i:s'</span>);                              </span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'TotalAmount'</span>]       = <span class="hljs-number">2000</span>;                                             </span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'TradeDesc'</span>]         = <span class="hljs-string">"good to drink"</span>;                                  </span><br><span class="line">        $obj-&gt;Send[<span class="hljs-string">'ChoosePayment'</span>]     = PaymentMethod::ALL;                               </span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//Items information</span></span><br><span class="line">        array_push($obj-&gt;Send[<span class="hljs-string">'Items'</span>], <span class="hljs-keyword">array</span>(<span class="hljs-string">'Name'</span> =&gt; <span class="hljs-string">"歐付寶黑芝麻豆漿"</span>, <span class="hljs-string">'Price'</span> =&gt; (int)<span class="hljs-string">"2000"</span>,</span><br><span class="line">                   <span class="hljs-string">'Currency'</span> =&gt; <span class="hljs-string">"元"</span>, <span class="hljs-string">'Quantity'</span> =&gt; (int) <span class="hljs-string">"1"</span>, <span class="hljs-string">'URL'</span> =&gt; <span class="hljs-string">"dedwed"</span>));</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># E-Invoice parameters</span></span><br><span class="line">        <span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;Send['InvoiceMark'] = InvoiceState::Yes;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['RelateNumber'] = $MerchantTradeNo;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['CustomerEmail'] = 'test<span class="hljs-doctag">@opay</span>.tw';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['CustomerPhone'] = '0911222333';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['TaxType'] = TaxType::Dutiable;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['CustomerAddr'] = '台北市南港區三重路19-2號5樓D棟';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['InvoiceItems'] = array();</span></span><br><span class="line"><span class="hljs-comment">        // Add item into list of e-invoice</span></span><br><span class="line"><span class="hljs-comment">        foreach ($obj-&gt;Send['Items'] as $info)</span></span><br><span class="line"><span class="hljs-comment">        &#123;</span></span><br><span class="line"><span class="hljs-comment">            array_push($obj-&gt;SendExtend['InvoiceItems'],array('Name' =&gt; $info['Name'],'Count' =&gt;</span></span><br><span class="line"><span class="hljs-comment">                $info['Quantity'],'Word' =&gt; '個','Price' =&gt; $info['Price'],'TaxType' =&gt; TaxType::Dutiable));</span></span><br><span class="line"><span class="hljs-comment">        &#125;</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['InvoiceRemark'] = '測試發票備註';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['DelayDay'] = '0';</span></span><br><span class="line"><span class="hljs-comment">        $obj-&gt;SendExtend['InvType'] = InvType::General;</span></span><br><span class="line"><span class="hljs-comment">        */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//Create order</span></span><br><span class="line">        $obj-&gt;CheckOut();</span><br><span class="line">      </span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (<span class="hljs-keyword">Exception</span> $e) &#123;</span><br><span class="line">    	<span class="hljs-keyword">echo</span> $e-&gt;getMessage();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Let’s-move-some-sensitive-information-into-env-file"><a href="#Let’s-move-some-sensitive-information-into-env-file" class="headerlink" title="Let’s move some sensitive information into .env file"></a>Let’s move some sensitive information into .env file</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">$obj-&gt;HashKey = env(<span class="hljs-string">'HASHKEY'</span>);                                            </span><br><span class="line">$obj-&gt;HashIV = env(<span class="hljs-string">'HASHIV'</span>);                                            </span><br><span class="line">$obj-&gt;MerchantID = env(<span class="hljs-string">'MERCHANTID'</span>);                                                      </span><br><span class="line"></span><br><span class="line">$obj-&gt;Send[<span class="hljs-string">'ReturnURL'</span>] = env(<span class="hljs-string">'ALLPAYRETURNURL'</span>);</span><br><span class="line">$obj-&gt;Send[<span class="hljs-string">'ClientBackURL'</span>] = $request-&gt;ClintBackURL;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>In .env:<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ALLPAYRETURNURL=https://163be100.ngrok.io/api/paymentsResponse</span><br><span class="line"></span><br><span class="line">HASHKEY=5294y06JbISpM5x9</span><br><span class="line">HASHIV=v77hoKGq4kWxNNIS</span><br><span class="line">MERCHANTID=2000132</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Use-use-to-replace-include"><a href="#Use-use-to-replace-include" class="headerlink" title="Use use to replace include"></a>Use <code>use</code> to replace <code>include</code></h3><ul>
+<li><p>Delete</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">include</span>(<span class="hljs-string">'AllPay.Payment.Integration.php'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Add it in AllPay.Payment.Integration.php到composer.json file</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">"autoload-dev"</span>: &#123;</span><br><span class="line">    <span class="hljs-string">"psr-4"</span>: &#123;</span><br><span class="line">        <span class="hljs-string">"Tests\\"</span>: <span class="hljs-string">"tests/"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="hljs-string">"files"</span>: [</span><br><span class="line">        <span class="hljs-string">"app/Helpers.php"</span>,</span><br><span class="line">        <span class="hljs-string">"app/AllPay.Payment.Integration.php"</span></span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>In terminal, under AllPay project</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">composer dump-autoload</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>In the PaymentsController, use all those required classes</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">AllInOne</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">EncryptType</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Exception</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">PaymentMethod</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Create-payment-order-It-depends-on-your-need"><a href="#Create-payment-order-It-depends-on-your-need" class="headerlink" title="Create payment order (It depends on your need.)"></a>Create payment order (It depends on your need.)</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">$totalAmount = Order::getTotalAmountForPayments($orders);</span><br><span class="line">$ordersName = Order::getOrdersNameForPayments($orders);</span><br><span class="line">$MerchantTradeNo = time() . Helpers::createAUniqueNumber();</span><br><span class="line">$MerchantTradeDate = date(<span class="hljs-string">'Y/m/d H:i:s'</span>);</span><br><span class="line">$TradeDesc = <span class="hljs-string">'BuyBuyGo'</span>;</span><br><span class="line">$quantity = <span class="hljs-number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">//Because I am going to insert data into two tables at a time, so I use </span></span><br><span class="line"><span class="hljs-comment">//Transaction of Laravel to prevent the possible inconsistency of two tables</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">//start transaction</span></span><br><span class="line">DB::beginTransaction();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">//All those scripts below should be executed without errors, otherwise the whole action rollback</span></span><br><span class="line"><span class="hljs-keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    $payment_service_order = <span class="hljs-keyword">new</span> PaymentServiceOrders();</span><br><span class="line"></span><br><span class="line">    $payment_service_order-&gt;user_id = User::getUserID($request);</span><br><span class="line">    <span class="hljs-comment">//Payment service ID</span></span><br><span class="line">    $payment_service_order-&gt;payment_service_id = $thirdPartyPaymentService-&gt;id;</span><br><span class="line">    $payment_service_order-&gt;expiry_time = (<span class="hljs-keyword">new</span> Carbon())-&gt;now()-&gt;addDay(<span class="hljs-number">1</span>)-&gt;toDateTimeString();</span><br><span class="line">    $payment_service_order-&gt;MerchantID = env(<span class="hljs-string">'MERCHANTID'</span>);</span><br><span class="line">    $payment_service_order-&gt;MerchantTradeNo = $MerchantTradeNo;</span><br><span class="line">    $payment_service_order-&gt;MerchantTradeDate = $MerchantTradeDate;</span><br><span class="line">    $payment_service_order-&gt;TotalAmount = $totalAmount;</span><br><span class="line">    $payment_service_order-&gt;TradeDesc = $TradeDesc;</span><br><span class="line">    <span class="hljs-comment">//Item order number</span></span><br><span class="line">    $payment_service_order-&gt;ItemName = $ordersName;</span><br><span class="line">    $payment_service_order-&gt;save();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">foreach</span> ($orders <span class="hljs-keyword">as</span> $order)</span><br><span class="line">    &#123;</span><br><span class="line">        $order_relations = <span class="hljs-keyword">new</span> OrderRelations();</span><br><span class="line">        $order_relations-&gt;payment_service_id = $thirdPartyPaymentService-&gt;id;</span><br><span class="line">        $order_relations-&gt;payment_service_order_id = $payment_service_order-&gt;id;</span><br><span class="line">        $order_relations-&gt;order_id = $order-&gt;id;</span><br><span class="line">        $order_relations-&gt;save();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-comment">//Once any errors occur, the whole action stops and rollback, and provide customized error message</span></span><br><span class="line">&#125; <span class="hljs-keyword">catch</span> (<span class="hljs-keyword">Exception</span> $e)</span><br><span class="line">&#123;</span><br><span class="line">    DB::rollBack();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> Helpers::result(<span class="hljs-string">'false'</span>, <span class="hljs-string">'Something went wrong with DB'</span>, <span class="hljs-number">400</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">//If no errors occur, the whole action commit</span></span><br><span class="line">DB::commit();</span><br></pre></td></tr></table></figure>
+<h3 id="Create-an-API-for-PaymentsController"><a href="#Create-an-API-for-PaymentsController" class="headerlink" title="Create an API for PaymentsController"></a>Create an API for PaymentsController</h3><ul>
+<li>Add new route in api.php under routes folder</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">Route::post(<span class="hljs-string">'pay'</span>, <span class="hljs-string">'PaymentsController@pay'</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="Create-a-simplest-HTML"><a href="#Create-a-simplest-HTML" class="headerlink" title="Create a simplest HTML"></a>Create a simplest HTML</h3><ul>
+<li>You could simply revise the content of default welcome.blade page as follows:</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Facebook Login JavaScript Example&lt;/title&gt;</span><br><span class="line">    &lt;meta charset=<span class="hljs-string">"UTF-8"</span>&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line"><span class="hljs-comment">// 這邊需輸入PaymentsController的API</span></span><br><span class="line">&lt;form action=<span class="hljs-string">"/api/pay"</span> method=<span class="hljs-string">"POST"</span>&gt;</span><br><span class="line">    @csrf()</span><br><span class="line">    &lt;input type=<span class="hljs-string">"checkbox"</span> value=<span class="hljs-string">"1"</span> name=<span class="hljs-string">"order_id[]"</span>&gt;</span><br><span class="line">    &lt;input type=<span class="hljs-string">"checkbox"</span> value=<span class="hljs-string">"2"</span> name=<span class="hljs-string">"order_id[]"</span>&gt;</span><br><span class="line">    &lt;input type=<span class="hljs-string">"checkbox"</span> value=<span class="hljs-string">"3"</span> name=<span class="hljs-string">"order_id[]"</span>&gt;</span><br><span class="line">    &lt;input type=<span class="hljs-string">"hidden"</span> value=<span class="hljs-string">"https://64b30ea0.ngrok.io/"</span> name=<span class="hljs-string">"ClintBackURL"</span>&gt;</span><br><span class="line">    &lt;button type=<span class="hljs-string">"submit"</span>&gt;Submit&lt;/button&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Simple-test"><a href="#Simple-test" class="headerlink" title="Simple test"></a>Simple test</h3><ul>
+<li>Now we are on the default page of Laravel, it should change to the simple form we just created</li>
+<li>Check nothing, go summit</li>
+<li>Yes, we successfully arrived payment page<br><img src="https://i.imgur.com/v26RmZj.png" alt></li>
+</ul>
+<h3 id="Create-a-log"><a href="#Create-a-log" class="headerlink" title="Create a log"></a>Create a log</h3><ul>
+<li>In order to get what AllPay will send to us after the payment is made, we need to use Log to see what we will receive.</li>
+<li>Is there some place that all requests and responses will have to go through where we could have full accessibility? It seems to be a perfect one for logging</li>
+<li>We could make a middleware, and use Log function of Laravel therein to log whatever it goes through</li>
+<li>Make a middleware, in the terminal under the AllPay project</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:middleware TestLog</span><br></pre></td></tr></table></figure>
+<ul>
+<li>註冊middleware<ul>
+<li>In<code>/app/Http/Kernel.php</code>，register the middleware we just made</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> $middleware = [</span><br><span class="line">    \App\Http\Middleware\CheckForMaintenanceMode::class,</span><br><span class="line">    \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,</span><br><span class="line">    \App\Http\Middleware\TrimStrings::class,</span><br><span class="line">    \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,</span><br><span class="line">    \App\Http\Middleware\TrustProxies::class,</span><br><span class="line">    \App\Http\Middleware\TestLog::class,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Create Log<ul>
+<li>In the TestLog file that we just made, and added:</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">$response = $next($request);</span><br><span class="line">log::info([</span><br><span class="line">$request-&gt;header(),</span><br><span class="line">$request-&gt;getMethod(),</span><br><span class="line">$request-&gt;getRequestUri(),</span><br><span class="line">$request-&gt;all(),</span><br><span class="line">$response-&gt;getStatusCode(),</span><br><span class="line">$response-&gt;getContent()</span><br><span class="line">]);</span><br><span class="line"><span class="hljs-keyword">return</span> $response;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Actually, what you might log varies upon different cases</li>
+</ul>
+<h3 id="Create-a-public-url"><a href="#Create-a-public-url" class="headerlink" title="Create a public url"></a>Create a public url</h3><ul>
+<li>We need to get the response from third party, so we need a public url to get it</li>
+<li>We could use ngrok to create the public url</li>
+<li>Install ngrok, please refer to its <a href="https://ngrok.com/" target="_blank" rel="noopener">official website</a></li>
+<li>Change ngrok to be globally executable<ul>
+<li>mv ngrok /usr/local/bin</li>
+</ul>
+</li>
+<li><p>Get public url</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ngrok http 8000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>In terminal under AllPay project</p>
+</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan serve 8000</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Copy the public url produced by ngrok</li>
+</ul>
+<h3 id="Create-receive-function"><a href="#Create-receive-function" class="headerlink" title="Create receive function"></a>Create receive function</h3><ul>
+<li>We are going to catch the response from AllPay, firstly we need to create a function, and after catching it, we could do things there.<ul>
+<li>In PaymentsController, we create a function <code>receive</code> as follows:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">receive</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Make an API for it<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">Route::post(<span class="hljs-string">'pay'</span>, <span class="hljs-string">'PaymentsController@pay'</span>);</span><br><span class="line">Route::post(<span class="hljs-string">'receive'</span>, <span class="hljs-string">'PaymentsController@receive'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Set-up-client-return-url"><a href="#Set-up-client-return-url" class="headerlink" title="Set up client return url"></a>Set up client return url</h3><ul>
+<li><p>In .env, if you’ve been following what I taught, there should be this parameter, just simply paste the public url there</p>
+<ul>
+<li><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ALLPAYRETURNURL=https://163be100.ngrok.io/api/recevie</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>Your link will be different from mine, don’t paste mine.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Test-payment"><a href="#Test-payment" class="headerlink" title="Test payment"></a>Test payment</h3><ul>
+<li>Let’s connect AllPay payment page again</li>
+<li>Login the testing buyer account provided by AllPay<ul>
+<li>Account：stageuser001</li>
+<li>Password：test1234</li>
+</ul>
+</li>
+<li>Use the testing credit card provided by AllPay<ul>
+<li>Number：4311-9522-2222-2222</li>
+<li>Expiry Date：12 / 20 or later than current date</li>
+<li>Security number：222</li>
+</ul>
+</li>
+<li><p>After payment, let’s check log to see if there is a response from AllPay, in terminal under AllPay project</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cat storage/logs/laravel-2019-02-08.log</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>On, we’ve got the response.</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">'MerchantID'</span> =&gt; <span class="hljs-string">'2000132'</span>,</span><br><span class="line">    <span class="hljs-string">'MerchantTradeNo'</span> =&gt; <span class="hljs-string">'Test1549597724'</span>,</span><br><span class="line">    <span class="hljs-string">'PayAmt'</span> =&gt; <span class="hljs-string">'2000'</span>,</span><br><span class="line">    <span class="hljs-string">'PaymentDate'</span> =&gt; <span class="hljs-string">'2019/02/08 11:49:03'</span>,</span><br><span class="line">    <span class="hljs-string">'PaymentType'</span> =&gt; <span class="hljs-string">'Credit_CreditCard'</span>,</span><br><span class="line">    <span class="hljs-string">'PaymentTypeChargeFee'</span> =&gt; <span class="hljs-string">'20'</span>,</span><br><span class="line">    <span class="hljs-string">'RedeemAmt'</span> =&gt; <span class="hljs-string">'0'</span>,</span><br><span class="line">    <span class="hljs-string">'RtnCode'</span> =&gt; <span class="hljs-string">'1'</span>,</span><br><span class="line">    <span class="hljs-string">'RtnMsg'</span> =&gt; <span class="hljs-string">'交易成功'</span>,</span><br><span class="line">    <span class="hljs-string">'SimulatePaid'</span> =&gt; <span class="hljs-string">'0'</span>,</span><br><span class="line">    <span class="hljs-string">'TradeAmt'</span> =&gt; <span class="hljs-string">'2000'</span>,</span><br><span class="line">    <span class="hljs-string">'TradeDate'</span> =&gt; <span class="hljs-string">'2019/02/08 11:48:44'</span>,</span><br><span class="line">    <span class="hljs-string">'TradeNo'</span> =&gt; <span class="hljs-string">'1902081148440800'</span>,</span><br><span class="line">    <span class="hljs-string">'CheckMacValue'</span> =&gt; <span class="hljs-string">'5B1EE24B0E9D600C65578DD82D3168E2ED56799453577E17E1EBEFC536BD7EAF'</span>,</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h3><ul>
+<li>Think about it, if your API was accidentally leaked, and some developer knew it. He bought some items from your service, and called your API, how could you tell?</li>
+<li>So, there is a specific mechanism that only applicable between you and third party payment service</li>
+<li>The validation mechanism is like a formula every column goes in and out will be calculated with which is only applicable between you and third party, if you’ve been paying attention, you should notice that in the last column of the response we’ve received from AllPay.</li>
+<li>If you are interested in the formula in detail, you could check it on AllPay’s website.</li>
+<li><p>Since in this article, we use AllPay SDK, so we are going to share how to use official SDK to validate the information.</p>
+<ul>
+<li>Firstly, let’s check a class called <code>CheckMacValue</code> in <code>app/AllPay.Payment.Integration.php</code></li>
+<li>Secondly, you could find a function called <code>generate</code>, and you could check it, which it the formula of the CheckMacValue</li>
+<li>So, we could calculate the received information with this formula, and it should exactly the same as what we’ve got from third party</li>
+<li><p>Let’s get all those information except for <code>CheckMacValue</code> from AllPay, we could use the following code.</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$parameters = $paymentResponse-&gt;except(&apos;CheckMacValue&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>And then, we assign a variable with the <code>CheckMacValue</code> we’ve got from AllPay</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$receivedCheckMacValue = $paymentResponse-&gt;CheckMacValue;</span><br></pre></td></tr></table></figure>
+<p>Then, we calculate the $parameters with function generate to produce correct <code>CheckMacValue</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">$calculatedCheckMacValue = CheckMacValue::generate($parameters, env(&apos;HASHKEY&apos;), env(&apos;HASHIV&apos;), EncryptType::ENC_SHA256);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Finally, we compare if two values are identical, if so, it proves the validity of its source. If not, we shouldn’t give any credibility to this information</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">if($receivedCheckMacValue == $calculatedCheckMacValue)</span><br><span class="line">    return true;</span><br><span class="line">return false;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="What’s-next"><a href="#What’s-next" class="headerlink" title="What’s next?"></a>What’s next?</h3><ul>
+<li>After validating the source, we could do things accordingly</li>
+<li>For example, if payment is successfully made, what we are going to do, and if not, what then?</li>
+<li><p>In this article, we mark the orders as paid and notify the buyers via email after the payment is made.</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> (PaymentServiceOrders::checkIfCheckMacValueCorrect($request) &amp;&amp; PaymentServiceOrders::checkIfPaymentPaid($request-&gt;RtnCode))</span><br><span class="line">&#123;</span><br><span class="line">    $paymentServiceOrder = (<span class="hljs-keyword">new</span> PaymentServiceOrders)-&gt;where(<span class="hljs-string">'MerchantTradeNo'</span>, $request-&gt;MerchantTradeNo)-&gt;first();</span><br><span class="line">    $paymentServiceOrder-&gt;update([<span class="hljs-string">'status'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'expiry_time'</span> =&gt; <span class="hljs-keyword">null</span>]);</span><br><span class="line"></span><br><span class="line">    $orderRelations = $paymentServiceOrder-&gt;where(<span class="hljs-string">'MerchantTradeNo'</span>, $request-&gt;MerchantTradeNo)-&gt;first()-&gt;orderRelations;</span><br><span class="line">    Order::updateStatus($orderRelations);</span><br><span class="line"></span><br><span class="line">    $payerEmail = $paymentServiceOrder-&gt;user-&gt;email;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> ($payerEmail !== <span class="hljs-keyword">null</span>)</span><br><span class="line">    Mail::to($payerEmail)-&gt;send(<span class="hljs-keyword">new</span> PaymentReceived($paymentServiceOrder, $orderRelations));</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">'1|OK'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>At the end, don’t forget to return ‘1|OK’ to let AllPay knows that we’ve received the message.</p>
+</li>
+</ul>
+<h3 id="Those-I-didn’t-mentioned"><a href="#Those-I-didn’t-mentioned" class="headerlink" title="Those I didn’t mentioned"></a>Those I didn’t mentioned</h3><ul>
+<li>With the testing buyer account provided by AllPay, except for credit card, is also supports multiple payment method</li>
+<li>With convenient store pay or bank transferring method, you could login with a testing backed account provided by AllPay, which could simulate making the payment.<ul>
+<li>Account：StageTest</li>
+<li>Password：test1234</li>
+</ul>
+</li>
+</ul>
+<h3 id="Refund"><a href="#Refund" class="headerlink" title="Refund"></a>Refund</h3><ul>
+<li><p>Refund example as follows:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">public static function refund($order, $paymentServiceInstance, $orderRelation)</span><br><span class="line">&#123;</span><br><span class="line">    try</span><br><span class="line">    &#123;</span><br><span class="line">        $obj = new AllInOne();</span><br><span class="line"></span><br><span class="line">        $obj-&gt;ServiceURL = &quot;https://payment-stage.opay.tw/Cashier/AioChargeback&quot;;</span><br><span class="line">        // endpoint</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;HashKey = env(&apos;HASHKEY&apos;);</span><br><span class="line">        // Hash key provided by AllPay</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;HashIV = env(&apos;HASHIV&apos;);</span><br><span class="line">        // Hash IV provided by AllPay</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;MerchantID = env(&apos;MERCHANTID&apos;);                                                      </span><br><span class="line">        // Merchant ID provided by AllPay</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;EncryptType = EncryptType::ENC_SHA256;                                        </span><br><span class="line">        // CheckMacValue type. Stay 1 as SHA256</span><br><span class="line"></span><br><span class="line">        $obj-&gt;ChargeBack[&apos;MerchantTradeNo&apos;] = $paymentServiceInstance-&gt;MerchantTradeNo;</span><br><span class="line">        // The trade number you provided to AllPay</span><br><span class="line"></span><br><span class="line">        $obj-&gt;ChargeBack[&apos;TradeNo&apos;] = $paymentServiceInstance-&gt;TradeNo;</span><br><span class="line">        // The trade no provided by AllPay</span><br><span class="line">        </span><br><span class="line">        $obj-&gt;ChargeBack[&apos;ChargeBackTotalAmount&apos;] = $order-&gt;total_amount;</span><br><span class="line">        // Refunded amount</span><br><span class="line">        $obj-&gt;AioChargeback();</span><br><span class="line"></span><br><span class="line">    &#125; catch (Exception $e)</span><br><span class="line">    &#123;</span><br><span class="line">        // If something wrong, return.</span><br><span class="line">        return Helpers::result(true, &apos;Something wrong happened&apos;, 200);</span><br><span class="line">        </span><br><span class="line">        // Debug mode, print out the error</span><br><span class="line">        echo $e-&gt;getMessage();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>You could refer to <a href="https://www.opay.tw/Content/files/O_Pay_011.pdf" target="_blank" rel="noopener">official document</a> for required parameters </p>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/AllPay/">#AllPay</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Laravel-Transaction/">#Laravel Transaction</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Laravel-Log/">#Laravel Log</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/ngrok/">#ngrok</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Laravel-Middleware/">#Laravel Middleware</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/getINFOViaFBToken/">Get information via Facebook graph API</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/taskSchedulingInLaravel/">Task Scheduling of Laravel</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/AllPayPaymentService/';
+        this.page.identifier = 'AllPayPaymentService/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

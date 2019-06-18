@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Add multiple items on PayPal IPN method - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="IntroductionIn this article, we are going to share how to add multiple items in PayPal’s IPN method">
+<meta name="keywords" content="PayPal IPN,multiple items,variables">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Add multiple items on PayPal IPN method">
+<meta property="og:url" content="https://tn710617.github.io/submitMultipleItemsInPayPalIPNmethod/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionIn this article, we are going to share how to add multiple items in PayPal’s IPN method">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-14T06:14:12.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Add multiple items on PayPal IPN method">
+<meta name="twitter:description" content="IntroductionIn this article, we are going to share how to add multiple items in PayPal’s IPN method">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/submitMultipleItemsInPayPalIPNmethod/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="IntroductionIn this article, we are going to share how to add multiple items in PayPal’s IPN method">
+<meta name="keywords" content="PayPal IPN,multiple items,variables">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Add multiple items on PayPal IPN method">
+<meta property="og:url" content="https://tn710617.github.io/submitMultipleItemsInPayPalIPNmethod/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="IntroductionIn this article, we are going to share how to add multiple items in PayPal’s IPN method">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-14T06:14:12.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Add multiple items on PayPal IPN method">
+<meta name="twitter:description" content="IntroductionIn this article, we are going to share how to add multiple items in PayPal’s IPN method">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b>Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Begins">2&nbsp;&nbsp;<b>Begins</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Method-1-Passing-the-Aggregate-Cart-Amount-to-PayPal">3&nbsp;&nbsp;<b>Method 1. Passing the Aggregate Cart Amount to PayPal</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Required-Variables">3.1&nbsp;&nbsp;Required Variables</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Extended-Variables">3.2&nbsp;&nbsp;Extended Variables</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Method-2-Passing-Individual-Items-to-PayPal">4&nbsp;&nbsp;<b>Method 2. Passing Individual Items to PayPal</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/submitMultipleItemsInPayPalIPNmethod/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/submitMultipleItemsInPayPalIPNmethod/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Add multiple items on PayPal IPN method
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-03-03T23:58:56.000Z" itemprop="datePublished">Mar 4 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Payment-Gateway/">Payment Gateway</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            11 minutes read (About 1610 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>In this article, we are going to share how to add multiple items in PayPal’s IPN method<br><a id="more"></a><br>This page is just a clone from the <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside#methodtwo" target="_blank" rel="noopener">official website</a>, and I clone it because I am lazy to look for it again whenever I need it in the future.</p>
+<h2 id="Begins"><a href="#Begins" class="headerlink" title="Begins"></a>Begins</h2><p>Some web developers may wish to integrate PayPal payment processing with their own 3rd party shopping cart instead of the standard PayPal Shopping Cart. Please use the instructions below to allow your buyers to pay with PayPal when they are ready to check out after adding all of their items to your 3rd party shopping cart.</p>
+<p>There are now two ways to integrate your 3rd party shopping cart with the PayPal payment flow. The first is to pass in the aggregate amount of the Cart payment, rather than of the individual items. The second is to pass details of the items that have been selected to PayPal, instead of an aggregated amount for the entire Cart. Note: Posting the necessary variables to PayPal as described below will probably require you to implement some scripting on your website.</p>
+<ul>
+<li><a href="#Method-1-Passing-the-Aggregate-Cart-Amount-to-PayPal">Method 1. Passing the Aggregate Cart Amount to PayPal</a></li>
+<li><a href="#Method-2-Passing-Individual-Items-to-PayPal">Method 2. Passing Individual Items to PayPal</a></li>
+</ul>
+<h2 id="Method-1-Passing-the-Aggregate-Cart-Amount-to-PayPal"><a href="#Method-1-Passing-the-Aggregate-Cart-Amount-to-PayPal" class="headerlink" title="Method 1. Passing the Aggregate Cart Amount to PayPal"></a>Method 1. Passing the Aggregate Cart Amount to PayPal</h2><p>If you wish, you may aggregate your entire shopping cart and pass the total amount into PayPal’s Buy Now Button code (that is, you will need to post a single name for the entire cart and the total price of the cart’s contents as though it were a purchase of a single item).</p>
+<p>One drawback of this method is that your buyers will not be able to see the individual items appearing in their carts. In addition, you cannot change our variable names, nor can you add your own variable names.</p>
+<p>If you have additional technical questions after reviewing the information below, please visit our Developer Support area. For additional information about Buy Now Buttons code or the variables below, please see the Website Payments Standard Integration Guide.</p>
+<h3 id="Required-Variables"><a href="#Required-Variables" class="headerlink" title="Required Variables"></a>Required Variables</h3><p>The code for your PayPal post requires the following 4 hidden variables and an image as the form submit:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>business</td>
+<td>Email address on your PayPal account</td>
+</tr>
+<tr>
+<td>item_name</td>
+<td>Name of the item (or a name for the shopping cart)</td>
+</tr>
+<tr>
+<td>currency_code</td>
+<td>Defines the currency in which the monetary variables (amount, shipping, shipping2, handling, tax) are denoted. Possible values are “USD”, “EUR”, “GBP”, “CAD”, “JPY”.</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>Price of the item (the total price of all items in the shopping cart)</td>
+</tr>
+<tr>
+<td>image</td>
+<td>The image for the button your buyer will press to initiate the PayPal payment process. You can substitute your own image by replacing the src with the URL of your image</td>
+</tr>
+</tbody>
+</table>
+<p>This means that the minimum required code for your post to PayPal will look like this</p>
+<figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"https://www.paypal.com/cgi-bin/webscr"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"post"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"cmd"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"_xclick"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"business"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"you@youremail.com"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"item_name"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"Item Name"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"currency_code"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"USD"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"amount"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"0.00"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"image"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://www.paypal.com/en_US/i/btn/x-click-but01.gif"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"submit"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"Make payments with PayPal - it's fast, free and secure!"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>PayPal offers additional variables to customize your form post. All of the available variables are listed below (variable names must be in lower case):</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>business</td>
+<td>Email address on your PayPal account</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>Number of items. This will multiply the amount if greater than one</td>
+</tr>
+<tr>
+<td>item_name</td>
+<td>Name of the item (or a name for the shopping cart). Must be alpha-numeric, with a 127character limit</td>
+</tr>
+<tr>
+<td>item_number</td>
+<td>Optional pass-through variable for you to track payments. Must be alpha-numeric, with a 127 character limit</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>Price of the item (the total price of all items in the shopping cart)</td>
+</tr>
+<tr>
+<td>shipping</td>
+<td>The cost of shipping the item</td>
+</tr>
+<tr>
+<td>shipping2</td>
+<td>The cost of shipping each additional item</td>
+</tr>
+<tr>
+<td>handling</td>
+<td>The cost of handling</td>
+</tr>
+<tr>
+<td>tax</td>
+<td>Transaction-based tax value. If present, the value passed here will override any profile tax settings you may have (regardless of the buyer’s location).</td>
+</tr>
+<tr>
+<td>no_shipping</td>
+<td>Shipping address. If set to “1,” your customer will not be asked for a shipping address. This is optional; if omitted or set to “0,” your customer will be prompted to include a shipping address</td>
+</tr>
+<tr>
+<td>cn</td>
+<td>Optional label that will appear above the note field (maximum 40 characters)</td>
+</tr>
+<tr>
+<td>no_note</td>
+<td>Including a note with payment. If set to “1,” your customer will not be prompted to include a note. This is optional; if omitted or set to “0,” your customer will be prompted to include a note.</td>
+</tr>
+<tr>
+<td>on0</td>
+<td>First option field name. 64 character limit</td>
+</tr>
+<tr>
+<td>os0</td>
+<td>First set of option value(s). 200 character limit. “on0” must be defined for “os0” to be recognized.</td>
+</tr>
+<tr>
+<td>on1</td>
+<td>Second option field name. 64 character limit</td>
+</tr>
+<tr>
+<td>os1</td>
+<td>Second set of option value(s). 200 character limit. “on1” must be defined for “os1” to be recognized.</td>
+</tr>
+<tr>
+<td>custom</td>
+<td>Optional pass-through variable that will never be presented to your customer. Can be used to track inventory</td>
+</tr>
+<tr>
+<td>invoice</td>
+<td>Optional pass-through variable that will never be presented to your customer. Can be used to track invoice numbers</td>
+</tr>
+<tr>
+<td>notify_url</td>
+<td>Only used with IPN. An internet URL where IPN form posts will be sent</td>
+</tr>
+<tr>
+<td>return</td>
+<td>An internet URL where your customer will be returned after completing payment</td>
+</tr>
+<tr>
+<td>cancel_return</td>
+<td>An internet URL where your customer will be returned after cancelling payment</td>
+</tr>
+<tr>
+<td>image_url</td>
+<td>The internet URL of the 150 X 50 pixel image you would like to use as your logo</td>
+</tr>
+<tr>
+<td>cs</td>
+<td>Sets the background color of your payment pages. If set to “1,” the background color will be black. This is optional; if omitted or set to “0,” the background color will be white</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Extended-Variables"><a href="#Extended-Variables" class="headerlink" title="Extended Variables"></a>Extended Variables</h3><p>PayPal allows you to post extended variables if you change this “cmd” input:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_xclick&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>to:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_ext-enter&quot;&gt;</span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;redirect_cmd&quot; value=&quot;_xclick&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>By making the above change to the “cmd” input, you can also use the variables below:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>email</td>
+<td>Customer’s email address</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>Customer’s first name. Must be alpha-numeric, with a 32 character limit</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>Customer’s last name. Must be alpha-numeric, with a 64 character limit</td>
+</tr>
+<tr>
+<td>address1</td>
+<td>First line of customer’s address. Must be alpha-numeric, with a 100 character limit</td>
+</tr>
+<tr>
+<td>address2</td>
+<td>Second line of customer’s address. Must be alpha-numeric, with a 100 character limit</td>
+</tr>
+<tr>
+<td>city</td>
+<td>City of customer’s address. Must be alpha-numeric, with a 100 character limit</td>
+</tr>
+<tr>
+<td>state</td>
+<td>State of customer’s address. Must be official 2 letter abbreviation</td>
+</tr>
+<tr>
+<td>zip</td>
+<td>Zip code of customer’s address</td>
+</tr>
+<tr>
+<td>night_phone_a</td>
+<td>Area code of customer’s night telephone number</td>
+</tr>
+<tr>
+<td>night_phone_b</td>
+<td>irst three digits of customer’s night telephone number</td>
+</tr>
+<tr>
+<td>day_phone_a</td>
+<td>Area code of customer’s daytime telephone number</td>
+</tr>
+<tr>
+<td>day_phone_b</td>
+<td>First three digits of customer’s daytime telephone number</td>
+</tr>
+</tbody>
+</table>
+<p>Note:To specify shipping &amp; handling amounts that differ from the default shipping amounts set in your Profile, please go to your Profile, edit your Shipping Calculations, and click the “allow transaction-based shipping override” checkbox.</p>
+<h2 id="Method-2-Passing-Individual-Items-to-PayPal"><a href="#Method-2-Passing-Individual-Items-to-PayPal" class="headerlink" title="Method 2. Passing Individual Items to PayPal"></a>Method 2. Passing Individual Items to PayPal</h2><p>If your 3rd party shopping cart can be configured to pass individual items to PayPal, information about the items will be included in the buyers’ and sellers’ History logs and notifications. To include information about the items, you will post HTML form elements to a new version of PayPal’s Shopping Cart flow. This process is much like the one described in Section #1 “Passing Aggregate Cart Amount to PayPal” with the following exceptions:</p>
+<ol>
+<li>Set the “cmd” variable to “_cart”<br>Replace this required HTML line<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_xclick&quot;&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>with<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_cart&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<ol start="2">
+<li><p>Add a new variable called “upload”<br>Add the following line between the <form> and </form> tags:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;upload&quot; value=&quot;1&quot;&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Define item details<br>For each of the following item-specific parameters, define a new set of values that correspond to each item that was purchased via your 3rd party cart. Append “_x” to the variable name, where x is the item number, starting with 1 and increasing by one for each item that is added.</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>item_name_x</td>
+<td>(Required for item #x) Name of item #x in the cart. Must be alpha-numeric, with a 127 character limit</td>
+</tr>
+<tr>
+<td>item_number_x</td>
+<td>Optional pass-through variable associated with item #x in the cart. Must be alpha-numeric, with a 127 character limit</td>
+</tr>
+<tr>
+<td>amount_x</td>
+<td>(Required for item #x) Price of the item #x</td>
+</tr>
+<tr>
+<td>shipping_x</td>
+<td>The cost of shipping the first piece (quantity of 1) of item #x</td>
+</tr>
+<tr>
+<td>shipping2_x</td>
+<td>The cost of shipping each additional piece (quantity of 2 or above) of item #x</td>
+</tr>
+<tr>
+<td>handling_x</td>
+<td>The cost of handling for item #x</td>
+</tr>
+<tr>
+<td>on0_x</td>
+<td>First option field name for item #x. 64 character limit</td>
+</tr>
+<tr>
+<td>os0_x</td>
+<td>First set of option value(s) for item #x. 200 character limit. “on0_x” must be defined in order for “os0_x” to be recognized.</td>
+</tr>
+<tr>
+<td>on1_x</td>
+<td>Second option field name for item #x. 64 character limit</td>
+</tr>
+<tr>
+<td>os1_x</td>
+<td>Second set of option value(s) for item #x. 200 character limit. “on1_x” must be defined in order for “os1_x” to be recognized.</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>Repeat for each item included in cart<br>Include a set of required variables and any optional variables from the table above for each item included in your buyers’ cart. The first item included in the cart should be defined with parameters ending in “_1”, such as “item_name_1”, “amount_1”, etc. Similarly the second item should be denoted with variables like “item_name_2”, “amount_2”, etc. Note: the “_x” values must increment by one continuously in order to be recognized. If you skip from item #1 to item #3 without defining an item #2, the third item will be ignored.</li>
+</ol>
+<p>To specify currency: All monetary variables (amount, shipping, shipping2, handling, tax) will be interpreted in the currency designated by the “currency_code” variable that is posted with the payment. Since it is not item-specific, there is no need to append a “_x” to the variable name. If no “currency_code” variable is posted, we will assume that all monetary values are in U.S. Dollars.</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PayPal-IPN/">#PayPal IPN</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/multiple-items/">#multiple items</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/variables/">#variables</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/implementATransactionViaPayPalIPN/">Implement a transaction via PayPal Payment Standard and PayPal IPN Message</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/FacebookLongLivedToken/">Get Facebook long-lived token and never expired token</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/submitMultipleItemsInPayPalIPNmethod/';
+        this.page.identifier = 'submitMultipleItemsInPayPalIPNmethod/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

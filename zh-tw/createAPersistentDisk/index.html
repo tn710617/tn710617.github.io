@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>在GCP建立一個persistent disk - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文請參閱Refer to official link  Persistent分為兩種 一般persistent disk SSD persistent disk  本篇將會做什麼？ 建立一個新的VM instance，然後在其新增persistent disk 掛載並格式化persistent disk">
+<meta name="keywords" content="GCP,QWIKLABS,GCP persistent disk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在GCP建立一個persistent disk">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/createAPersistentDisk/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文請參閱Refer to official link  Persistent分為兩種 一般persistent disk SSD persistent disk  本篇將會做什麼？ 建立一個新的VM instance，然後在其新增persistent disk 掛載並格式化persistent disk">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/G0Y8mi6.png">
+<meta property="og:image" content="https://i.imgur.com/Zqb6UpU.png">
+<meta property="og:image" content="https://i.imgur.com/Y02cj2y.png">
+<meta property="og:image" content="https://i.imgur.com/Oada6gU.png">
+<meta property="og:image" content="https://i.imgur.com/XRCkS9j.png">
+<meta property="og:image" content="https://i.imgur.com/QStCZUo.png">
+<meta property="og:updated_time" content="2019-04-01T06:49:19.407Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在GCP建立一個persistent disk">
+<meta name="twitter:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文請參閱Refer to official link  Persistent分為兩種 一般persistent disk SSD persistent disk  本篇將會做什麼？ 建立一個新的VM instance，然後在其新增persistent disk 掛載並格式化persistent disk">
+<meta name="twitter:image" content="https://i.imgur.com/G0Y8mi6.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/createAPersistentDisk/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文請參閱Refer to official link  Persistent分為兩種 一般persistent disk SSD persistent disk  本篇將會做什麼？ 建立一個新的VM instance，然後在其新增persistent disk 掛載並格式化persistent disk">
+<meta name="keywords" content="GCP,QWIKLABS,GCP persistent disk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在GCP建立一個persistent disk">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/createAPersistentDisk/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文請參閱Refer to official link  Persistent分為兩種 一般persistent disk SSD persistent disk  本篇將會做什麼？ 建立一個新的VM instance，然後在其新增persistent disk 掛載並格式化persistent disk">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/G0Y8mi6.png">
+<meta property="og:image" content="https://i.imgur.com/Zqb6UpU.png">
+<meta property="og:image" content="https://i.imgur.com/Y02cj2y.png">
+<meta property="og:image" content="https://i.imgur.com/Oada6gU.png">
+<meta property="og:image" content="https://i.imgur.com/XRCkS9j.png">
+<meta property="og:image" content="https://i.imgur.com/QStCZUo.png">
+<meta property="og:updated_time" content="2019-04-01T06:49:19.407Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在GCP建立一個persistent disk">
+<meta name="twitter:description" content="前言本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記原文請參閱Refer to official link  Persistent分為兩種 一般persistent disk SSD persistent disk  本篇將會做什麼？ 建立一個新的VM instance，然後在其新增persistent disk 掛載並格式化persistent disk">
+<meta name="twitter:image" content="https://i.imgur.com/G0Y8mi6.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Persistent分為兩種">2&nbsp;&nbsp;<b>Persistent分為兩種</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#本篇將會做什麼？">3&nbsp;&nbsp;<b>本篇將會做什麼？</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">4&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Qwiklabs-setup">4.1&nbsp;&nbsp;Qwiklabs setup</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#在你按下-Start-Lab-按鈕之前">4.1.1&nbsp;&nbsp;在你按下 Start Lab 按鈕之前</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#你需要什麼？">4.1.2&nbsp;&nbsp;你需要什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Google-Cloud-Platform-Console">4.2&nbsp;&nbsp;Google Cloud Platform Console</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#如何開始你的-lab-，然後登入-Console">4.2.1&nbsp;&nbsp;如何開始你的 lab ，然後登入 Console?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cloud-Shell">4.3&nbsp;&nbsp;Cloud Shell</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-Google-Cloud-Shell">4.3.1&nbsp;&nbsp;啟動 Google Cloud Shell</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立VM-instance">5&nbsp;&nbsp;<b>建立VM instance</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立新的persistent-disk">6&nbsp;&nbsp;<b>建立新的persistent disk</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在運轉中的VM-instance上新增剛建立的persistent-disk">7&nbsp;&nbsp;<b>在運轉中的VM instance上新增剛建立的persistent disk</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在VM-instance-上找到剛剛新增的persistent-disk">8&nbsp;&nbsp;<b>在VM instance 上找到剛剛新增的persistent disk</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#格式化，並且掛載persistent-disk">9&nbsp;&nbsp;<b>格式化，並且掛載persistent disk</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定自動掛載">10&nbsp;&nbsp;<b>設定自動掛載</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#小習題：">11&nbsp;&nbsp;<b>小習題：</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#非必要指令">12&nbsp;&nbsp;<b>非必要指令</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/createAPersistentDisk/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/createAPersistentDisk/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            在GCP建立一個persistent disk
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-02-16T01:54:55.000Z" itemprop="datePublished">2月 16 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            11 分钟 讀完 (大概 1625 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><br>本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記<br>原文請參閱<br><br><a href="https://www.qwiklabs.com/focuses/1753?parent=catalog" target="_blank" rel="noopener">Refer to official link</a><br><br></p>
+
+<h2 id="Persistent分為兩種"><a href="#Persistent分為兩種" class="headerlink" title="Persistent分為兩種"></a>Persistent分為兩種</h2><ul>
+<li>一般persistent disk</li>
+<li>SSD persistent disk</li>
+</ul>
+<h2 id="本篇將會做什麼？"><a href="#本篇將會做什麼？" class="headerlink" title="本篇將會做什麼？"></a>本篇將會做什麼？</h2><ul>
+<li>建立一個新的VM instance，然後在其新增persistent disk</li>
+<li>掛載並格式化persistent disk</li>
+</ul>
+<a id="more"></a> 
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><h3 id="Qwiklabs-setup"><a href="#Qwiklabs-setup" class="headerlink" title="Qwiklabs setup"></a>Qwiklabs setup</h3><h4 id="在你按下-Start-Lab-按鈕之前"><a href="#在你按下-Start-Lab-按鈕之前" class="headerlink" title="在你按下 Start Lab 按鈕之前"></a>在你按下 Start Lab 按鈕之前</h4><p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Quiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Quiclabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<h4 id="你需要什麼？"><a href="#你需要什麼？" class="headerlink" title="你需要什麼？"></a>你需要什麼？</h4><p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p>備註： 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<h3 id="Google-Cloud-Platform-Console"><a href="#Google-Cloud-Platform-Console" class="headerlink" title="Google Cloud Platform Console"></a>Google Cloud Platform Console</h3><h4 id="如何開始你的-lab-，然後登入-Console"><a href="#如何開始你的-lab-，然後登入-Console" class="headerlink" title="如何開始你的 lab ，然後登入 Console?"></a>如何開始你的 lab ，然後登入 Console?</h4><ol>
+<li>按下 Start Lab 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://i.imgur.com/G0Y8mi6.png" alt></p>
+<ol start="2">
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p>tip: 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://i.imgur.com/Zqb6UpU.png" alt></p>
+<ol start="4">
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ol>
+<p>重要：必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://i.imgur.com/Y02cj2y.png" alt></p>
+<h3 id="Cloud-Shell"><a href="#Cloud-Shell" class="headerlink" title="Cloud Shell"></a>Cloud Shell</h3><h4 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h4><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://i.imgur.com/Oada6gU.png" alt></p>
+<ol start="2">
+<li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://i.imgur.com/XRCkS9j.png" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
+<p><img src="https://i.imgur.com/QStCZUo.png" alt></p>
+<p><code>gcloud</code> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command ,你可以列出有效帳戶名稱:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure></p>
+<p>輸出:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure></p>
+<p>範例輸出:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure></p>
+<p>你可以使用以下 command 來列出專案 ID<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure></p>
+<p>輸出：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure></p>
+<p>範例輸出：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure></p>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<h2 id="建立VM-instance"><a href="#建立VM-instance" class="headerlink" title="建立VM instance"></a>建立VM instance</h2><ul>
+<li><p>建立一個名為’gcelab’的新虛擬機instance </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create gcelab --zone us-central1-c</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>新建的VM instance將有內建10GB的初始化disk</p>
+</li>
+</ul>
+<h2 id="建立新的persistent-disk"><a href="#建立新的persistent-disk" class="headerlink" title="建立新的persistent disk"></a>建立新的persistent disk</h2><ul>
+<li>在Cloud Shell中輸入以下指令，注意zone參數需與VM instance一致<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute disks create mydisk --size=200GB --zone us-centrall-c</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="在運轉中的VM-instance上新增剛建立的persistent-disk"><a href="#在運轉中的VM-instance上新增剛建立的persistent-disk" class="headerlink" title="在運轉中的VM instance上新增剛建立的persistent disk"></a>在運轉中的VM instance上新增剛建立的persistent disk</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances attach-disk gcelab --disk mydisk --zone us-central1-c</span><br></pre></td></tr></table></figure>
+<h2 id="在VM-instance-上找到剛剛新增的persistent-disk"><a href="#在VM-instance-上找到剛剛新增的persistent-disk" class="headerlink" title="在VM instance 上找到剛剛新增的persistent disk"></a>在VM instance 上找到剛剛新增的persistent disk</h2><ul>
+<li>SSH到virtual machine<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute ssh gcelab --zone us-central1-c</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>輸入y繼續</li>
+<li>如果需要設定密碼，可以輸入密碼</li>
+<li><p>在/dev/disk/by-id/下找到disk裝置</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls -l /dev/disk/by-id/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>找到預設裝置名稱如下:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">scsi-0Google_PersistentDisk_persistent-disk-1.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果你想要一個不一樣的裝置名稱，當你在新增disk時，你可以加入裝置名稱參數 </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances attach-disk gcelab --disk mydisk --device-name yourDeviceName --zone us-central1-c</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="格式化，並且掛載persistent-disk"><a href="#格式化，並且掛載persistent-disk" class="headerlink" title="格式化，並且掛載persistent disk"></a>格式化，並且掛載persistent disk</h2><ul>
+<li>在找到裝置後，我們可以將disk分區，格式化，並且掛載</li>
+<li>建立一個掛載點<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir /mnt/mydisk</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>使用<code>mkfs</code>工具，格式化disk為ext4格式，這個指令將會刪除指定disk下的所有資料</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/scsi-0Google_PersistentDisk_persistent-disk-1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>利用<code>mount</code>工具，掛載disk</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mount -o discard,defaults /dev/disk/by-id/scsi-0Google_PersistentDisk_persistent-disk-1 /mnt/mydisk</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="設定自動掛載"><a href="#設定自動掛載" class="headerlink" title="設定自動掛載"></a>設定自動掛載</h2><ul>
+<li><p>預設值中，在VM instance重新啟動之後，persistent disk並不會自動掛載，我們需要在/etc/fstab檔案中增加一些輸入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/fstab</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在開頭是<code>UUID</code>那段程式碼之後，加入：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/dev/disk/by-id/scsi-0Google_PersistentDisk_persistent-disk-1 /mnt/mydisk ext4 defaults 1 1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>此時，你的/etc/fstab應該看起來要像這樣:<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">UUID=e084c728-36b5-4806-bb9f-1dfb6a34b396 / ext4 defaults 1 1</span><br><span class="line">/dev/disk/by-id/scsi-0Google_PersistentDisk_persistent-disk-1 /mnt/mydisk ext4 defaults 1 1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>按<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">:wq</span><br></pre></td></tr></table></figure></p>
+<h2 id="小習題："><a href="#小習題：" class="headerlink" title="小習題："></a>小習題：</h2><ul>
+<li><p>Can you prevent the destruction of an attached persistent disk when the instance is deleted?</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> No, attached persistent disks are always associated with the lifetime of the instance.</li>
+<li style="list-style: none"><input type="checkbox" checked> Yes, deselect the option <code>Delete boot disk when instance is deleted</code> when creating an instance</li>
+<li style="list-style: none"><input type="checkbox"> Yes, use the <code>-keep-disks</code> option with the <code>gcloud compute instances delete</code> command</li>
+</ul>
+</li>
+<li><p>For migrating data from a persistent disk to another region, reorder the following steps in which they should be performed:</p>
+</li>
+</ul>
+<ol>
+<li>Attach disk</li>
+<li>Create disk</li>
+<li>Create snapshot</li>
+<li>Create instance</li>
+<li><p>Unmount file system(s)</p>
+<ul>
+<li style="list-style: none"><input type="checkbox"> (4, 1, 2, 3, 5)</li>
+<li style="list-style: none"><input type="checkbox"> (2, 3, 1, 4, 5)</li>
+<li style="list-style: none"><input type="checkbox"> (1, 3, 2, 4, 5)</li>
+<li style="list-style: none"><input type="checkbox" checked> (5, 3, 2, 4, 1)</li>
+</ul>
+</li>
+</ol>
+<h2 id="非必要指令"><a href="#非必要指令" class="headerlink" title="非必要指令"></a>非必要指令</h2><ul>
+<li>顯示活躍中帳戶<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>顯示project id<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP/">#GCP</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-persistent-disk/">#GCP persistent disk</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/Kubernetes/">你好！Kubernetes</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/gitRevert/">推錯了Commit該怎麼辦？</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/createAPersistentDisk/';
+        this.page.identifier = 'zh-tw/createAPersistentDisk/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
