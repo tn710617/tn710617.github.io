@@ -2,21 +2,26 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Ray&#39;s Coding Journey</title>
+<title>利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Ray&#39;s Coding Journey">
-<meta property="og:url" content="https://tn710617.github.io/zh-tw/index.html">
+<meta name="description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 參考網頁官網 環境 Server: NginX OS: Ubuntu 18.04DNS 設定先將 DNS 設定好, 建一個 A record, 將我們喜歡的 domain 指向我們的 IP  設定檔 這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無">
+<meta name="keywords" content="Let&#39;s Encrypt,SSL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/letsencrypt/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 參考網頁官網 環境 Server: NginX OS: Ubuntu 18.04DNS 設定先將 DNS 設定好, 建一個 A record, 將我們喜歡的 domain 指向我們的 IP  設定檔 這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無">
 <meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2019-06-30T05:39:57.745Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ray&#39;s Coding Journey">
+<meta name="twitter:title" content="利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證">
+<meta name="twitter:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 參考網頁官網 環境 Server: NginX OS: Ubuntu 18.04DNS 設定先將 DNS 設定好, 建一個 A record, 將我們喜歡的 domain 指向我們的 IP  設定檔 這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-    <link href="/index.html" rel="alternate" hreflang="en">
+    <link href="/letsencrypt/" rel="alternate" hreflang="en">
 
 
 
@@ -25,13 +30,18 @@
 
 
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Ray&#39;s Coding Journey">
-<meta property="og:url" content="https://tn710617.github.io/zh-tw/index.html">
+    <meta name="description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 參考網頁官網 環境 Server: NginX OS: Ubuntu 18.04DNS 設定先將 DNS 設定好, 建一個 A record, 將我們喜歡的 domain 指向我們的 IP  設定檔 這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無">
+<meta name="keywords" content="Let&#39;s Encrypt,SSL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/letsencrypt/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 參考網頁官網 環境 Server: NginX OS: Ubuntu 18.04DNS 設定先將 DNS 設定好, 建一個 A record, 將我們喜歡的 domain 指向我們的 IP  設定檔 這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無">
 <meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2019-06-30T05:39:57.745Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ray&#39;s Coding Journey">
+<meta name="twitter:title" content="利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證">
+<meta name="twitter:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 參考網頁官網 環境 Server: NginX OS: Ubuntu 18.04DNS 設定先將 DNS 設定好, 建一個 A record, 將我們喜歡的 domain 指向我們的 IP  設定檔 這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無">
 
 
 
@@ -121,6 +131,82 @@
             </a>
             
             
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#參考網頁">2&nbsp;&nbsp;<b>參考網頁</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#環境">3&nbsp;&nbsp;<b>環境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#DNS-設定">4&nbsp;&nbsp;<b>DNS 設定</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定檔">5&nbsp;&nbsp;<b>設定檔</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#新增-cerbot-PPA-Personal-Package-Archives">6&nbsp;&nbsp;<b>新增 cerbot PPA (Personal Package Archives)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#安裝-Let’s-Encrypt">7&nbsp;&nbsp;<b>安裝 Let’s Encrypt</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#運行-cerbot">8&nbsp;&nbsp;<b>運行 cerbot</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#全自動模式">8.1&nbsp;&nbsp;全自動模式</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#半自動模式">8.2&nbsp;&nbsp;半自動模式</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試自動更新">9&nbsp;&nbsp;<b>測試自動更新</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試簽證是否成功">10&nbsp;&nbsp;<b>測試簽證是否成功</b></a>
+                    
+                </div>
+            </div>
+            
 
             
 <div class="column is-narrow has-text-centered">
@@ -139,11 +225,11 @@
         <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
             <div class="dropdown-content">
             
-                <a href="/index.html" class="dropdown-item">
+                <a href="/letsencrypt/" class="dropdown-item">
                     English
                 </a>
             
-                <a href="/zh-tw/index.html" class="dropdown-item">
+                <a href="/zh-tw/letsencrypt/" class="dropdown-item">
                     繁體中文
                 </a>
             
@@ -158,11 +244,10 @@
 
     <section class="section">
     <div class="container">
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
+    <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh-tw/letsencrypt/" itemprop="url">利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證</a>
+            利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -225,417 +310,63 @@
     
     </div>
     
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Let-s-Encrypt/">#Let&#39;s Encrypt</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/SSL/">#SSL</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/ftpServer/">使用 vsftpd 在 GCP VM 上部署 FTP Server</a>
+            
+        </span>
+    </div>
     
 </article>
 
 
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
 
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/ftpServer/" itemprop="url">使用 vsftpd 在 GCP VM 上部署 FTP Server</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-06-29T11:33:28.000Z" itemprop="datePublished">6月 29 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            13 分钟 讀完 (大概 1957 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇將分享：</p>
-<ol>
-<li>vsftpd 的設定細節</li>
-<li>建立一個特定的 FTP user</li>
-<li>使用 gcloud command line 開啟相對應的防火牆</li>
-</ol>
-        <p class="article-more-link">
-            <a href="/zh-tw/ftpServer/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
+</div>
 
 
 
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/letsencrypt/';
+        this.page.identifier = 'zh-tw/letsencrypt/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
 
+<div id="disqus_thread">
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/ssh/" itemprop="url">What I&#39;ve learnt on SSH</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-06-09T12:57:04.000Z" itemprop="datePublished">6月 9 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/ssh/">ssh</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            4 分钟 讀完 (大概 533 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇為未整理的個人學習紀錄<br></p>
-        <p class="article-more-link">
-            <a href="/zh-tw/ssh/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
 
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/gitlabCICDOnGCP/" itemprop="url">利用 Gitlab CI/CD 部署專案到 GCP virtual machine</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-05-19T01:25:36.000Z" itemprop="datePublished">5月 19 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            11 分钟 讀完 (大概 1680 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇將分享如下：</p>
-<ol>
-<li>利用 <code>gcloud</code> 開立一台 GCP <code>instance</code></li>
-<li>如何利用 <code>gcloud</code> 在 <code>instance</code> 上匯入 <code>ssh key</code></li>
-<li>利用 <code>Daemon</code> 使服務常駐</li>
-<li>利用 <code>gitlab pusher</code> 部署專案到 <code>GCP virtual machine</code> 上</li>
-</ol>
-        <p class="article-more-link">
-            <a href="/zh-tw/gitlabCICDOnGCP/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/Node-js/" itemprop="url">My learning journey in Node.js</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-04-23T02:16:58.000Z" itemprop="datePublished">4月 23 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Node-js/">Node.js</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 小时 讀完 (大概 6849 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/Node-js/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/Linux/" itemprop="url">My learning journey in Linux</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-04-21T07:30:27.000Z" itemprop="datePublished">4月 21 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Linux/">Linux</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            8 分钟 讀完 (大概 1207 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/Linux/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/docker/" itemprop="url">My learning journey in Docker</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-04-08T02:04:43.000Z" itemprop="datePublished">4月 8 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            26 分钟 讀完 (大概 3907 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>This is the notes I take during my learning, and it’s still unorganised, so there will no be English version of this article</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/docker/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/KubernetesEngineQuickStart/" itemprop="url">Kubernetes Engine 快速開始</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-03-31T08:47:47.000Z" itemprop="datePublished">3月 31 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            18 分钟 讀完 (大概 2637 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇為 GCP Kubernetes Engine 的學習筆記<br><a href="https://cloud.google.com/kubernetes-engine/" target="_blank" rel="noopener">Google Kubernetes Engine</a> (GKE) 為使用 Google 基礎架構的應用提供了一個部署，管理，以及可調整規模的環境。<br>Kubernetes Engine 環境包含了多台的群集機器(這邊專指為 <a href="https://cloud.google.com/compute" target="_blank" rel="noopener">Google Compute Engine</a> 的實例)，形成一個<a href="https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture" target="_blank" rel="noopener">容器的群集</a>。<br>在這個課程中，你將可以實際操作練習如何建立一個容器，以及在 GKE 上部署你的應用。<br></p>
-        <p class="article-more-link">
-            <a href="/zh-tw/KubernetesEngineQuickStart/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/AWSLaravelDeployment/" itemprop="url">在 Server 上部署 Laravel 專案</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-03-27T07:21:59.000Z" itemprop="datePublished">3月 27 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            21 分钟 讀完 (大概 3155 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇紀錄如何在 <code>AWS EC2</code> 上部署 <code>Laravel</code> 專案<br>主要有以下重點：</p>
-<ol>
-<li><code>LAMP</code> 部署</li>
-<li><code>Composer</code> 部署</li>
-<li><code>Laravel</code> 部署</li>
-</ol>
-        <p class="article-more-link">
-            <a href="/zh-tw/AWSLaravelDeployment/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/LaravelView/" itemprop="url">使用 `Laravel` `template` 與 `blade`</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-03-25T04:38:38.000Z" itemprop="datePublished">3月 25 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Laravel/">Laravel</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            5 分钟 讀完 (大概 698 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇為<code>Laravel</code> 的學習筆記，主要紀錄 <code>Laravel blade</code> 的用法，重點如下：</p>
-<ol>
-<li>建立並重複使用 <code>template</code></li>
-<li>使用 <code>yield</code> 及 <code>section</code></li>
-<li>將值傳到 <code>view</code></li>
-<li> {{ }}  幫我們做了什麼？</li>
-</ol>
-        <p class="article-more-link">
-            <a href="/zh-tw/LaravelView/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-    
-        
-<nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
-    <div class="pagination-previous is-invisible is-hidden-mobile">
-        <a href="/zh-tw/page/0/">上一頁</a>
-    </div>
-    <div class="pagination-next">
-        <a href="/zh-tw/page/2/">下一頁</a>
-    </div>
-    <ul class="pagination-list is-hidden-mobile">
-        
-        <li><a class="pagination-link is-current" href="/zh-tw/">1</a></li>
-        
-        <li><a class="pagination-link" href="/zh-tw/page/2/">2</a></li>
-        
-        <li><span class="pagination-ellipsis">&hellip;</span></li>
-        
-        <li><a class="pagination-link" href="/zh-tw/page/5/">5</a></li>
-        
-    </ul>
-</nav>
-    
     </div>
 </section>
     <footer class="footer">
