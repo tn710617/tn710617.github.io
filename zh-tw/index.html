@@ -162,6 +162,94 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh-tw/mysql/" itemprop="url">MySQL 筆記</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-08-01T12:32:19.000Z" itemprop="datePublished">8月 1 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            2 分钟 讀完 (大概 350 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一份未整理的 MySQL 學習筆記</p>
+<h2 id="中文亂碼問題"><a href="#中文亂碼問題" class="headerlink" title="中文亂碼問題"></a>中文亂碼問題</h2><h3 id="先確認-locale-狀態："><a href="#先確認-locale-狀態：" class="headerlink" title="先確認 locale 狀態："></a>先確認 locale 狀態：</h3><ol>
+<li><p>確認 charset 狀態, 在 mysql 當中:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show variables like <span class="hljs-string">'char%'</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>確認 <code>database</code> locale 狀態：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">SELECT default_character_set_name FROM information_schema.SCHEMATA </span><br><span class="line">WHERE schema_name = <span class="hljs-string">"databaseName"</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>確認 <code>table</code> locale 狀態：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">SELECT CCSA.character_set_name FROM information_schema.`TABLES` T,</span><br><span class="line">       information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA</span><br><span class="line">WHERE CCSA.collation_name = T.table_collation</span><br><span class="line">  AND T.table_schema = <span class="hljs-string">"databaseName"</span></span><br><span class="line">  AND T.table_name = <span class="hljs-string">"tableName"</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>確認 <code>column</code> locale 狀態：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show full columns from tableName;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>確認 <code>collation</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show variables like <span class="hljs-string">'collation%'</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="locale-設定"><a href="#locale-設定" class="headerlink" title="locale 設定"></a>locale 設定</h3><ol>
+<li>確認 <code>mysql</code> 設定檔位置<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mysql --<span class="hljs-built_in">help</span> -verbose | grep <span class="hljs-string">'my.cnf'</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>通常，檔案會在 <code>/etc/mysql/my.cnf</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/mysql/my.cnf</span><br></pre></td></tr></table></figure>
+<p>貼上：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set=utf8</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">collation-server = utf8_unicode_ci</span><br><span class="line">init-connect=<span class="hljs-string">'SET NAMES utf8'</span></span><br><span class="line">character-set-server = utf8</span><br></pre></td></tr></table></figure></p>
+<ol start="2">
+<li><p>修改 <code>database</code> locale</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ALTER DATABASE database_name CHARACTER SET utf8 COLLATE utf8_general_ci;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改 <code>table</code> locale</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ALTER TABLE table_name CONVERT TO CHARACTER SET utf8;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>完成以上設定之後，重啟 <code>mysql</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">service mysql restart</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果有用使用 <code>PHP</code> 的話，記得也將 <code>PHP</code> 那邊的 locale 設為 <code>uft8</code>, 可參考<a href="https://tn710617.github.io/zh-tw/importDataFromCSVIntoMySQLDatabaseViaPHP/">文章</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mysqli_set_charset(<span class="hljs-variable">$dbc</span>,<span class="hljs-string">"utf8"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="疑難雜症"><a href="#疑難雜症" class="headerlink" title="疑難雜症"></a>疑難雜症</h3><p>理論上，上面的都做完了，應該就不會有亂碼了，如果問題尚未解決，可以試試下面的方法</p>
+<ul>
+<li><p>查看資料庫 locale 設定</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show create database databaseName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看 table locale 設定</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show create table tableName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>其餘設定</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">set</span> names uft8;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh-tw/gitlab/" itemprop="url">My learning note on Gitlab</a>
         
     </h1>
@@ -523,46 +611,6 @@
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這是一份未整理過的 Linux 學習筆記<br>OS 系統基本上為 GCP 的 Ubuntu, 若有使用其他 OS，在 Google 相對應的用法</p>
         <p class="article-more-link">
             <a href="/zh-tw/Linux/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/docker/" itemprop="url">My learning journey in Docker</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-04-08T02:04:43.000Z" itemprop="datePublished">4月 8 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            26 分钟 讀完 (大概 3897 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這是一份未整理過的 Linux 學習筆記</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/docker/#more">點擊閱讀</a>
         </p>
     
     </div>
