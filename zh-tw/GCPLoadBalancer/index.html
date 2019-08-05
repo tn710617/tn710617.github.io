@@ -13,7 +13,7 @@
 <meta property="og:description" content="前言為什麼要使用 Load Balancer? 可以分攤流量, 利用多台機器跑多個服務 當一台機器掛了，你還有另外一台 當負載到達一定程度，可以啟動 auto scaling (本篇不會使用到) 配合適當的 CI / CD, 以及健康檢查，可達到 rolling upgrade 的效果">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/VxUj5Ru.png">
-<meta property="og:updated_time" content="2019-08-04T09:03:12.365Z">
+<meta property="og:updated_time" content="2019-08-04T09:24:31.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="手把手教你理解並建立 GCP 平衡負載">
 <meta name="twitter:description" content="前言為什麼要使用 Load Balancer? 可以分攤流量, 利用多台機器跑多個服務 當一台機器掛了，你還有另外一台 當負載到達一定程度，可以啟動 auto scaling (本篇不會使用到) 配合適當的 CI / CD, 以及健康檢查，可達到 rolling upgrade 的效果">
@@ -41,7 +41,7 @@
 <meta property="og:description" content="前言為什麼要使用 Load Balancer? 可以分攤流量, 利用多台機器跑多個服務 當一台機器掛了，你還有另外一台 當負載到達一定程度，可以啟動 auto scaling (本篇不會使用到) 配合適當的 CI / CD, 以及健康檢查，可達到 rolling upgrade 的效果">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/VxUj5Ru.png">
-<meta property="og:updated_time" content="2019-08-04T09:03:12.365Z">
+<meta property="og:updated_time" content="2019-08-04T09:24:31.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="手把手教你理解並建立 GCP 平衡負載">
 <meta name="twitter:description" content="前言為什麼要使用 Load Balancer? 可以分攤流量, 利用多台機器跑多個服務 當一台機器掛了，你還有另外一台 當負載到達一定程度，可以啟動 auto scaling (本篇不會使用到) 配合適當的 CI / CD, 以及健康檢查，可達到 rolling upgrade 的效果">
@@ -358,7 +358,7 @@
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.nvm"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> &amp;&amp; nvm install yourNodeVersion &amp;&amp; apt-get install npm -y &amp;&amp; npm install pm2 -g &amp;&amp; pm2 update &amp;&amp; apt-get install git -y &amp;&amp; apt-get install build-essential</span><br></pre></td></tr></table></figure>
 <h2 id="開啟防火牆"><a href="#開啟防火牆" class="headerlink" title="開啟防火牆"></a>開啟防火牆</h2><p>看服務跑在哪一個 port, 我們需要將防火牆打開，這樣 <code>instance group</code> 才能將 request 從 <code>Load Balancer</code> 經由 <code>backend-service</code> 導向相對應的 port, 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-01 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-01</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-01 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-02</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-02 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-02</span><br></pre></td></tr></table></figure>
 <h2 id="外部靜態-IP"><a href="#外部靜態-IP" class="headerlink" title="外部靜態 IP"></a>外部靜態 IP</h2><p>這邊建立一個 IPv4 的靜態 IP , 之後會用到, 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create?hl=zh-tw" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses create lb-test \</span><br><span class="line">    --ip-version=IPV4 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
 <h2 id="Instance-group"><a href="#Instance-group" class="headerlink" title="Instance group"></a>Instance group</h2><p><code>Instance group</code> 可由多個 <code>instance</code> 所組成，為組成 <code>backend-service</code> 的主體, 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/instance-groups/managed/create" target="_blank" rel="noopener">官方文件</a></p>
