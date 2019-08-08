@@ -13,7 +13,7 @@
 <meta property="og:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/KqrTrVt.png">
-<meta property="og:updated_time" content="2019-08-07T06:00:34.184Z">
+<meta property="og:updated_time" content="2019-08-08T02:18:17.498Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Linux">
 <meta name="twitter:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
@@ -41,7 +41,7 @@
 <meta property="og:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/KqrTrVt.png">
-<meta property="og:updated_time" content="2019-08-07T06:00:34.184Z">
+<meta property="og:updated_time" content="2019-08-08T02:18:17.498Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Linux">
 <meta name="twitter:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
@@ -450,6 +450,18 @@
                     
                     <a class="navbar-item" href="#練習題-1">31&nbsp;&nbsp;<b>練習題</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#etc-passwd-文件架構">32&nbsp;&nbsp;<b>/etc/passwd 文件架構</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#etc-shadow-文件結構">33&nbsp;&nbsp;<b>/etc/shadow 文件結構</b></a>
+                    
                 </div>
             </div>
             
@@ -510,7 +522,7 @@
         <span class="column is-narrow">
             
             
-            43 分钟 讀完 (大概 6423 字)
+            1 小时 讀完 (大概 8791 字)
         </span>
         
     </div>
@@ -1133,6 +1145,70 @@
 <li>我們知道 /etc/passwd 裡面以 : 來分隔，第一欄為帳號名稱。請寫一隻程序，可以將 /etc/passwd 的第一欄取出，而且每一欄都以一行字串“The 1 account is “root” ”來顯示，那個 1 表示行數。</li>
 </ol>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">#!/bin/bash</span></span><br><span class="line">accounts=`cat /etc/passwd | cut -d<span class="hljs-string">':'</span> -f1`</span><br><span class="line"><span class="hljs-keyword">for</span> account <span class="hljs-keyword">in</span> <span class="hljs-variable">$accounts</span></span><br><span class="line"><span class="hljs-keyword">do</span></span><br><span class="line"><span class="hljs-built_in">declare</span> -i i=<span class="hljs-variable">$i</span>+1</span><br><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-string">"The <span class="hljs-variable">$i</span> account is \"<span class="hljs-variable">$account</span>\" "</span></span><br><span class="line"><span class="hljs-keyword">done</span></span><br></pre></td></tr></table></figure>
+<h2 id="etc-passwd-文件架構"><a href="#etc-passwd-文件架構" class="headerlink" title="/etc/passwd 文件架構"></a>/etc/passwd 文件架構</h2><ol>
+<li><p>帳號名稱： 需要用來對應 UID, 例如 root 的 UID 對應就是 0 (第三字段)</p>
+</li>
+<li><p>密碼： 早期 Unix 系統的密碼就是放在這字段上！但是因為這個文件的特性是所有的程序都能夠讀取，這樣一來很容易造成密碼數據被竊取， 因此後來就將這個字段的密碼數據給他改放到 /etc/shadow 中了。所以這裡你會看到一個“ x ”</p>
+</li>
+<li><p>UID: 使用者識別碼！ Linux 對於 UID 有幾個限制:</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>id 範圍</th>
+<th>該 ID 使用者特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0（系統管理員）</td>
+<td>當 UID 是 0 時，代表這個帳號是“系統管理員”！ 所以當你要讓其他的帳號名稱也具有 root 的權限時，將該帳號的 UID 改為 0 即可。 這也就是說，一部系統上面的系統管理員不見得只有 root 喔！ 不過，很不建議有多個帳號的 UID 是 0 啦～容易讓系統管理員混亂！</td>
+</tr>
+<tr>
+<td>1~999（系統帳號）</td>
+<td>保留給系統使用的 ID，其實除了 0 之外，其他的 UID 權限與特性並沒有不一樣。默認 1000 以下的數字讓給系統作為保留帳號只是一個習慣。 <br> 由於系統上面啟動的網絡服務或背景服務希望使用較小的權限去運行，因此不希望使用 root 的身份去執行這些服務， 所以我們就得要提供這些運行中程序的擁有者帳號才行。這些系統帳號通常是不可登陸的， 所以才會有我們在第十章提到的 /sbin/nologin 這個特殊的 shell 存在。 <br> 根據系統帳號的由來，通常這類帳號又約略被區分為兩種： <br> 1~200：由 distributions 自行創建的系統帳號； <br> 201~999：若使用者有系統帳號需求時，可以使用的帳號 UID。 </td>
+</tr>
+<tr>
+<td>1000~60000（可登陸帳號）</td>
+<td>給一般使用者用的。事實上，目前的 linux 核心 （3.10.x 版）已經可以支持到 4294967295 （2^32-1） 這麼大的 UID 號碼喔！</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li><p>GID： 這個與 /etc/group 有關！其實 /etc/group 的觀念與 /etc/passwd 差不多，只是他是用來規範群組名稱與 GID 的對應而已！</p>
+</li>
+<li><p>使用者信息說明欄： 這個字段基本上並沒有什麼重要用途，只是用來解釋這個帳號的意義而已！不過，如果您提供使用 finger 的功能時， 這個字段可以提供很多的訊息呢！本章後面的 chfn 指令會來解釋這裡的說明。</p>
+</li>
+<li><p>主文件夾： 這是使用者的主文件夾，以上面為例， root 的主文件夾在 /root ，所以當 root 登陸之後，就會立刻跑到 /root 目錄裡頭啦！呵呵！ 如果你有個帳號的使用空間特別的大，你想要將該帳號的主文件夾移動到其他的硬盤去該怎麼作？ 沒有錯！可以在這個字段進行修改呦！默認的使用者主文件夾在 /home/yourIDname</p>
+</li>
+<li><p>Shell： 我們在第十章 BASH 提到很多次，當使用者登陸系統後就會取得一個 Shell 來與系統的核心溝通以進行使用者的操作任務。那為何默認 shell 會使用 bash 呢？就是在這個字段指定的囉！ 這裡比較需要注意的是，有一個 shell 可以用來替代成讓帳號無法取得 shell 環境的登陸動作！那就是 /sbin/nologin 這個東西！這也可以用來製作純 pop 郵件帳號者的數據呢！</p>
+</li>
+</ol>
+<h2 id="etc-shadow-文件結構"><a href="#etc-shadow-文件結構" class="headerlink" title="/etc/shadow 文件結構"></a>/etc/shadow 文件結構</h2><ol>
+<li><p>帳號名稱：<br>由於密碼也需要與帳號對應啊～因此，這個文件的第一欄就是帳號，必須要與 /etc/passwd 相同才行！</p>
+</li>
+<li><p>密碼：<br>這個字段內的數據才是真正的密碼，而且是經過編碼的密碼 （加密） 啦！ 你只會看到有一些特殊符號的字母就是了！需要特別留意的是，雖然這些加密過的密碼很難被解出來， 但是“很難”不等於“不會”，所以，這個文件的默認權限是“-rw——-”或者是“———-”，亦即只有 root 才可以讀寫就是了！你得隨時注意，不要不小心更動了這個文件的權限呢！<br>另外，由於各種密碼編碼的技術不一樣，因此不同的編碼系統會造成這個字段的長度不相同。 舉例來說，舊式的 DES, MD5 編碼系統產生的密碼長度就與目前慣用的 SHA 不同[2]！SHA 的密碼長度明顯的比較長些。由於固定的編碼系統產生的密碼長度必須一致，因此“當你讓這個字段的長度改變後，該密碼就會失效（算不出來）”。 很多軟件通過這個功能，在此字段前加上 ! 或 * 改變密碼字段長度，就會讓密碼“暫時失效”了。</p>
+</li>
+<li><p>最近更動密碼的日期：<br>這個字段記錄了“更動密碼那一天”的日期，不過，很奇怪呀！在我的例子中怎麼會是 16559 呢？呵呵，這個是因為計算 Linux 日期的時間是以 1970 年 1 月 1 日作為 1 而累加的日期，1971 年 1 月 1 日則為 366 啦！ 得注意一下這個數據呦！上述的 16559 指的就是 2015-05-04 那一天啦！瞭解乎？ 而想要了解該日期可以使用本章後面 chage 指令的幫忙！至於想要知道某個日期的累積日數， 可使用如下的程序計算：</p>
+</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> $（（$（date --date=<span class="hljs-string">"2015/05/04"</span> +%s）/86400+1））</span><br></pre></td></tr></table></figure>
+<p>上述指令中，2015/05/04 為你想要計算的日期，86400 為每一天的秒數， %s 為 1970/01/01 以來的累積總秒數。 由於 bash 僅支持整數，因此最終需要加上 1 補齊 1970/01/01 當天。</p>
+<ol start="4">
+<li><p>密碼不可被更動的天數：（與第 3 字段相比）<br>第四個字段記錄了：這個帳號的密碼在最近一次被更改後需要經過幾天才可以再被變更！如果是 0 的話， 表示密碼隨時可以更動的意思。這的限制是為了怕密碼被某些人一改再改而設計的！如果設置為 20 天的話，那麼當你設置了密碼之後， 20 天之內都無法改變這個密碼呦！</p>
+</li>
+<li><p>密碼需要重新變更的天數：（與第 3 字段相比）<br>經常變更密碼是個好習慣！為了強制要求使用者變更密碼，這個字段可以指定在最近一次更改密碼後， 在多少天數內需要再次的變更密碼才行。你必須要在這個天數內重新設置你的密碼，否則這個帳號的密碼將會“變為過期特性”。 而如果像上面的 99999 （計算為 273 年） 的話，那就表示，呵呵，密碼的變更沒有強制性之意。</p>
+</li>
+<li><p>密碼需要變更期限前的警告天數：（與第 5 字段相比）<br>當帳號的密碼有效期限快要到的時候 （第 5 字段），系統會依據這個字段的設置，發出“警告”言論給這個帳號，提醒他“再過 n 天你的密碼就要過期了，請儘快重新設置你的密碼呦！”，如上面的例子，則是密碼到期之前的 7 天之內，系統會警告該用戶。</p>
+</li>
+<li><p>密碼過期後的帳號寬限時間（密碼失效日）：（與第 5 字段相比）<br>密碼有效日期為“更新日期（第3字段）”+“重新變更日期（第5字段）”，過了該期限後使用者依舊沒有更新密碼，那該密碼就算過期了。 雖然密碼過期但是該帳號還是可以用來進行其他工作的，包括登陸系統取得 bash 。不過如果密碼過期了， 那當你登陸系統時，系統會強制要求你必須要重新設置密碼才能登陸繼續使用喔，這就是密碼過期特性。</p>
+</li>
+<li><p>帳號失效日期：<br>這個日期跟第三個字段一樣，都是使用 1970 年以來的總日數設置。這個字段表示： 這個帳號在此字段規定的日期之後，將無法再使用。 就是所謂的“帳號失效”，此時不論你的密碼是否有過期，這個“帳號”都不能再被使用！ 這個字段會被使用通常應該是在“收費服務”的系統中，你可以規定一個日期讓該帳號不能再使用啦！</p>
+</li>
+<li><p>保留：<br>最後一個字段是保留的，看以後有沒有新功能加入。</p>
+</li>
+</ol>
 
     
     </div>
