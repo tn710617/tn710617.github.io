@@ -13,7 +13,7 @@
 <meta property="og:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/KqrTrVt.png">
-<meta property="og:updated_time" content="2019-08-08T02:18:17.498Z">
+<meta property="og:updated_time" content="2019-08-08T02:46:42.938Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Linux">
 <meta name="twitter:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
@@ -41,7 +41,7 @@
 <meta property="og:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/KqrTrVt.png">
-<meta property="og:updated_time" content="2019-08-08T02:18:17.498Z">
+<meta property="og:updated_time" content="2019-08-08T02:46:42.938Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Linux">
 <meta name="twitter:description" content="前言這是一份未整理過的 Linux 學習筆記OS 系統為 GCP 上的 Linux 18.04 LTS">
@@ -462,6 +462,14 @@
                     
                     <a class="navbar-item" href="#etc-shadow-文件結構">33&nbsp;&nbsp;<b>/etc/shadow 文件結構</b></a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#範例-5">33.1&nbsp;&nbsp;範例</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#獲取-shadow-的加密機制">33.2&nbsp;&nbsp;獲取 shadow 的加密機制</a>
+                    
                 </div>
             </div>
             
@@ -522,7 +530,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8791 字)
+            1 小时 讀完 (大概 9509 字)
         </span>
         
     </div>
@@ -1209,6 +1217,43 @@
 <li><p>保留：<br>最後一個字段是保留的，看以後有沒有新功能加入。</p>
 </li>
 </ol>
+<h3 id="範例-5"><a href="#範例-5" class="headerlink" title="範例"></a>範例</h3><p>假如我的使用者的密碼欄如下所示：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">dmtsai:<span class="hljs-variable">$6</span><span class="hljs-variable">$M4IphgNP2TmlXaSS</span><span class="hljs-variable">$B418YFroYxxmm</span>....:16559:5:60:7:5:16679:</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>由於密碼幾乎僅能單向運算（由明碼計算成為密碼，無法由密碼反推回明碼），因此由上表的數據我們無法得知 dmstai 的實際密碼明文 （第二個字段）；</p>
+</li>
+<li><p>此帳號最近一次更動密碼的日期是 2015/05/04 （16559）；</p>
+</li>
+<li><p>能夠再次修改密碼的時間是 5 天以後，也就是 2015/05/09 以前 dmtsai 不能修改自己的密碼；如果使用者還是嘗試要更動自己的密碼，系統就會出現這樣的訊息：</p>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">You must <span class="hljs-built_in">wait</span> longer to change your password</span><br><span class="line">passwd: Authentication token manipulation error</span><br><span class="line">畫面中告訴我們：你必須要等待更久的時間才能夠變更密碼之意啦！</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>由於密碼過期日期定義為 60 天后，亦即累積日數為： 16559+60=16619，經過計算得到此日數代表日期為 2015/07/03。 這表示：“使用者必須要在 2015/05/09 （前 5 天不能改） 到 2015/07/03 之間的 60 天限制內去修改自己的密碼，若 2015/07/03 之後還是沒有變更密碼時，該密碼就宣告為過期”了！</p>
+</li>
+<li><p>警告日期設為 7 天，亦即是密碼過期日前的 7 天，在本例中則代表 2015/06/26 ~ 2015/07/03 這七天。 如果使用者一直沒有更改密碼，那麼在這 7 天中，只要 dmtsai 登陸系統就會發現如下的訊息：<br>Warning: your password will expire in 5 days</p>
+</li>
+<li><p>如果該帳號一直到 2015/07/03 都沒有更改密碼，那麼密碼就過期了。但是由於有 5 天的寬限天數， 因此 dmtsai 在 2015/07/08 前都還可以使用舊密碼登陸主機。 不過登陸時會出現強制更改密碼的情況，畫面有點像下面這樣：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">You are required to change your password immediately （password aged）</span><br><span class="line">WARNING: Your password has expired.</span><br><span class="line">You must change your password now and login again!</span><br><span class="line">Changing password <span class="hljs-keyword">for</span> user dmtsai.</span><br><span class="line">Changing password <span class="hljs-keyword">for</span> dmtsai</span><br><span class="line">（current） UNIX password:</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>你必須要輸入一次舊密碼以及兩次新密碼後，才能夠開始使用系統的各項資源。如果你是在 2015/07/08 以後嘗試以 dmtsai 登陸的話，那麼就會出現如下的錯誤訊息且無法登陸，因為此時你的密碼就失效去啦！</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Your account has expired; please contact your system administrator</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果使用者在 2015/07/03 以前變更過密碼，那麼第 3 個字段的那個 16559 的天數就會跟著改變，因此， 所有的限制日期也會跟著相對變動喔！^_^</p>
+</li>
+<li><p>無論使用者如何動作，到了 16679 （大約是 2015/09/01 左右） 該帳號就失效了～</p>
+</li>
+</ul>
+<h3 id="獲取-shadow-的加密機制"><a href="#獲取-shadow-的加密機制" class="headerlink" title="獲取 shadow 的加密機制"></a>獲取 shadow 的加密機制</h3><ul>
+<li>安裝 authconfig, 如果沒有裝的話</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">yum install authconfig-gtk*</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查詢</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">authconfig --<span class="hljs-built_in">test</span> | grep hashing</span><br></pre></td></tr></table></figure>
 
     
     </div>
