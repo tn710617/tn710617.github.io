@@ -169,6 +169,310 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh-tw/fundamentalsOfStackdriverLogging/" itemprop="url">Stackdriver Logging 的基礎知識</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-08-25T07:44:58.000Z" itemprop="datePublished">8月 25 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            1 小时 讀完 (大概 7015 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>Stackdriver Logging</code> 是 Google Cloud Platform (GCP) <code>Stackdriver</code> 套裝產品的一部分。 它包含紀錄的儲存，一個使用者介面名為 <code>Logs Viewer</code>, 還提供 API 讓你可程式化的去管理紀錄. 使用 <code>Stackdriver logging</code> 來讀寫紀錄, 搜尋以及篩選紀錄, 匯出紀錄, 以及建立記錄指標</p>
+<p>在這個練習中, 你將學習如何使用 <code>Stackdriver Logging</code>, 在同一個地方累積應用的 logs, 通過篩選來取得實際上需求的 紀錄, 理解如何建立紀錄指標來進行更進階的分析, 稽核紀錄 的使用案例, 以及匯出紀錄如果有更進階分析的需要</p>
+<p><b>你需要做什麼？</b></p>
+<ul>
+<li>部署一個 Google App Engine 應用的範例來產生紀錄</li>
+<li>使用 <code>Stackdriver Logging</code> 主控台來對應用產生的紀錄做相關操作</li>
+<li>建立 <code>Stackdriver monitoring</code> 記錄指標</li>
+<li>建立 <code>Stackdriver logs</code> 的 <code>Export</code> 至 <code>Google BigQuery</code></li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><br></p>
+<h3 id="Qwiklabs-setup"><a href="#Qwiklabs-setup" class="headerlink" title="Qwiklabs setup"></a>Qwiklabs setup</h3><p><b>在你按下 Start Lab 按鈕之前</b></p>
+<p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Quiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Quiclabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<p><b>你需要什麼？</b></p>
+<p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><b>備註：</b> 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台，然後開啟命令列工具</p>
+<p><b>如何開始你的 lab ，然後登入 Console?</b></p>
+<ol>
+<li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<ol start="2">
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p><b>tip:</b> 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<ol start="4">
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ol>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<ol start="2">
+<li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command ,你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+<p>輸出:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+<p>範例輸出:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+<p>輸出：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+<p>範例輸出：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<p><br><br><br><br><br></p>
+<h2 id="部署應用"><a href="#部署應用" class="headerlink" title="部署應用"></a>部署應用</h2><p>使用 <code>Cloud Shell</code> 命令行工具來部署 <code>guestbook</code>, 一個 <code>Google App Engine</code> 的範例應用。 這個網頁應用將會產生我們需要的紀錄</p>
+<ul>
+<li>從遠端 Clone <code>guestbook</code> 應用</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> https://github.com/GoogleCloudPlatform/appengine-guestbook-python.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>移動到 clone 下來的資料夾內</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> appengine-guestbook-python/</span><br></pre></td></tr></table></figure>
+<ul>
+<li>部署 <code>guestbook</code> 應用</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud app deploy app.yaml index.yaml</span><br></pre></td></tr></table></figure>
+<ul>
+<li>選擇離你較近的地區</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Please choose the region <span class="hljs-built_in">where</span> you want your App Engine application located:</span><br><span class="line"> [1] europe-west2  (supports standard and flexible)</span><br><span class="line"> [2] us-east1      (supports standard and flexible)</span><br><span class="line"> [3] us-east4      (supports standard and flexible)</span><br><span class="line"> [4] asia-northeast1 (supports standard and flexible)</span><br><span class="line"> [5] asia-south1   (supports standard and flexible)</span><br><span class="line"> [6] australia-southeast1 (supports standard and flexible)</span><br><span class="line"> [7] southamerica-east1 (supports standard and flexible)</span><br><span class="line"> [8] us-central    (supports standard and flexible)</span><br><span class="line"> [9] europe-west3  (supports standard and flexible)</span><br><span class="line"> [10] europe-west   (supports standard and flexible)</span><br><span class="line"> [11] cancel</span><br><span class="line">When prompted to <span class="hljs-built_in">continue</span> <span class="hljs-built_in">type</span> <span class="hljs-string">"Y"</span>:</span><br><span class="line">Do you want to <span class="hljs-built_in">continue</span> (Y/n)? Y</span><br></pre></td></tr></table></figure>
+<ul>
+<li>輸入 “Y” 繼續。幾分鐘後，應用將會被完全部署完畢</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="檢視以及搜尋紀錄"><a href="#檢視以及搜尋紀錄" class="headerlink" title="檢視以及搜尋紀錄"></a>檢視以及搜尋紀錄</h2><p>移動到 <code>Stackdriver Logs Viewer</code> 設置要檢視的紀錄</p>
+<p>選擇<b>Navigation menu &gt; Logging &gt; Logs Viewer</b></p>
+<p><img src="https://lh3.googleusercontent.com/lOquGJVWL_2et71S9nDPSn-VsDvCbGCws_B4m57gN_roo75BiWtmxrGGvsr8V1EtJ5DdXd1AmTJxkjD9z1retbDuyQ5TJVml-OSXw0qHzRBVXWsr7zyN6KzP2dOuvjx_Lw0RJ9fxoVr20dA1nfqRFadWez2hMOj2Gf15sM1qDTsCpTTfwhGgZzI_dbVUQqFfq3zw3Mze0m_cEGCrnlpg1hyD8K905kTb8JEV0lebWlj1PP1gi0MWUG1G232QgolBoMX9JiPTlV6737HCCcUbR-DjT7a-KuptPLplQEDYKt6G5OadgJJoaueAHmEgGtenT7q-ae3vsMf7hzjY6BtFB0C8osE8cEqZZGLj4vo9tCxJlKdYQmuqLA-ZXqmNfOrsExfu0cap3WpFwBaOaDkIVbybP024PqMrkgkXyD9rCyL3nFj35koY3nA5VN4-wpuup7nYxO7FcbmukDPJcyIDpmKRHS8Cm_VOteeVy7cfYMHzxcgFJoZ24hOnmaxe1QaRwLyGacfUXqmB3jijysVQitEroPDRgiuxq0zsV2Q0yC9nIBqENeXFg4TKgRIoH2xUV-1OmmBW985uC-vFpOEAKsxN-rzDTm5VN7Oz7JTMxDrEFgEfUrDuvhiOgbTA1UActeJ5hhl7bpk1Ls3zja3BkKR_HxXMXAE=w866-h1139-no" alt></p>
+<p><code>Stackdriver Logging</code> 主控台有以下功能：</p>
+<ul>
+<li>(1) 服務篩選器： 根據資源種類篩選</li>
+<li>(2) 紀錄篩選器： 根據選擇的資源的特定類型來篩選</li>
+<li>(3) 紀錄等級篩選器： 篩選特定紀錄等級</li>
+<li>(4) 日期篩選器： 根據特定日期篩選來檢視之前發生的問題</li>
+<li>(5) 切換持續串流</li>
+<li>(6) 一個搜索框，可以根據文字，標籤，正則，進階篩選器來搜尋</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/1GKik55ZbCi6rfchEOPNtp-siQjmI1TKCLACCvoAz6oW3lhaIgyIws-61fYK9JlwfMOyuoj96bzqEHlpgz4NG3FPCAmRIyydTF4akM7jfs676S5FLblO6dPiNok75tAbq4nzHlFKj33eYl8OInzb2zFsn27ThNlWdRtioM6ZNeDjgF3kD-7iO1LWtMSz3a914vRrhkJ19DhCB3JTZfuJLEMqk2fsPyWpUkxrh7DoP_2p_rGmovfTYRMvrCfUax24RhOuV18DuWT9HDObXtPGMTJcgTaU6zRIsZhdQc-bN68OsQzCjlLaKU1H9gmBvI4CNP4zB0jxP6Q0iuMPtI-4nUt6YSdLE5Btq3e3fm5KH_QsygUyUO-dqlT8ql548uKZ4dAWpZYYLTLOVMFvHMAozS5r7MFYkLhWsTKnBI9l0HMXPNdbELtNH33TMa5ameJxtiT5tLU5Fh0JtBfIoDA74zda8b-j5yqPzBufcTg26IZgOtIcJeeyHDfMtK7AvqTppBvAGn3KyT2nVv6FvAS0hW9ZbojBpJt22S-2vjR7JX9tj-uRYx7yO8GWJKeyEJ5acDa6EVm71_dA4czEr9XqLW5awbLe27sFhqbDMIWjznviseoCxOlDQq1u1xkGM73ig5Vn0OkNYEdcUe3tjdtFUXfsLeCvlAE=w761-h258-no" alt></p>
+<p><b>產生紀錄</b></p>
+<p>造訪早前建立的 <code>Google App Engine</code> 應用 (guestbook) 來產生用來檢視的紀錄</p>
+<ul>
+<li>在一個新的網頁視窗，打開 <code>guestbook</code> 應用，應用的 URL 如下：</li>
+</ul>
+<p><code>https://&lt;PROJECT_ID&gt;.appspot.com</code></p>
+<p>用位於 lab 左方面板上的<b>GCP Project ID</b>來替換<b>&lt;PROJECT_ID&gt;</b></p>
+<p>或者，你也可以從 <code>Cloud Shell</code> (當你部署 <code>App Engine app</code> 時的輸出) 複製完整的 URL，然後在新的網頁視窗貼上</p>
+<p>如果你看到<b>Internal Server Error</b>, 那是因為 <code>Datastore Index</code> 還沒準備好，等個一分鐘再重新整理瀏覽器</p>
+<p>預測該有的結果：</p>
+<p><img src="https://lh3.googleusercontent.com/TGSXICbFNGceqtzdNf8raz7F9VQDZt7db_WS7NWTl_Y8Uj-oxcEfHUmJJKhHIYBQpwBUGcQUJeOL00HllQH_vQ44o9uTIA1bnFvbrAwanmsYc9JcbOwp5NxU7jLIzAqQ0ICG7Iwk-pOnmbELJlhFV8865q4sIpelWcHrjzERlztr_bqKtACAnN3gBUnp8Dp290yY0m6nu5S9ISnAQV1dmVeZbiiXVufpxQSmz19rU6llocpw4GOhBZ_Pn-agJm6E8ky0m56g72dy13Qelpcu2DMWOhGMQECy9210Rtu65kx8UjpSEK_yZ0BpLvC_ITVqsxv9UX-V3b29xp8_c9L2vxUgntDo9frivy-sMNsyV4B9Lg0oGQZzA9ZYlt5ZAQuWMVGhth1pNsOWxrkKu4aQI6zibNcnP3Ds6LyPykYbgg3GSojJJ3AegU-KUkjsRFG7PlcUSaAIGRAap2QIJL-aBQRE--PUTEphkmhHRaW51kG-OOOVchn9fI18aymqObimgkuxkaRvbdR3W8e3xBewTJfFQXNKDs8miS9t_Bc51QgYQ99dDBRg8MTckFBkNx-zDw5qBaxDilGeevhqc1ac7fqziJPF5aAjwlHFiKdp6yjvCnRzxt6j7z-m3YrvXLP-YwtJciXrKWdwyaGj76iXIexbNc4-vsQ=w1280-h525-no" alt></p>
+<p>當你在你的瀏覽器視窗看到 <code>App Engine Guestbook</code>, 這代表你的 <code>App Engine</code> 應用已經部署且驗證完畢，讓我們來產生一些紀錄吧</p>
+<ul>
+<li><p>重整瀏覽器幾次，並且輸入一些名字到 <code>Guestbook</code> 應用來產生一些紀錄</p>
+</li>
+<li><p>回到 <code>Stackdriver Logs Viewer</code></p>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="篩選器"><a href="#篩選器" class="headerlink" title="篩選器"></a>篩選器</h2><p><code>Logs Viewer</code> 提供多樣化的基本篩選以及進階篩選的搜尋功能</p>
+<h3 id="基礎篩選"><a href="#基礎篩選" class="headerlink" title="基礎篩選"></a>基礎篩選</h3><ul>
+<li>一樣在 <code>Logs Viewer</code>，在第一個下拉式窗 (服務選擇器)，選擇<b>GAE Application &gt; Default Service &gt; All version_id</b>, 表示我們想要檢視該服務的紀錄。這會顯示 <code>guestbook</code> 的所有紀錄</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/GAdH326aqGMHIuHHVyqpYg3uETKAtsAxBOq0AssAwQkI-9onO9J8hBnEIoVdsEgm2Maynudzac3zJR2cP0maAF7_nHsi-1dSavv0Osij_7FoF-fMuioVEXqybk1VfOKyWl5smEL7XzzOI28JNEg9U26j61OfsG_0e0tfVxRtCXpI2pstNou1uzEGTXy7uFo5iq9yot8L0IYeCH_mIcy_53bG3kBp29MvHYiPr4yAZIW6amFkA9OQqglo53Z8UymXmr82hGRo-Y5JWVz2dpuw5A7r8cADcXZ0PhQBs8Bw6t0AuPwJuQRvPWA13mb6-1ZGdNR7ARV2JpHkwzliBM2qN0Au-u8hZGzyf47ExIK9bpGWk1f_az4S690XZMVYOyyWAXBFhECF3QWx4HmwYpl0byF5T7u72dAjqdtb9VQ6WWMZ2DD8xt_mrE_DRizhTzedUOIHgU9H454mzdi0xBV4UkEvuX0YOgHguue4O3Utu4QHLyivSbDHfzrCHLnP0UEJr8JSR91bjNNiQSOBwEj56MeIm3WYXbryqUHuXjV9iXK-XqAF0Ww3T8KRoCheRHJLh6C6CMcH_VIWMgKlGp08hSHqnOZ6FUQsJwnYx3Jp8aeKkUokLmUw9ealinh_CwM7ZQh9UGmpgZ8p8S4l4BBMh4h2sR5YF9Y=w1054-h890-no" alt></p>
+<ul>
+<li>在下一個下拉選單 (紀錄選擇器), 選擇<b>All logs</b></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/RkjHGM6GkFPpl0wAY3Ru5cQ_4RXKSRfJOaJMwWPmgzdxsaHOIjef8ATMWD489o3Hs3znEXP_Lov5eLXiHvn5LfiMDAz0TxOLDxdR-k9p4dEIAqzyPXKo83YGyfKOuEksmXl6bldMzb1F7uDstoVUWbzelEW28N6RrFY1pfrpXMIww4-TgA0uPAVmBVoGBPLLGmUSaOamWIDdJEOcaLRmEsDBl1N2-UVrJ2mctFrRYb_7wbclKWFJCdWnl-CobM2MBNdUXyQO5H7ZYXZ1BxfEhYCfAomqma3ZthEUcT1C35e_nptnMfc8Y5el2cMO57Utc6n8oD8gFad4fGkaoO-BmObMErEWuAo8ynITllFD3lNJAv22Ejy2gLuw7UyxK2cIR1nFCt__TMpT9KBIQmhl9L9uHppL7JpbsNSd3rx14y4fpBQARLvBuGB5sA20RwyQbzRiBGSmFERggntunNVMimPsZmHL1UvtfsUsszdmO5zO5eBskazRAU8tHOf28zMgkVitUZPaYLNHZeQcNy-6wqgot03N1kepyo0Mx6hAxufj5UzYQSyUXq_1Ej93zEZsbHFpSSgOaaGJA9YKRc3i66nIzFTUNObUvDKOB03DU8vxrr9eZxaYm7zciNfqVXAXMnsZfsNV8cNxjFxwsciiHuLR48F8vt4=w982-h397-no" alt></p>
+<ul>
+<li>在下一個下拉選單 (紀錄等級選擇器), 選擇<b>Any log level</b></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/aM6pBGLLgIZfj3YCU_slMdgt2s7YJVuK8Z-8Fj7rLj145NkXgDLYKRd7mFBaQhBzd8e1CMe6_iJlu4jTR4dqNqu2WaBIk--cIklb3zdsiLgzfpvRziwgEkiGHoG5_odXKndKGcTahH-orSK3uJbjBrdbbp9llkBgeBm1vRYdYXRdicWs1YaUry94TgSZDJbNpOUtSEi7yIh8YwElGWALjNuAHl1aOVlEexjiJwy1-7PXKbJcvPdw1N51PGuNGo8s0RS7_iGv3OYW0eLLmWTtSBn-tiwi6lCrkNacFSqE_pbLCSa74MgNrQkdAeJagKxo5OCMohgMAVnyJJMiTMbvxLeO1aadb7PhJT0GkVFSCYY5B_wm8RAVPz5529dnbd7QTGNPmAz8z6YPsLj9gmwCqdTiKov2xT60HaL3upXtd9D5V2rxCStGTMEkG04sdi4y1g0A8fUR2Oy6sN_D7CaWw3xZbI6IRkgiG_yOB253GDNVmERG9r9mlJkMiBNie7fpFw265vY2IVa6am1FrsnNdDgGho-IdYCAJdgzGUBwpP4zEXFKJ7fFj9BGTyDlQuriFOhLE-ypfHd2wRNH9QdDL7HeIiDnVyZXXEC3uYSHVxbb9UV4l-hqZGKf86xzfl9LAnOC-sfRBCKGn0unFRG-IPF4_9Y3TZE=w712-h633-no" alt></p>
+<ul>
+<li>其他下拉選單為默認值, 你的 <code>Basic Filter</code> 應該看起來是像這樣</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/iHkIUcUjWpd4A7U3ZFpGuggA2fOyrcTYjGVr8R_sD1Kqcbw6HpNaLGUiL2g_C-snT_TKtg7v0bw4NgnQ1TWe5Br0tor6Y0xDXaHYwilwf6CEs_deuJihD7MmgOz_7qJvPDYf5MGm2CWdmUgpnjDlTyOXVzkEBZAXF7WWt54btuVObSqzunzQvEcCJH9kc0mANpQVN6h14_nMdtsWfhVDCtkChihuMpPeaefsFIHke-rJOVtYYUkoAHXHv6F93U0PjrK_YPqqIOxNQcCYZVKkMbfHHhAUT96RAhaxpwB2xXOKkFdFLRDIGpVjUDEluSBVH1ttNddOY4diH0ATUzRQxq0LtK4Z5RlACb9eAgOD7gKEw8qaDsgvTz0ZvIKvUaH3O-weGocjVTBXjJG0sbrn25RJrdBFor1RU2Koo5hwJS86wvfg_SXDPkB07TZ9zwLJnrPHGyOXDoPMEwmJJqzhUskdpHblMVjgyH758VacxwZXMQ-uApYbngLYceHe4Lxw4Rmog11hGGCu5KHNq3cKnhoMkAI-Z8_ZOeALiasbCzbOl6qL6SHr5_t5dPdqzrLF1t4NtkTVCDtKXwQOEMg_v4mhy11Q_2w8GPbyB6Z7QXvjuHsAwbq9SE2upoMc_OAS4hlZ_53WNj58SF_JnHJ-ILmwz4gnmaE=w1262-h240-no" alt></p>
+<p>注意，當你更換選擇時紀錄清單會自動重整</p>
+<h3 id="進階篩選器"><a href="#進階篩選器" class="headerlink" title="進階篩選器"></a>進階篩選器</h3><p>使用進階篩選器來進一步訂做你的搜尋</p>
+<ul>
+<li>在<b>Filter by label or text search</b>下拉選單，選擇<b>Covert to advanced filter</b></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/DCexg6L7mNBytcpgRKdaohpEHyGk0hFyY6ZhGTk3EUWAYVdpz8BUMBtRzm2NafhCV8hlR18QGfSxWb7kE_SbHgRenjz5AU24fn9Vj5_X_al1sud2kHbm4on5OQN1M6ucwIU7bUJ9uFFoUGyGuyYM0iHa7Tfbt9HhB7Dtwp4Hl3J9TmGgX1GE5sw2xJY-hWi6j6D__-Th12ktfjyQ8cuOJdOUkzqSjj42MQu231DsiZw8eJHQ3WcwcmscPixYMvy17sGxaS8YEGM-VKJd_HIbURjYJOzyvqHBINHiYFfUaOxdjN88cwzbdhY-v9cPERwWmL_A733DPQWOGjq-PrhRAtyHn1lNO12r89aoAxVUwDkSfwHDzfIMSE_t37-0ST9L-6EslvffYw7rGGBIk1SDfyFPwIX3YsJtDxwRBNCaostDORSBQvWne2hpqPy8_8_Cs5xEZbJ_ZsS-g_leti2E7A9-bzV2EUAA0cqRf3vx2bTq-Pf0fWw_z8R97ha_VhPsSnfDuCRb33L0EBN3-TeVikKTKSXsis7Bj0vAFQUQw6wJr2nuGzKHZzfafLIPXF2WrEftOdv5QS0UBLnLx4MMioAXplyJqPr8AK-IVL0QXn1zPnsLDmMApkBw9EpYG7KGhNqImQR568O0tKKlDuWlnyFn63AY-q4=w1274-h346-no" alt></p>
+<p>注意，你選擇的基礎篩選器已經在進階篩選器被轉譯成查詢表達式</p>
+<p><img src="https://lh3.googleusercontent.com/VcQ8awSuFyd5Axe_94WizlAC6o0QHjia4vMTEKWFli-Mv_CX5q8giyE4S_S_F-cVK1-rq7PhjUPdV6LvldV9gYrE8Nm64v8M5xcOcnDcONCFED6v3hH0xoEOfMaTA7YmLS2zkrFuaMb1uzIF2kq2IecYZ9PA8sDYnhE0ze9aD9kO9dRZxVnw6jHoU9ZQFX1yitHDut8ryr4ldDO6GSFvDcd3YW8jBhn5__Sieqex3v7qNwwsAuWAGb3pzdhnLccCXGv4uduL4pAWUwXAM4n9lg_HIK86hDLKo6BLMH1WWbEilT55gHRx0jzy5M_jDi6Bb7h9JOLgq3S8QtO1bNDbPynaS_ySuZ3Xa-ulCnEEsn4y71CbDWBjxuh1yX4imshtKN_kbnt_IIG3WlEx8L00J9-jZSy7vW54uNfUdQoyNUUO39k5_1rH_HrV7eMT9WRWc0sPyYBmJ15PEjGL0s45DcExDPGejwCcQkUSpybyKKPoCd_8IDlbmagBHDSIKhnPaucGS6SCBdXEPrQYs-0ugSZFEV5bUzzhBGJwiAZzxyoVxH_Rc8Df5i4yW-foX8i4_hr6DoVcXQOua53p1lkcTXuLANtmxuBWj8vWiUQO2V2cwyN5uw747M2Viof-Zv4shuJJempnHQ1c59UIpe0n5Vf2t_Ssbjk=w759-h162-no" alt></p>
+<ul>
+<li>在進階篩選器的輸入文字區塊，加上下面新的一行。 輸入新的一行來看自動完成功能</li>
+</ul>
+<p><b>protoPayload.latency&gt;=0.01s</b></p>
+<p>這行顯示所有延遲大於或等於 0.01 秒的 GAE app 紀錄</p>
+<ul>
+<li><p>點擊<b>Submit Filter</b>然後檢視更新過的紀錄資料，可看到所有延遲超過 0.01 秒的紀錄</p>
+</li>
+<li><p>回到基礎篩選模式。點擊右上方，位於進階篩選器文字區塊區中的箭頭，在下拉選單選擇<b>Clear filters and return to basic mode</b></p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/Y49uYTYzdwCL8p71HR-NVmlpdqKTWCbP7MAQsXOiwHFOuMdJU_yG8Tm4E7Zo9F4IVZ5gS-MAS86TQa1TCTLzjvcNiUYtxPij3pi0CySy1QiKWiqqAEENcjBZV2lrhTuYGJ4Y4NU9hk9mhPoXThymEBYtIUVtO3g6jGNbBYg5U9YxlBS6KiBQqu131oG8el8J5yvxUkqodTP3nmnHi3FGVi4RHA29cxSAEH0eY5-DEK89E8dbA68kHNJp53MIrS48TBW_ny_yCDT0jfC0DezsV-fYj4ZiTN-VqIjRaGG9l7oNyqbEMefxcsXdevoDzaojF1gvClUD2_zU9IvqzboEnThspQcWqFBoBgBMz6UQnGuYrkBFuuSJjn8wnEX9j9vuOOSQnvxjhIR4dwcO-pRmJ_mlorSgoT9okWvfsGJ-HX7hHxgjtdycxeCXB4s9CJnQ5m5p0oVm7y6C5zzOS_j1T7zc6U6snGgLo2OyzJMyN-VHYJOvLmN9cfUFYcBBUHq8tW16W5t7MBuOyCwyaIUffSyueLEufwn0oSK6fB0HEy1R0p3tfRJJw8DSrykLpDHRu4hMA32ek-uAWR7QjYJIXbvEnixx-CupbJFcLmHDjhswJwOhgKBgZWRdAmWtu1zhNWIVP2C0eKezrAO9ksSO4XMeBcQs55E=w1280-h656-no" alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="紀錄指標"><a href="#紀錄指標" class="headerlink" title="紀錄指標"></a>紀錄指標</h2><p>紀錄指標是根據於紀錄的內容的 <a href="https://cloud.google.com/monitoring/docs/" target="_blank" rel="noopener">Stackdriver Monitoring</a> 指標。 因此，你的紀錄不會只坐在那什麼事情也不做就等著別人來發現錯誤; <code>Stackdriver Monitoring</code> 會自動地監控你的紀錄，監控那些你定義的事件以及指標。由此可見，紀錄指標真是一個監控你客製化應用的一個絕佳的好方式。如果你的應用可以寫紀錄到 VM 的文件系統，你可以在那之上建立監控系統。</p>
+<p><code>Stackdriver Monitoring</code> 提供<a href="https://cloud.google.com/logging/docs/logs-based-metrics/" target="_blank" rel="noopener">兩種</a>使用者定義的紀錄指標 - <b>Counter</b> 以及 <b>Distribution</b></p>
+<h3 id="計數器指標-Counter-Metrics"><a href="#計數器指標-Counter-Metrics" class="headerlink" title="計數器指標 (Counter Metrics)"></a>計數器指標 (Counter Metrics)</h3><p>計數器指標計數那些符合<a href="https://cloud.google.com/logging/docs/view/advanced_filters" target="_blank" rel="noopener">進階紀錄篩選器</a>的紀錄內容。舉例來說，一種指標，計數著那些，在特定資源中，代表某些類型的錯誤的紀錄內容。當很多拜訪你網頁的使用者收到了 HTTP 500 錯誤，想要收到警告嗎？ 計數器指標可以幫到你</p>
+<h3 id="分佈指標"><a href="#分佈指標" class="headerlink" title="分佈指標"></a>分佈指標</h3><p>分布指標從紀錄中，累積那些符合篩選器的數據資料並且做數學運算。來說說一個分佈指標的普遍運用，像是追蹤一段時間的延遲模式/趨勢。當收到每一筆紀錄，延遲的數據會從紀錄中被取出並且加到分佈。累積的分佈將會有規律間隔的被寫到 <code>Stackdriver Monitoring</code></p>
+<p><br><br><br><br><br></p>
+<h2 id="建立計數器指標"><a href="#建立計數器指標" class="headerlink" title="建立計數器指標"></a>建立計數器指標</h2><p>在此節中，你將建立一個計數器指標來計數成功拜訪網站的次數 - 在這個例子中，所有帶的 HTTP 200 的紀錄都算</p>
+<ul>
+<li><p>依然在 <code>Logs Viewer</code>, 在<b>select service</b>的下拉選單中，選擇<b>GAE Application &gt; Default Service</b></p>
+</li>
+<li><p>在<b>log level selector</b>下拉選單中，選擇<b>All logs</b>, 你的篩選器應該看起來如下：</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/Ba6tXfAxOl4qyeL4nuq6YM2oWhDBJFrpEsDnixylNAh6GFVihATF8aVX0Tj_VhwTs7H3fQVEFLt51Rfqyw65tQFATvn4_mV7Dki87GRwQsyKjjq9hXovYMaruZgrjVez72-atbsI2KQLdGKv_aohX_K4Xtd2lTbKi5f3Xr9UmNeeGt1ej-NtD0FlK0tWKe2U3bdYMniyPtcLaMEVUFHCg5-fZhibZLa2bWtrYdg_QIGF5yHkUppIbA1kKvoRfynr2x8l50CfgIWih6wr-uycgo_eU6MaBsQU-YX95EXQDZK3Rb00u5UbS9TCAM_6busuaiEHuvVD2yJUziQve0edHL_aC4TpI2wKL7quAGoAOXwkmJEp8Vxlk9vYjEYQ7Yk_5RmHl6ooDlIx4U3cNesO1Awccx4TBsr1bORnGWSAICkoJjG6_w6dwzJ6V9P7vjtn61tQcOgG60g2BvQResyPPV4CCzM_6w4tehEeD-AJbgiy2QGpMSX57R5npdx1Q0v79shKhLE27XzUsbXcxH757Ryb7UUlLBYBXEy3iz2_Lnqhe1MEo-ai21ln965jRMLc3FRLHu02P5RaQEQ2fndnnwaGNBGG9Yqq5JuAkfygKTpncBMvDERO_T5pS63MwUGJjcuqttlv7pH01GfQz-QcVXYkOu_rAKw=w1438-h279-no" alt></p>
+<ul>
+<li>在紀錄清單中，點擊狀態 “200” (任何列有 200 就行) 然後選擇<b>Show matching entries</b></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/rpyEcbbpWWlfWaHKNxW3owuJziQeprW7xVajqb28W1mXbReHEH8IML4bdhXJbOkXho1rcMGFASPy_-PJPQrztRWyObW7d1ikrbucy3ThgKXzmnY127ktp-f-0THIDVcl9AT2arnYAUi5C7bLiQmtr-1PgbQvsjHjAv5mGdjw94oGxFHPErQ7uC7fJ3pBZLlfVVA0vC03JnNiKgeTuAJJy2XI9OEkf_M8aADn3sj5mUfklWmVs1XMKvX_cyUArBlIU7iQNmlJHm5eAaUMxUnblZCYqYZbcpVBOrhrZkq3w4AcdDcp7_sI28H_caQn0xeo0P_E9PIwyuWtSUYUghqSKmSTGdSOMa9eRk2uITgX7gMxrp3oYswqtl88HapuFz10y81C0w6UZ92kOL-sF-HzB9CE8RMGJJ3J1XroizYyzQ-8Q8qlAuJaSQcW0iqfFZ6yiC0rMttC8R1TbMBXbZbK0ScJ-s20d0XCocKGuOA8FDKnOLOsqSllQHp-6lQZVAiumZ7YLsux8EH79d7SQqb4feb6yCfkV7r6KbZ7aO8MmrvWAwHro_Z6IGvYAJuI2swu-5xxSdBR762-od9fX3ZNpKIL83KI7RiDyqvbhVfegr_jjS9sXDQuaJIY-PlqTvqJ2KIPy6yaJTE92jU_gEVYOc5yux6WtS4=w1260-h665-no" alt></p>
+<p>你將會看到</p>
+<pre><code>- 清單只會列出狀態 200 的紀錄
+- 在進階的篩選編輯器中，一條進階的篩選條件已經自動地被建立了&lt;b&gt;protoPayload.status=200&lt;/b&gt;
+</code></pre><p>   <img src="https://lh3.googleusercontent.com/Tiumc4fjISj3J0kc14Qc78-ijzNMh6HHwoO0PbfYC_wBw0qvDhKmbYy90fDJSvApu6b2sad2F1R5-9iComCNuwqFXDcA_EWS7YVdkBUwvL4eUzpVTrKOdKX9QCQP0_jZAvZ7gE9cLQJ6Nbg7QgmipAdM_8PFrt520koSHzGIfy4L6Pkg3_aR0p6SQM-Hgo1-z3p0VXV9a4gxo2OZuANiqjYZ_HD51w-p4h4150K4IKqp-LVWMv0VY8hKZ_EhZaASJzx9C7qxQdQuq4VnH9OPUMd7mitAq3-H0KLJB7LNTNf4gSioXAnNt3P9ZZqLySN2mjMQViSgvxr1YGByrx47zh60YcfLQ8ySswAoNXTWyD7He9qUyy1C1UELUhXL6r9qJU2knpI3VtR47hbe6r1Xh_vCUWC1Mmk9D-9IpndKetMxoWhIooGUG-E2Fn3mnW5i2-5d3od3W7ZRaj1oi1N2O7RD7OiMtZ7LztO5KnXDCm-iEaJzQYvHQwQNDkj2mzCOVKvINvMlR3FfwpKiun1v4L-Z-v_-Nr6yESMay2mYeRSXksJjtScEdEbt17aaTvfvzKgvdz27DX3Dij3ZuItxR1-E61TIy_RvVFU7XlnjHeNtKU6pedX-FpJ1ppnq_QyA7uwTLJYv7YouwcDagvP7AoU6p94iDxg=w598-h148-no" alt></p>
+<p><b>根據你的篩選器建立一個監控指標</b>  </p>
+<ul>
+<li><p>點擊<b>Create Metric</b> 來建立監控指標，根據你的進階篩選器</p>
+</li>
+<li><p>在指標編輯器中，根據下圖賦值，其他的欄位留為預設值就可</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/shTGnFQTtKEmItXtd3xpOG53uX6myBpIqe9vqB5YILIY8pEBGEdCCYDTEcbz54ikO85_z7209IodS5346EoSx7WnbGDxT9bhZ2B5tJXEMtEYJE9K2TfoiY7lRhxc6SaaRd1lsd5RvBm_IaXE6gpOYn9b31lzVu7zSmHKOEoFxwtFcPbqaX6c1Jl6OOf84jUzktzHEVt6ktieADzZ9Iuw8fVCxRevhh4BaFK8VXy9bFsBHVbm18um6DGPC86butKjzMF3auTjeMTxVDZiZn5mfrBxootreo6ilC71FbS98QLCj0OHlsko1XONtEzIYvcUW0jfx_KhyUQG8B4ParzjMdjC2A7L_Id6yqrDKv0GaNmAl74a_jaE6F3AeUkMCwcjRYAW8dWvzp65bAS8WuDQeWogYGtK49Hf9tCJknN0tU4Xxa4Cs-UYie2ywOXLhDx1YRSLtAUUqwMEsE3ARt9HRGoimcOaWDmJhBkwmCDyE8qg2KzC9Pelq_THps_SIoTpJatJs01u876Ns6Mpj7SIUshqzcn8BUsjVdw82P9mGhKlGZeQK-sMEF_ggFmgXElPkYqMoyqCJPB-EVQTR8ltYLIJ-EUalmnUO8Ik_I7XfGY3yMiztwnSlN7gbButcBFmK3wrBIydFV5N8y6pEeBOf9Zu5afsvas=w938-h256-no" alt></p>
+<ul>
+<li>點擊<b>Create Metric</b></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/a9gfG3lgpBX9ueO7A_vYBTuJsRuV1tLd58uuSPikkh0lsg18i5wZW7XlBSvLokT8DSUJBNulLz2wbHPCWa1Ac3YmG5yjbscT5PtOuMZIrwx41UrroXk8Ou7kBbUwUWmQcxB4Hbjvf_qS7SGROa4WV9xR3YRQBof0_FQx2mnJ0kQB-5aF60mxJICQ_aasLZBdPLoiP76Z3DUa3y4zl4mAUiZzhQfn7XbXgHBLt7KBI9bvZmLHgHXAgL5omwIRCwb98O4Bez_8Fr4pjd5GfwPZl9-CYARwLEKuCVSqMCKgU3mwNjUiEwPOYIKvj2E74oYKFO1VGEOKG_NHSB8i9ItyVcaxPAHeN6Bz2XR8LTX3B3sxlq95MRXK1MlCDYwL97GphJ9LAknERjjjgez_vxuieKZPyclw9OIQuEEY1kLitoU9P1fiouXimUue2bMkuEhyd5RgCT1DWP96LHq352KakCP6Va-dob6-ZFiHEs6jCWra9tLhtyTVkty_Z2JStw0aFAM0UeH3Kev1uMV0VaJPv7bTbb105xO1Ib2PTR7znStUItsgMMIqSWFSwzYzKhDR45FbwyyDMOL60rJ5srQnmoUv1CMyyCdUzzAckEMlT3AmBVJLpdilv-UBZsgLuTKYaKDjrAUQd5Jp3HH8akbnIs6pO_P4CrE=w809-h832-no" alt></p>
+<ul>
+<li><p>下滑紀錄指標清單來檢視剛剛建立的回應 200 的指標, 你的心指標被列在最尾端，<b>User-defined Metrics</b>的區塊中</p>
+</li>
+<li><p>在下圖三點圖案處點擊，選擇 <b>View in Metrics Explorer</b> 來檢視回應 200 的指標</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/qXi4jqov_2l4sTRHeWzhPMp046Cz92hbUYxxbnEDJE3vZZI6bQdS_3Busx3_pyI5brW5uitndSBI29hdPn2i0mt4QKsJw_7DoXq7QlO4csmVh3HAah5cDryoUMeZDz6-vLp6gRX_wPlu9y3bseRv5MaiOKaVYclnj4WXw5UeomrWNCEPdmPBjJ-JcCz58fIpYO433poCoQ9uMl1nC-gSlKVORd1ThKqbn8EAWGUqbJRcqanhSZFtywwGZPtr1l8kTf5H7CQbvSlbViqxQHmyRTyT1G5sh-n-mLn1fZF-hpykAU9krPfv8AFEhR0lJKL3UDywdZX0G6X7TZkkzAL870Ec7ZtWcGZGluNLRsIbwrCXUwCHouvVpUqjm3dIEGeZPg0IgSkzHLgzpYanSRv-Xs4nBZq1F9n8eQ0aNBX3nASncAzbT1hbsyH6KZTXZ6svbQXaXy5ZaWO6CTzD8uosaVFUs6AEFW0JvJgvqRp5QX8GoP-lTkbCPLJIelwgU6xIVmMkyzODYj9vZ8xWGMB0zUBKfJvnBGRfx6jeOfbzcPMpfE4nylRwTPMk6hjDq-L2PG_jgMsGLaQVD5eXEknjr2Q6LKYQMohAJAOi21CDWay2xMZtFoSzFnjBt-BB6OMqvMTmu7MEYcKPakJ_Q7o7D3KhWgPYtdM=w742-h396-no" alt></p>
+<p>在 <code>Metrics Explorer</code> 視窗打開 Stackdriver 主控台大概會需要一分鐘的時間</p>
+<ul>
+<li>在 <code>Metric Explorer</code>, 點擊<b>GAE Application</b> 資源類型，應該在數秒後會被自動增添進去</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/_Uq6i6XDIU8HY28E9rk1aeHQw8lDp1HS4ONAXHj5bURodbKb0qBTaIN-5nqZTdAAP2dPLrjdWSkqa9iBJSKwvE2JH7njFfpie-1LfYnJpn0oI7Qw6jGA8ibOsF82kivItq_yOH3HcraDaUiKaTXg2qEWXYKqD73rgyLbc_8UQGpHN1a6PzC1SXEPiA_p3NIMLHO4BHKmubk7kJvOr_HqtKaiZqn0HvoKl6ep4TpckBBchFW6KZeQneT43peMhncWrp4jLKjqQpc3a0Mob1ujmohFapqQVupnoPuRot_YRLNFQibAkNUt_jvh2_amGhprbnsAlqNr4Bkdb3gPaPtxbYI3eVaCnNeHi0YEykxs3tWLoAbzdSZJqUDBRrYJUAzkX7LHQRgIbJq5Ks50gjSM-Yc_vN5xV5ckA49GmTvvL22s2UdxTxFf_CLwE8evO0hTEDEl1s1j1FxDWCnQm89qN_pJAk4eNwn0pk1M36CFwgQDXOn4Jy7oK3JWSXKdeCA0fWmS87L0zEDNGty9YmJohzTOae7Keal_aXJKnocCoM2NyFiwGmX1v5TXeBvJf_vVhjgISHF0EaintPTJH4zUZO23dOBCmx8EeyuBjeCpflChr4qGhsmLJyvSwiz-Y2y_7pcu-wrdoVXBFvQxWQSAqgS-wNlImYc=w645-h671-no" alt></p>
+<p>如果在資源類型選項中你沒有看到 <code>GAE Application</code></p>
+<p><img src="https://lh3.googleusercontent.com/jTsWxjUIKY0zm3b6Mc9megh7Osdyg-ay_7dJHWUbLUwgBXOBALjsATtQhyGQSshyZrwFU0mp5zFNsR2jxrL3m-mEhU11g9TG554wmQ7uHe3FSbPoS7lMzGeX5sQUv75zuJuK2efCGZk5YWFsGyyL9eED5erEK2oImAZeC9jxEhB61GmPl2wsh1ooJHbajnT3Ocan8-NH3XL6zodAWR8XRjvJlN0BNG73xqlxqkk7LJwGcN5VqA0su7BDJxaBehZmL_kilTQlgbXc64QIkR-83oxHu9UzZyql-zg3D7eA4HIqrfaiPt3DBk7bG1Pd66wMXETadwRdLcn9xmWjFuVgsi-2ieW1de7p590rabhb2iW5LbvB5nZtVLirUVww2zRWuc8cPQNaAz24qkMHbr-4pbIH21L3SMGCWFmlkRmA35tVry5WSEibrVNCQDSihi9U5OIHTetYY-pSu2UPw8PYy723BYgSlBDB3sqZ4UCI025KwDMn_JSoqRaNnm1qI1oTpCufiBc1xj3gOqidBa4ElAvCa0jykVjyciS8-X2tu8g-NVHf_xQH12llf1AlXt5OFG5JQwSwbHAB1UnNy4nmt-a2b0qowzY9irdu_m7Hc0O7sI69qjaoHFgcJtQvBgydCVAVrkPuT-fEmoRz4AIOkM0Jd0QhzqY=w1220-h464-no" alt></p>
+<ul>
+<li>關閉 <code>Metrics Explorer</code> 視窗</li>
+<li>重整你的 <code>guestbook</code> app 幾次，來產生紀錄數據</li>
+<li>等待一分鐘，等你的記錄數據被添載進去 (在你重整 <code>App Engine app</code> 之後), 很有可能會花 2 到 3 分鐘</li>
+<li>點擊三個點圖案，選擇<b>View in Metrics Explorer</b></li>
+</ul>
+<p>一旦紀錄有被吃到，你將會看到 <b>GAE Application</b> 出現在<b>Resource types</b> 選擇器當中</p>
+<p>這個指標已經準備好可以監控並且分析你應用的行為</p>
+<p><img src="https://lh3.googleusercontent.com/fVcVulxysyrtgH6Kwub3I85fYa_HL_0b1Vd3S61CJNsNNer_tMLANXjVaExJPiTomQfZjiQ8oYuCMcXiQKm350Ne21nIeFhwrhBaLVpDahhKO5RwyTcee1cA4MMUa28B5VFS4F8gUJyB2gheDSUf0HDpWjYxIP6M2EzqIBCiXkaqy7B1UKYIMkD6bOhMfpzC08Xqe7ydbaTGHWOFVc7VwJ11WWDbzcqQTyURvNDXP77uAASNa6kNg-I5_ZwCcXe5n1DggzU7qIbnPDpUX2Cbz4WfoZ9IzgNxhmV3eA2sw9MgzqbJYhyR9zopT-HEqizGBAbbUUXkRZND6S_dhJDa5PR-qpA56LskKi6JHjU8fGnnIFfgxdvWAVZQMnaj6Wzdq5yKWcj2eIT-bIOKZcewzrI4EVuj4XguJ-H0yjprmv5bQeLGm1hEcHH1mXxuMpp1bU89pHEcw-RgkJyGz5maUbKu-pei2eOCfnIy1IpD-WZJ3KvoZstaocAe-IqlLC-557v33k21rqYYGHpwRKslDCUnoDIr1b2cCG03iVvK1iiJcod4_FGWRFEcYF-80hguRMqXeGk0eTvkOQ9QszBAQkDd-konb_Xx7WbH6lmLMelNj9W-CfgFETWO6c1qbDx3Vs-swofjoNlrn2Z2FowjR4w333qb71w=w1604-h906-no" alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="建立一個分佈指標"><a href="#建立一個分佈指標" class="headerlink" title="建立一個分佈指標"></a>建立一個分佈指標</h2><p>在此節中，你將會建立一個分佈計數器來監控 <code>guestbook</code> 應用的延遲</p>
+<ul>
+<li>回到 <code>Stackdriver Logging Console</code> &gt; <code>Logs Viewer</code>, 建立一個篩選器來選擇<b>GAE Application &gt; Default Service, All Logs, 以及 Any Log Level</b>, 如下圖:</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/dVb2M8NpI_8WcHYdCgZkVIRb6JwWK4KureH5tFgterf1i8aBgmBilziE_bTNB-ArGGHfvpxre7kg0CH_jrxEoI99YvAbyiu3s_gsTUbCLNHSsSQ2cVVSwgTq-xqLXtG1jsFZ2vH8h3HYvShHl2C72-ssL8cdxJF91jMdUPRuQRy5ETNX5EhSsOTZ6P8WqXGtM-I4pbOc_5IJWR3pVAl2FJQkMcwM8bxcUd2oxxI5kxfYq9RwIy8gleupZHkjG2bD6lBuWz_a5xPvIhgvRmuP798DvWDn27evq4tehHLy5_QjE9-N5n8XsC4jSZKGwq3C1VEX1ei8q__-pMz8DOG4bFt-3PSxyZ_9ekiUWoyrQWICzerDwG4fpgew4aHPYunAarEySDy3p0_OyZBZRwO7eTaebQvjhBsgJJBBrjYVlgNe4GLSZ-lsxLsLkIRwwFmB8lPH17Qk6d39CoY3uBBOrpA-BlmE_Zis-2f_fTukPKPDeK9Hb66iZSVw6OrAr-JhXd-_8id4-mR2oEUGPRgBLv2wV9DSFM6q7_D3oeeiW4GsH-GuKeb0PRUUDnv5AGJprUG2AwGuiQYl3WtWIRsMfma56a2s6kT27JH4JV5nYL-Z7WLnhmgajeeLfgeMdkzW1fjTmj9nGnh8sP0pr2dad_D6svQdOpU=w1438-h279-no" alt></p>
+<ul>
+<li>在頁面上方點擊<b>Create Metrics</b></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/Smo-2gti6cY4qbRICxD28ldTzWfcTd3yVJ1PKm1rHHOSV8CcMJiAzgB3j3S9AMOaqbVIQdzwLa8kVsBhcte7e0CB2_ye1YznwwcbnJsL_sxV5bFOPlJNw-BB8wl8cGfSpOIUjY0FaykLim_ikBKjwee2KxmnH00LiCCVVg2jV8x9W_x93nCSgIRmbrLqpxG8Hd94aTxCqSIFfydQI5HRF-URvA1ltYaSOOYHuFxzCiuve7J0OBF632ZxAdkp48iVNC6HmjU1UkUxgZuExiAURHXEKXPML5-Ha6MK8PXcDQeyI0hvXV35RPwD2xTawjmMCQcXOLa-EffuQV7RALk-hrrWZpKSCmV2iKRijHyqv6lIzuu6pGhROZgFi_F1Y7j1QJaZ1El4FGkZDSefERxkUy8KtvgpiIz0CVhR2CGvj4aEl7aNzGdkxKMtFJPxMH2STzyyUvksmZFzZJxpnJnxjQOXYxxIMhLk5YyNO0aaYgAxsT15FiEDqr0IVy51FZ5hbKICfMfoEkLE57xpo2_6fC7nY2YI29_tvJo_j7BSndFhyhuIWh-8d02-8Lb3ckVGdwXJ4jxD8KD_VIfmi4BjRgyQuit2jja6Lr9CmQ0bsKZwP_NLBGj42aGfYU5cra1twxA87HMfMxLtU3y51KW0H2Mhv10c-gI=w539-h61-no" alt></p>
+<ul>
+<li>在指標編輯器的面板中，設定如下圖中的值</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/txclE1bBxYrWzSzTChLletj54VFB7abhMjuglyht0jNxPyxfG3EBbvGBt47g8x99PRIpjarTjOXzKeHeUg3Sj2aLWYT-Iv2hoRKcfzSvsiDMNyXi2741OvsXW3ur1sM1VQjW8c_LIXfDvVbLpSVbY-Z9VU6s_yX-nA5sgVh3Ad4GqlVa6Ru1W88Ni8xN9OHZnm5EyyOk7Rb9Tb6wwQ-xywtT0FDT28hClKjnDjSRkOM7DYkOeS8pGvpE3BKRUmTmckZ3B-PY1jyCZZaD1iRQCbFHKrKKeRUn-Dk8-rCO-Yn6niST-VtGZNK-K2eDRS35PwCypBAOcx-h2qYEvblRwFFwxD27sxqnT6_RvpAcDXrYSIgblk2dm1wuvLVzcdRVWKxuHbc0pZjGF3BCk1jdBAIpKZ1iX0_tQgk98Z1rErdcttmAuGsGCX_uZneEDZDebEkSj-N68chSR3l9O07zf-ri4j6f65K0P_DWK6rP_AZlGjDguh2tD-BPtcp43pMzvKE6giFnA61UgrJue3Q0BLY9N-9MG4XsycwOJZE2kXjcNl48SwQzmD7Vs3uhZ8ZnCOkAzm7zUVKFm5O6nugdQ0lWj3GlhVVyEty2Dz5UlfNoTafGgtm2bLWn9oVSdGB8II2WYdyxi2GExdL4zYEtnh-uBrQa8Ts=w938-h414-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/89aMXUH3g7IJx23hhtzmVXhw2ucZdaLXzvkR7e6ox14N78f4ewNJ8UTC4CAaLjAVPaJg7vjGCS8J_URjUG1_tE5dqjpA6FcvR0PjGpmG01oGABNc-0fcKXNWJ-WW6xOJkRidrQ-RLgZiAZ1G87gnNp3JVO7xq68FnfM7plxKm_WfMW9xulBlirz36-aS3QZS5qpYWChaT1fjhWse2HDxQYWRE9g5DesG055O8xEQzUnbk8PG7ayZUGQJJcC10IHRL_BtmSgczJ2ajYgfvu5te_IMprAeMUpC7GRH6-Jud4CqMJiqzqIavicnfD5IUyWtld2SoAkeob7GK5YT6HvdFGDDfpYEn_gAvxffZo3wfoSiFyAgY6zXKLgGP-Xggv7k73bE0umiLw174TzNnVPZqfN-kJRprj9RtbX_ILH8ywaJbcOqRlF69ehSzCcKksqhKfSmFctfjAaIHIO6RnUvZNw-O32ZWe4FXVv-TsDJILaae0PH50HWn2S7Ph6TBEdemLzqUSUxOhnYl5k8Bksw53wDWZf1vYJ3PedAbCwfR7K4zNIcar1pktqz9-T3zi8sK0uFK47NDSq4iKnCE46KpxkdFeDzxgcqRHT3sIqCDc1hn0vMF7U-iNSEqmy5tY7yHr42Idb1po883yKoXknznKG1NPT0_VA=w727-h1054-no" alt></p>
+<ul>
+<li><p>點擊<b>Create Metric</b></p>
+</li>
+<li><p>核對延遲指標已經被建立在使用者定義的指標中</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/EeuoBhtMxN9wmeF0AtENB8knhKOw5znPr5-K0Q_UcIujc_8B6EIv6oanusFCRZq4uyD-if-aj_LOx8_3Cu_cCyVUpYQq0wcVBTWmu5lzT4mJz9fASRXPMM--YaRVf22E2IOjvG-EnNpSmxiAocWghMIYrerOfEf8fTzqJCNofPy_HSLpMe0fLOcjDWeOK1mt6oUeY_SDhTfXyQnimNtmZG8zu7zHz92TxUdDrYRQmWq-yMYl3ctdxJNWgeI392rehbTvN6UloWJfeIyq8MvceRkE7zqtvj6PXVua4sMWwYjkzj1GEV7rqPbpimT_G0j6uMngzIkXxzid2Ppddme9s27AKuu8f7D0aIqeLONn0PTRoKCKGXRo0NEfmPIOwuXyRE-JB08lSO_IzYVuCKppsXfoF6qRvXHdOmSA02qsF3goAFpVvdbRXUiUWezxaWCJwTjCB4N54lkeQzp200XG3eDWI_eOH5SUxY40DTNM1O5_IS8sTOUFcS2AtQ7mG5Th0Rg4SZ0ZMc9rKFgkIIVomgCQ-1ExMVQIemi3GN86xCtuIuR9NnnILSOD4zzQL2OP8fF4vnyvMJEvLXXMnVATYZrk2wcMLGifmZ7dXHUYhox6FJKWZhjlYI9_9NZWmySaDumHUvXbKL1o41WOV6LiZ6t8RvHDSvQ=w1245-h563-no" alt></p>
+<ul>
+<li><p>產生更多紀錄。重整 <code>guestbook</code> 應用多次，給指標 1 到 2 分鐘去取得以及累積新的紀錄資料</p>
+</li>
+<li><p>點擊三個點的圖案，然後點擊<b>View In Metrics Explorer</b>, 如下圖:</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/YcNnyIhzze6mMo31na1cmaqiT8Psu3JIYOPad3gbqoNBOBKBLQ0XoP3CVlQO-ZrJSHihCJZ5ruI0qdvlsBIgcane0wL8NCkviDh2AklSzT-weL6f2N0ocUe63bMwQkw6KTcJo9iCwvRt6bvY1Bi27Ey-KZBGCSgd_jSY3XCDhFCjB8bXyFH1Xg66XlT51gYLj5TysntrGWHR7BDS9NkxUORSUpBHmfM9YZDQdsKygrGUixfGoxI2dFeo0Wv1stN-lT8SOjxVQ6tJrg7z1SfSKRER0f7d4mMLS0u42CJuGZxGqqLtVCIfo5dA3YrXmJN1LCw3FtotTix2oKV09X_qpWB4CXn645zQVmd6hvJOkhyX-bqCOrTbryhSZlAhhclRlJE4R0NOv7Zn3Q4zL4NLo5ATWQnQxn64nq8iXa5Mm9yrSQZbLaVD3JQF98SZLMTAIXS2FZsg5aQ5WVu2XtDQUJDSJ5ui4Kok8vWkz6rLNgveKtFmIidpgyxUTJwvl9BsfuUV5xO800Hrl4RSV--80BUPmY6LRKIUcG_KqKZeBkCx97z3Sxa1S5c83J1usNBX1zpMXOOL5IAt-oveugQbRmg-DJshFGF3TYsS4O1BvLeN-01rvhN9ff2IvdP28iErU6bB1pecmWdNNwmO1w0YY_707ePmWvs=w1026-h392-no" alt></p>
+<ul>
+<li>跟之前一樣，從<b>resource type</b>點擊<b>GAE Application</b>, 然後確認一下指標是你剛剛建立的那一個</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/24L-S96u15tIxRALE2Pzz3VZ0S_BzlGj2iAtznNHITLkQzjgRU37MnVoFmBf7Ejm1r4E8e_ZnWI9RXIMYchNq5fa9F6r-gtw5Pd-qlk2rMhXo-vN_QT1b9EnlObVg633z7y3iMIbHxtw0bvtQsk7C5IIrXRhe3qFQNdiaFUGlTkPkIhRC4hmtoJQCFiCIzW8NKRXcHQtAwKTZfNl5Ye1Kag5voQKyeU_kh4qFwCHXfKnuMcpNRirGmZX2nInt_AVVEIZQniVrVLWqG1Cvn8bmZgf0IUhW_fDRkyblyUYtFyFPcD2nLyw9Uk1wrfN7DvRUfw_TKWgEh9iVII1FjFOFcYA8XUvKmY2nSwWnlKNqo6BygK-o1bPSaVWWqB3o_EmUH_7YZ0M4IcscCR1HxugoE2eWXmTCU_dsX_RQsHUFSRBlKQayM6GdUV-TYa-MbI9ECm1oMkLD56kQe6csQlmhY_iYn3F2sV-ldLOi3fsy965bCruBbemccdlZ2OeoOYKmpJkBos-brdZTbS6kxYGP1Q9maqT1YfNJrJRTHbM3fAry4s_ValCGDgTxfn5y82jB_lRjruDr5aLF0reBimyIJ2GMjsTiVbuIsa_Y5Ieg1sX_HNycFyFff8ZYYv6hfbm0OnJYaN2pAb8cZmOsZLrgsSVbmRNe-U=w420-h264-no" alt></p>
+<p>如果<b>GAE Application</b>沒有自動載入</p>
+<ul>
+<li>關閉 <code>Metrics Explorer</code> 視窗</li>
+<li>重整你的 <code>guestbook</code> app 幾次，來產生紀錄數據</li>
+<li>等待一分鐘，等你的記錄數據被添載進去 (在你重整 <code>App Engine app</code> 之後), 很有可能會花 2 到 3 分鐘</li>
+<li>點擊三個點圖案，選擇<b>View in Metrics Explorer</b></li>
+</ul>
+<p>一旦紀錄有被吃到，你將會看到 <b>GAE Application</b> 出現在<b>Resource types</b> 選擇器當中</p>
+<p><img src="https://lh3.googleusercontent.com/U_oS-0SOTR5HL_FPg3N1oxlPZrr8koqOvenPqf2XyufM_9vPwXSATL81JzUZJoPID1Y-OSoVK7LCBFk4gNd5hDCset6Tm0LkRqFTi9Rzef_dqb74Kat1AZiwYzCcrmgUnIdDPvnFj9GD0vf8bf2HdvVKGIGX0zrls9QS4uwZQ_8q69mTf__8TO4DkMmtAQ9XcWRghiSqq_Q6HzMTgp7BcAPb_PW4ijUhERppEjFH6cXDKzd7rfhN19qjT-a6iXZtP336zZ70SLN9HzAfJIlyXxRxvhXhmV-IiPJSRR3Q9ZtnJK8bmAMiQhgzWG1W3I8X5cEHW3A-RIJaur4HLrH28Uj7_PeyfhzM_QimZ_cWxl7XegKud-PyIrW_Dm1suatnPF2B8iLCHzfNFzsAZE9YjmceRm9UYlmUgSHJhtnRiq-H9lnW5g3ud8e8HY-zUVoxuRRdiv3uQcQxJ7n6q3ic2RPn5i_lAXarQcxwwyNizN0Zjlm_IDArqjOEw_d-5Juo-n85PSQkQbRdUi1sfbB8JcCXb4KnkhdXXdw9yHU6aPCUxGo7Z9i5PwIRvB-KCkEsafF6y5cERoDNsEMtCQD5vpu4FQEqIFznV_cZ89TMjp9WRdpEcR8r3_XR1eeNYOH8mNbOkw15tCGkVUqXZgMjnXu5AnUPmic=w789-h1196-no" alt></p>
+
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh-tw/googleCloudPubSubQwikStartConsole/" itemprop="url">Google Cloud Pub/Sub:Qwik Start - 控制面板</a>
         
     </h1>
@@ -558,50 +862,23 @@
 
 
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+    
         
-            <a href="/zh-tw/Kubernetes/" itemprop="url">你好！Kubernetes</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-02-17T02:46:40.000Z" itemprop="datePublished">2月 17 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            23 分钟 讀完 (大概 3385 字)
-        </span>
-        
+<nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
+    <div class="pagination-previous is-invisible is-hidden-mobile">
+        <a href="/zh-tw/categories/GCP/page/0/">上一頁</a>
     </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><br>本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記<br>原文連結如下：<br><br><a href="https://www.qwiklabs.com/focuses/564?parent=catalog" target="_blank" rel="noopener">Refer to QWIKLABS official website</a><br></p>
-
-<p><img src="https://i.imgur.com/lLAZTuk.png" alt></p>
-<h2 id="本篇將會做什麼？"><a href="#本篇將會做什麼？" class="headerlink" title="本篇將會做什麼？"></a>本篇將會做什麼？</h2><ul>
-<li>建立一個 Node.js server</li></ul>
-        <p class="article-more-link">
-            <a href="/zh-tw/Kubernetes/#more">點擊閱讀</a>
-        </p>
-    
+    <div class="pagination-next">
+        <a href="/zh-tw/categories/GCP/page/2/">下一頁</a>
     </div>
-    
-    
-</article>
-
-
-
-
-    
+    <ul class="pagination-list is-hidden-mobile">
+        
+        <li><a class="pagination-link is-current" href="/zh-tw/categories/GCP/">1</a></li>
+        
+        <li><a class="pagination-link" href="/zh-tw/categories/GCP/page/2/">2</a></li>
+        
+    </ul>
+</nav>
     
     </div>
 </section>
