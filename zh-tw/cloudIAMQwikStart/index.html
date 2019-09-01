@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Cloud IAM:從 Qwik 開始 - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="keywords" content="QWIKLABS,Baseline: Infrastructure,GCP IAM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud IAM:從 Qwik 開始">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudIAMQwikStart/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/tTKrN2oqFBDaZkZOgej8FEuUCvRKwkEEmf8aeMshO_ZyzocqzZPlHi4mGfYytQnjjKRnCam8C8GnYJF6SgqDS36oucl89BNUEmTpG1SekT7k7t5ca-rzLwUUYWrocguQtpeoWrFHxiOaquD2Co4v0tUtuBVcqHbJFwuF_YvsC9omLO98ljXKI-OmbNJP8ki8cJGrVfN1nbSaLlonp1_FXSu8kf2uboJVSBW4DxECgxy1gxSAduCn_yaaP0Dsxjctt8urIARV7q7MtO5VFfHFBQHYHekX5z75Rk3xK3ErSZA8UVqMSuipblWBaUmInBV64549wYIg10PWzgzHA_RzaN80rVvnHJG-as_QCnba10kzt2EF68UOq43jI5sQZgxLKdG5i0koMr0TnCB2wGouaC4bsOHXFoqetV-0HbLZPzn9O9YHVyLMbmYyxfxiS2CyztIRkzBMmdDhGTSDcibm7A87nsMO6ZKj8RGC6A-DvvVCJamiQN5OQx2THUMmpTCqJ5buYrwIzypWVBY49EhZlIlaXVFCO548RddLngCksHfITkzHsLBineUNB0Z4zKG-3dTn2yn7J_eF21mGvaRT8AgMMPtmRvnlyicpwxuFLf7iu6Sk8ELNG0gOQ-_j9l8sPpPNbgX2MfAjJhJFPtTbdQ3sRfbw7L9rT_b4mxxjHv1saVNFCwEuz7s=w795-h246-no">
+<meta property="og:image" content="https://cdn.qwiklabs.com/Fj2raSqxxSSaysd18h01Ky0DK7M%2BpUc%2FJsmmSDhvPno%3D">
+<meta property="og:image" content="https://lh3.googleusercontent.com/_F70XM39QfmOMCQyY8TyhmYLCRJEJz-hNfmFVzYJJMlxxE6ifJeors04sQNR_TFP7VXLKmWHdwB4MthtXDkWQcLjNiln4VpX_a1zDKFTHfUCm5_7KvZzm-ZkpnnMQvPBhahYVYUCf3t7oblFOPHTyJJmwwN1qnvqKARmj8XOPIFRpsrvFcyeQASpb4G7qXXEzlrK5zOAIqjBf_77Fni26lEhFl9Bejq1E_zFOxcZZszCUOeLfS7dyFHnv6jyk9hm1tb9scF7PTRTPMNDc8O0EEPAnxumyUm01ScXoFD7Gwxjm5H5IPmScYTPUhT0uaBz7fAkDP_aSCVjRsIU9MJwa9OD26-_j-cTJ6MKRbkj2X60xXMS0DxX3WKGthSmVsagbedwjvFfzABrjDI6RWB2tkzFRoNkBwH8TKyJDcnEn7CuiY2oN0wQcn6Mdk23u25yf3tmminpRbDcAcEHWBHR8L_IC-H1EftFiUeusTJyUWbtZe4apcG7pQ8CFkaAXs8qNQY94_KmnobdWojQZIbr8_Fd1zk2HAP9uBZP6g3wTtH2RMQAPN9ZQM6phgtfvWdhBke-jZv55hSW_HwZRJv_DTJZ1iGXaLcPP2MiHK8_3QJvF8kUU8-hI43rLeTLzr4APMhyZT5oT-1CxvqHV6_2CLRIiYL5TADR-q3IT4Q7U0FLheiT3M-2MBM=w1652-h270-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/54nVwKzxAJ8AjXF7rw51xelru-s5JoFhIMoBwsP7Xth9Hx2rgdYtsin3inJzVdhUvZLHybSimTBAxO8MvZwPPvdbTFsyp_-VFdXkN83oWEN1JHQ7-AqdPXCDnoU9ULrBUBjAqbBDCCCdrUyPgsWcXrmNmugVxV5-5L5GUwaKFTVxCu9nIYmgTBwh0s9aROZend48V_SB_qbwPgFg02fKBmGeOOeC84LHUdWAQJ8Ge0h2GFz1G1ePq2A9zYuqirSbJ2vKsWoeaPFE4yXgAJ6cw5_dsxRt-dKbq_ZAar6SsHhZQqlpsWSntaL7ahErHx9NDD9nwDSeZuzVaT2tYnzDtJl7fn0arkTtNa-gkEPJStugyBt2-N3mHfXMMzhT-ANk2HVazWauoezBLtJRWqo5WzlOFtiycbcd2JeCcIu23q3Zifrvfjono89MM8l3TnGIrh052LTJg8fUx0VnRzZWUBOIy61W4PV3HFLKmDnW5c7RUOZnOpei5L7LFS3MCMIYprqI2uU-W1_FcHBFaQo4ehtEGt8ESdlTRaRK47q1WgMlYclMz5D1Hvhd9rVPBGMBeM460zfkYzebAlZUqRC_gPSxu2tZ2cHjmfi-CI3POatAmbn8Qwu7xACftYmWNw71vGz6jDAvaZTOEKqcS-PkmQoNI4084zlLYWDssBlPupoxvTKgn60YvsU=w766-h288-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JL-dYlbpmyhmsh70f3je7-SFitdCg2FF91YRSJ4V5XDwNcqIRMkyo-NCrRynDjioXN5rIXaLmEcfmDrUovo8l-wg6fInnXbPcyAsxW4FSZiE7WBM7mxu1HNci9Q3veK14-cE92gcoF2WxJcuL5Z6nXFs3Txbo7MSB_zWPWDF3WvXdYFAsHtqo6xU8DU5xs0LWqNtKHPM6KVLBI2h4cbSfH80Ii0N07PP4ZLLTZlcSz8Q6Gl9Jb2F8bjf0QP5ffTa3DlgEkcro-0NJivuOKWLXYB-Da7P6wFMQMI8GEB6swpa8VWE6xSrkEncaV2-LJr-DbgBV6Ps0d1bVC-_TY_e1sLx54RPf7LTMrBDUTK5MYlECk6ykeCUJneucEVTKe7z3gWuOEP8WDq9ozsaniLzVtA20GQ6MpljWSPEcwROP-bYb9BDmZUO27WUlN4a5JhWepJVj_q06SkJG4MqL3N2c2ofo1kXow76Iuwf7x4tSvNiGA6FLxoFNUNzxPpAQ4wwfSWPSRroXuTYpt_xsmFIfxkAWNSXSaboBRygwifyS8xtmRx1UCLzlpDl5Lsle4b7JDIXYh2tzY21aoqqHDiRVywhsow9-drEzEBwW8hkt6TK3Lw-iCuPY0Axqau264LKi-7YMQXNs2twt8zMiTYMuGTGJltQCJIXhF-ejfg4cmPzVbHi00xhICg=w1284-h244-no">
+<meta property="og:updated_time" content="2019-08-31T13:44:21.444Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cloud IAM:從 Qwik 開始">
+<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/cloudIAMQwikStart/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="keywords" content="QWIKLABS,Baseline: Infrastructure,GCP IAM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud IAM:從 Qwik 開始">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudIAMQwikStart/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/tTKrN2oqFBDaZkZOgej8FEuUCvRKwkEEmf8aeMshO_ZyzocqzZPlHi4mGfYytQnjjKRnCam8C8GnYJF6SgqDS36oucl89BNUEmTpG1SekT7k7t5ca-rzLwUUYWrocguQtpeoWrFHxiOaquD2Co4v0tUtuBVcqHbJFwuF_YvsC9omLO98ljXKI-OmbNJP8ki8cJGrVfN1nbSaLlonp1_FXSu8kf2uboJVSBW4DxECgxy1gxSAduCn_yaaP0Dsxjctt8urIARV7q7MtO5VFfHFBQHYHekX5z75Rk3xK3ErSZA8UVqMSuipblWBaUmInBV64549wYIg10PWzgzHA_RzaN80rVvnHJG-as_QCnba10kzt2EF68UOq43jI5sQZgxLKdG5i0koMr0TnCB2wGouaC4bsOHXFoqetV-0HbLZPzn9O9YHVyLMbmYyxfxiS2CyztIRkzBMmdDhGTSDcibm7A87nsMO6ZKj8RGC6A-DvvVCJamiQN5OQx2THUMmpTCqJ5buYrwIzypWVBY49EhZlIlaXVFCO548RddLngCksHfITkzHsLBineUNB0Z4zKG-3dTn2yn7J_eF21mGvaRT8AgMMPtmRvnlyicpwxuFLf7iu6Sk8ELNG0gOQ-_j9l8sPpPNbgX2MfAjJhJFPtTbdQ3sRfbw7L9rT_b4mxxjHv1saVNFCwEuz7s=w795-h246-no">
+<meta property="og:image" content="https://cdn.qwiklabs.com/Fj2raSqxxSSaysd18h01Ky0DK7M%2BpUc%2FJsmmSDhvPno%3D">
+<meta property="og:image" content="https://lh3.googleusercontent.com/_F70XM39QfmOMCQyY8TyhmYLCRJEJz-hNfmFVzYJJMlxxE6ifJeors04sQNR_TFP7VXLKmWHdwB4MthtXDkWQcLjNiln4VpX_a1zDKFTHfUCm5_7KvZzm-ZkpnnMQvPBhahYVYUCf3t7oblFOPHTyJJmwwN1qnvqKARmj8XOPIFRpsrvFcyeQASpb4G7qXXEzlrK5zOAIqjBf_77Fni26lEhFl9Bejq1E_zFOxcZZszCUOeLfS7dyFHnv6jyk9hm1tb9scF7PTRTPMNDc8O0EEPAnxumyUm01ScXoFD7Gwxjm5H5IPmScYTPUhT0uaBz7fAkDP_aSCVjRsIU9MJwa9OD26-_j-cTJ6MKRbkj2X60xXMS0DxX3WKGthSmVsagbedwjvFfzABrjDI6RWB2tkzFRoNkBwH8TKyJDcnEn7CuiY2oN0wQcn6Mdk23u25yf3tmminpRbDcAcEHWBHR8L_IC-H1EftFiUeusTJyUWbtZe4apcG7pQ8CFkaAXs8qNQY94_KmnobdWojQZIbr8_Fd1zk2HAP9uBZP6g3wTtH2RMQAPN9ZQM6phgtfvWdhBke-jZv55hSW_HwZRJv_DTJZ1iGXaLcPP2MiHK8_3QJvF8kUU8-hI43rLeTLzr4APMhyZT5oT-1CxvqHV6_2CLRIiYL5TADR-q3IT4Q7U0FLheiT3M-2MBM=w1652-h270-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/54nVwKzxAJ8AjXF7rw51xelru-s5JoFhIMoBwsP7Xth9Hx2rgdYtsin3inJzVdhUvZLHybSimTBAxO8MvZwPPvdbTFsyp_-VFdXkN83oWEN1JHQ7-AqdPXCDnoU9ULrBUBjAqbBDCCCdrUyPgsWcXrmNmugVxV5-5L5GUwaKFTVxCu9nIYmgTBwh0s9aROZend48V_SB_qbwPgFg02fKBmGeOOeC84LHUdWAQJ8Ge0h2GFz1G1ePq2A9zYuqirSbJ2vKsWoeaPFE4yXgAJ6cw5_dsxRt-dKbq_ZAar6SsHhZQqlpsWSntaL7ahErHx9NDD9nwDSeZuzVaT2tYnzDtJl7fn0arkTtNa-gkEPJStugyBt2-N3mHfXMMzhT-ANk2HVazWauoezBLtJRWqo5WzlOFtiycbcd2JeCcIu23q3Zifrvfjono89MM8l3TnGIrh052LTJg8fUx0VnRzZWUBOIy61W4PV3HFLKmDnW5c7RUOZnOpei5L7LFS3MCMIYprqI2uU-W1_FcHBFaQo4ehtEGt8ESdlTRaRK47q1WgMlYclMz5D1Hvhd9rVPBGMBeM460zfkYzebAlZUqRC_gPSxu2tZ2cHjmfi-CI3POatAmbn8Qwu7xACftYmWNw71vGz6jDAvaZTOEKqcS-PkmQoNI4084zlLYWDssBlPupoxvTKgn60YvsU=w766-h288-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JL-dYlbpmyhmsh70f3je7-SFitdCg2FF91YRSJ4V5XDwNcqIRMkyo-NCrRynDjioXN5rIXaLmEcfmDrUovo8l-wg6fInnXbPcyAsxW4FSZiE7WBM7mxu1HNci9Q3veK14-cE92gcoF2WxJcuL5Z6nXFs3Txbo7MSB_zWPWDF3WvXdYFAsHtqo6xU8DU5xs0LWqNtKHPM6KVLBI2h4cbSfH80Ii0N07PP4ZLLTZlcSz8Q6Gl9Jb2F8bjf0QP5ffTa3DlgEkcro-0NJivuOKWLXYB-Da7P6wFMQMI8GEB6swpa8VWE6xSrkEncaV2-LJr-DbgBV6Ps0d1bVC-_TY_e1sLx54RPf7LTMrBDUTK5MYlECk6ykeCUJneucEVTKe7z3gWuOEP8WDq9ozsaniLzVtA20GQ6MpljWSPEcwROP-bYb9BDmZUO27WUlN4a5JhWepJVj_q06SkJG4MqL3N2c2ofo1kXow76Iuwf7x4tSvNiGA6FLxoFNUNzxPpAQ4wwfSWPSRroXuTYpt_xsmFIfxkAWNSXSaboBRygwifyS8xtmRx1UCLzlpDl5Lsle4b7JDIXYh2tzY21aoqqHDiRVywhsow9-drEzEBwW8hkt6TK3Lw-iCuPY0Axqau264LKi-7YMQXNs2twt8zMiTYMuGTGJltQCJIXhF-ejfg4cmPzVbHi00xhICg=w1284-h244-no">
+<meta property="og:updated_time" content="2019-08-31T13:44:21.444Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cloud IAM:從 Qwik 開始">
+<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#概述">2&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#必要條件">3&nbsp;&nbsp;<b>必要條件</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定兩個使用者">4&nbsp;&nbsp;<b>設定兩個使用者</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#用第一個-user-登入-GCP-主控台">4.1&nbsp;&nbsp;用第一個 user 登入 GCP 主控台</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#用第二個使用者登入-GCP-主控台">4.2&nbsp;&nbsp;用第二個使用者登入 GCP 主控台</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#在瀏覽視窗重置或者檢視使用者">4.3&nbsp;&nbsp;在瀏覽視窗重置或者檢視使用者</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#IAM-主控台以及專案等級角色">5&nbsp;&nbsp;<b>IAM 主控台以及專案等級角色</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#探索編輯者角色">5.1&nbsp;&nbsp;探索編輯者角色</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#準備一個資源來測試存取">6&nbsp;&nbsp;<b>準備一個資源來測試存取</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立一個儲存區">6.1&nbsp;&nbsp;建立一個儲存區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#上傳一個範例檔案">6.2&nbsp;&nbsp;上傳一個範例檔案</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#核對專案檢視者存取權限">6.3&nbsp;&nbsp;核對專案檢視者存取權限</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/cloudIAMQwikStart/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/cloudIAMQwikStart/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Cloud IAM:從 Qwik 開始
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-08-31T07:44:58.000Z" itemprop="datePublished">8月 31 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            17 分钟 讀完 (大概 2614 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+<a id="more"></a>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。</p>
+<p><br><br><br><br><br></p>
+<h2 id="必要條件"><a href="#必要條件" class="headerlink" title="必要條件"></a>必要條件</h2><p>這是入門級的教程，如果你對 Cloud IAM 沒有經驗，或只有一點點經驗的話，這個教程會蠻適合你的。 如果你有 Cloud Storage 的經驗，會可能會讓你比較容易完成這個教程，但是如果沒有也沒關係，因為這不是必須的。 要完成本教程，你必須要可以建立 .txt 檔，或者 .html 檔。 如果你在找更進階一點的 Cloud IAM 課程，一定不要錯下面這個：</p>
+<ul>
+<li><a href="https://google.qwiklabs.com/catalog_lab/955" target="_blank" rel="noopener">IAM Custom Roles</a></li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="設定兩個使用者"><a href="#設定兩個使用者" class="headerlink" title="設定兩個使用者"></a>設定兩個使用者</h2><p>如同早先提到的，本教程提供兩組帳號密碼來模擬 IAM 政策以及特定的角色有什麼樣的權限</p>
+<p>在教程頁面的左方，你可以看到帳號密碼列表，代表如下：</p>
+<p><img src="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no" alt></p>
+<p>注意到，有兩組帳號密碼: Username1 還有 Username2。 分別代表 不同的 Cloud IAM，每一個 IAM 都有各自被分配到的存取權限。 這些 GCP “roles” 根據被分配的權限限制哪些資源你可以存取，哪一些不行</p>
+<h3 id="用第一個-user-登入-GCP-主控台"><a href="#用第一個-user-登入-GCP-主控台" class="headerlink" title="用第一個 user 登入 GCP 主控台"></a>用第一個 user 登入 GCP 主控台</h3><ul>
+<li><p>點擊 <b>Open Google Console</b> 按鈕。 這會打開一個新的瀏覽視窗。 如果你被要求 <b>Choose an account</b>, 點擊 <b>Use another account</b></p>
+</li>
+<li><p>打開 GCP 登入頁面，複製代表 <a href="mailto:`googlexxxxxx_student@qwiklabs.net" target="_blank" rel="noopener">`googlexxxxxx_student@qwiklabs.net</a>` 的第一使用者帳號，然後貼到 “Email or phone” 欄位</p>
+</li>
+<li><p>從 “Connection Details” 複製密碼，然後貼到 Google 登入密碼欄位</p>
+</li>
+<li><p>點擊 <b>Next</b> 然後 <b>Accept</b> 服務條款。 Google Cloud Platform 主控台開啟。 <b>Agree</b> 服務條款，以及在 Email updates 處勾選 <b>No</b> </p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no" alt></p>
+<h3 id="用第二個使用者登入-GCP-主控台"><a href="#用第二個使用者登入-GCP-主控台" class="headerlink" title="用第二個使用者登入 GCP 主控台"></a>用第二個使用者登入 GCP 主控台</h3><ul>
+<li><p>再次點擊 <b>Open Google Console</b> 按鈕。 這會打開一個新的瀏覽視窗。 如果你被要求 <b>Choose an account</b>, 點擊 <b>Use another account</b></p>
+</li>
+<li><p>打開 GCP 登入頁面，複製代表 <a href="mailto:`googlexxxxxx_student@qwiklabs.net" target="_blank" rel="noopener">`googlexxxxxx_student@qwiklabs.net</a>` 的第二使用者帳號，然後貼到 “Email or phone” 欄位</p>
+</li>
+<li><p>從 “Connection Details” 複製密碼，然後貼到 Google 登入密碼欄位</p>
+</li>
+<li><p>點擊 <b>Next</b> 然後 <b>Accept</b> 服務條款。 Google Cloud Platform 主控台開啟。 <b>Agree</b> 服務條款，以及在 Email updates 處勾選 <b>No</b> </p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no" alt></p>
+<p>現在你應該要有兩個 GCP Console 視窗是在你的瀏覽器打開的，一個是使用者 1, 一個是使用者 2</p>
+<h3 id="在瀏覽視窗重置或者檢視使用者"><a href="#在瀏覽視窗重置或者檢視使用者" class="headerlink" title="在瀏覽視窗重置或者檢視使用者"></a>在瀏覽視窗重置或者檢視使用者</h3><p>有時候，一個使用者可能會被另一個使用者覆蓋掉，這時候可能會讓你很疑惑目前登入的使用者是哪一個</p>
+<p>要知道目前確切登入的使用者是誰，將滑鼠停在大頭貼處，你就可以看到目前的 username</p>
+<p><img src="https://lh3.googleusercontent.com/tTKrN2oqFBDaZkZOgej8FEuUCvRKwkEEmf8aeMshO_ZyzocqzZPlHi4mGfYytQnjjKRnCam8C8GnYJF6SgqDS36oucl89BNUEmTpG1SekT7k7t5ca-rzLwUUYWrocguQtpeoWrFHxiOaquD2Co4v0tUtuBVcqHbJFwuF_YvsC9omLO98ljXKI-OmbNJP8ki8cJGrVfN1nbSaLlonp1_FXSu8kf2uboJVSBW4DxECgxy1gxSAduCn_yaaP0Dsxjctt8urIARV7q7MtO5VFfHFBQHYHekX5z75Rk3xK3ErSZA8UVqMSuipblWBaUmInBV64549wYIg10PWzgzHA_RzaN80rVvnHJG-as_QCnba10kzt2EF68UOq43jI5sQZgxLKdG5i0koMr0TnCB2wGouaC4bsOHXFoqetV-0HbLZPzn9O9YHVyLMbmYyxfxiS2CyztIRkzBMmdDhGTSDcibm7A87nsMO6ZKj8RGC6A-DvvVCJamiQN5OQx2THUMmpTCqJ5buYrwIzypWVBY49EhZlIlaXVFCO548RddLngCksHfITkzHsLBineUNB0Z4zKG-3dTn2yn7J_eF21mGvaRT8AgMMPtmRvnlyicpwxuFLf7iu6Sk8ELNG0gOQ-_j9l8sPpPNbgX2MfAjJhJFPtTbdQ3sRfbw7L9rT_b4mxxjHv1saVNFCwEuz7s=w795-h246-no" alt></p>
+<p>如果你要重置目前登入的使用者</p>
+<ul>
+<li>點擊你的 <code>Avatar</code>, 然後點擊 <b>Sign out</b> 來登出</li>
+<li>在 <b>Connection Details</b> 面板處，點擊 <b>Open Google Console</b>, 然後再用對的帳號密碼登入一次</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="IAM-主控台以及專案等級角色"><a href="#IAM-主控台以及專案等級角色" class="headerlink" title="IAM 主控台以及專案等級角色"></a>IAM 主控台以及專案等級角色</h2><ul>
+<li>到 <b>Username 1</b> 的 GCP 主控台頁面</li>
+<li>選擇 <b>Navigation menu &gt; IAM &amp; admin &gt; IAM</b> 。你現在已經在 “IAM &amp; admin” 主控台</li>
+<li>在頁面上方點擊 <b>+ADD</b> 按鈕, 從下拉選單探索與專案相關的角色</li>
+</ul>
+<p><img src="https://cdn.qwiklabs.com/Fj2raSqxxSSaysd18h01Ky0DK7M%2BpUc%2FJsmmSDhvPno%3D" alt></p>
+<p>你應該會看到 <code>Browser (瀏覽者)</code>, <code>Editor (編輯者)</code>, <code>Owner (擁有者)</code>, 還有 <code>Viewer (檢視者)</code> 角色。 這四種在 GCP 被熟知為 <code>原始角色 (primitive roles)</code> 。 原始角色設定專案等級的權限，並且，除非有特別指定，否則他們的存取管理權限範圍涵蓋所有的 GCP 服務</p>
+<p>下面表格中的角色從 <a href="https://cloud.google.com/iam/docs/understanding-roles#primitive_roles" target="_blank" rel="noopener">GCP roles documentation</a> 提取定義，給予瀏覽者，編輯者，擁有者，以及檢視者權限的簡單概述</p>
+<table>
+<thead>
+<tr>
+<th>角色名稱</th>
+<th>權限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>角色/檢視者</td>
+<td>擁有不影響狀態的 <code>只讀</code> 權限，例如檢視 (但不可修改) 已存在的資源或檔案</td>
+</tr>
+<tr>
+<td>角色/編輯者</td>
+<td>擁有檢視者的所有權限，外加修改的權限，例如可以改變已存在的資源</td>
+</tr>
+<tr>
+<td>角色/擁有者</td>
+<td>擁有編輯者的所有權限，外加以下的權限 <br> <ul><li>管理專案內所有角色的權限</li><li>設定專案的帳單</li></ul></td>
+</tr>
+<tr>
+<td>角色/瀏覽者 (beta)</td>
+<td>擁有可以瀏覽專案階層關係的權限，包含資料夾，組織，以及 Cloud IAM 政策。 但此角色不包含檢視專案內資源的權限</td>
+</tr>
+</tbody>
+</table>
+<p>因為我們可以管理這個專案的角色以及全縣，所以 Username 1 有專案擁有者的權限</p>
+<ul>
+<li>點擊 <b>CANCEL</b> 離開 “Add member” 面板</li>
+</ul>
+<h3 id="探索編輯者角色"><a href="#探索編輯者角色" class="headerlink" title="探索編輯者角色"></a>探索編輯者角色</h3><p>現在切換到 <b>Username 2</b> 主控台</p>
+<ul>
+<li>移動到 IAM &amp; admin 主控台，選擇 <b>Navigation menu &gt; IAM &amp; admin &gt; IAM</b></li>
+<li>在表格內搜尋一下 Username 1 以及 Username 2, 然後看一下他們被賦予的角色，你應該可以看到如下圖:</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/_F70XM39QfmOMCQyY8TyhmYLCRJEJz-hNfmFVzYJJMlxxE6ifJeors04sQNR_TFP7VXLKmWHdwB4MthtXDkWQcLjNiln4VpX_a1zDKFTHfUCm5_7KvZzm-ZkpnnMQvPBhahYVYUCf3t7oblFOPHTyJJmwwN1qnvqKARmj8XOPIFRpsrvFcyeQASpb4G7qXXEzlrK5zOAIqjBf_77Fni26lEhFl9Bejq1E_zFOxcZZszCUOeLfS7dyFHnv6jyk9hm1tb9scF7PTRTPMNDc8O0EEPAnxumyUm01ScXoFD7Gwxjm5H5IPmScYTPUhT0uaBz7fAkDP_aSCVjRsIU9MJwa9OD26-_j-cTJ6MKRbkj2X60xXMS0DxX3WKGthSmVsagbedwjvFfzABrjDI6RWB2tkzFRoNkBwH8TKyJDcnEn7CuiY2oN0wQcn6Mdk23u25yf3tmminpRbDcAcEHWBHR8L_IC-H1EftFiUeusTJyUWbtZe4apcG7pQ8CFkaAXs8qNQY94_KmnobdWojQZIbr8_Fd1zk2HAP9uBZP6g3wTtH2RMQAPN9ZQM6phgtfvWdhBke-jZv55hSW_HwZRJv_DTJZ1iGXaLcPP2MiHK8_3QJvF8kUU8-hI43rLeTLzr4APMhyZT5oT-1CxvqHV6_2CLRIiYL5TADR-q3IT4Q7U0FLheiT3M-2MBM=w1652-h270-no" alt></p>
+<p>你應該會看到:</p>
+<ul>
+<li>Username 2 有 “檢視者” 的角色</li>
+<li>頁面上方的 <b>+ADD</b> 按鈕是反灰的 - 如果你試圖點擊它，你會看到以下的訊息</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/54nVwKzxAJ8AjXF7rw51xelru-s5JoFhIMoBwsP7Xth9Hx2rgdYtsin3inJzVdhUvZLHybSimTBAxO8MvZwPPvdbTFsyp_-VFdXkN83oWEN1JHQ7-AqdPXCDnoU9ULrBUBjAqbBDCCCdrUyPgsWcXrmNmugVxV5-5L5GUwaKFTVxCu9nIYmgTBwh0s9aROZend48V_SB_qbwPgFg02fKBmGeOOeC84LHUdWAQJ8Ge0h2GFz1G1ePq2A9zYuqirSbJ2vKsWoeaPFE4yXgAJ6cw5_dsxRt-dKbq_ZAar6SsHhZQqlpsWSntaL7ahErHx9NDD9nwDSeZuzVaT2tYnzDtJl7fn0arkTtNa-gkEPJStugyBt2-N3mHfXMMzhT-ANk2HVazWauoezBLtJRWqo5WzlOFtiycbcd2JeCcIu23q3Zifrvfjono89MM8l3TnGIrh052LTJg8fUx0VnRzZWUBOIy61W4PV3HFLKmDnW5c7RUOZnOpei5L7LFS3MCMIYprqI2uU-W1_FcHBFaQo4ehtEGt8ESdlTRaRK47q1WgMlYclMz5D1Hvhd9rVPBGMBeM460zfkYzebAlZUqRC_gPSxu2tZ2cHjmfi-CI3POatAmbn8Qwu7xACftYmWNw71vGz6jDAvaZTOEKqcS-PkmQoNI4084zlLYWDssBlPupoxvTKgn60YvsU=w766-h288-no" alt></p>
+<p>這是一個範例，展示了 IAM 角色影響決定了你在 GCP 專案中哪些可以做，哪些不能做</p>
+<ul>
+<li>下一步，我們切換到 <b>Username 1</b> 主控台</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="準備一個資源來測試存取"><a href="#準備一個資源來測試存取" class="headerlink" title="準備一個資源來測試存取"></a>準備一個資源來測試存取</h2><p>確定你在 <b>Username 1</b> 的主控台</p>
+<h3 id="建立一個儲存區"><a href="#建立一個儲存區" class="headerlink" title="建立一個儲存區"></a>建立一個儲存區</h3><ul>
+<li>建立一個 <code>GCS</code> 儲存區，給予一個獨特的名字。 從主控台，選擇 <b>Navigation menu &gt; Storage &gt; Browser</b></li>
+<li>點擊 <b>Create bucket</b></li>
+</ul>
+<p><b>注意:</b> 如果出現一個儲存區建立的權限錯誤，先登出再使用 Username 1 登入</p>
+<ul>
+<li>更新以下的欄位，沒提到的留為預設</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/JL-dYlbpmyhmsh70f3je7-SFitdCg2FF91YRSJ4V5XDwNcqIRMkyo-NCrRynDjioXN5rIXaLmEcfmDrUovo8l-wg6fInnXbPcyAsxW4FSZiE7WBM7mxu1HNci9Q3veK14-cE92gcoF2WxJcuL5Z6nXFs3Txbo7MSB_zWPWDF3WvXdYFAsHtqo6xU8DU5xs0LWqNtKHPM6KVLBI2h4cbSfH80Ii0N07PP4ZLLTZlcSz8Q6Gl9Jb2F8bjf0QP5ffTa3DlgEkcro-0NJivuOKWLXYB-Da7P6wFMQMI8GEB6swpa8VWE6xSrkEncaV2-LJr-DbgBV6Ps0d1bVC-_TY_e1sLx54RPf7LTMrBDUTK5MYlECk6ykeCUJneucEVTKe7z3gWuOEP8WDq9ozsaniLzVtA20GQ6MpljWSPEcwROP-bYb9BDmZUO27WUlN4a5JhWepJVj_q06SkJG4MqL3N2c2ofo1kXow76Iuwf7x4tSvNiGA6FLxoFNUNzxPpAQ4wwfSWPSRroXuTYpt_xsmFIfxkAWNSXSaboBRygwifyS8xtmRx1UCLzlpDl5Lsle4b7JDIXYh2tzY21aoqqHDiRVywhsow9-drEzEBwW8hkt6TK3Lw-iCuPY0Axqau264LKi-7YMQXNs2twt8zMiTYMuGTGJltQCJIXhF-ejfg4cmPzVbHi00xhICg=w1284-h244-no" alt></p>
+<p>注意儲存區的名字，之後會用到</p>
+<ul>
+<li>點擊 <b>Create</b></li>
+</ul>
+<p><b>注意:</b> 如果出現一個儲存區建立的權限錯誤，先登出再使用 Username 1 登入</p>
+<h3 id="上傳一個範例檔案"><a href="#上傳一個範例檔案" class="headerlink" title="上傳一個範例檔案"></a>上傳一個範例檔案</h3><ul>
+<li>在儲存區的細節頁面，點擊 <b>Upload files</b> 按鈕</li>
+<li>瀏覽你的電腦，找一個可以使用的檔案，任何 text 或 html 檔都可以</li>
+<li>在檔案那一行的行末，點擊三個小點的圖案，然後點擊 <b>Rename</b></li>
+<li>更新檔名為 <code>sample.txt</code></li>
+<li>點擊 <b>Rename</b></li>
+</ul>
+<p>點擊 <b>Check my progress</b> 來核對目前進度</p>
+<h3 id="核對專案檢視者存取權限"><a href="#核對專案檢視者存取權限" class="headerlink" title="核對專案檢視者存取權限"></a>核對專案檢視者存取權限</h3><p>現在切換到 <b>Username 2</b> 主控台</p>
+<ul>
+<li>從主控台： 選擇 <b>Navigation menu &gt; Storage &gt; Browser</b> 。 核對這個使用者可以看到這個儲存區</li>
+</ul>
+<p>Username 2 有 </p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Baseline-Infrastructure/">#Baseline: Infrastructure</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-IAM/">#GCP IAM</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/usingBigQueryAndStackdriverToAnalyzeBigQuerryUsage/">使用 BigQuery 以及 Stackdriver 來分析 BigQuery 用量</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/cloudIAMQwikStart/';
+        this.page.identifier = 'zh-tw/cloudIAMQwikStart/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
