@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>使用 Stackdriver 在 Kubernetes Engine 上做紀錄 - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver,GCP Kubernetes Engine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/TtKBL6_GDpE3bIJ28Fj7wxYDSfpDrothsOj-0BESMiDU_1Iy3JmtAHGS6GvpccqK54OqmdpEzhZob8KrTFQrHizNAdxcxlmFDuVTYee9_AncI0sBB4Q056SflK2wkFaCbc0BDCstotj742wSuHPY50WzEZ0FrBT5Z1F2qJg6gLnd2P5WrutOxeqpiLtUYyRU9grE2cSXwIqOV6dSqbRszuOszaLeWkgUzp5OerHFvlxk4msav2odgpLU8Ji11h0nTi6CbJuz5rX6SlpO2L2d0UHTxLQgHDGKy3przR1Eq05Z97FwwEsK7JR2PfC3K7v9nWDBctMviO-nCpbUfVOBGOb2Xl0Z4F42AX4mYaOSihtQ0sZGrqmudsqfQQ1wyne3n4qsfCwOdHN48mOWIp4icC3BHMUSgpXNHRzM8RjAk9RXbw_HV272HwmSHxTpbReYRRQAh8uUCrw9ADhRXoStwyxdTQjelXJeDzIpDK_bsc_NQs0v_c9F9tkDUEQMjyF5OL2cnRcb2xMLaeHLa4Xt22zorU0kX7K6wxd80F5dcdAsNZ1Qu2A6RV60UUEfDt1UcLgm5E_v0m7PQoU3jng_8OnTOXw3qxN0eo_lktK2RKi_uqwenK56v6x8fzwraAK4Xq5cF-ekru3yuShhDkHmdkoAubqLzqVYbdc-LMD2SxFsMjImktbn8d4=w1126-h126-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/mCQ6ZxpuL2gAoOIlIFDbczZb3Q3HCKvcRzcKtlfakrl9e6znQrbpWVEx9sieq1c32CKyN8KYTLWpxVhETYVHPTrs08T2ZovYyBrETADSjwPRKDEGBe7pnnhdZ2RbVpMvXWt09oynIXiPVCePR5Rs2o79EF97LUwtPmLcmqPY6t_g-4cvIgoskt-cvvME6XeEX7ygzFIoc2YBsF6OMCanxZ-FCZK2DvsW5GSbahvqGM3xe41E8K3UjP0uHsA6z4eflbXU9ct0Yh0q1xWkzSWvr0ReGIkdcd2OtrrvdJhZPzjerLgw1OUU-jfA1X5IVvhZuBTaGN2-qsGRyPSXNiwP6763NlxYeie9Zpy1kfGBsxkM7iWOn7GUZzguBYANvu43qVukQtu1TzgroeZ5e-rGXpxE8hUqG049Jk7iaHTO86QM1HX-HXJibgIXOgixDkzjmaXtOvUvqs5vQeOjcLFQiH7VXzu9KU20QhOcEB9pCHaBcFpemHzIbxnK-A8bid0zDQV1E7H5852mLEWkJT7mU6PQqzRwZK7YGYMzBgxUY8txK0OUe-oWcy4K9mx7i0A3P8fyuFtJL4rCLrwSR2Hs6EK3pdJjq-bn-3xvz_S5qGyQI6kiiOdj-yIou8DkA9plD2IcyZODpuOY-IWrqY_XMSYRBhSYxoo_pn0E3lU0a4o04Z8tiCcm060=w401-h79-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/Jsp-plF_V72tFF4abtq99qiCUiFdFOc2su2kZDkA-RniGCT1lWeSgcaJkg5tNh4ou-kjVpRYB7BXhNRufLMOzaIrsjU_QqJCNJ2OpcgMfuwQpmuCoNcjVHcZ5Minka1z2y6tUyjvT9UMdWW7nStLMKtm6tca_4s0KQO1Bje8c_LVOmskuBPO2gvgpinN8ybpgdsZCi0al_CqSIFEC46QeGDRzrGRRSSBXpC3bYD1GkPcKiwbYMt6fhzg5ugjY5zPtHKa15pvRvCf1uD5pr0Vcc72372yb0lTk-FSDOp0b3CDObIvKS1n6dXmCeLwXkzcGNMLOsMB4HWHFxNWic2IkkdTWpNEPfValp7HHGEyADrI3lnn1kMjon-zV-mM55iWqXykATzul8BmclA7VxujN36MHVq82oAEwM8kpTYqxXTbzrRQ6UO01LSTYUVDtfjUfF8vMyCftQnNRasnJ1R54UpByi4UCDCfxGSgiB0S0DByrThTKBYlF71dkQ0j3U_uliXGUYQGUXnfGpmzeMF8yiabuNBkP2vJ7gepFt5cGF_Hnqj8uo6R1g1KD8N9TDr35Bq9FqXExJiaVLymcLbwGu_Vtt1KOYE-FEUpJiJ34HW6PoVU4zZnMwZn9sLyauZaIYyvMIk6IBoqZn9r7XPWINFPsq5zOBrehRDrSl-I_J6QCvhb88BhF6I=w869-h235-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/BwKemx5HbLlhu5iaBw1-YNFHeTMDedYaUMu1WQ79JItMCiPczK75TCPKAA1egcfq-g9A00bliikjh7R0sGVn4ag0TPdRPG3A8yhr0RH1Sb514Xh7NGjTdRTsLaaqNjqwXiMAVu-Hffxao9EyinJgWmoTEUJklP_cje4j8ddH2h9ZzZSXHMgfFQPKkV1TRg7bhA3916DptaWUd24aCIRtu8Puc5xXgdbdhdxzDiZ8AXVbWvvsGqW5rPqjNA_pIXhcC-GGM3MwEgPOERBjQBU6pGwvdog22NRryTeNpsUX7eLGaYK2BeTmZvgk1EWQ3VdQjPkasYp0yUIOHXZM8yiFvxeO9OAJNx4zAarEVB_2usOWZSlvNbRXo4j0jQYfVRlP8JdWhUM1_MpiPHAnsKL4VDCjo9oriP_Iax1Qo3Mraikd2PUoyJi_5vXkBFZABg7IJZc8MMMkg8mRVJjRBtbP23Gu_vI0EZkMnxazM5dhkXhQKA0p-fghVa6HaJZnvLkMg6U17HSaJlokvy4VdV8yhDrnGaMKnDjWkVnkFlk6LNDvT_ecAORrl-h7vHnxSy7uSbsd7XWOFSQCpQqVHVnb6URlqpGoiKQCyHrdl9_hDFvQKhJnG9phg7gnwG7X6iAG7EYbag1XZL2HL4odVlvxhFenyP-fPiSo4GwAvOgNKSYjWK0i2BzHzPc=w1211-h569-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/1DtHynfDSbYRxhnCSlw_0GcPkpiIw8d2NfxVN74-bDs4C-7uBZAVngzY4MApW93Oqyyf62CDlfG9V6N6n7z12AxdvU0zHwv62bzQcK2HkKQfGJ0_3ZYV3hjNCCeZrOKqPmMXX81Zitjp-OvQG3Ab0OBmyXqSzbUFJRBF_X3z3Qei_VkYAX51OglBi7NOgG8T6TOaHq-CWTR_KNuwC-053MCAjOTBM8vnhSq9wYThx00dfvmc6jv4JF_Gg8gLo-ocyZXJYNsfw207VbO03zGaG37oPuIwSkMBsbEZ_cM36FYM0Hc8ZkK5sxMrgVW9mem_CpN6qJWBE3UtCEOD_VWqeaJ7qbsuFV5s0xk8LTvT3J_0QwkC55dqnOOvMLWDGMVTMw9cwLMRevOeuS2adWIedDH-2z5vuBzF7tzYsndT4xhSl6rAY_GxNWJ5jhBteSaXRzZQWnue9a4PqXrfs-3JMqimMv-QyPQuJKOhVrIq02ie8rADm6FYX3BKWTjxzgAbGXe1_MsDjLSWXV3GeYjsGkLmV3QQwtb6USTaxL0u1bOWVAuf2ysCRklmoRFALTzhkBGsPLmuIeaS1kC7z9K1Mkkd0x6ILjPiODm_fwfDxlsMcur0L8axMkB4bUbHuXwBdBworL8WBNXa5oiUPfGDHY5QRrSi7VfOxANeIE-qdl07BQH3lDnbfhE=w1280-h550-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/B6K5A8g1uRhmwk2FuT-5mYdUlyv00kj4cEJEJjqDpRizYRQ_WrMZ-mXiopMhQc1XHc2aaKdtCtfR8NiJwdYPNMXXMKFuFFqVx3zIr6JVT7-oqpVlSsfQ9XzXo1E2SoFqcWkzHsiietu3hWSGxiMt628dDEvs0ee28oe6sKW-F7vpejbJP5yDh32IqRHJnE5k_mfNWl2MkQJVTxq6AGIp8To3WnQnsn0jh0CJI0wV7MuFU4tO4mpSj7EESxOmwkeYQATCEppQoovYyLIZh5NOwLMz7fxia-xwlXaNIwF5MzT9atqwcavD0m8kh7POBlzJPShvWatPgYfA1n5gSJegcynUAs24P1vG9nPEkDmHiKA8ZziGVRApxq268kRGv9AQhA4fWHwcB_H0wAnh5RjWRCcnr_zIC49W9GiIKZffrbPuQ6aPtrJyIdjCGuPzXYmLJuDZLG_yJw9cyeDMpP3_KZrcdlg8DLnnjBs4gNtM6om04DcGmLHKFHeF8oUDFkLoQZcsJIUcPvtbhXWeoZmJ_O7GtMvNI5sUFDGnybztM3fqBChjiFhZFqQAjd2J3XEc0HqqQVBg0-9fFGqQ7Pvth1qDAkGUEZgibrpUxHtTYr9f-z4-BiPRIyJG0S34xNDZGIGhA4cpDR-hBV0uG3c19wyt0oJonf0bxDIhJIRpfcHqsNYeEJPIyUg=w1098-h795-no">
+<meta property="og:updated_time" content="2019-09-01T11:00:50.700Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
+<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/loggingWithStackdriverOnKubernetesEngine/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver,GCP Kubernetes Engine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/TtKBL6_GDpE3bIJ28Fj7wxYDSfpDrothsOj-0BESMiDU_1Iy3JmtAHGS6GvpccqK54OqmdpEzhZob8KrTFQrHizNAdxcxlmFDuVTYee9_AncI0sBB4Q056SflK2wkFaCbc0BDCstotj742wSuHPY50WzEZ0FrBT5Z1F2qJg6gLnd2P5WrutOxeqpiLtUYyRU9grE2cSXwIqOV6dSqbRszuOszaLeWkgUzp5OerHFvlxk4msav2odgpLU8Ji11h0nTi6CbJuz5rX6SlpO2L2d0UHTxLQgHDGKy3przR1Eq05Z97FwwEsK7JR2PfC3K7v9nWDBctMviO-nCpbUfVOBGOb2Xl0Z4F42AX4mYaOSihtQ0sZGrqmudsqfQQ1wyne3n4qsfCwOdHN48mOWIp4icC3BHMUSgpXNHRzM8RjAk9RXbw_HV272HwmSHxTpbReYRRQAh8uUCrw9ADhRXoStwyxdTQjelXJeDzIpDK_bsc_NQs0v_c9F9tkDUEQMjyF5OL2cnRcb2xMLaeHLa4Xt22zorU0kX7K6wxd80F5dcdAsNZ1Qu2A6RV60UUEfDt1UcLgm5E_v0m7PQoU3jng_8OnTOXw3qxN0eo_lktK2RKi_uqwenK56v6x8fzwraAK4Xq5cF-ekru3yuShhDkHmdkoAubqLzqVYbdc-LMD2SxFsMjImktbn8d4=w1126-h126-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/mCQ6ZxpuL2gAoOIlIFDbczZb3Q3HCKvcRzcKtlfakrl9e6znQrbpWVEx9sieq1c32CKyN8KYTLWpxVhETYVHPTrs08T2ZovYyBrETADSjwPRKDEGBe7pnnhdZ2RbVpMvXWt09oynIXiPVCePR5Rs2o79EF97LUwtPmLcmqPY6t_g-4cvIgoskt-cvvME6XeEX7ygzFIoc2YBsF6OMCanxZ-FCZK2DvsW5GSbahvqGM3xe41E8K3UjP0uHsA6z4eflbXU9ct0Yh0q1xWkzSWvr0ReGIkdcd2OtrrvdJhZPzjerLgw1OUU-jfA1X5IVvhZuBTaGN2-qsGRyPSXNiwP6763NlxYeie9Zpy1kfGBsxkM7iWOn7GUZzguBYANvu43qVukQtu1TzgroeZ5e-rGXpxE8hUqG049Jk7iaHTO86QM1HX-HXJibgIXOgixDkzjmaXtOvUvqs5vQeOjcLFQiH7VXzu9KU20QhOcEB9pCHaBcFpemHzIbxnK-A8bid0zDQV1E7H5852mLEWkJT7mU6PQqzRwZK7YGYMzBgxUY8txK0OUe-oWcy4K9mx7i0A3P8fyuFtJL4rCLrwSR2Hs6EK3pdJjq-bn-3xvz_S5qGyQI6kiiOdj-yIou8DkA9plD2IcyZODpuOY-IWrqY_XMSYRBhSYxoo_pn0E3lU0a4o04Z8tiCcm060=w401-h79-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/Jsp-plF_V72tFF4abtq99qiCUiFdFOc2su2kZDkA-RniGCT1lWeSgcaJkg5tNh4ou-kjVpRYB7BXhNRufLMOzaIrsjU_QqJCNJ2OpcgMfuwQpmuCoNcjVHcZ5Minka1z2y6tUyjvT9UMdWW7nStLMKtm6tca_4s0KQO1Bje8c_LVOmskuBPO2gvgpinN8ybpgdsZCi0al_CqSIFEC46QeGDRzrGRRSSBXpC3bYD1GkPcKiwbYMt6fhzg5ugjY5zPtHKa15pvRvCf1uD5pr0Vcc72372yb0lTk-FSDOp0b3CDObIvKS1n6dXmCeLwXkzcGNMLOsMB4HWHFxNWic2IkkdTWpNEPfValp7HHGEyADrI3lnn1kMjon-zV-mM55iWqXykATzul8BmclA7VxujN36MHVq82oAEwM8kpTYqxXTbzrRQ6UO01LSTYUVDtfjUfF8vMyCftQnNRasnJ1R54UpByi4UCDCfxGSgiB0S0DByrThTKBYlF71dkQ0j3U_uliXGUYQGUXnfGpmzeMF8yiabuNBkP2vJ7gepFt5cGF_Hnqj8uo6R1g1KD8N9TDr35Bq9FqXExJiaVLymcLbwGu_Vtt1KOYE-FEUpJiJ34HW6PoVU4zZnMwZn9sLyauZaIYyvMIk6IBoqZn9r7XPWINFPsq5zOBrehRDrSl-I_J6QCvhb88BhF6I=w869-h235-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/BwKemx5HbLlhu5iaBw1-YNFHeTMDedYaUMu1WQ79JItMCiPczK75TCPKAA1egcfq-g9A00bliikjh7R0sGVn4ag0TPdRPG3A8yhr0RH1Sb514Xh7NGjTdRTsLaaqNjqwXiMAVu-Hffxao9EyinJgWmoTEUJklP_cje4j8ddH2h9ZzZSXHMgfFQPKkV1TRg7bhA3916DptaWUd24aCIRtu8Puc5xXgdbdhdxzDiZ8AXVbWvvsGqW5rPqjNA_pIXhcC-GGM3MwEgPOERBjQBU6pGwvdog22NRryTeNpsUX7eLGaYK2BeTmZvgk1EWQ3VdQjPkasYp0yUIOHXZM8yiFvxeO9OAJNx4zAarEVB_2usOWZSlvNbRXo4j0jQYfVRlP8JdWhUM1_MpiPHAnsKL4VDCjo9oriP_Iax1Qo3Mraikd2PUoyJi_5vXkBFZABg7IJZc8MMMkg8mRVJjRBtbP23Gu_vI0EZkMnxazM5dhkXhQKA0p-fghVa6HaJZnvLkMg6U17HSaJlokvy4VdV8yhDrnGaMKnDjWkVnkFlk6LNDvT_ecAORrl-h7vHnxSy7uSbsd7XWOFSQCpQqVHVnb6URlqpGoiKQCyHrdl9_hDFvQKhJnG9phg7gnwG7X6iAG7EYbag1XZL2HL4odVlvxhFenyP-fPiSo4GwAvOgNKSYjWK0i2BzHzPc=w1211-h569-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/1DtHynfDSbYRxhnCSlw_0GcPkpiIw8d2NfxVN74-bDs4C-7uBZAVngzY4MApW93Oqyyf62CDlfG9V6N6n7z12AxdvU0zHwv62bzQcK2HkKQfGJ0_3ZYV3hjNCCeZrOKqPmMXX81Zitjp-OvQG3Ab0OBmyXqSzbUFJRBF_X3z3Qei_VkYAX51OglBi7NOgG8T6TOaHq-CWTR_KNuwC-053MCAjOTBM8vnhSq9wYThx00dfvmc6jv4JF_Gg8gLo-ocyZXJYNsfw207VbO03zGaG37oPuIwSkMBsbEZ_cM36FYM0Hc8ZkK5sxMrgVW9mem_CpN6qJWBE3UtCEOD_VWqeaJ7qbsuFV5s0xk8LTvT3J_0QwkC55dqnOOvMLWDGMVTMw9cwLMRevOeuS2adWIedDH-2z5vuBzF7tzYsndT4xhSl6rAY_GxNWJ5jhBteSaXRzZQWnue9a4PqXrfs-3JMqimMv-QyPQuJKOhVrIq02ie8rADm6FYX3BKWTjxzgAbGXe1_MsDjLSWXV3GeYjsGkLmV3QQwtb6USTaxL0u1bOWVAuf2ysCRklmoRFALTzhkBGsPLmuIeaS1kC7z9K1Mkkd0x6ILjPiODm_fwfDxlsMcur0L8axMkB4bUbHuXwBdBworL8WBNXa5oiUPfGDHY5QRrSi7VfOxANeIE-qdl07BQH3lDnbfhE=w1280-h550-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/B6K5A8g1uRhmwk2FuT-5mYdUlyv00kj4cEJEJjqDpRizYRQ_WrMZ-mXiopMhQc1XHc2aaKdtCtfR8NiJwdYPNMXXMKFuFFqVx3zIr6JVT7-oqpVlSsfQ9XzXo1E2SoFqcWkzHsiietu3hWSGxiMt628dDEvs0ee28oe6sKW-F7vpejbJP5yDh32IqRHJnE5k_mfNWl2MkQJVTxq6AGIp8To3WnQnsn0jh0CJI0wV7MuFU4tO4mpSj7EESxOmwkeYQATCEppQoovYyLIZh5NOwLMz7fxia-xwlXaNIwF5MzT9atqwcavD0m8kh7POBlzJPShvWatPgYfA1n5gSJegcynUAs24P1vG9nPEkDmHiKA8ZziGVRApxq268kRGv9AQhA4fWHwcB_H0wAnh5RjWRCcnr_zIC49W9GiIKZffrbPuQ6aPtrJyIdjCGuPzXYmLJuDZLG_yJw9cyeDMpP3_KZrcdlg8DLnnjBs4gNtM6om04DcGmLHKFHeF8oUDFkLoQZcsJIUcPvtbhXWeoZmJ_O7GtMvNI5sUFDGnybztM3fqBChjiFhZFqQAjd2J3XEc0HqqQVBg0-9fFGqQ7Pvth1qDAkGUEZgibrpUxHtTYr9f-z4-BiPRIyJG0S34xNDZGIGhA4cpDR-hBV0uG3c19wyt0oJonf0bxDIhJIRpfcHqsNYeEJPIyUg=w1098-h795-no">
+<meta property="og:updated_time" content="2019-09-01T11:00:50.700Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
+<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#概述">2&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#架構">3&nbsp;&nbsp;<b>架構</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">4&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Qwiklabs-setup">4.1&nbsp;&nbsp;Qwiklabs setup</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-Google-Cloud-Shell">4.2&nbsp;&nbsp;啟動 Google Cloud Shell</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Clone-範例">4.3&nbsp;&nbsp;Clone 範例</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定你的-region-和-zone">4.4&nbsp;&nbsp;設定你的 region 和 zone</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署">5&nbsp;&nbsp;<b>部署</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#驗證">6&nbsp;&nbsp;<b>驗證</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#產生紀錄">7&nbsp;&nbsp;<b>產生紀錄</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在-Stackdiver-的紀錄">8&nbsp;&nbsp;<b>在 Stackdiver 的紀錄</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#檢視紀錄匯出">9&nbsp;&nbsp;<b>檢視紀錄匯出</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在-Cloud-Storage-的紀錄">10&nbsp;&nbsp;<b>在 Cloud Storage 的紀錄</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在-BigQuery-的紀錄">11&nbsp;&nbsp;<b>在 BigQuery 的紀錄</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#刪除安裝">12&nbsp;&nbsp;<b>刪除安裝</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#正式環境的故障排除">13&nbsp;&nbsp;<b>正式環境的故障排除</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#恭喜，你已完成本教程">14&nbsp;&nbsp;<b>恭喜，你已完成本教程</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/loggingWithStackdriverOnKubernetesEngine/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/loggingWithStackdriverOnKubernetesEngine/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            使用 Stackdriver 在 Kubernetes Engine 上做紀錄
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-09-01T06:08:36.000Z" itemprop="datePublished">9月 1 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            37 分钟 讀完 (大概 5546 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文<br><a id="more"></a></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>Stackdriver Logging</code> 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 <code>Stackdriver Logging UI</code> 內被檢視。 他們也可以被<a href="https://cloud.google.com/logging/docs/export/configure_export_v2" target="_blank" rel="noopener">匯出到接收器</a>來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:</p>
+<ul>
+<li>Cloud Storage</li>
+<li>Pub/Sub</li>
+<li>BigQuery</li>
+</ul>
+<p>在這個教程，你將會部署一個簡單的 Kubernetes 應用，這個應用將轉發紀錄事件到 <a href="https://cloud.google.com/logging/" target="_blank" rel="noopener">Stackdriver Logging</a> 。 <a href="https://www.terraform.io/" target="_blank" rel="noopener">Terraform</a> 一個強調基礎架構就是程式碼的工具， 可以使用配置檔來自動化部署，是雲端基礎架構的進化。 配置檔同時也會建立一個 <code>Cloud Storage</code> 儲存區，以及 <code>BigQuery</code> 資料組來接受被匯出的紀錄</p>
+<p>本教程由 <code>GKE Helmsman</code> 的工程師所建立，為了讓你對 Stackdriver Logging 有更好地理解。 你可以在 Github 上檢視這個<a href="https://github.com/GoogleCloudPlatform/gke-binary-auth-demo.git" target="_blank" rel="noopener">範例</a>。 我們也鼓勵以及歡迎任何想對我們專案做出貢獻的開發者！</p>
+<p><br><br><br><br><br></p>
+<h2 id="架構"><a href="#架構" class="headerlink" title="架構"></a>架構</h2><p><code>Terraform</code> 配置將會建立一個 <code>Kubernetes Engine</code> 叢集，這個叢集會產生可被 Stackdriver 處理的紀錄以及指標。 這個腳本也會同時建立紀錄的匯出接收器，有 <code>CloudStorage, BigQuery</code>, 以及 <code>Cloud Pub/Sub</code>。 這一切包含資料流，可參考下面的圖片</p>
+<p><img src="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no" alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><br></p>
+<h3 id="Qwiklabs-setup"><a href="#Qwiklabs-setup" class="headerlink" title="Qwiklabs setup"></a>Qwiklabs setup</h3><p><b>在你按下 Start Lab 按鈕之前</b></p>
+<p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Quiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Quiclabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<p><b>你需要什麼？</b></p>
+<p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><b>備註：</b> 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台，然後開啟命令列工具</p>
+<p><b>如何開始你的 lab ，然後登入 Console?</b></p>
+<ol>
+<li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<ol start="2">
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p><b>tip:</b> 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<ol start="4">
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ol>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<ol start="2">
+<li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command ,你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+<p>輸出:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+<p>範例輸出:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+<p>輸出：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+<p>範例輸出：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<h3 id="Clone-範例"><a href="#Clone-範例" class="headerlink" title="Clone 範例"></a>Clone 範例</h3><p>clone 本教程需要的資源，執行以下指令<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> https://github.com/GoogleCloudPlatform/gke-logging-sinks-demo</span><br></pre></td></tr></table></figure></p>
+<p>進到專案內<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> gke-logging-sinks-demo</span><br></pre></td></tr></table></figure></p>
+<h3 id="設定你的-region-和-zone"><a href="#設定你的-region-和-zone" class="headerlink" title="設定你的 region 和 zone"></a>設定你的 region 和 zone</h3><p>某些 <code>Compute Engine</code> 的資源位於 regions 以及 zones 。 region 是一個特定的地理位置，你只能在這個執行 region 運行你的資源, 每一個 region 有一個或多個 zone</p>
+<p>如果你想要了解更多有關 region 以及 zone, 可以參考<a href="https://cloud.google.com/compute/docs/regions-zones/" target="_blank" rel="noopener">官方文件</a></p>
+<p>執行以下指令來設定本教程中的 region 以及 zone (你可以使用對你來說最佳的 region 跟 zone)</p>
+<p><br><br><br><br><br></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>遵從 <a href="https://en.wikipedia.org/wiki/Infrastructure_as_Code" target="_blank" rel="noopener">程式碼及基本架構</a> 以及 <a href="https://www.oreilly.com/ideas/an-introduction-to-immutable-infrastructure" target="_blank" rel="noopener">不可改變的基礎架構</a> , Terraform 支援利用陳述性的描述來決定理想的基礎架構狀態。 當述詞被採用， Terraform 使用 <code>GCP APIs</code> 來提供以及更新資源的狀態已符合述詞。 Terraform 比較想要的狀態以及目前的狀態，所以漸進式增加的變更不需要刪除任何東西，或者重新開始，即可被套用。 例如說，Terraform 可以建立 GCP 專案以及 compute 執行個體等等… 甚至是設定一個 <code>Kubernetes Engine</code> 叢集，並且部署應用到上面。 當要求改變了，敘詞可以被更新，然後 Terraform 將會相對應的更新雲端基礎設施</p>
+<p>這個範例將會開始一個 <code>Kubernetes Engine</code> 叢集，然後部署一個簡單的範例應用上去。 預設， GCP <code>Kubernetes Engine</code> 叢集內建一個事先配置好的 <a href="https://www.fluentd.org/" target="_blank" rel="noopener">Fluented</a> 收集器，他會轉發記錄到 Stackdriver</p>
+<p><b>更新 provider.tf 檔案</b></p>
+<p>在 Terraform 的 <code>provider.tf</code> 腳本中，移除 provider 版本</p>
+<p>編輯 <code>provider.tf</code> 腳本<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">nano ~/gke-logging-sinks-demo/terraform/provider.tf</span><br></pre></td></tr></table></figure></p>
+<p>如果檔案含有 <code>google</code> 提供者的靜態版本字串，像下圖一樣，請移除</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">provider <span class="hljs-string">"google"</span> &#123;</span><br><span class="line">  project = var.project</span><br><span class="line">  version = <span class="hljs-string">"~&gt; 2.10.0"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>儲存檔案</p>
+<p><b>部署叢集</b></p>
+<p>本教程提供的範例檔案中，有三個 Teffaform 的配置檔。 第一個， <code>main.tf</code> ，是一個 Terraform 的起始點。 他描述了會使用到的功能，以及會被操縱到的資源，還有會輸出的結果。 第二個檔案是 <code>provider.tf</code> , 這個檔案顯示 Terraform 指令的目標是哪一個雲端提供者以及其版本，在這個範例中，是 GCP 。 最後一個檔案是 <code>variables.tf</code> ，它含有一個變數清單，用來當作 Terraform 的輸入。 任何沒有在 <code>variables.tf</code> 但有用在 <code>main.tf</code> 的變數都會在執行過程中跳出。</p>
+<p>要建立環境，可以執行以下指令<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make create</span><br></pre></td></tr></table></figure></p>
+<p><b>備註：</b> 如果你收到跟 zone 變數相關的廢棄警告，請無視，繼續本教程</p>
+<p><br><br><br><br><br></p>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>如果在部署過程中沒有顯示任何錯誤，在幾分鐘之後，你應該會在 GCP 主控台看到 <code>Kubernetes Engine</code> 叢集</p>
+<p>到 <b>Navigation menu &gt; Kubernetes Engine</b> 來看同一個被部署的應用</p>
+<p>若要驗證這個範例是否正確的部署，執行<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make validate</span><br></pre></td></tr></table></figure></p>
+<p>輸出看起來如下：</p>
+<p><img src="https://lh3.googleusercontent.com/TtKBL6_GDpE3bIJ28Fj7wxYDSfpDrothsOj-0BESMiDU_1Iy3JmtAHGS6GvpccqK54OqmdpEzhZob8KrTFQrHizNAdxcxlmFDuVTYee9_AncI0sBB4Q056SflK2wkFaCbc0BDCstotj742wSuHPY50WzEZ0FrBT5Z1F2qJg6gLnd2P5WrutOxeqpiLtUYyRU9grE2cSXwIqOV6dSqbRszuOszaLeWkgUzp5OerHFvlxk4msav2odgpLU8Ji11h0nTi6CbJuz5rX6SlpO2L2d0UHTxLQgHDGKy3przR1Eq05Z97FwwEsK7JR2PfC3K7v9nWDBctMviO-nCpbUfVOBGOb2Xl0Z4F42AX4mYaOSihtQ0sZGrqmudsqfQQ1wyne3n4qsfCwOdHN48mOWIp4icC3BHMUSgpXNHRzM8RjAk9RXbw_HV272HwmSHxTpbReYRRQAh8uUCrw9ADhRXoStwyxdTQjelXJeDzIpDK_bsc_NQs0v_c9F9tkDUEQMjyF5OL2cnRcb2xMLaeHLa4Xt22zorU0kX7K6wxd80F5dcdAsNZ1Qu2A6RV60UUEfDt1UcLgm5E_v0m7PQoU3jng_8OnTOXw3qxN0eo_lktK2RKi_uqwenK56v6x8fzwraAK4Xq5cF-ekru3yuShhDkHmdkoAubqLzqVYbdc-LMD2SxFsMjImktbn8d4=w1126-h126-no" alt></p>
+<p>現在，應用已經被部署到 <code>Kubernetes Engine</code>, 它可以產生紀錄資料，然後可以使用 <a href="https://console.cloud.google.com/logs" target="_blank" rel="noopener">Stackdriver</a> 或其他工具來檢視它</p>
+<p><br><br><br><br><br></p>
+<h2 id="產生紀錄"><a href="#產生紀錄" class="headerlink" title="產生紀錄"></a>產生紀錄</h2><p>這個使用 Terraform 部署的範例應用提供一個簡單網頁的功能。 每次你在瀏覽器打開這個應用，這個應用將會發布紀錄事件到 <code>Stackdriver Logging</code> 。 重整頁面幾次來產生一些紀錄事件。</p>
+<p>要取得應用頁面的 URL , 執行以下步驟:</p>
+<ul>
+<li>在 GCP 主控台，從 <b>Navigation menu</b>, 移動到 Networking section, 然後點擊 <b>Network services</b></li>
+<li>在預設的 <b>Load balancing</b> 頁面，點擊已經設定好的 TCP load balancer</li>
+<li>在 <b>Load balancer detail</b> 頁面，最上面已被下標籤 <b>Fronted</b></li>
+<li>複製 <code>IP:Port</code> URL, 打開一個新的瀏覽器然後貼上，瀏覽器應該會顯示類似以下的畫面：</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/mCQ6ZxpuL2gAoOIlIFDbczZb3Q3HCKvcRzcKtlfakrl9e6znQrbpWVEx9sieq1c32CKyN8KYTLWpxVhETYVHPTrs08T2ZovYyBrETADSjwPRKDEGBe7pnnhdZ2RbVpMvXWt09oynIXiPVCePR5Rs2o79EF97LUwtPmLcmqPY6t_g-4cvIgoskt-cvvME6XeEX7ygzFIoc2YBsF6OMCanxZ-FCZK2DvsW5GSbahvqGM3xe41E8K3UjP0uHsA6z4eflbXU9ct0Yh0q1xWkzSWvr0ReGIkdcd2OtrrvdJhZPzjerLgw1OUU-jfA1X5IVvhZuBTaGN2-qsGRyPSXNiwP6763NlxYeie9Zpy1kfGBsxkM7iWOn7GUZzguBYANvu43qVukQtu1TzgroeZ5e-rGXpxE8hUqG049Jk7iaHTO86QM1HX-HXJibgIXOgixDkzjmaXtOvUvqs5vQeOjcLFQiH7VXzu9KU20QhOcEB9pCHaBcFpemHzIbxnK-A8bid0zDQV1E7H5852mLEWkJT7mU6PQqzRwZK7YGYMzBgxUY8txK0OUe-oWcy4K9mx7i0A3P8fyuFtJL4rCLrwSR2Hs6EK3pdJjq-bn-3xvz_S5qGyQI6kiiOdj-yIou8DkA9plD2IcyZODpuOY-IWrqY_XMSYRBhSYxoo_pn0E3lU0a4o04Z8tiCcm060=w401-h79-no" alt></p>
+<h2 id="在-Stackdiver-的紀錄"><a href="#在-Stackdiver-的紀錄" class="headerlink" title="在 Stackdiver 的紀錄"></a>在 Stackdiver 的紀錄</h2><p><code>Stackdriver</code> 提供 UI 介面來檢視紀錄事件。 基本的搜尋以及篩選的功能都有提供，當在 Debug 系統問題時，這非常的有用。 <code>Stackdriver Logging</code> 最適合用來檢視比較近的紀錄事件，若對長期紀錄事件有要求的使用者，應該考慮其他一些工具，下面會介紹到</p>
+<p>若要存取 <code>Stackdriver Logging</code> 主控台，執行以下的步驟：</p>
+<ul>
+<li><p>在 GCP 主控台，從 <b>Navigation menu</b> Stackdriver 區塊，選擇 <b>Logging</b></p>
+</li>
+<li><p>變更資源篩選器 <b>GKE Container &gt; stackdriver-logging &gt; default </b>( <b>stackdriver-logging 是叢集，而 <b> </b>default</b> 是命名空間)</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/Jsp-plF_V72tFF4abtq99qiCUiFdFOc2su2kZDkA-RniGCT1lWeSgcaJkg5tNh4ou-kjVpRYB7BXhNRufLMOzaIrsjU_QqJCNJ2OpcgMfuwQpmuCoNcjVHcZ5Minka1z2y6tUyjvT9UMdWW7nStLMKtm6tca_4s0KQO1Bje8c_LVOmskuBPO2gvgpinN8ybpgdsZCi0al_CqSIFEC46QeGDRzrGRRSSBXpC3bYD1GkPcKiwbYMt6fhzg5ugjY5zPtHKa15pvRvCf1uD5pr0Vcc72372yb0lTk-FSDOp0b3CDObIvKS1n6dXmCeLwXkzcGNMLOsMB4HWHFxNWic2IkkdTWpNEPfValp7HHGEyADrI3lnn1kMjon-zV-mM55iWqXykATzul8BmclA7VxujN36MHVq82oAEwM8kpTYqxXTbzrRQ6UO01LSTYUVDtfjUfF8vMyCftQnNRasnJ1R54UpByi4UCDCfxGSgiB0S0DByrThTKBYlF71dkQ0j3U_uliXGUYQGUXnfGpmzeMF8yiabuNBkP2vJ7gepFt5cGF_Hnqj8uo6R1g1KD8N9TDr35Bq9FqXExJiaVLymcLbwGu_Vtt1KOYE-FEUpJiJ34HW6PoVU4zZnMwZn9sLyauZaIYyvMIk6IBoqZn9r7XPWINFPsq5zOBrehRDrSl-I_J6QCvhb88BhF6I=w869-h235-no" alt></p>
+<p>在這個頁面上，你可以展開紀錄來檢視紀錄數據更多的細節</p>
+<p><img src="https://lh3.googleusercontent.com/BwKemx5HbLlhu5iaBw1-YNFHeTMDedYaUMu1WQ79JItMCiPczK75TCPKAA1egcfq-g9A00bliikjh7R0sGVn4ag0TPdRPG3A8yhr0RH1Sb514Xh7NGjTdRTsLaaqNjqwXiMAVu-Hffxao9EyinJgWmoTEUJklP_cje4j8ddH2h9ZzZSXHMgfFQPKkV1TRg7bhA3916DptaWUd24aCIRtu8Puc5xXgdbdhdxzDiZ8AXVbWvvsGqW5rPqjNA_pIXhcC-GGM3MwEgPOERBjQBU6pGwvdog22NRryTeNpsUX7eLGaYK2BeTmZvgk1EWQ3VdQjPkasYp0yUIOHXZM8yiFvxeO9OAJNx4zAarEVB_2usOWZSlvNbRXo4j0jQYfVRlP8JdWhUM1_MpiPHAnsKL4VDCjo9oriP_Iax1Qo3Mraikd2PUoyJi_5vXkBFZABg7IJZc8MMMkg8mRVJjRBtbP23Gu_vI0EZkMnxazM5dhkXhQKA0p-fghVa6HaJZnvLkMg6U17HSaJlokvy4VdV8yhDrnGaMKnDjWkVnkFlk6LNDvT_ecAORrl-h7vHnxSy7uSbsd7XWOFSQCpQqVHVnb6URlqpGoiKQCyHrdl9_hDFvQKhJnG9phg7gnwG7X6iAG7EYbag1XZL2HL4odVlvxhFenyP-fPiSo4GwAvOgNKSYjWK0i2BzHzPc=w1211-h569-no" alt></p>
+<p>在紀錄主控台，你可以執行任何類型的文字搜尋，或是嘗試很多紀錄類型的篩選器，事件等級，時間區間等等</p>
+<p><br><br><br><br><br></p>
+<h2 id="檢視紀錄匯出"><a href="#檢視紀錄匯出" class="headerlink" title="檢視紀錄匯出"></a>檢視紀錄匯出</h2><p><code>Terraform</code> 配置建立了兩個紀錄匯出接收器。 若要檢視接收器，執行以下的步驟:</p>
+<ul>
+<li>你應該還在 <b>Stackdriver -&gt; Logging </b>頁面</li>
+<li>在左邊導航選單，點擊 <b>Exports</b> 選單選項</li>
+<li>這會導引你到 <b>Exports</b> 頁面，在紀錄匯出的清單，你應該會看到兩個接收器</li>
+<li>在接收器右手邊點擊 context 選單 (三個小點), 然後選擇 <b>Edit sink</b>, 你可以編輯/檢視這些接受器</li>
+<li>另外，在導航視窗的頂部點擊 <b>Create Export</b> 選項，你可以建立額外的客制匯出接收器</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="在-Cloud-Storage-的紀錄"><a href="#在-Cloud-Storage-的紀錄" class="headerlink" title="在 Cloud Storage 的紀錄"></a>在 Cloud Storage 的紀錄</h2><p>紀錄事件可以被儲存在 <a href="https://cloud.google.com/storage/" target="_blank" rel="noopener">Cloud Storage</a>, 這是一個適合用來儲存歸檔資料的物件儲存系統。 <code>Cloud Storage</code> 儲存區的政策可以被配置，舉例來說，久置的資料可變為過期，然後自動刪除，而新的資料可以依照不同的類別被儲存，類別會影響到價格以及可用性。</p>
+<p><code>Terraform</code> 配置黨建立了一個 <code>Cloud Storage</code> 儲存區，名為 <code>Stackdriver-gke-logging-</code>, 中長期的紀錄都會被匯出，然後儲存在這。 在這個範例中，儲存類別被定義為 <code>Nearline</code>, 因為正常生產環境中，紀錄中長期的紀錄不會經常性地被儲存（這將有助於管理中長期儲存成本）。 在正式環境中，儲存區也可以包含一個生命週期的政策，他可以將內容移動到 <code>Coldline</code> 儲存區，這樣對長期儲存記錄的成本會更低</p>
+<p>要在 <code>Cloud Storage</code> 存取 Stackdriver 紀錄, 執行下面的步驟：</p>
+<ul>
+<li>在 GCP 主控台， 從 <b>Navigation menu</b> 點擊 <b>Storage</b></li>
+<li>找到名為 <code>stackdriver-gke-logging-&lt;random-Id&gt;</code> 的儲存區，點擊名稱</li>
+<li>你應會看到一系列與跑到叢集中的 <code>pod</code> 相對應的資料夾 (就是， autoscaler, dnsmasq, 等等)</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/1DtHynfDSbYRxhnCSlw_0GcPkpiIw8d2NfxVN74-bDs4C-7uBZAVngzY4MApW93Oqyyf62CDlfG9V6N6n7z12AxdvU0zHwv62bzQcK2HkKQfGJ0_3ZYV3hjNCCeZrOKqPmMXX81Zitjp-OvQG3Ab0OBmyXqSzbUFJRBF_X3z3Qei_VkYAX51OglBi7NOgG8T6TOaHq-CWTR_KNuwC-053MCAjOTBM8vnhSq9wYThx00dfvmc6jv4JF_Gg8gLo-ocyZXJYNsfw207VbO03zGaG37oPuIwSkMBsbEZ_cM36FYM0Hc8ZkK5sxMrgVW9mem_CpN6qJWBE3UtCEOD_VWqeaJ7qbsuFV5s0xk8LTvT3J_0QwkC55dqnOOvMLWDGMVTMw9cwLMRevOeuS2adWIedDH-2z5vuBzF7tzYsndT4xhSl6rAY_GxNWJ5jhBteSaXRzZQWnue9a4PqXrfs-3JMqimMv-QyPQuJKOhVrIq02ie8rADm6FYX3BKWTjxzgAbGXe1_MsDjLSWXV3GeYjsGkLmV3QQwtb6USTaxL0u1bOWVAuf2ysCRklmoRFALTzhkBGsPLmuIeaS1kC7z9K1Mkkd0x6ILjPiODm_fwfDxlsMcur0L8axMkB4bUbHuXwBdBworL8WBNXa5oiUPfGDHY5QRrSi7VfOxANeIE-qdl07BQH3lDnbfhE=w1280-h550-no" alt></p>
+<p>你可以點擊任何一個資料夾來瀏覽特定的紀錄細節，像是 heapster, kubedns, sidecar, 等等…</p>
+<p><br><br><br><br><br></p>
+<h2 id="在-BigQuery-的紀錄"><a href="#在-BigQuery-的紀錄" class="headerlink" title="在 BigQuery 的紀錄"></a>在 BigQuery 的紀錄</h2><p><code>Stackdriver</code> 紀錄事件可以被設定成發佈在 <a href="https://cloud.google.com/bigquery/" target="_blank" rel="noopener">BigQuery</a>, 一個快速的，精細的，供龐大資料查詢的資料儲存工具</p>
+<p><code>Terraform</code> 配置將會建立一個 <code>BigQuery</code> <a href="https://cloud.google.com/bigquery/docs/reference/rest/v2/datasets" target="_blank" rel="noopener">資料組</a>, 名為 <code>gke_logs_dataset</code>。 這個資料組將會被設定成包含所有與 <code>Kubernetes Engine</code> 相關的距今一個小時的紀錄 (設定預設的資料組表格過期時間)。 Stackdriver 匯出將會被建立且將 <code>Kubernetes Engine</code> 容器紀錄推送到資料組</p>
+<p>若想要從 BigQuery 存取 Stackdriver 紀錄，執行下面的步驟：</p>
+<ul>
+<li>在 GCP 主控台的 <b>Navigation menu</b>, 在 <code>Big Data</code> 的區塊點擊 <code>BigQuery</code></li>
+<li>在左邊的選單，點擊你的專案名稱。 你應會看到一個名為 <b>gke_logs_dataset</b> 的資料組。 展開這個資料組來檢視存在的表格 ( <b>Note:</b> 這個資料組會立即被建立，但表格會再當紀錄產生了，且新的表格有需要時建立)</li>
+<li>點擊其中一個表格來檢視表格細節</li>
+<li>檢視表格結構，並且注意到欄位的名稱以及他們的資料類型。 這些資訊在你下一步要對表格做查詢時會用到</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/B6K5A8g1uRhmwk2FuT-5mYdUlyv00kj4cEJEJjqDpRizYRQ_WrMZ-mXiopMhQc1XHc2aaKdtCtfR8NiJwdYPNMXXMKFuFFqVx3zIr6JVT7-oqpVlSsfQ9XzXo1E2SoFqcWkzHsiietu3hWSGxiMt628dDEvs0ee28oe6sKW-F7vpejbJP5yDh32IqRHJnE5k_mfNWl2MkQJVTxq6AGIp8To3WnQnsn0jh0CJI0wV7MuFU4tO4mpSj7EESxOmwkeYQATCEppQoovYyLIZh5NOwLMz7fxia-xwlXaNIwF5MzT9atqwcavD0m8kh7POBlzJPShvWatPgYfA1n5gSJegcynUAs24P1vG9nPEkDmHiKA8ZziGVRApxq268kRGv9AQhA4fWHwcB_H0wAnh5RjWRCcnr_zIC49W9GiIKZffrbPuQ6aPtrJyIdjCGuPzXYmLJuDZLG_yJw9cyeDMpP3_KZrcdlg8DLnnjBs4gNtM6om04DcGmLHKFHeF8oUDFkLoQZcsJIUcPvtbhXWeoZmJ_O7GtMvNI5sUFDGnybztM3fqBChjiFhZFqQAjd2J3XEc0HqqQVBg0-9fFGqQ7Pvth1qDAkGUEZgibrpUxHtTYr9f-z4-BiPRIyJG0S34xNDZGIGhA4cpDR-hBV0uG3c19wyt0oJonf0bxDIhJIRpfcHqsNYeEJPIyUg=w1098-h795-no" alt></p>
+<ul>
+<li>點擊右上方 <b>Query Table</b> 來對表格執行客製化查詢</li>
+<li>這會在查詢編輯器裡增加一個查詢，你它有一個語法錯誤</li>
+<li>編輯這個查詢，在 after 之後增加一個星號 (<em>) 來從這個表格調出所有的細節。 <b>備註:</b> 一個 `Select </em>` 查詢通常是非常昂貴，且不建議的。 在本教程中，資料組被限制上最近一個小時的紀錄，所以整體上資料庫的相對小的。</li>
+<li>點擊 <b>Run</b> 來執行查詢，並且從表格得到一些結果</li>
+</ul>
+<p>結果視窗應該會顯示一些行和列，你可以捲動回傳的多行資料。如果你想要，執行一些客制的查詢從原本查詢的結果中篩選一些特定的資料</p>
+<p><br><br><br><br><br></p>
+<h2 id="刪除安裝"><a href="#刪除安裝" class="headerlink" title="刪除安裝"></a>刪除安裝</h2><p>Qwiklabs 會將所有本教程中使用到的資源關掉，但是這邊可能需要你做的是清理你的環境來節省成果，當一個好雲端公民！<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make teardown</span><br></pre></td></tr></table></figure></p>
+<p>因為 Terraform 有對所有建立的資源做追蹤，所以他可以將他們全部清除</p>
+<p><br><br><br><br><br></p>
+<h2 id="正式環境的故障排除"><a href="#正式環境的故障排除" class="headerlink" title="正式環境的故障排除"></a>正式環境的故障排除</h2><p><b>執行 Terraform 時，安裝腳本失敗了，並且回傳 <code>Permission denied</code></b>。<br>Terraform 使用的帳號沒有提供必須的權限來在選擇的專案中建立資源。 確保列在 <code>gcloud config list</code> 中的專案有必要的權限來建立資源。 如果它有，使用 <code>gcloud auth application-default login</code> 來重新產生應用預設帳號</p>
+<p><b>Cloud Storage 儲存區沒有載入</b> 。<br>一旦 Terraform 配置已經完成，那 <code>Cloud Storage</code> 儲存區將會被建立。 但不是每次都會立即地將 <code>Kubernetes Engine</code> 叢集中的紀錄資料立即載入。 給這個程序一點時間，因為他可能會花上最多 2-3 個小時讓第一筆資料出現。 (<a href="https://cloud.google.com/logging/docs/export/using_exported_logs" target="_blank" rel="noopener">參考資料</a>)</p>
+<p><b>BigQuery 資料組中沒有表格</b><br>一旦 Terraform 配置完成， <code>BigQuery</code> 資料組將自動被建立但表格不會總是在你檢視結果的時候就已經建立。 表格很少立即的載入資訊。 給這個程序一點時間，(最少 5 分鐘), 在你下可能出錯的判斷之前。</p>
+<p><br><br><br><br><br></p>
+<h2 id="恭喜，你已完成本教程"><a href="#恭喜，你已完成本教程" class="headerlink" title="恭喜，你已完成本教程"></a>恭喜，你已完成本教程</h2>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Stackdriver-Logging/">#Stackdriver Logging</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Stackdriver/">#GCP Stackdriver</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Kubernetes-Engine/">#GCP Kubernetes Engine</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/cloudIAMQwikStart/">Cloud IAM:從 Qwik 開始</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/usingBigQueryAndStackdriverToAnalyzeBigQuerryUsage/">使用 BigQuery 以及 Stackdriver 來分析 BigQuery 用量</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/';
+        this.page.identifier = 'zh-tw/loggingWithStackdriverOnKubernetesEngine/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
