@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="參考連結官方網站 安裝npm install --save sequelize 以下手動安裝：npm install --save pg pg-hstorenpm install --save mysql2npm install --save mariadbnpm install --save sqlite3npm install --save tedious # Microsoft SQL Se">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-06T08:18:26.162Z">
+<meta property="og:updated_time" content="2019-09-06T08:23:00.945Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey on Sequelize">
 <meta name="twitter:description" content="參考連結官方網站 安裝npm install --save sequelize 以下手動安裝：npm install --save pg pg-hstorenpm install --save mysql2npm install --save mariadbnpm install --save sqlite3npm install --save tedious # Microsoft SQL Se">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="參考連結官方網站 安裝npm install --save sequelize 以下手動安裝：npm install --save pg pg-hstorenpm install --save mysql2npm install --save mariadbnpm install --save sqlite3npm install --save tedious # Microsoft SQL Se">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-06T08:18:26.162Z">
+<meta property="og:updated_time" content="2019-09-06T08:23:00.945Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey on Sequelize">
 <meta name="twitter:description" content="參考連結官方網站 安裝npm install --save sequelize 以下手動安裝：npm install --save pg pg-hstorenpm install --save mysql2npm install --save mariadbnpm install --save sqlite3npm install --save tedious # Microsoft SQL Se">
@@ -178,6 +178,18 @@
                     
                     <a class="navbar-item" href="#變更設定檔位置，名稱">3.6&nbsp;&nbsp;變更設定檔位置，名稱</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在-model-中增加-method">4&nbsp;&nbsp;<b>在 model 中增加 method</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用-async-await">5&nbsp;&nbsp;<b>使用 async/await</b></a>
+                    
                 </div>
             </div>
             
@@ -238,7 +250,7 @@
         <span class="column is-narrow">
             
             
-            4 分钟 讀完 (大概 566 字)
+            4 分钟 讀完 (大概 663 字)
         </span>
         
     </div>
@@ -310,6 +322,8 @@
 <p>有時我們會需要更改 config 檔案副檔名, 因為我們需要一些 json 無法提供的功能, 例如：<br><figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);</span><br><span class="line">  production: &#123;</span><br><span class="line">    username: process.env.DB_USERNAME,</span><br><span class="line">    password: process.env.DB_PASSWORD,</span><br><span class="line">    database: process.env.DB_NAME,</span><br><span class="line">    host: process.env.DB_HOSTNAME,</span><br><span class="line">    dialect: <span class="hljs-string">'mysql'</span>,</span><br><span class="line">    dialectOptions: &#123;</span><br><span class="line">      ssl: &#123;</span><br><span class="line">        ca: fs.readFileSync(__dirname + <span class="hljs-string">'/mysql-ca-master.crt'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
 <p>這時我們可以在 <code>.sequelizerc</code> 檔案中修改<br><figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="hljs-string">'config'</span>: path.resolve(<span class="hljs-string">'config'</span>, <span class="hljs-string">'config.js'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>最後別忘了修改 <code>/models/index</code> 中, <code>config</code> 的路徑</p>
+<h2 id="在-model-中增加-method"><a href="#在-model-中增加-method" class="headerlink" title="在 model 中增加 method"></a>在 model 中增加 method</h2><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">'use strict'</span>;</span><br><span class="line"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function">(<span class="hljs-params">sequelize, DataTypes</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> User = sequelize.define(<span class="hljs-string">'User'</span>, &#123;</span><br><span class="line">    firstName: DataTypes.STRING,</span><br><span class="line">    lastName: DataTypes.STRING,</span><br><span class="line">    email: DataTypes.STRING</span><br><span class="line">  &#125;, &#123;&#125;);</span><br><span class="line">  User.associate = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">models</span>) </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// associations can be defined here</span></span><br><span class="line">  &#125;;</span><br><span class="line">  User.prototype.useInstance = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'This is for new instance way'</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  User.useStatic = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'This is for static way'</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="hljs-keyword">return</span> User;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="使用-async-await"><a href="#使用-async-await" class="headerlink" title="使用 async/await"></a>使用 async/await</h2><p>直接 await method 就可<br><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line">(<span class="hljs-keyword">async</span> () =&gt; &#123;</span><br><span class="line">    <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> Data.findAll(&#123;</span><br><span class="line">        attributes: [</span><br><span class="line">            <span class="hljs-string">'host'</span>,</span><br><span class="line">            <span class="hljs-string">'upstream_cache_status'</span>,</span><br><span class="line">            [Sequelize.fn(<span class="hljs-string">'COUNT'</span>, Sequelize.col(<span class="hljs-string">'request'</span>)), <span class="hljs-string">'requests'</span>],</span><br><span class="line">        ],</span><br><span class="line">        group: [<span class="hljs-string">'host'</span>, <span class="hljs-string">'upstream_cache_status'</span>]</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="hljs-built_in">console</span>.log(result)</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure></p>
 
     
     </div>
