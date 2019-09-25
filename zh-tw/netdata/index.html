@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-25T08:08:49.201Z">
+<meta property="og:updated_time" content="2019-09-25T08:53:29.158Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netdata 學習筆記">
 <meta name="twitter:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-25T08:08:49.201Z">
+<meta property="og:updated_time" content="2019-09-25T08:53:29.158Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netdata 學習筆記">
 <meta name="twitter:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
@@ -212,7 +212,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 讀完 (大概 835 字)
+            7 分钟 讀完 (大概 985 字)
         </span>
         
     </div>
@@ -238,21 +238,18 @@
 <li>當多個 server 被定義, 第一個失敗時, Netdata 將會自動嘗試下一個。 這讓我們可以平衡負載不同的 server: 在每一個 Netdata 給予不同的後端服務順序</li>
 <li>Netdata 也提供了 <a href="https://github.com/netdata/netdata/blob/master/backends/nc-backend.sh" target="_blank" rel="noopener">nc-backend.sh</a>, 一個備用解決方法來將指標先存到硬碟中, 待 time-series 資料庫可用了, 再將資料傳到資料庫。 它也可用來監控 / 追蹤 / 除錯 Netadata 產生的指標。</li>
 <li>如果是 kinesis 後端目的地, 應該要被設定成 AWS region (例如, <code>us-east-1</code>) </li>
+<li>MongoDB 後端在這設定中不使用 destination 選項, 它使用 mongodb.conf 設定</li>
 </ul>
 </li>
-<li><p><code>data source = as collected</code>, 或 <code>data source = average</code>, 或 <code>data source = sum</code>, 選擇要被傳送到後端的資料類型</p>
-<ul>
-<li><p><code>as-collected</code> 當指標被採集時, 傳送到後端, 以他們被採集時的單位。 所以說， counter 將會以 counter 傳送, gauge 也被以 gauge 傳送, 就像所有的資料採集器那樣。 例如說</p>
-</li>
-<li><p><code>as-collected</code> sends to backends the metrics as they are collected, in the units they are collected. So, counters are sent as counters and gauges are sent as gauges, much like all data collectors do. For example, to calculate CPU utilization in this format, you need to know how to convert kernel ticks to percentage.</p>
-</li>
+<li><code>data source = as collected</code>, 或 <code>data source = average</code>, 或 <code>data source = sum</code>, 選擇要被傳送到後端的資料類型<ul>
+<li><code>as-collected</code>: 當指標被採集時, 傳送到後端, 以他們被採集時的單位。 所以說， counter 將會以 counter 傳送, gauge 也被以 gauge 傳送, 就像所有的資料採集器那樣。 例如說, 若要算出在這格式下的 CPU 使用率，你需要知道怎麼轉換 <code>kernel ticks</code> 到百分比</li>
+<li><code>average</code>: 將正規化之後的指標從 Netdata 資料庫傳送到後端。 在這個模式下，所有的指標都被以 <code>gauges</code> 傳送，並且使用 Netdata 使用的單位。 這抽象化了資料收集以及簡單化了視覺顯示，但你將沒有辦法從其他來源複製貼上 query 來轉換單位。 例如， CPU 使用百分比是被 Netdata 計算，所以 Netdata 將會轉換 ticks 到百分比，然後傳送平均百分比到後端</li>
+<li><code>sum or volume</code>: Netdata 圖表上的總合將會被傳送到後端。 所以，如果 Netdata 被設定為每 10 秒傳送資料一次，那 10 秒的總合將會被傳送。 </li>
+<li>Time-series 資料庫建議以原始數值的方式收集資料 (as-collected)。 如果你打算建立你自己的監控系統搭配 time-series 資料庫，且你已經（或你將會花時間學習）知道如何轉換單位以及正規化資料已符合 Grafana 或其他視覺化工具，我們建議使用 as-collected</li>
+<li>如果，另一方面，你只是需要長期的 Netdata 資料歸檔，並且妳主要打算使用 Netdata, 我們建議使用 average。 它將視覺化以及資料收集分離，所以整體來說它會簡單很多。 再進一步來說，如果你使用 average, 在後端看到的圖表將會完全符合你在 Netdata 看到的，如果是在別種模式的話，可能不是這樣。</li>
 </ul>
 </li>
 </ul>
-<p>average sends to backends normalized metrics from the Netdata database. In this mode, all metrics are sent as gauges, in the units Netdata uses. This abstracts data collection and simplifies visualization, but you will not be able to copy and paste queries from other sources to convert units. For example, CPU utilization percentage is calculated by Netdata, so Netdata will convert ticks to percentage and send the average percentage to the backend.</p>
-<p>sum or volume: the sum of the interpolated values shown on the Netdata graphs is sent to the backend. So, if Netdata is configured to send data to the backend every 10 seconds, the sum of the 10 values shown on the Netdata charts will be used.</p>
-<p>Time-series databases suggest to collect the raw values (as-collected). If you plan to invest on building your monitoring around a time-series database and you already know (or you will invest in learning) how to convert units and normalize the metrics in Grafana or other visualization tools, we suggest to use as-collected.</p>
-<p>If, on the other hand, you just need long term archiving of Netdata metrics and you plan to mainly work with Netdata, we suggest to use average. It decouples visualization from data collection, so it will generally be a lot simpler. Furthermore, if you use average, the charts shown in the back-end will match exactly what you see in Netdata, which is not necessarily true for the other modes of operation.</p>
 
     
     </div>
