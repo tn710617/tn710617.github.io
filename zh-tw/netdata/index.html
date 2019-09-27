@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-25T08:53:29.158Z">
+<meta property="og:updated_time" content="2019-09-27T14:25:30.169Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netdata 學習筆記">
 <meta name="twitter:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-25T08:53:29.158Z">
+<meta property="og:updated_time" content="2019-09-27T14:25:30.169Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netdata 學習筆記">
 <meta name="twitter:description" content="前言這是一份未整理過的 Netdata 學習筆記內容參考出處：官方文件">
@@ -154,6 +154,40 @@
                     
                     <a class="navbar-item" href="#backend">2.1&nbsp;&nbsp;backend</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#利用-InfluxDB-作為-Netdata-backend">3&nbsp;&nbsp;<b>利用 InfluxDB 作為 Netdata backend</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Netdata">3.1&nbsp;&nbsp;Netdata</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝">3.1.1&nbsp;&nbsp;安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Config">3.1.2&nbsp;&nbsp;Config</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#InfluxDB">3.2&nbsp;&nbsp;InfluxDB</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-1">3.2.1&nbsp;&nbsp;安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開啟設定檔">3.2.2&nbsp;&nbsp;開啟設定檔</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定">3.2.3&nbsp;&nbsp;設定</a>
+                    
                 </div>
             </div>
             
@@ -214,7 +248,7 @@
         <span class="column is-narrow">
             
             
-            7 分钟 讀完 (大概 985 字)
+            7 分钟 讀完 (大概 1105 字)
         </span>
         
     </div>
@@ -252,6 +286,21 @@
 </ul>
 </li>
 </ul>
+<h2 id="利用-InfluxDB-作為-Netdata-backend"><a href="#利用-InfluxDB-作為-Netdata-backend" class="headerlink" title="利用 InfluxDB 作為 Netdata backend"></a>利用 InfluxDB 作為 Netdata backend</h2><h3 id="Netdata"><a href="#Netdata" class="headerlink" title="Netdata"></a>Netdata</h3><h4 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">bash &lt;(curl -Ss https://my-netdata.io/kickstart.sh) --dont-wait</span><br></pre></td></tr></table></figure>
+<h4 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h4><ul>
+<li><p>開啟設定檔</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/netdata/netdata.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設定</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[backend]</span><br><span class="line">        <span class="hljs-comment"># host tags =</span></span><br><span class="line">         enabled = yes</span><br><span class="line">         data <span class="hljs-built_in">source</span> = average</span><br><span class="line">         <span class="hljs-built_in">type</span> = opentsdb</span><br><span class="line">         destination = localhost:4242</span><br><span class="line">        <span class="hljs-comment"># prefix = netdata</span></span><br><span class="line">        <span class="hljs-comment"># hostname = netdata</span></span><br><span class="line">         update every = 10</span><br><span class="line">        <span class="hljs-comment"># buffer on failures = 10</span></span><br><span class="line">        <span class="hljs-comment"># timeout ms = 20000</span></span><br><span class="line">        <span class="hljs-comment"># send names instead of ids = yes</span></span><br><span class="line">        <span class="hljs-comment"># send charts matching = *</span></span><br><span class="line">        <span class="hljs-comment"># send hosts matching = localhost *</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新啟動</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemctl restart netdata</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="InfluxDB"><a href="#InfluxDB" class="headerlink" title="InfluxDB"></a>InfluxDB</h3><h4 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h4><p>參考<a href="https://docs.influxdata.com/influxdb/v1.7/introduction/installation/" target="_blank" rel="noopener">官方流程</a></p>
+<h4 id="開啟設定檔"><a href="#開啟設定檔" class="headerlink" title="開啟設定檔"></a>開啟設定檔</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/influxdb/influxdb.conf</span><br></pre></td></tr></table></figure>
+<h4 id="設定"><a href="#設定" class="headerlink" title="設定"></a>設定</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[[opentsdb]]</span><br><span class="line">   enabled = <span class="hljs-literal">true</span></span><br><span class="line">   <span class="hljs-built_in">bind</span>-address = <span class="hljs-string">"localhost:4242"</span></span><br><span class="line">   database = <span class="hljs-string">"opentsdb"</span></span><br></pre></td></tr></table></figure>
 
     
     </div>

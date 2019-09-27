@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>InfluxDB 學習筆記 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼 CLICLI 中使用 where clausemeasurement 的 double quotes &amp;quot; 是必要的，但需要 escapeinflux -execute &quot;select * from \&quot;netdata.ipv4.packets.delivered\&quot; WHERE host = &apos;netdata&apos; AND time">
+<meta name="description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼">
 <meta name="keywords" content="InfluxDB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="InfluxDB 學習筆記">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/influxdb/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼 CLICLI 中使用 where clausemeasurement 的 double quotes &amp;quot; 是必要的，但需要 escapeinflux -execute &quot;select * from \&quot;netdata.ipv4.packets.delivered\&quot; WHERE host = &apos;netdata&apos; AND time">
+<meta property="og:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-27T12:32:37.312Z">
+<meta property="og:updated_time" content="2019-09-27T15:15:08.746Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="InfluxDB 學習筆記">
-<meta name="twitter:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼 CLICLI 中使用 where clausemeasurement 的 double quotes &amp;quot; 是必要的，但需要 escapeinflux -execute &quot;select * from \&quot;netdata.ipv4.packets.delivered\&quot; WHERE host = &apos;netdata&apos; AND time">
+<meta name="twitter:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼 CLICLI 中使用 where clausemeasurement 的 double quotes &amp;quot; 是必要的，但需要 escapeinflux -execute &quot;select * from \&quot;netdata.ipv4.packets.delivered\&quot; WHERE host = &apos;netdata&apos; AND time">
+    <meta name="description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼">
 <meta name="keywords" content="InfluxDB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="InfluxDB 學習筆記">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/influxdb/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼 CLICLI 中使用 where clausemeasurement 的 double quotes &amp;quot; 是必要的，但需要 escapeinflux -execute &quot;select * from \&quot;netdata.ipv4.packets.delivered\&quot; WHERE host = &apos;netdata&apos; AND time">
+<meta property="og:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-27T12:32:37.312Z">
+<meta property="og:updated_time" content="2019-09-27T15:15:08.746Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="InfluxDB 學習筆記">
-<meta name="twitter:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼 CLICLI 中使用 where clausemeasurement 的 double quotes &amp;quot; 是必要的，但需要 escapeinflux -execute &quot;select * from \&quot;netdata.ipv4.packets.delivered\&quot; WHERE host = &apos;netdata&apos; AND time">
+<meta name="twitter:description" content="前言InfluxDB 學習筆記，內容未整理，學到什麼記什麼">
 
 
 
@@ -154,6 +154,28 @@
                     
                     <a class="navbar-item" href="#CLI-中使用-where-clause">2.1&nbsp;&nbsp;CLI 中使用 where clause</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#定時清理資料庫">2.2&nbsp;&nbsp;定時清理資料庫</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#串接-Node-js">3&nbsp;&nbsp;<b>串接 Node.js</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝">3.1&nbsp;&nbsp;安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#串接檔範例">3.2&nbsp;&nbsp;串接檔範例</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#require-串接檔">3.3&nbsp;&nbsp;require 串接檔</a>
+                    
                 </div>
             </div>
             
@@ -214,14 +236,21 @@
         <span class="column is-narrow">
             
             
-            几秒 讀完 (大概 59 字)
+            1 分钟 讀完 (大概 209 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>InfluxDB 學習筆記，內容未整理，學到什麼記什麼</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>InfluxDB 學習筆記，內容未整理，學到什麼記什麼<br><a id="more"></a></p>
 <h2 id="CLI"><a href="#CLI" class="headerlink" title="CLI"></a>CLI</h2><h3 id="CLI-中使用-where-clause"><a href="#CLI-中使用-where-clause" class="headerlink" title="CLI 中使用 where clause"></a>CLI 中使用 where clause</h3><p>measurement 的 double quotes <code>&quot;</code> 是必要的，但需要 escape<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">influx -execute <span class="hljs-string">"select * from \"netdata.ipv4.packets.delivered\" WHERE host = 'netdata' AND time &gt; now() - 1m"</span> -database <span class="hljs-string">'opentsdb'</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="定時清理資料庫"><a href="#定時清理資料庫" class="headerlink" title="定時清理資料庫"></a>定時清理資料庫</h3><p>可將以下的 command 寫成 shell script, 用 crontab 執行<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">influx -execute <span class="hljs-string">"delete WHERE time &lt; now() - 1h"</span> -database <span class="hljs-string">'opentsdb'</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="串接-Node-js"><a href="#串接-Node-js" class="headerlink" title="串接 Node.js"></a>串接 Node.js</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">npm install --save influx</span><br></pre></td></tr></table></figure>
+<h3 id="串接檔範例"><a href="#串接檔範例" class="headerlink" title="串接檔範例"></a>串接檔範例</h3><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function">(<span class="hljs-params">(</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="hljs-keyword">const</span> Influx = <span class="hljs-built_in">require</span>(<span class="hljs-string">'influx/lib/src/index'</span>);</span><br><span class="line">    <span class="hljs-keyword">const</span> Netdata = <span class="hljs-keyword">new</span> Influx.InfluxDB(&#123;</span><br><span class="line">        database: <span class="hljs-string">'opentsdb'</span>,</span><br><span class="line">        username: <span class="hljs-string">''</span>,</span><br><span class="line">        password: <span class="hljs-string">''</span>,</span><br><span class="line">        <span class="hljs-comment">// 預設 port 號會自動設定為 8086</span></span><br><span class="line">        hosts: [&#123; <span class="hljs-attr">host</span>: <span class="hljs-string">'IP'</span> &#125;],</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 在設定檔中新增 method</span></span><br><span class="line">    Netdata.getData = <span class="hljs-keyword">async</span> (measurement, host, time = <span class="hljs-string">'1m'</span>) =&gt; &#123;</span><br><span class="line">        <span class="hljs-keyword">let</span> toBeReturnedObject = [];</span><br><span class="line">        <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> Netdata.query(</span><br><span class="line">            <span class="hljs-string">`select * from "<span class="hljs-subst">$&#123;measurement&#125;</span>" WHERE host = '<span class="hljs-subst">$&#123;host&#125;</span>' AND time &gt; now() - <span class="hljs-subst">$&#123;time&#125;</span>`</span></span><br><span class="line">        );</span><br><span class="line">        result.map(<span class="hljs-function"><span class="hljs-params">dot</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="hljs-keyword">let</span> object = &#123;</span><br><span class="line">                host: dot.host,</span><br><span class="line">                value: dot.value,</span><br><span class="line">                time: <span class="hljs-built_in">Number</span>(dot.time.getNanoTime())</span><br><span class="line">            &#125;;</span><br><span class="line">            toBeReturnedObject.push(object);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> toBeReturnedObject;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> Netdata;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="require-串接檔"><a href="#require-串接檔" class="headerlink" title="require 串接檔"></a>require 串接檔</h3><ul>
+<li>後面需加上 <code>()</code>;<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> Netdata = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../models/netdatadb'</span>)();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 
     
     </div>
