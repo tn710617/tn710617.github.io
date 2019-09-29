@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-29T07:37:53.041Z">
+<meta property="og:updated_time" content="2019-09-29T13:47:22.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-29T07:37:53.041Z">
+<meta property="og:updated_time" content="2019-09-29T13:47:22.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -170,6 +170,20 @@
                     
                     <a class="navbar-item" href="#啟用">4.2&nbsp;&nbsp;啟用</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#location">5&nbsp;&nbsp;<b>location</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#語法">5.1&nbsp;&nbsp;語法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#範例">5.2&nbsp;&nbsp;範例</a>
+                    
                 </div>
             </div>
             
@@ -230,7 +244,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 396 字)
+            6 分钟 讀完 (大概 840 字)
         </span>
         
     </div>
@@ -259,6 +273,38 @@
 <h2 id="啟用設定檔"><a href="#啟用設定檔" class="headerlink" title="啟用設定檔"></a>啟用設定檔</h2><h3 id="複製到-enabled-資料夾"><a href="#複製到-enabled-資料夾" class="headerlink" title="複製到 enabled 資料夾"></a>複製到 enabled 資料夾</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ln -s /etc/nginx/sites-available/yourConfig /etc/nginx/sites-enabled</span><br></pre></td></tr></table></figure>
 <p><br></p>
 <h3 id="啟用"><a href="#啟用" class="headerlink" title="啟用"></a>啟用</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemctl restart nginx.service</span><br></pre></td></tr></table></figure>
+<h2 id="location"><a href="#location" class="headerlink" title="location"></a>location</h2><p><a href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location" target="_blank" rel="noopener">參考官方文件</a></p>
+<h3 id="語法"><a href="#語法" class="headerlink" title="語法"></a>語法</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Syntax:	location [ = | ~ | ~* | ^~ ] uri &#123; ... &#125;</span><br><span class="line">location @name &#123; ... &#125;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>規則搜尋分為以下兩種方式</p>
+<ul>
+<li>正則搜尋 (regular expression)<ul>
+<li><code>~*</code>: 不區分大小寫</li>
+<li><code>~</code>: 區分大小寫</li>
+</ul>
+</li>
+<li>前綴字串 (prefix string)</li>
+</ul>
+</li>
+<li><p>規則搜尋順序：<br>使用前綴字串搜尋 &rarr; 搜尋到符合最長的 url, 並且記下結果 &rarr; 依照設定檔中的順序， 使用正則規則搜尋 &rarr; 如果正則規則有搜尋到符合的，會立即停止搜尋，因此正則順序至關重要 &rarr; 如果正則沒有搜尋到符合的，會採用使用前綴字串搜尋到的</p>
+</li>
+<li><p>在一些不區分大小寫的系統中，像是 macOS 或是 Cygwin, 前綴字串規則會無視大小寫</p>
+</li>
+<li>正則規則可以捕捉一些變數，在其他的規則中使用</li>
+<li>如果最長的前綴字串規則有 <code>^~</code>, 那就不會再使用正則規則搜尋</li>
+<li>前綴規則有 <code>=</code>, 代表字串須完全符合，如果有找到，搜尋終止。 例如，如果 “/“ 請求很頻繁，那麼可以定義 “location = /“, 這樣可以加速請求處理</li>
+<li>在版本 0.7.1 到 0.8.41 中，如果請求符合前綴規則，就算沒有加上 <code>=</code>, 或者 <code>^~</code>, 搜尋也會立即停止</li>
+</ul>
+<h3 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> = / &#123;</span><br><span class="line">    [ configuration A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">    [ configuration B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> /documents/ &#123;</span><br><span class="line">    [ configuration C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span><span class="hljs-regexp"> ^~</span> /images/ &#123;</span><br><span class="line">    [ configuration D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> <span class="hljs-regexp">~* \.(gif|jpg|jpeg)$</span> &#123;</span><br><span class="line">    [ configuration E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>請求 <code>/</code> 將會符合 <strong>A</strong></li>
+<li>請求 <code>/index.html</code> 將會符合 <strong>B</strong></li>
+<li>請求 <code>/documents/document.html</code> 將會符合 <strong>C</strong></li>
+<li>請求 <code>/images/1.gif</code> 將會符合 <strong>D</strong></li>
+<li>請求 <code>/documents/1.jpg</code> 將會符合 <strong>E</strong></li>
+<li>請求 <code>@name</code>: 只用於內部重新導向，不用於正常使用, 例如：<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> /img/ &#123;</span><br><span class="line">        <span class="hljs-attribute">not_found</span> <span class="hljs-number">404</span> <span class="hljs-variable">@not_found</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-attribute">location</span> <span class="hljs-variable">@not_found</span> &#123;</span><br><span class="line">        <span class="hljs-comment"># 规则</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 
     
     </div>
@@ -271,7 +317,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/markdown/">Markdown 學習筆記</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
