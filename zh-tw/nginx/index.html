@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-28T11:41:24.626Z">
+<meta property="og:updated_time" content="2019-09-28T11:58:01.588Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-28T11:41:24.626Z">
+<meta property="og:updated_time" content="2019-09-28T11:58:01.588Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="Introduction這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -230,7 +230,7 @@
         <span class="column is-narrow">
             
             
-            2 分钟 讀完 (大概 316 字)
+            2 分钟 讀完 (大概 358 字)
         </span>
         
     </div>
@@ -241,7 +241,7 @@
 <h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install nginx</span><br></pre></td></tr></table></figure>
 <p><br><br><br><br><br></p>
 <h2 id="建立新的設定檔"><a href="#建立新的設定檔" class="headerlink" title="建立新的設定檔"></a>建立新的設定檔</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/nginx/sites-available/configName</span><br></pre></td></tr></table></figure>
-<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line"><span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line"><span class="hljs-attribute">server_name</span> yourServerName;</span><br><span class="line"><span class="hljs-attribute">access_log</span> /locationYouPrefer;</span><br><span class="line"><span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;</span><br><span class="line"><span class="hljs-attribute">ssl_certificate</span> /location/fullchain.pem;</span><br><span class="line"><span class="hljs-attribute">ssl_certificate_key</span> /location/privkey.pem;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> / &#123;</span><br><span class="line"><span class="hljs-attribute">proxy_pass_header</span> Server;</span><br><span class="line"><span class="hljs-attribute">proxy_redirect</span> <span class="hljs-literal">off</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> X-Scheme <span class="hljs-variable">$scheme</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:50005;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line"><span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line"><span class="hljs-attribute">server_name</span> yourServerName;</span><br><span class="line"><span class="hljs-attribute">access_log</span> /locationYouPrefer;</span><br><span class="line"><span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;</span><br><span class="line"><span class="hljs-attribute">ssl_certificate</span> /location/fullchain.pem;</span><br><span class="line"><span class="hljs-attribute">ssl_certificate_key</span> /location/privkey.pem;</span><br><span class="line">   </span><br><span class="line"><span class="hljs-attribute">location</span> /upstream &#123;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> Host www.tu8686.com;</span><br><span class="line"><span class="hljs-attribute">set</span> <span class="hljs-variable">$upstream_url</span> <span class="hljs-number">210.209.13.49:80</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_pass</span> http://<span class="hljs-variable">$upstream_url</span>;</span><br><span class="line"><span class="hljs-attribute">add_header</span> Q-Status <span class="hljs-variable">$upstream_cache_status</span>;</span><br><span class="line">break;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> / &#123;</span><br><span class="line"><span class="hljs-attribute">proxy_pass_header</span> Server;</span><br><span class="line"><span class="hljs-attribute">proxy_redirect</span> <span class="hljs-literal">off</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> X-Scheme <span class="hljs-variable">$scheme</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:50005;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>proxy_pass_header</code>: 若回應 request 時, header 有設定了, 那告訴 NGINX 不要更改設定的 header, 若要加 header 需使用 via, 例如 <a href="https://lh3.googleusercontent.com/qfRZmu-bkGWNmgmsyxojw6Js6weD29jiuPoiQAIm_qvDUE9xTczLpLPIBYEbNeVCNmkDUFOcJqrAKBsIbcaCAlmgzJggH2l5WM7X3XCnrq1oKFXTIBTVCdTVzMjDupjxXt3BrMJwguQvkDcMy3j11SJyJ2-CKzZ6W_rdpQM10a6iLSKHTJzdrGhttq0Fm96AeoXCpqMWG0ZxJ6TYjpc_X4NCe-For9UYldB297Lqzl8eJnyASItIVciGDlHz5iqnyA_PKcbI-krLfTO-r966WiRHuWV9QJHAGSlwj7UhOS689z_Yq2MWmG5YryAFqDJCOl-nfvOI-lh0oFMlzcSgntJqSarTkQfTg3_qstfHYsAYWsrdbxpONwnzwl7oZ_7SvodN0iXEyG8dnyFDdTSOKa7Aqd8_0kzutkKTnetmVVYwHoYVYQzp3mHpJGZHpRFGBIlA-3_oSEp8j_2WE6aWECDblSOJuM9D-Wg4kMh6wxVS8P88HVDbDumsEaAiQIWGOAj_P0U7cizmCLCgP5D94xHF9SN7mfZpFv5-Ubmh_tJqIs7yj_6UanRO0__6pXPjWdx-Hp3F2G2DHVPFSKJ7OD3XRh_E9XrrqQYnWUWLMdB6U50zm6dAOTiBrRMnd_x-qzB7LOUxA6EZdpErsHsraF4rCDBjjikWqb8t-b1wVauVTZ29yBA3LGM=w1140-h718-no" target="_blank" rel="noopener">範例圖片</a></li>
 <li><code>server_name</code>: request 的 header 中的 server 需符合</li>
@@ -249,7 +249,11 @@
 <li><code>location</code>: 符合 server 後, 改搜尋相對應的 location</li>
 <li><code>proxy_redirect</code>: 重新導向</li>
 <li><code>proxy_set_header</code>: 設定 header 值</li>
-<li><code>proxy_pass</code>: 將 request 導向指定的 port</li>
+<li><code>proxy_pass</code>: 將 request 導向指定的位置</li>
+<li><code>proxy_set_header</code>: set host</li>
+<li><code>set $upstream_url</code>: set $upstream_url </li>
+<li><code>add_header</code>: add header </li>
+<li><code>break</code>: </li>
 </ul>
 <p><br><br><br><br><br></p>
 <h2 id="啟用設定檔"><a href="#啟用設定檔" class="headerlink" title="啟用設定檔"></a>啟用設定檔</h2><h3 id="複製到-enabled-資料夾"><a href="#複製到-enabled-資料夾" class="headerlink" title="複製到 enabled 資料夾"></a>複製到 enabled 資料夾</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ln -s /etc/nginx/sites-available/yourConfig /etc/nginx/sites-enabled</span><br></pre></td></tr></table></figure>
