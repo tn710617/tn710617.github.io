@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Build a SFTP Server on Linux - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta name="keywords" content="SFTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build a SFTP Server on Linux">
+<meta property="og:url" content="https://tn710617.github.io/buildSftpServerOnLinux/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-01T14:03:34.187Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Build a SFTP Server on Linux">
+<meta name="twitter:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/buildSftpServerOnLinux/" rel="alternate" hreflang="zh-TW">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta name="keywords" content="SFTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build a SFTP Server on Linux">
+<meta property="og:url" content="https://tn710617.github.io/buildSftpServerOnLinux/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-01T14:03:34.187Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Build a SFTP Server on Linux">
+<meta name="twitter:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Ray&#39;s Coding Journey
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">Archives</a>
+            
+            <a class="navbar-item " href="/categories">Categories</a>
+            
+            <a class="navbar-item " href="/tags">Tags</a>
+            
+            <a class="navbar-item " href="/schedule">Schedule</a>
+            
+            <a class="navbar-item " href="/about">About</a>
+            
+            <a class="navbar-item " href="/friends">Friends</a>
+            
+            <a class="navbar-item " href="/japanese">Japanese</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#環境">2&nbsp;&nbsp;<b>環境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立-SFTP-群組">3&nbsp;&nbsp;<b>建立 SFTP 群組</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立-SFTP-使用者">4&nbsp;&nbsp;<b>建立 SFTP 使用者</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#SSH-設定">5&nbsp;&nbsp;<b>SSH 設定</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用者上傳下載權限開始">6&nbsp;&nbsp;<b>使用者上傳下載權限開始</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#大功告成">7&nbsp;&nbsp;<b>大功告成</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/buildSftpServerOnLinux/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/buildSftpServerOnLinux/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Build a SFTP Server on Linux
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-10-01T13:24:35.000Z" itemprop="datePublished">Oct 1 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Deployment/">Deployment</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 minutes read (About 514 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：</p>
+<ul>
+<li>使用者<code>不可</code>經由 SSH 登入</li>
+<li>使用者<code>可</code>經由 SFTP 登入</li>
+<li>使用者<code>只可</code>在指令目錄活動</li>
+<li>使用者<code>可</code>上傳下載指令目錄內的檔案</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>GCP Ubuntu 18.04<br>以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作</p>
+<p><br><br><br><br><br></p>
+<h2 id="建立-SFTP-群組"><a href="#建立-SFTP-群組" class="headerlink" title="建立 SFTP 群組"></a>建立 SFTP 群組</h2><ul>
+<li><p>建立 group</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">group add sftp-users</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>確認 group 有正確被建立</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">grep <span class="hljs-string">'sftp-users'</span> /etc/group</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="建立-SFTP-使用者"><a href="#建立-SFTP-使用者" class="headerlink" title="建立 SFTP 使用者"></a>建立 SFTP 使用者</h2><ul>
+<li>建立使用者<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">useradd -g sftp-users -d /upload -s /sbin/nologin <span class="hljs-built_in">test</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>-g</code>: 預設 group<br><code>-d</code>: 預設家目錄<br><code>-s</code>: 預設 shell, nologin shell 一般用於系統帳號, 表示不可經由 ssh 登入</p>
+<ul>
+<li><p>確認使用者有正確被建立</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">grep <span class="hljs-built_in">test</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果使用者早已建立, 可直接更改使用者設定即可</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">usermod -g sftp-users -d /upload -s /sbin/nologin <span class="hljs-built_in">test</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="SSH-設定"><a href="#SSH-設定" class="headerlink" title="SSH 設定"></a>SSH 設定</h2><ul>
+<li><p>打開 SSH 設定檔</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>複製 Subsystem 以作修改用, 並註解原本的</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># Subsystem     sftp    /usr/lib/openssh/sftp-server</span></span><br><span class="line">Subsystem       sftp    internal-sftp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>指定群組根目錄</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Match Group sftp-users</span><br><span class="line">        ChrootDirectory /home/sftp-users/%u</span><br><span class="line">        ForceCommand internal-sftp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ChrootDirectory</code>: 設定該群組根目錄</p>
+</li>
+<li><code>%u</code>: user 的意思, 所以任何該群組下的 user 登入之後的根目錄就會變成 user 的名稱, 以這個例子來看, 根目錄就是 /home/sftp-users/test</li>
+<li><code>ForceCommand</code>: 強制使用 internal-sftp </li>
+<li>以上 <code>Match</code> 的設定, 請置於檔案的最末處, 否則會有語法錯誤。</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="使用者上傳下載權限開始"><a href="#使用者上傳下載權限開始" class="headerlink" title="使用者上傳下載權限開始"></a>使用者上傳下載權限開始</h2><ul>
+<li>建立使用者上傳下載用資料夾<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">install -d -o <span class="hljs-built_in">test</span> -g sftp-users /home/sftp-users/<span class="hljs-built_in">test</span>/upload</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>-d</code>: 類型為資料夾<br><code>-o</code>: owner<br><code>-g</code>: group</p>
+<p>使用者只能在這個剛剛建立的 upload 資料夾裡頭, 才有權限上傳跟下載。<br>根據 SSH 安全規則, chrootDirectory 的 owner 必須是 root 才行, 且權限只有 root 才可以有 w 的權限, 如果這邊沒有設定為 root, 使用者是無法登入的</p>
+<h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成"></a>大功告成</h2>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/SFTP/">#SFTP</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/creatingAndAlertingOnLogsBasedMetrics/">Creating and Alerting on Logs-based Metrics</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/buildSftpServerOnLinux/';
+        this.page.identifier = 'buildSftpServerOnLinux/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
