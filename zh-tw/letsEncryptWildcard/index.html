@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 (wildcard)什麼是 wildcard? 比方說你的域名是 example.com, 那一個 wildcard 的憑證將會適用於以下的網站:abc.example.comaaa.example.comwhatever.example.com 總之不管前面是什麼，都可以適用。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-29T10:36:46.067Z">
+<meta property="og:updated_time" content="2019-10-01T10:24:29.504Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證 (wildcard)">
 <meta name="twitter:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 (wildcard)什麼是 wildcard? 比方說你的域名是 example.com, 那一個 wildcard 的憑證將會適用於以下的網站:abc.example.comaaa.example.comwhatever.example.com 總之不管前面是什麼，都可以適用。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 (wildcard)什麼是 wildcard? 比方說你的域名是 example.com, 那一個 wildcard 的憑證將會適用於以下的網站:abc.example.comaaa.example.comwhatever.example.com 總之不管前面是什麼，都可以適用。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-09-29T10:36:46.067Z">
+<meta property="og:updated_time" content="2019-10-01T10:24:29.504Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證 (wildcard)">
 <meta name="twitter:description" content="前言本篇主要分享，如何利用 Let&amp;#39;s Encrypt 的 cert bot 來自動簽署以及更新 SSL 憑證 (wildcard)什麼是 wildcard? 比方說你的域名是 example.com, 那一個 wildcard 的憑證將會適用於以下的網站:abc.example.comaaa.example.comwhatever.example.com 總之不管前面是什麼，都可以適用。">
@@ -306,7 +306,7 @@
         <span class="column is-narrow">
             
             
-            10 分钟 讀完 (大概 1505 字)
+            10 分钟 讀完 (大概 1514 字)
         </span>
         
     </div>
@@ -330,7 +330,7 @@
 <ul>
 <li>執行以下程式碼</li>
 </ul>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">certbot certonly --manual -d *.example.com --preferred-challenges dns</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">certbot certonly --manual -d *.example.com -d example.com --preferred-challenges dns</span><br></pre></td></tr></table></figure>
 <ul>
 <li>到你的 DNS 服務商去新增相對應的 hostName 以及指向的 value, type 為 TXT</li>
 <li><code>dig -t txt hostName</code> 確認該 hostName 是否指向 上一步新增的 value</li>
@@ -373,9 +373,9 @@
 <p><br><br><br><br><br></p>
 <h2 id="選擇你想要怎麼樣執行-Certbot-是單純拿到-certificate-或要安裝"><a href="#選擇你想要怎麼樣執行-Certbot-是單純拿到-certificate-或要安裝" class="headerlink" title="選擇你想要怎麼樣執行 Certbot, 是單純拿到 certificate 或要安裝"></a>選擇你想要怎麼樣執行 Certbot, 是單純拿到 certificate 或要安裝</h2><p>這邊官網有提供兩種方式，一種是全自動安裝，不只獲得憑證還幫你安裝，另外一種是只有安裝。<br>不過我看過 Google 的插件之後，發現好像只有獲得憑證的選項，因此下面的指令會是單純獲得憑證的方式，若有人知道怎麼同時安裝的，也可以提供哦！</p>
 <p>下面指令為 Google 版的，其他版的請勿使用哦！</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">certbot certonly --dns-google --dns-google-credentials yourCredentailLocation -d *.example.com. -i nginx</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">certbot certonly --dns-google --dns-google-credentials yourCredentailLocation -d *.example.com. -d example.com. -i nginx</span><br></pre></td></tr></table></figure>
 <p>上面的 <code>yourCredentailLocation</code> 為上面我的建立的 Google Service Account JSON Key, 假如我放在 /home/ray/serviceAccountKey.json, 那上面的指令將會如下：</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">certbot certonly --dns-google --dns-google-credentials /home/ray/serviceAccountKey.json -d *.example.com. -i nginx</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">certbot certonly --dns-google --dns-google-credentials /home/ray/serviceAccountKey.json -d *.example.com. -d example.com. -i nginx</span><br></pre></td></tr></table></figure>
 <p><br><br><br><br><br></p>
 <h2 id="拿到憑證之後，我們可以設定一個測試站來看-wildcard-憑證是否有效"><a href="#拿到憑證之後，我們可以設定一個測試站來看-wildcard-憑證是否有效" class="headerlink" title="拿到憑證之後，我們可以設定一個測試站來看 wildcard 憑證是否有效"></a>拿到憑證之後，我們可以設定一個測試站來看 wildcard 憑證是否有效</h2><ul>
 <li>建立測試 site 檔案<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">vim example.com</span><br></pre></td></tr></table></figure>
