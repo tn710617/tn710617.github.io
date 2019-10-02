@@ -4,13 +4,13 @@
     <meta charset="utf-8">
 <title>Creating and Alerting on Logs-based Metrics - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="前言&amp;lt;未完待續&amp;gt;本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
 <meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Creating and Alerting on Logs-based Metrics">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/creatingAndAlertingOnLogsBasedMetrics/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言&amp;lt;未完待續&amp;gt;本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
@@ -21,10 +21,12 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/zBc-WknJKNVhCcBV5D6ByzbMbk_poeuTwtoeVwNYpbhTPzhveRVMUS0K4TPMuyhJLBrJ7w6SrSYM9WJnkp8DNTPjQYRoAwy1WBE7b3XrLh9BglJDW8sx-k91FzYNfAg_HY1IQ4ai6sTbnB-I1JyHe-UPZ4hy2ZkcFRy3JCNwnBBa_3WbAwR35pRn4OK_mkboFb6ZIxboXwWFLqcfgBUdy5jikH_OqdR4vYwh-ahBnYZlFssQw77qQci38WE-O2k3B90SgoKQv-7ZvO37idoPKpygg54IUzod-s73bv61SI7WvmylXWy5aPB-3f7NXOgMcABgRAvCgkb7Ie9PnpIRwTuodKrVfzQ9kVUydAN9x7p1260dCwck0IYZDUpALyV6ipbqY67NXLvkjsOOhiVkVqcGK5Zwbv4FOXeeIiZOHvi9p-VoKKzvdJ_f7ftcVbcn4KjGcbnU3Hi1P_t8u_rdPR8cTsBwTDAlYwaFSSLlV9yjLucmo7P1L-sCpfcAzpWOiwG3Uiyp6vH5qZ1oXw8-IVCuwuopNOO21zNdVIxFoIPtjZmJUkvMGxlA3e-nQpxobcwI7UT6RY3vjpG4kRF0U2p_aH4yz783IuQ59Zi4TNEkwbExhUSRnIeu-peBMOMWbzS2uyuMy34UBW226feOYQ6cQodyvKdigey6Q4tm_cyNHub-1x3fxC8=w463-h322-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/HHJYrhyTw6rvoGzU1a_oxoTIVC4MUH8nxTAF31OYFrnkQiJfpqbhXWrgMZfvHKlR7PoWhcsbcSosiSoKIv87DcE6CHSKy-hukaitLUGR7rzmxXtFYkQfOzZF4-T4LL0PcXxuEjfHB83uAU4p66-9HXowQtAMyStJ3it2rA3t36wjowKvb-LF7UaSfTX3YYqBU0FL77Uq0Vb5WAdYlbWLjD5vQnJgfSsEjp-hgXxFT1n-B70s-2y-_WrvJBxlocgRxL8qvZdNxeX63_BFPFBKTHbQ3M8W6e4TmvUbOYl5_EeCZseqKz8PPezoXivYoFKQwRNXCOD8haCBc_9k5YimvTVffF9Lt_WtKZJI2vKHSJoV2W_0N0OmOum0Tswzi3XG5nARe032Nb_Qs6ZgaucJUJS3pg0JyztYRk_N5VKZSTjaemfF7k5ug8Q4wqyvfNNLsTzHKly_-Ze2jkxbI6Gzhf3N3EmtUIMBquI3H9bvwozxSSXFEGfTUWgtLYyZcwmclqFDzEpyXnqfwL6eNFj2bSHprJFPNCyl5c_czmWGWJ8A3-ehbGeTKO8qU2HY-6J2OZz9E9pSz6-h3GL5rgKXF3ThHf2lokZ29nJD8xMLpz9beCSIwH7kbxRSAe1B_sxI3LX9MMTuecBLRqk7UdcN8IXnhITW3aeVHgoIS3EUqSa9zf-ZOo8AuWo=w1182-h365-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/_LUxkSdfDV9Hly_AjRWqeE7wJ-8opt8vtZysK4sIegEPK6-JDNsYGnrl7tilRhROv5vdaPNbRfQ77-rgDgXKIOIbtrPJW6FOhJs3TgP6Gc3Cflah8pANxiTA-N973n5LdSNYwA8XbkIIjhmVTdrJymMFuXutbD1ZoOYfv2Y5_ls0ciAjJwUOTGQi3cJK5wq9grZ_k_oDVjeBF-I-u3cdKdlkNFT2pOwhBRcH40b4Q-1HKuIANbFaWjXHhVYziyBiqNCj6APGnBW72VERcIJstVH8c0H_M8K8Mf48zygZF7gS2KUpz1TpBu6MIw3H78bHp-YUeeiL-lUdhCEMQoAcNFaa5SvLaGSU9CELc-xXUK8BQtQVWIgSR4c8oIhxwLqCgtKtifXI865pTfNgeysKAfqpxypy9pzbPEmT1hz4EZrl-6znJrY4aAiVXsqrQv38Y5rgyvCv7MKfgepFkOnURIHer-nmDg6F2yaoVcJ7pLeFblWy7pYsZ26r_sIKwCCi4IvKr1eG71Spz0Aj8goYWDoceFEMCNGYWAvzUKRG98BhljcwVmUUBt9e6PKKT2GICxcl1E13RnEkbuFotfOZXBQHqFgfztXxGDXHf1vs5sEiIvfEzw_DbU78PuK7IAM-r0Di0ZJW-r_QNAihksXLhWUssSnUKwm73ptTur6XqE-46TfEzGRgv7U=w550-h278-no">
-<meta property="og:updated_time" content="2019-10-01T10:40:55.720Z">
+<meta property="og:image" content="https://lh3.googleusercontent.com/MDx02SLI2I-L_JRLgOSLMEYks2o7Y2yGz0pwBTDSBvD78AJZtNAKlmPxDp9OPtNg7hEbx55NHHMnkHT79Z5B4rS2Yy4IeL6smZOYTGgLZj4VXazU8fYZFYW8luLw7s0bmOnQpAoWcZUyzKYkNyamXcUa6boczQ6ux6j2lfmD1X5HjMlRNMenb203a-2tYhckW9tvoHW19NTyxHtD3Ajhn8UnBCH6IqNMVUOFJykwSAs4iIIpJkKr8EPo7ZV1pjo09XpGV5_bXrL4sWT3Lsjf5PiJp7z8U3KxZKwB2aUTcaL52tRTI3eGEg6eP-AF4j70bhqLyeIjMtGvkmL2mhxKt1pi3yz9OOWUUS7bsqH79Zg2GsuEclbZDyMvMS3RhbE7I0PsNkifewD2yR1QDiyZGAIzs6p9iYnuNs4nR26pCqQY87PPltMocxZHvCz454kUI708F8xTmsdXtmTQDs4jAofjbzbrndjhRpWQF4H9HRup5m9jHOUrB6sz4akEnH2AjlozWIJEZadqhVsQ4ubO0_me6_4nXfEKtmOZ_Uyx5JHKo82TekRQb9QVPGjjhE1IQ7gw_61UTYG0MULD2Kk5TpNbCfRY28hXAqfs2_B3Uvbx4EAQrq4C6GHAgaYZ7g3-BS9t0lPpFC7JWE8WjwN6u-S607SfBhjGaNlNF-8qPgYN92EnGKJsH1Q=w1012-h510-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/3caP1blatuSgx7OzLV-toB3TAo0MWMWGIdrT0_x5yDEEaf7HpDRVGbc6VBcsFbnlwgUbDJukLKWTXXsRCijbrqzbhuiQo-IG8f7AGmW6syzcDj8rnTAbNlB2JMJIBOIQz8mWk5MxnHzN1pmVK21CIkmaHAB3Zi9lvYctm2eq9xPwY_YlBXZMTtmt2Ahe_YLTY-6E4qXnrIpitsi-95JNRDrxzA7UHeTyv1KqQ8YgipwuROXHCnnVncWjHWx0Eov-QUB40nNGYUkraU3FvIVyiBo56SC475MGcgNgaadtrCsuNoGtfQRn6sKCB9XMJVUaeNeE3MM78Kvsp8Y-eVZMVlYcU6uWhx9OYZqPU0KcZa1d6iouT__-cEW_RUawYNkova2zMV0feBntg07tIshRbHO1-SWyUfehGb3TICdFqSi-ewyxEwixIEVR6brlDLGh2GzDL1Kx3_sFR_QxZzcBXUT2Un_j-8fk6_043sGGNjpn2vYBFxkofZZPNH1Vod55x2Ib3kA9YY5lnuSwxeZR5XY0mNxsgYq5En-GUaQbVwypEXKWWHH-spdtUiHDdfrFTDbgPvYiUAy9BktfTybv0I9gTKrWPD813WIbABbdQcjJkW6p9JjcZpb0TwodkfQS-jcAPIOeuHtRH3fMVlu-cz4GMQ-NvMCuq_gVM6Tc86fjY8xMQ5pMJ3Y=w859-h532-no">
+<meta property="og:updated_time" content="2019-10-02T11:47:47.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Creating and Alerting on Logs-based Metrics">
-<meta name="twitter:description" content="前言&amp;lt;未完待續&amp;gt;本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 
 
@@ -40,13 +42,13 @@
 
 
 
-    <meta name="description" content="前言&amp;lt;未完待續&amp;gt;本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+    <meta name="description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
 <meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Creating and Alerting on Logs-based Metrics">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/creatingAndAlertingOnLogsBasedMetrics/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言&amp;lt;未完待續&amp;gt;本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
@@ -57,10 +59,12 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/zBc-WknJKNVhCcBV5D6ByzbMbk_poeuTwtoeVwNYpbhTPzhveRVMUS0K4TPMuyhJLBrJ7w6SrSYM9WJnkp8DNTPjQYRoAwy1WBE7b3XrLh9BglJDW8sx-k91FzYNfAg_HY1IQ4ai6sTbnB-I1JyHe-UPZ4hy2ZkcFRy3JCNwnBBa_3WbAwR35pRn4OK_mkboFb6ZIxboXwWFLqcfgBUdy5jikH_OqdR4vYwh-ahBnYZlFssQw77qQci38WE-O2k3B90SgoKQv-7ZvO37idoPKpygg54IUzod-s73bv61SI7WvmylXWy5aPB-3f7NXOgMcABgRAvCgkb7Ie9PnpIRwTuodKrVfzQ9kVUydAN9x7p1260dCwck0IYZDUpALyV6ipbqY67NXLvkjsOOhiVkVqcGK5Zwbv4FOXeeIiZOHvi9p-VoKKzvdJ_f7ftcVbcn4KjGcbnU3Hi1P_t8u_rdPR8cTsBwTDAlYwaFSSLlV9yjLucmo7P1L-sCpfcAzpWOiwG3Uiyp6vH5qZ1oXw8-IVCuwuopNOO21zNdVIxFoIPtjZmJUkvMGxlA3e-nQpxobcwI7UT6RY3vjpG4kRF0U2p_aH4yz783IuQ59Zi4TNEkwbExhUSRnIeu-peBMOMWbzS2uyuMy34UBW226feOYQ6cQodyvKdigey6Q4tm_cyNHub-1x3fxC8=w463-h322-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/HHJYrhyTw6rvoGzU1a_oxoTIVC4MUH8nxTAF31OYFrnkQiJfpqbhXWrgMZfvHKlR7PoWhcsbcSosiSoKIv87DcE6CHSKy-hukaitLUGR7rzmxXtFYkQfOzZF4-T4LL0PcXxuEjfHB83uAU4p66-9HXowQtAMyStJ3it2rA3t36wjowKvb-LF7UaSfTX3YYqBU0FL77Uq0Vb5WAdYlbWLjD5vQnJgfSsEjp-hgXxFT1n-B70s-2y-_WrvJBxlocgRxL8qvZdNxeX63_BFPFBKTHbQ3M8W6e4TmvUbOYl5_EeCZseqKz8PPezoXivYoFKQwRNXCOD8haCBc_9k5YimvTVffF9Lt_WtKZJI2vKHSJoV2W_0N0OmOum0Tswzi3XG5nARe032Nb_Qs6ZgaucJUJS3pg0JyztYRk_N5VKZSTjaemfF7k5ug8Q4wqyvfNNLsTzHKly_-Ze2jkxbI6Gzhf3N3EmtUIMBquI3H9bvwozxSSXFEGfTUWgtLYyZcwmclqFDzEpyXnqfwL6eNFj2bSHprJFPNCyl5c_czmWGWJ8A3-ehbGeTKO8qU2HY-6J2OZz9E9pSz6-h3GL5rgKXF3ThHf2lokZ29nJD8xMLpz9beCSIwH7kbxRSAe1B_sxI3LX9MMTuecBLRqk7UdcN8IXnhITW3aeVHgoIS3EUqSa9zf-ZOo8AuWo=w1182-h365-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/_LUxkSdfDV9Hly_AjRWqeE7wJ-8opt8vtZysK4sIegEPK6-JDNsYGnrl7tilRhROv5vdaPNbRfQ77-rgDgXKIOIbtrPJW6FOhJs3TgP6Gc3Cflah8pANxiTA-N973n5LdSNYwA8XbkIIjhmVTdrJymMFuXutbD1ZoOYfv2Y5_ls0ciAjJwUOTGQi3cJK5wq9grZ_k_oDVjeBF-I-u3cdKdlkNFT2pOwhBRcH40b4Q-1HKuIANbFaWjXHhVYziyBiqNCj6APGnBW72VERcIJstVH8c0H_M8K8Mf48zygZF7gS2KUpz1TpBu6MIw3H78bHp-YUeeiL-lUdhCEMQoAcNFaa5SvLaGSU9CELc-xXUK8BQtQVWIgSR4c8oIhxwLqCgtKtifXI865pTfNgeysKAfqpxypy9pzbPEmT1hz4EZrl-6znJrY4aAiVXsqrQv38Y5rgyvCv7MKfgepFkOnURIHer-nmDg6F2yaoVcJ7pLeFblWy7pYsZ26r_sIKwCCi4IvKr1eG71Spz0Aj8goYWDoceFEMCNGYWAvzUKRG98BhljcwVmUUBt9e6PKKT2GICxcl1E13RnEkbuFotfOZXBQHqFgfztXxGDXHf1vs5sEiIvfEzw_DbU78PuK7IAM-r0Di0ZJW-r_QNAihksXLhWUssSnUKwm73ptTur6XqE-46TfEzGRgv7U=w550-h278-no">
-<meta property="og:updated_time" content="2019-10-01T10:40:55.720Z">
+<meta property="og:image" content="https://lh3.googleusercontent.com/MDx02SLI2I-L_JRLgOSLMEYks2o7Y2yGz0pwBTDSBvD78AJZtNAKlmPxDp9OPtNg7hEbx55NHHMnkHT79Z5B4rS2Yy4IeL6smZOYTGgLZj4VXazU8fYZFYW8luLw7s0bmOnQpAoWcZUyzKYkNyamXcUa6boczQ6ux6j2lfmD1X5HjMlRNMenb203a-2tYhckW9tvoHW19NTyxHtD3Ajhn8UnBCH6IqNMVUOFJykwSAs4iIIpJkKr8EPo7ZV1pjo09XpGV5_bXrL4sWT3Lsjf5PiJp7z8U3KxZKwB2aUTcaL52tRTI3eGEg6eP-AF4j70bhqLyeIjMtGvkmL2mhxKt1pi3yz9OOWUUS7bsqH79Zg2GsuEclbZDyMvMS3RhbE7I0PsNkifewD2yR1QDiyZGAIzs6p9iYnuNs4nR26pCqQY87PPltMocxZHvCz454kUI708F8xTmsdXtmTQDs4jAofjbzbrndjhRpWQF4H9HRup5m9jHOUrB6sz4akEnH2AjlozWIJEZadqhVsQ4ubO0_me6_4nXfEKtmOZ_Uyx5JHKo82TekRQb9QVPGjjhE1IQ7gw_61UTYG0MULD2Kk5TpNbCfRY28hXAqfs2_B3Uvbx4EAQrq4C6GHAgaYZ7g3-BS9t0lPpFC7JWE8WjwN6u-S607SfBhjGaNlNF-8qPgYN92EnGKJsH1Q=w1012-h510-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/3caP1blatuSgx7OzLV-toB3TAo0MWMWGIdrT0_x5yDEEaf7HpDRVGbc6VBcsFbnlwgUbDJukLKWTXXsRCijbrqzbhuiQo-IG8f7AGmW6syzcDj8rnTAbNlB2JMJIBOIQz8mWk5MxnHzN1pmVK21CIkmaHAB3Zi9lvYctm2eq9xPwY_YlBXZMTtmt2Ahe_YLTY-6E4qXnrIpitsi-95JNRDrxzA7UHeTyv1KqQ8YgipwuROXHCnnVncWjHWx0Eov-QUB40nNGYUkraU3FvIVyiBo56SC475MGcgNgaadtrCsuNoGtfQRn6sKCB9XMJVUaeNeE3MM78Kvsp8Y-eVZMVlYcU6uWhx9OYZqPU0KcZa1d6iouT__-cEW_RUawYNkova2zMV0feBntg07tIshRbHO1-SWyUfehGb3TICdFqSi-ewyxEwixIEVR6brlDLGh2GzDL1Kx3_sFR_QxZzcBXUT2Un_j-8fk6_043sGGNjpn2vYBFxkofZZPNH1Vod55x2Ib3kA9YY5lnuSwxeZR5XY0mNxsgYq5En-GUaQbVwypEXKWWHH-spdtUiHDdfrFTDbgPvYiUAy9BktfTybv0I9gTKrWPD813WIbABbdQcjJkW6p9JjcZpb0TwodkfQS-jcAPIOeuHtRH3fMVlu-cz4GMQ-NvMCuq_gVM6Tc86fjY8xMQ5pMJ3Y=w859-h532-no">
+<meta property="og:updated_time" content="2019-10-02T11:47:47.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Creating and Alerting on Logs-based Metrics">
-<meta name="twitter:description" content="前言&amp;lt;未完待續&amp;gt;本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 
 
@@ -162,13 +166,13 @@
                     
                     
                     
-                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#概述">2&nbsp;&nbsp;<b>概述</b></a>
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -234,6 +238,12 @@
                     
                     <a class="navbar-item" href="#系統定義紀錄指標">8.1&nbsp;&nbsp;系統定義紀錄指標</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用者定義的紀錄指標">9&nbsp;&nbsp;<b>使用者定義的紀錄指標</b></a>
+                    
                 </div>
             </div>
             
@@ -294,16 +304,16 @@
         <span class="column is-narrow">
             
             
-            24 分钟 讀完 (大概 3661 字)
+            28 分钟 讀完 (大概 4196 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&lt;未完待續&gt;<br>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>&lt;未完待續&gt;<br><strong>Logs-based metrics (紀錄指標)</strong> 是由 <a href="https://cloud.google.com/monitoring/docs/" target="_blank" rel="noopener">Stackdriver Monitoring</a> 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建立圖表以及警告政策。 紀錄指標是由紀錄的資料產生的時間序列, 在本教程中你將會動手實作上面所提到的。</p>
 <a id="more"></a>
 <p><br><br><br><br><br></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>Logs-based metrics (紀錄指標)</strong> 是由 <a href="https://cloud.google.com/monitoring/docs/" target="_blank" rel="noopener">Stackdriver Monitoring</a> 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建立圖表以及警告政策。 紀錄指標是由紀錄的資料產生的時間序列, 在本教程中你將會動手實作上面所提到的。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
 <p><br><br><br><br><br></p>
 <h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
 <p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
@@ -438,7 +448,21 @@
 <li><code>Excluded_log_entry_count</code>: 排除的記錄項目總數。 被細分為監控資源類型。</li>
 </ul>
 <p><strong>紀錄指標的指標</strong></p>
-
+<ul>
+<li><code>Dropped_log_entry_count</code>: 不要看這個名字這樣, 事實上這個不是被 Stackdriver 放棄的紀錄數據, 而是因為遲到了, 所以未被歸進紀錄指標的紀錄項目總數</li>
+<li><code>Log_entry_count</code>: 有被歸進紀錄指標的紀錄項目總數, 所以 <code>dropped_log_entry_count</code> + <code>log_entry_count</code> 為 Stackdriver Logging 收到的紀錄項目總數</li>
+<li><code>Metric_throttled</code>: 顯示數據點是否因為超過時間順序限制而被紀錄指標放棄</li>
+<li><code>Time_series_count</code>: 在紀錄指標中, 活躍的時間序列項目總數的估計值</li>
+</ul>
+<p>大部分的系統紀錄指標都是計數器指標。 <strong>Counter metrics(計數器指標)</strong> 計算符合進階紀錄篩選器的記錄數據數量。</p>
+<p>現在, 你將更進一步的看看系統產生的紀錄指標： <code>Log_entry_count</code></p>
+<p>在 Stackdriver 主控台, 點擊 <strong>Resources &gt; Metrics Explorer</strong>:</p>
+<p><img src="https://lh3.googleusercontent.com/MDx02SLI2I-L_JRLgOSLMEYks2o7Y2yGz0pwBTDSBvD78AJZtNAKlmPxDp9OPtNg7hEbx55NHHMnkHT79Z5B4rS2Yy4IeL6smZOYTGgLZj4VXazU8fYZFYW8luLw7s0bmOnQpAoWcZUyzKYkNyamXcUa6boczQ6ux6j2lfmD1X5HjMlRNMenb203a-2tYhckW9tvoHW19NTyxHtD3Ajhn8UnBCH6IqNMVUOFJykwSAs4iIIpJkKr8EPo7ZV1pjo09XpGV5_bXrL4sWT3Lsjf5PiJp7z8U3KxZKwB2aUTcaL52tRTI3eGEg6eP-AF4j70bhqLyeIjMtGvkmL2mhxKt1pi3yz9OOWUUS7bsqH79Zg2GsuEclbZDyMvMS3RhbE7I0PsNkifewD2yR1QDiyZGAIzs6p9iYnuNs4nR26pCqQY87PPltMocxZHvCz454kUI708F8xTmsdXtmTQDs4jAofjbzbrndjhRpWQF4H9HRup5m9jHOUrB6sz4akEnH2AjlozWIJEZadqhVsQ4ubO0_me6_4nXfEKtmOZ_Uyx5JHKo82TekRQb9QVPGjjhE1IQ7gw_61UTYG0MULD2Kk5TpNbCfRY28hXAqfs2_B3Uvbx4EAQrq4C6GHAgaYZ7g3-BS9t0lPpFC7JWE8WjwN6u-S607SfBhjGaNlNF-8qPgYN92EnGKJsH1Q=w1012-h510-no" alt></p>
+<p>開始輸入 “GCE”, 然後選擇 “GCE VM Instance” 為你的資源。 指標的話則是輸入 “log” 以及選擇 “Log entries”:</p>
+<p><img src="https://lh3.googleusercontent.com/3caP1blatuSgx7OzLV-toB3TAo0MWMWGIdrT0_x5yDEEaf7HpDRVGbc6VBcsFbnlwgUbDJukLKWTXXsRCijbrqzbhuiQo-IG8f7AGmW6syzcDj8rnTAbNlB2JMJIBOIQz8mWk5MxnHzN1pmVK21CIkmaHAB3Zi9lvYctm2eq9xPwY_YlBXZMTtmt2Ahe_YLTY-6E4qXnrIpitsi-95JNRDrxzA7UHeTyv1KqQ8YgipwuROXHCnnVncWjHWx0Eov-QUB40nNGYUkraU3FvIVyiBo56SC475MGcgNgaadtrCsuNoGtfQRn6sKCB9XMJVUaeNeE3MM78Kvsp8Y-eVZMVlYcU6uWhx9OYZqPU0KcZa1d6iouT__-cEW_RUawYNkova2zMV0feBntg07tIshRbHO1-SWyUfehGb3TICdFqSi-ewyxEwixIEVR6brlDLGh2GzDL1Kx3_sFR_QxZzcBXUT2Un_j-8fk6_043sGGNjpn2vYBFxkofZZPNH1Vod55x2Ib3kA9YY5lnuSwxeZR5XY0mNxsgYq5En-GUaQbVwypEXKWWHH-spdtUiHDdfrFTDbgPvYiUAy9BktfTybv0I9gTKrWPD813WIbABbdQcjJkW6p9JjcZpb0TwodkfQS-jcAPIOeuHtRH3fMVlu-cz4GMQ-NvMCuq_gVM6Tc86fjY8xMQ5pMJ3Y=w859-h532-no" alt></p>
+<p>呈現在你眼前的是一台機器的記錄數據圖表, 這台機器從這個教程開始時就開啟了, 是你的眾多資源之一。</p>
+<p><br><br><br><br><br></p>
+<h2 id="使用者定義的紀錄指標"><a href="#使用者定義的紀錄指標" class="headerlink" title="使用者定義的紀錄指標"></a>使用者定義的紀錄指標</h2>
     
     </div>
     

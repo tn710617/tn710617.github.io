@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>在 Linux 上建立一個 SFTP Server - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta name="description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案">
 <meta name="keywords" content="SFTP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在 Linux 上建立一個 SFTP Server">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/buildSftpServerOnLinux/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta property="og:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-01T14:03:34.192Z">
+<meta property="og:updated_time" content="2019-10-02T02:27:17.469Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在 Linux 上建立一個 SFTP Server">
-<meta name="twitter:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta name="twitter:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+    <meta name="description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案">
 <meta name="keywords" content="SFTP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在 Linux 上建立一個 SFTP Server">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/buildSftpServerOnLinux/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta property="og:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-01T14:03:34.192Z">
+<meta property="og:updated_time" content="2019-10-02T02:27:17.469Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在 Linux 上建立一個 SFTP Server">
-<meta name="twitter:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案   環境GCP Ubuntu 18.04以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作  建立 SFTP 群組 建立 group group a">
+<meta name="twitter:description" content="前言本篇記錄如何在 Linux 上建立一個 SFTP Server, 需滿足以下幾點條件：  使用者不可經由 SSH 登入 使用者可經由 SFTP 登入 使用者只可在指令目錄活動 使用者可上傳下載指令目錄內的檔案">
 
 
 
@@ -240,7 +240,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 514 字)
+            3 分钟 讀完 (大概 515 字)
         </span>
         
     </div>
@@ -251,7 +251,8 @@
 <li>使用者<code>不可</code>經由 SSH 登入</li>
 <li>使用者<code>可</code>經由 SFTP 登入</li>
 <li>使用者<code>只可</code>在指令目錄活動</li>
-<li>使用者<code>可</code>上傳下載指令目錄內的檔案</li>
+<li>使用者<code>可</code>上傳下載指令目錄內的檔案<a id="more"></a>
+</li>
 </ul>
 <p><br><br><br><br><br></p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>GCP Ubuntu 18.04<br>以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作</p>

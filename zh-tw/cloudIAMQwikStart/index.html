@@ -2,15 +2,15 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Cloud IAM:從 Qwik 開始 - Ray&#39;s Coding Journey</title>
+<title>Cloud IAM - 初探 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta name="keywords" content="QWIKLABS,Baseline: Infrastructure,GCP IAM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Cloud IAM:從 Qwik 開始">
+<meta property="og:title" content="Cloud IAM - 初探">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudIAMQwikStart/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no">
@@ -27,10 +27,10 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/YbwnVL86YvBbTkOpiUkBMFa7PfNqkwlAOyTI_MDT5txk-d8YMGTqI-qki6aedktUZH4rOV7A0L9HVTO6qaNI67PK0CqNSMPxAQ2_aJOZ6_IYNpQ6ca7wDzPM2FHfJZN4P7fOAkLlZTCiXHCFZQwGy2TOK-h51lr57SouchuWqOiizFBr9KwmGtG3mw8bQtMOypvB2DfFhn3lgllwAkwYqzI8eZrvooKMZ8as__wY0geDWJFmNTAFbLYRSR1qEGed_1opw1EG0Ukm8V9lbnDtGEV_g7AgTcm6My2ovYoGzwfAJDQZWT5-rkEEQXNa5OmQHd0tG4X99VRcfeam4di-n85talzMZu8ht0kv6mYrWseofJbgITDxT2UzGNFgnGCzR7i4duK6IYrXWycZvZrPNZTqVk_kkPyE7IfMHb-FmNbFFaDU04igeRDpH4EQfYnqiO2kPUfMOgwur9RpZ9tny18lmcK9tsTYc7iTF7u-8Wce-aQeLgWCL_wJF9_wYR-rucIwd5iNdpBOPaG04OA0_mQnbsUH8zG5foAQEpRY-QOZb839fEIL33kPESnUoj8sTGaAkbVfxhGnsz5-4xUjvkC4ShHVYpVc8hQikLAAHEqLS1mAjqcAQl-zO9D1BccyQuvWyYvEKqKFcgQ-mvdqS_qovk0XEMNtIpLZkkW7hmQ8RwxAe1aLiPI=w394-h70-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/IyjQnaI_59WhSrX6IMRYZnAHTHVGCYzWOkMJRb2rfIHeXoSmqljD87r8f-Gygv3NfZUioX4XFMXwBOTeVzYzs7aKsX0dxEZYb2RsasbxNJ6ylRt1zAp6lT5IC8ZqTES3Mtl9FMubV5DbSRcJn0nbFrNwHhCToMSFFmcOxsfxmcGjJmjgmOZ9KlZfm2b6XxhOI0pFsPDrBb2puivOzKbeZubVz9-L7k3aeq4Lp0ljYS67B8vfez_HUbL9ojFEKW5rHJC59s8RSD2ZVzgk_Atio30O2uIeDtscoIAMH5rVvejNj2_hOPW96QMW_1Tv4VsGe_B-ihganxF_8Lg0p_OZ81yJJ-4mXtDgQ9kESlOU9kHQKW77MRJMNoIctYPhAYsHGoD_mL2nEzztBkQ0tkTl8T0yg02TcdutLJPTRDkSplI6slm5lIRLcjeb6wSUxg4FQQ0YTO_MAn5TE9sh4J1YvZHRT3jYiHuCTUPU2xM1tjo5hxFy-A6GzimWuwZmHx6RlXx-RwrrlY2EKzI3MF-OUtso08G-R1X5k8mgaJbSv4VIihyRSMbsK2fM5RDLjK_ddSJYrwGcH5fjGzdxb3mfM7ZpOCkM-60-fjOhYqyTK3i6Fs-xQJPkBAwJQvJzJtpGy-nsS9wmHgGLrKPUgLT1V5HRBBJf_9wDY16lpfGa8EiNaESws3_sXDk=w513-h113-no">
-<meta property="og:updated_time" content="2019-09-01T05:57:37.558Z">
+<meta property="og:updated_time" content="2019-10-02T02:31:45.983Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Cloud IAM:從 Qwik 開始">
-<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:title" content="Cloud IAM - 初探">
+<meta name="twitter:description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
 
 
@@ -46,13 +46,13 @@
 
 
 
-    <meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+    <meta name="description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta name="keywords" content="QWIKLABS,Baseline: Infrastructure,GCP IAM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Cloud IAM:從 Qwik 開始">
+<meta property="og:title" content="Cloud IAM - 初探">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudIAMQwikStart/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/rcR6LTh5xxhE_6BN-jjuzd1Te3MxIdyoZarPe_z4zj2nDtr3GZvMZiHiHjYeKgKtYORpGFydN5w-K2jz00O7AWSdaBHCnNcDglgLJ3w_YoOqWjUN8p66Cjdtnc2T33dl-KBE4EvpGw2uBkr3dbhafWS7fDJiT56wgMndt4Zi1VlEvZiZ4Zxk7kBB03wWizDku2EGfZ3BCuFulqMGzbsqaDTevo1yOhV4BGVZW_u1gy9pMP5Fs_BqyXHkkVjGEM8iRb17iY_hAyC1asRevKnkxgBe3WvpLC6E6_VO1jfkzjOtSYXvPOX6O_7POv9aoFGGADwOIAfZlEgIzGnQhoGulRoch66Eqkf3dWeHb7xry4FjFnTs0qiohLfZ-a3m5Pw8uvCPrb584sEjnwCuxPM8Lj0YiaC0gdmY3tqwa8vltBR_SpgcnOt9sHQoRKTkhUw3t4Nrdo0lBAZozYqkDj8ZOZKlMsDE5fKOHlCTe_AQIKexld2BmC8BgCOYw32xhvIWDSjEKxA4rc-XlMoy9NOOyBOjxO1EKpeidqqdBnQRvYO4c5eAB_JM8lI2q5-U32qMN1T6gdvOlYC5w2XPpqbGRgBpxv2Q4UAmrFjspgYQ0tX5iWqavm4q-_B1nSsZCKcccX722jcFbRaQ_FhYPaCTKt7EEBJiBGyg_lHRnmT734TZDXC7EghmgXQ=w558-h534-no">
@@ -69,10 +69,10 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/YbwnVL86YvBbTkOpiUkBMFa7PfNqkwlAOyTI_MDT5txk-d8YMGTqI-qki6aedktUZH4rOV7A0L9HVTO6qaNI67PK0CqNSMPxAQ2_aJOZ6_IYNpQ6ca7wDzPM2FHfJZN4P7fOAkLlZTCiXHCFZQwGy2TOK-h51lr57SouchuWqOiizFBr9KwmGtG3mw8bQtMOypvB2DfFhn3lgllwAkwYqzI8eZrvooKMZ8as__wY0geDWJFmNTAFbLYRSR1qEGed_1opw1EG0Ukm8V9lbnDtGEV_g7AgTcm6My2ovYoGzwfAJDQZWT5-rkEEQXNa5OmQHd0tG4X99VRcfeam4di-n85talzMZu8ht0kv6mYrWseofJbgITDxT2UzGNFgnGCzR7i4duK6IYrXWycZvZrPNZTqVk_kkPyE7IfMHb-FmNbFFaDU04igeRDpH4EQfYnqiO2kPUfMOgwur9RpZ9tny18lmcK9tsTYc7iTF7u-8Wce-aQeLgWCL_wJF9_wYR-rucIwd5iNdpBOPaG04OA0_mQnbsUH8zG5foAQEpRY-QOZb839fEIL33kPESnUoj8sTGaAkbVfxhGnsz5-4xUjvkC4ShHVYpVc8hQikLAAHEqLS1mAjqcAQl-zO9D1BccyQuvWyYvEKqKFcgQ-mvdqS_qovk0XEMNtIpLZkkW7hmQ8RwxAe1aLiPI=w394-h70-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/IyjQnaI_59WhSrX6IMRYZnAHTHVGCYzWOkMJRb2rfIHeXoSmqljD87r8f-Gygv3NfZUioX4XFMXwBOTeVzYzs7aKsX0dxEZYb2RsasbxNJ6ylRt1zAp6lT5IC8ZqTES3Mtl9FMubV5DbSRcJn0nbFrNwHhCToMSFFmcOxsfxmcGjJmjgmOZ9KlZfm2b6XxhOI0pFsPDrBb2puivOzKbeZubVz9-L7k3aeq4Lp0ljYS67B8vfez_HUbL9ojFEKW5rHJC59s8RSD2ZVzgk_Atio30O2uIeDtscoIAMH5rVvejNj2_hOPW96QMW_1Tv4VsGe_B-ihganxF_8Lg0p_OZ81yJJ-4mXtDgQ9kESlOU9kHQKW77MRJMNoIctYPhAYsHGoD_mL2nEzztBkQ0tkTl8T0yg02TcdutLJPTRDkSplI6slm5lIRLcjeb6wSUxg4FQQ0YTO_MAn5TE9sh4J1YvZHRT3jYiHuCTUPU2xM1tjo5hxFy-A6GzimWuwZmHx6RlXx-RwrrlY2EKzI3MF-OUtso08G-R1X5k8mgaJbSv4VIihyRSMbsK2fM5RDLjK_ddSJYrwGcH5fjGzdxb3mfM7ZpOCkM-60-fjOhYqyTK3i6Fs-xQJPkBAwJQvJzJtpGy-nsS9wmHgGLrKPUgLT1V5HRBBJf_9wDY16lpfGa8EiNaESws3_sXDk=w513-h113-no">
-<meta property="og:updated_time" content="2019-09-01T05:57:37.558Z">
+<meta property="og:updated_time" content="2019-10-02T02:31:45.983Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Cloud IAM:從 Qwik 開始">
-<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:title" content="Cloud IAM - 初探">
+<meta name="twitter:description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
 
 
@@ -174,13 +174,13 @@
                     
                     
                     
-                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#概述">2&nbsp;&nbsp;<b>概述</b></a>
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -309,7 +309,7 @@
     <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            Cloud IAM:從 Qwik 開始
+            Cloud IAM - 初探
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -332,9 +332,10 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。</p>
 <a id="more"></a>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。</p>
+<p><br><br><br><br><br></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
 <p><br><br><br><br><br></p>
 <h2 id="必要條件"><a href="#必要條件" class="headerlink" title="必要條件"></a>必要條件</h2><p>這是入門級的教程，如果你對 Cloud IAM 沒有經驗，或只有一點點經驗的話，這個教程會蠻適合你的。 如果你有 Cloud Storage 的經驗，會可能會讓你比較容易完成這個教程，但是如果沒有也沒關係，因為這不是必須的。 要完成本教程，你必須要可以建立 .txt 檔，或者 .html 檔。 如果你在找更進階一點的 Cloud IAM 課程，一定不要錯下面這個：</p>
 <ul>

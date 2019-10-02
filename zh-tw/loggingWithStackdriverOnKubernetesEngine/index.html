@@ -4,13 +4,13 @@
     <meta charset="utf-8">
 <title>使用 Stackdriver 在 Kubernetes Engine 上做紀錄 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver,GCP Kubernetes Engine">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
@@ -25,10 +25,10 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/BwKemx5HbLlhu5iaBw1-YNFHeTMDedYaUMu1WQ79JItMCiPczK75TCPKAA1egcfq-g9A00bliikjh7R0sGVn4ag0TPdRPG3A8yhr0RH1Sb514Xh7NGjTdRTsLaaqNjqwXiMAVu-Hffxao9EyinJgWmoTEUJklP_cje4j8ddH2h9ZzZSXHMgfFQPKkV1TRg7bhA3916DptaWUd24aCIRtu8Puc5xXgdbdhdxzDiZ8AXVbWvvsGqW5rPqjNA_pIXhcC-GGM3MwEgPOERBjQBU6pGwvdog22NRryTeNpsUX7eLGaYK2BeTmZvgk1EWQ3VdQjPkasYp0yUIOHXZM8yiFvxeO9OAJNx4zAarEVB_2usOWZSlvNbRXo4j0jQYfVRlP8JdWhUM1_MpiPHAnsKL4VDCjo9oriP_Iax1Qo3Mraikd2PUoyJi_5vXkBFZABg7IJZc8MMMkg8mRVJjRBtbP23Gu_vI0EZkMnxazM5dhkXhQKA0p-fghVa6HaJZnvLkMg6U17HSaJlokvy4VdV8yhDrnGaMKnDjWkVnkFlk6LNDvT_ecAORrl-h7vHnxSy7uSbsd7XWOFSQCpQqVHVnb6URlqpGoiKQCyHrdl9_hDFvQKhJnG9phg7gnwG7X6iAG7EYbag1XZL2HL4odVlvxhFenyP-fPiSo4GwAvOgNKSYjWK0i2BzHzPc=w1211-h569-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/1DtHynfDSbYRxhnCSlw_0GcPkpiIw8d2NfxVN74-bDs4C-7uBZAVngzY4MApW93Oqyyf62CDlfG9V6N6n7z12AxdvU0zHwv62bzQcK2HkKQfGJ0_3ZYV3hjNCCeZrOKqPmMXX81Zitjp-OvQG3Ab0OBmyXqSzbUFJRBF_X3z3Qei_VkYAX51OglBi7NOgG8T6TOaHq-CWTR_KNuwC-053MCAjOTBM8vnhSq9wYThx00dfvmc6jv4JF_Gg8gLo-ocyZXJYNsfw207VbO03zGaG37oPuIwSkMBsbEZ_cM36FYM0Hc8ZkK5sxMrgVW9mem_CpN6qJWBE3UtCEOD_VWqeaJ7qbsuFV5s0xk8LTvT3J_0QwkC55dqnOOvMLWDGMVTMw9cwLMRevOeuS2adWIedDH-2z5vuBzF7tzYsndT4xhSl6rAY_GxNWJ5jhBteSaXRzZQWnue9a4PqXrfs-3JMqimMv-QyPQuJKOhVrIq02ie8rADm6FYX3BKWTjxzgAbGXe1_MsDjLSWXV3GeYjsGkLmV3QQwtb6USTaxL0u1bOWVAuf2ysCRklmoRFALTzhkBGsPLmuIeaS1kC7z9K1Mkkd0x6ILjPiODm_fwfDxlsMcur0L8axMkB4bUbHuXwBdBworL8WBNXa5oiUPfGDHY5QRrSi7VfOxANeIE-qdl07BQH3lDnbfhE=w1280-h550-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/B6K5A8g1uRhmwk2FuT-5mYdUlyv00kj4cEJEJjqDpRizYRQ_WrMZ-mXiopMhQc1XHc2aaKdtCtfR8NiJwdYPNMXXMKFuFFqVx3zIr6JVT7-oqpVlSsfQ9XzXo1E2SoFqcWkzHsiietu3hWSGxiMt628dDEvs0ee28oe6sKW-F7vpejbJP5yDh32IqRHJnE5k_mfNWl2MkQJVTxq6AGIp8To3WnQnsn0jh0CJI0wV7MuFU4tO4mpSj7EESxOmwkeYQATCEppQoovYyLIZh5NOwLMz7fxia-xwlXaNIwF5MzT9atqwcavD0m8kh7POBlzJPShvWatPgYfA1n5gSJegcynUAs24P1vG9nPEkDmHiKA8ZziGVRApxq268kRGv9AQhA4fWHwcB_H0wAnh5RjWRCcnr_zIC49W9GiIKZffrbPuQ6aPtrJyIdjCGuPzXYmLJuDZLG_yJw9cyeDMpP3_KZrcdlg8DLnnjBs4gNtM6om04DcGmLHKFHeF8oUDFkLoQZcsJIUcPvtbhXWeoZmJ_O7GtMvNI5sUFDGnybztM3fqBChjiFhZFqQAjd2J3XEc0HqqQVBg0-9fFGqQ7Pvth1qDAkGUEZgibrpUxHtTYr9f-z4-BiPRIyJG0S34xNDZGIGhA4cpDR-hBV0uG3c19wyt0oJonf0bxDIhJIRpfcHqsNYeEJPIyUg=w1098-h795-no">
-<meta property="og:updated_time" content="2019-09-01T11:09:34.260Z">
+<meta property="og:updated_time" content="2019-10-02T02:33:03.425Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
-<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
 
 
@@ -44,13 +44,13 @@
 
 
 
-    <meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+    <meta name="description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver,GCP Kubernetes Engine">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta property="og:description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
@@ -65,10 +65,10 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/BwKemx5HbLlhu5iaBw1-YNFHeTMDedYaUMu1WQ79JItMCiPczK75TCPKAA1egcfq-g9A00bliikjh7R0sGVn4ag0TPdRPG3A8yhr0RH1Sb514Xh7NGjTdRTsLaaqNjqwXiMAVu-Hffxao9EyinJgWmoTEUJklP_cje4j8ddH2h9ZzZSXHMgfFQPKkV1TRg7bhA3916DptaWUd24aCIRtu8Puc5xXgdbdhdxzDiZ8AXVbWvvsGqW5rPqjNA_pIXhcC-GGM3MwEgPOERBjQBU6pGwvdog22NRryTeNpsUX7eLGaYK2BeTmZvgk1EWQ3VdQjPkasYp0yUIOHXZM8yiFvxeO9OAJNx4zAarEVB_2usOWZSlvNbRXo4j0jQYfVRlP8JdWhUM1_MpiPHAnsKL4VDCjo9oriP_Iax1Qo3Mraikd2PUoyJi_5vXkBFZABg7IJZc8MMMkg8mRVJjRBtbP23Gu_vI0EZkMnxazM5dhkXhQKA0p-fghVa6HaJZnvLkMg6U17HSaJlokvy4VdV8yhDrnGaMKnDjWkVnkFlk6LNDvT_ecAORrl-h7vHnxSy7uSbsd7XWOFSQCpQqVHVnb6URlqpGoiKQCyHrdl9_hDFvQKhJnG9phg7gnwG7X6iAG7EYbag1XZL2HL4odVlvxhFenyP-fPiSo4GwAvOgNKSYjWK0i2BzHzPc=w1211-h569-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/1DtHynfDSbYRxhnCSlw_0GcPkpiIw8d2NfxVN74-bDs4C-7uBZAVngzY4MApW93Oqyyf62CDlfG9V6N6n7z12AxdvU0zHwv62bzQcK2HkKQfGJ0_3ZYV3hjNCCeZrOKqPmMXX81Zitjp-OvQG3Ab0OBmyXqSzbUFJRBF_X3z3Qei_VkYAX51OglBi7NOgG8T6TOaHq-CWTR_KNuwC-053MCAjOTBM8vnhSq9wYThx00dfvmc6jv4JF_Gg8gLo-ocyZXJYNsfw207VbO03zGaG37oPuIwSkMBsbEZ_cM36FYM0Hc8ZkK5sxMrgVW9mem_CpN6qJWBE3UtCEOD_VWqeaJ7qbsuFV5s0xk8LTvT3J_0QwkC55dqnOOvMLWDGMVTMw9cwLMRevOeuS2adWIedDH-2z5vuBzF7tzYsndT4xhSl6rAY_GxNWJ5jhBteSaXRzZQWnue9a4PqXrfs-3JMqimMv-QyPQuJKOhVrIq02ie8rADm6FYX3BKWTjxzgAbGXe1_MsDjLSWXV3GeYjsGkLmV3QQwtb6USTaxL0u1bOWVAuf2ysCRklmoRFALTzhkBGsPLmuIeaS1kC7z9K1Mkkd0x6ILjPiODm_fwfDxlsMcur0L8axMkB4bUbHuXwBdBworL8WBNXa5oiUPfGDHY5QRrSi7VfOxANeIE-qdl07BQH3lDnbfhE=w1280-h550-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/B6K5A8g1uRhmwk2FuT-5mYdUlyv00kj4cEJEJjqDpRizYRQ_WrMZ-mXiopMhQc1XHc2aaKdtCtfR8NiJwdYPNMXXMKFuFFqVx3zIr6JVT7-oqpVlSsfQ9XzXo1E2SoFqcWkzHsiietu3hWSGxiMt628dDEvs0ee28oe6sKW-F7vpejbJP5yDh32IqRHJnE5k_mfNWl2MkQJVTxq6AGIp8To3WnQnsn0jh0CJI0wV7MuFU4tO4mpSj7EESxOmwkeYQATCEppQoovYyLIZh5NOwLMz7fxia-xwlXaNIwF5MzT9atqwcavD0m8kh7POBlzJPShvWatPgYfA1n5gSJegcynUAs24P1vG9nPEkDmHiKA8ZziGVRApxq268kRGv9AQhA4fWHwcB_H0wAnh5RjWRCcnr_zIC49W9GiIKZffrbPuQ6aPtrJyIdjCGuPzXYmLJuDZLG_yJw9cyeDMpP3_KZrcdlg8DLnnjBs4gNtM6om04DcGmLHKFHeF8oUDFkLoQZcsJIUcPvtbhXWeoZmJ_O7GtMvNI5sUFDGnybztM3fqBChjiFhZFqQAjd2J3XEc0HqqQVBg0-9fFGqQ7Pvth1qDAkGUEZgibrpUxHtTYr9f-z4-BiPRIyJG0S34xNDZGIGhA4cpDR-hBV0uG3c19wyt0oJonf0bxDIhJIRpfcHqsNYeEJPIyUg=w1098-h795-no">
-<meta property="og:updated_time" content="2019-09-01T11:09:34.260Z">
+<meta property="og:updated_time" content="2019-10-02T02:33:03.425Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
-<meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文">
+<meta name="twitter:description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
 
 
@@ -170,13 +170,13 @@
                     
                     
                     
-                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#概述">2&nbsp;&nbsp;<b>概述</b></a>
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -332,15 +332,17 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文<br><a id="more"></a></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>Stackdriver Logging</code> 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 <code>Stackdriver Logging UI</code> 內被檢視。 他們也可以被<a href="https://cloud.google.com/logging/docs/export/configure_export_v2" target="_blank" rel="noopener">匯出到接收器</a>來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>Stackdriver Logging</code> 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 <code>Stackdriver Logging UI</code> 內被檢視。 他們也可以被<a href="https://cloud.google.com/logging/docs/export/configure_export_v2" target="_blank" rel="noopener">匯出到接收器</a>來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:</p>
 <ul>
 <li>Cloud Storage</li>
 <li>Pub/Sub</li>
 <li>BigQuery</li>
 </ul>
+<a id="more"></a>
 <p>在這個教程，你將會部署一個簡單的 Kubernetes 應用，這個應用將轉發紀錄事件到 <a href="https://cloud.google.com/logging/" target="_blank" rel="noopener">Stackdriver Logging</a> 。 <a href="https://www.terraform.io/" target="_blank" rel="noopener">Terraform</a> 一個強調基礎架構就是程式碼的工具， 可以使用配置檔來自動化部署，是雲端基礎架構的進化。 配置檔同時也會建立一個 <code>Cloud Storage</code> 儲存區，以及 <code>BigQuery</code> 資料組來接受被匯出的紀錄</p>
 <p>本教程由 <code>GKE Helmsman</code> 的工程師所建立，為了讓你對 Stackdriver Logging 有更好地理解。 你可以在 Github 上檢視這個<a href="https://github.com/GoogleCloudPlatform/gke-binary-auth-demo.git" target="_blank" rel="noopener">範例</a>。 我們也鼓勵以及歡迎任何想對我們專案做出貢獻的開發者！</p>
+<p><br><br><br><br><br></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
 <p><br><br><br><br><br></p>
 <h2 id="架構"><a href="#架構" class="headerlink" title="架構"></a>架構</h2><p><code>Terraform</code> 配置將會建立一個 <code>Kubernetes Engine</code> 叢集，這個叢集會產生可被 Stackdriver 處理的紀錄以及指標。 這個腳本也會同時建立紀錄的匯出接收器，有 <code>CloudStorage, BigQuery</code>, 以及 <code>Cloud Pub/Sub</code>。 這一切包含資料流，可參考下面的圖片</p>
 <p><img src="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no" alt></p>
@@ -524,7 +526,7 @@
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/zh-tw/cloudIAMQwikStart/">Cloud IAM:從 Qwik 開始</a>
+            <a href="/zh-tw/cloudIAMQwikStart/">Cloud IAM - 初探</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">

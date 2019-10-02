@@ -188,7 +188,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 514 字)
+            3 分钟 讀完 (大概 515 字)
         </span>
         
     </div>
@@ -199,58 +199,10 @@
 <li>使用者<code>不可</code>經由 SSH 登入</li>
 <li>使用者<code>可</code>經由 SFTP 登入</li>
 <li>使用者<code>只可</code>在指令目錄活動</li>
-<li>使用者<code>可</code>上傳下載指令目錄內的檔案</li>
-</ul>
-<p><br><br><br><br><br></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>GCP Ubuntu 18.04<br>以下操作皆默認 root 操作, 請在前面加上 sudo 如果你不是使用 root 操作</p>
-<p><br><br><br><br><br></p>
-<h2 id="建立-SFTP-群組"><a href="#建立-SFTP-群組" class="headerlink" title="建立 SFTP 群組"></a>建立 SFTP 群組</h2><ul>
-<li><p>建立 group</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">group add sftp-users</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>確認 group 有正確被建立</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">grep <span class="hljs-string">'sftp-users'</span> /etc/group</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><br><br><br><br><br></p>
-<h2 id="建立-SFTP-使用者"><a href="#建立-SFTP-使用者" class="headerlink" title="建立 SFTP 使用者"></a>建立 SFTP 使用者</h2><ul>
-<li>建立使用者<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">useradd -g sftp-users -d /upload -s /sbin/nologin <span class="hljs-built_in">test</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><code>-g</code>: 預設 group<br><code>-d</code>: 預設家目錄<br><code>-s</code>: 預設 shell, nologin shell 一般用於系統帳號, 表示不可經由 ssh 登入</p>
-<ul>
-<li><p>確認使用者有正確被建立</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">grep <span class="hljs-built_in">test</span> /etc/passwd</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果使用者早已建立, 可直接更改使用者設定即可</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">usermod -g sftp-users -d /upload -s /sbin/nologin <span class="hljs-built_in">test</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><br><br><br><br><br></p>
-<h2 id="SSH-設定"><a href="#SSH-設定" class="headerlink" title="SSH 設定"></a>SSH 設定</h2><ul>
-<li><p>打開 SSH 設定檔</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>複製 Subsystem 以作修改用, 並註解原本的</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># Subsystem     sftp    /usr/lib/openssh/sftp-server</span></span><br><span class="line">Subsystem       sftp    internal-sftp</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>指定群組根目錄</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Match Group sftp-users</span><br><span class="line">        ChrootDirectory /home/sftp-users/%u</span><br><span class="line">        ForceCommand internal-sftp</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>ChrootDirectory</code>: 設定該群組根目錄</p>
-</li>
-<li><code>%u</code>: user 的意思, 所以任何該群組下的 user 登入之後的根目錄就會變成 user 的名稱, 以這個例子來看, 根目錄就是 /home/sftp-users/test</li>
-<li><code>ForceCommand</code>: 強制使用 internal-sftp </li>
-<li>以上 <code>Match</code> 的設定, 請置於檔案的最末處, 否則會有語法錯誤。</li>
-</ul>
-<p><br><br><br><br><br></p>
-<h2 id="使用者上傳下載權限開始"><a href="#使用者上傳下載權限開始" class="headerlink" title="使用者上傳下載權限開始"></a>使用者上傳下載權限開始</h2><ul>
-<li>建立使用者上傳下載用資料夾<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">install -d -o <span class="hljs-built_in">test</span> -g sftp-users /home/sftp-users/<span class="hljs-built_in">test</span>/upload</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><code>-d</code>: 類型為資料夾<br><code>-o</code>: owner<br><code>-g</code>: group</p>
-<p>使用者只能在這個剛剛建立的 upload 資料夾裡頭, 才有權限上傳跟下載。<br>根據 SSH 安全規則, chrootDirectory 的 owner 必須是 root 才行, 且權限只有 root 才可以有 w 的權限, 如果這邊沒有設定為 root, 使用者是無法登入的</p>
-<h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成"></a>大功告成</h2>
+<li>使用者<code>可</code>上傳下載指令目錄內的檔案</li></ul>
+        <p class="article-more-link">
+            <a href="/zh-tw/buildSftpServerOnLinux/#more">點擊閱讀</a>
+        </p>
     
     </div>
     
