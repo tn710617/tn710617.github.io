@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-03T23:57:20.059Z">
+<meta property="og:updated_time" content="2019-10-06T09:48:15.868Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-03T23:57:20.059Z">
+<meta property="og:updated_time" content="2019-10-06T09:48:15.868Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -184,6 +184,24 @@
                     
                     <a class="navbar-item" href="#範例">5.2&nbsp;&nbsp;範例</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#alias-與-root">6&nbsp;&nbsp;<b>alias 與 root</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#alias">6.1&nbsp;&nbsp;alias</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#root">6.2&nbsp;&nbsp;root</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#總結">6.3&nbsp;&nbsp;總結</a>
+                    
                 </div>
             </div>
             
@@ -244,7 +262,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 讀完 (大概 841 字)
+            8 分钟 讀完 (大概 1127 字)
         </span>
         
     </div>
@@ -295,6 +313,7 @@
 <li>前綴規則有 <code>=</code>, 代表字串須完全符合，如果有找到，搜尋終止。 例如，如果 “/“ 請求很頻繁，那麼可以定義 “location = /“, 這樣可以加速請求處理</li>
 <li>在版本 0.7.1 到 0.8.41 中，如果請求符合前綴規則，就算沒有加上 <code>=</code>, 或者 <code>^~</code>, 搜尋也會立即停止</li>
 </ul>
+<p><br></p>
 <h3 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> = / &#123;</span><br><span class="line">    [ configuration A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">    [ configuration B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> /documents/ &#123;</span><br><span class="line">    [ configuration C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span><span class="hljs-regexp"> ^~</span> /images/ &#123;</span><br><span class="line">    [ configuration D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> <span class="hljs-regexp">~* \.(gif|jpg|jpeg)$</span> &#123;</span><br><span class="line">    [ configuration E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>請求 <code>/</code> 將會符合 <strong>A</strong></li>
@@ -305,6 +324,27 @@
 <li>請求 <code>@name</code>: 只用於內部重新導向，不用於正常使用, 例如：<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> /img/ &#123;</span><br><span class="line">        <span class="hljs-attribute">not_found</span> <span class="hljs-number">404</span> <span class="hljs-variable">@not_found</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-attribute">location</span> <span class="hljs-variable">@not_found</span> &#123;</span><br><span class="line">        <span class="hljs-comment"># 规则</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+<p><br><br><br><br><br></p>
+<h2 id="alias-與-root"><a href="#alias-與-root" class="headerlink" title="alias 與 root"></a>alias 與 root</h2><h3 id="alias"><a href="#alias" class="headerlink" title="alias"></a>alias</h3><p><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#alias" target="_blank" rel="noopener">參考文件</a><br>定義特定 location 的替換。 舉例來說, 看看下面的設定</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> /i/ &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果請求是 <strong>/i/top.git</strong> 的話, 檔案 <strong>/data/w3/images/top.git</strong> 將會被送出</p>
+<p>路徑可以包含變數, 除了 <strong>$document_root</strong> 以及 <strong>$realpath_root</strong> 之外</p>
+<p>如果 alias 被使用在正則定義的 location 之內, 那 alias 必須要參考正則捕捉到的條件, 範例如下：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> <span class="hljs-regexp">~ ^/users/(.+\.(?:gif|jpe?g|png))$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/<span class="hljs-variable">$1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>當 location 的值跟 alias 的最後一個資料夾的值相同, 像下面這樣：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> /images/ &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那會建議使用 root<br><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> /images/ &#123;</span><br><span class="line">    <span class="hljs-attribute">root</span> /data/w3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="root"><a href="#root" class="headerlink" title="root"></a>root</h3><p><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#root" target="_blank" rel="noopener">參考文件</a><br>設定 root 的資料夾位置為請求路徑, 例如以下範例：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">location</span> /i/ &#123;</span><br><span class="line">    <span class="hljs-attribute">root</span> /data/w3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>/data/w3/i/top.git</strong> 檔案將會被送出, 以回應 <strong>/i/top.git</strong> 請求</p>
+<p>路徑可以包含變數, 除了 <strong>$document_root</strong> 以及 <strong>$realpath_root</strong> 之外</p>
+<p><br></p>
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><ul>
+<li><strong>alias 會取代 location</strong> <code>成為新的請求資源路徑</code></li>
+<li><strong>root + location 的值</strong> = <code>請求資源路徑</code></li>
+</ul>
+<p><br><br><br><br><br></p>
 
     
     </div>
