@@ -2,15 +2,15 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Creating and Alerting on Logs-based Metrics - Ray&#39;s Coding Journey</title>
+<title>建立紀錄指標並基於紀錄指標建立警告 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
+<meta name="description" content="概述Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建">
 <meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Creating and Alerting on Logs-based Metrics">
+<meta property="og:title" content="建立紀錄指標並基於紀錄指標建立警告">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/creatingAndAlertingOnLogsBasedMetrics/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
+<meta property="og:description" content="概述Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
@@ -30,10 +30,17 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/BL5uGKKwfhvKIUQRh0-qt8CQRCbyUhThrXsDzcAlGszJr7XFqQxGUaZPqx0cD5gfB1XqVsGh0OD-U7oNgL_b1Jbwf7lg-A0XIESwNsw4bT6dBd2HlH1Gxl7cT1UulM25Q5Pz8ImkVzc8YKz8efFjTJmHNvmnUf9mWs5JA_Xgz9uzhpyR8vCgklZj4GeK2YI-RtwK_ODaPFonzd35pl1CTGnOAmgnYd1yqKurO939oqSdocmRf9CxNRqJBM9NSATqbpb3p3f910et5JwneoXOtMap6P8Nw5frUzfkgWO0fdbtckuE0zIaJaLdj479R145WYcti3E0PhWJ-NkUsJ6wSm6MePVGl633IP5W4eL9qBtS3bSKE_ubyXG4occDtEodmAHNTnLWP5IinH71kX1hS8OIsqMzPJLFucIxDko8XJtz6166649I7bQPkybGkwXFDZb7esrgOm2gviaVmhkOTj0WQ8ebo99-aEePmROs9Cz3Lwmq5koDKyPjJYrcgB6VHl5MbJIgHgoP6iFb-_OEo59dkowFwDNOW_7JDlRbXfdVOmOMPtS3NVevWANbSVvuseBCgJu8tBfzfNP_vL5-2TZPE9a9wqJm2bAokuixPS-NsECOgKkytbKkF_KyxM8eTS22Sp8JX54lzrPs9-MyWCKTDotQ_Y2pKuWjLNAeeXEEJRnvuiH42lA=w791-h364-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/EZdNLri7BX5X0ZHkjqi4GakpJsCMqonu1oDUjrUBr_7L5zfhKZUFBwaP1EbPGtLmGdf2naCEvN2vKPZurXn0THPMiZfNutuoQI55s6JdG0v8GDf_6t5X-KrM5bMaC8YpPAtXSeXY5MiKG_8x1--V6-OtQ8DksfBHG87EkLSZCvb2mNV9CmIpowGFuOT32Iavu05elHge7XCvBJNkshoIksZi-kAZRUWabtzJYAjnzrrtuJxHLElZ_Yc-a6Tj7B56TzJsMn5xSN-daXc1JL24ZtTSCy0HQJOREAIlfccrIGKCIYazWvjMUeAuK_yeOjL_1VWMX2OlnykNXa-Wx2mWjqN02aP4yLgR-e8CxHJ0sbRFCFLpyefY0LWP2htaAPQT-h4Hl1G9ztqrtTVk8FMzSE5MbbLQg1YeTuDvy1Khd9lv86sLTLVkbQdc9_nreTPEnBlB8QJVFnd65CDWj0IWVYPox3tvtHqKp6gmluZzOxvqLytXDo6pa-U-5JBe_JzlMhufVNzZu6RHVAvhGHkLmVdsKSFojR3Tjp29GWSL3VDNn9P4rLX6t4YHd9vj4C8XskfbO9zN9Fv6hOlNLtOtAGJYIxvAAO6CgoxesNK7zR6BuiK79QC0ysjycuGF_OAMDcTHXZ0Gn6gqnc3CiVnRRA08cYgT3uULLQAxlVcREtvEyOxy_6QPYsw=w633-h223-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/VhC115hAWXoHaXUZA6y0vamYIr72C5It9EscMINn9PzhcLWMAeyQrWkBX-AAsyD4xScJh_PDWqvv64ebmV1OqU2sDA1LR5ld6Ww934o1132AjBMJ92yC7M3damKyANkP9eF5YsNQNyZBPgp0SpGioNXpuxT4tMazbAt2zcWcAao4x9R9ywsAWXpndxJuZ2mcp16OyzcUwFAIJ2fFdMJv-4gVVX5EuFZTWBzxO20e8GwEyuMFQ4QC-CiX6mnMPPBq0nv30Zcuv3D60tm6dwKOnF3XJZMgu7b4qoTf_sRUpSh20L6mXwiP3LwtC2Wun_96sEevhJbUJr9zSt8aU1ToN_X6lDNMq-mWnZmpwZKWUrmqIzv2PetPLm31-ux4XrWL4L1fXDz_MzJ8gtaRhf5GCDTyOzuY4zp8q_H2DKnJcvSp0PxVJ0S9G-87qOkz-13RCu-O-YA91F5m_Q0O2DpeT_KRysiRlZ8AkrXBv5dcfDkn0MCMzTn7cHfjyEM6o1t6kethcXqegtN5sO-7zf2zLSAUFKSsQkwAsQ6H_PtmCRWglCcGPHEqkLikF5Hk1tEJ7zki5TQFmmp5MovhGN3vp4Ymt5rVOxiTwhWblplX1Mhom7zo3ULXgDqA802NvcZCFicYpQd3_WB8gCX6T2y3w3eoP8YMUCNPwVXfEdjFQY6bdODiELa8vp4=w306-h315-no">
-<meta property="og:updated_time" content="2019-10-07T13:10:54.783Z">
+<meta property="og:image" content="https://lh3.googleusercontent.com/54eJVWKzTuTFPxzIhkEB4n1zgVV-33X_0t4RoDkxsCeovut5zOpc-oZ6RYUyFVxE1nI0Qit33S8lhm6dHMK-Dl4Z0gicC7Gjdo1gE4v9OkzlcoJAaCl838mcDp7kO-8-mVQAPwjmI8C2hGEx37BTIOJZb2S4_U0vX2iy5IkpKxoGSOM40PT8ULJt_I4_HoScZyplRFMZyv2H2Zu0M6XIq8FkaTFrSxRtfT8dj10KWhmaa7fPLmjjsgUY3eie2LiCwFRHdYmMHXpoYe1Wfzbl3ue6diPIEv0w33Vm-p06Z_eLo6qYEJmTHMPgJ410OK82-jcZR1JGeCs4oVoLOJiWJmMMLl5_OEODOmyFVguuKySP0obAHuABljBOwq0arDW_PNLCKWf_yOLsDW-CE9wNW84NHaeSAJdyyErCnRDGA7P1rHud_nw6K2QAqEd25O28aLdagD8HWXs4TriqkLUc-ZD9ElpDeFWpt6bZZbsi8rAzYefugQN7EGQY0EyLhRJfDqoNZ_GsrVHbyrlTc5BbZHIB_rTap7XLqNmgCxEDx3talTNEKan0M5KePaVesP-k3fA5iHW1b5mtMrvGbdLT5wWgYTc5wn5gQar6suYmw6IS4S13b5FJJeK6AFCoaTKigpBu2Ii5nq4cpYVBFTLrky_9Fq5HUsEtqzuYoCMgbZYliHf7lk3iEAU=w473-h924-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/SNptriwenWS6eqbNqXiG8n4ZB7D2wkbLWZdEQ-G8jnRxfaK80v4PPvbTvOnEtS2FWxywDUkECec40Jp_VtV5r5k2LoKLAar-pTxKweJi7uh8kZfKO_WyeeYUFTpQ8P-cGxdTSpt_SqiSjgHhFMatrd7ZexnrM1NAxjbhTEID_xffin78moGa4fF20bDBX3EH5ljFfTVquQgUCmFaonhPx6TgtfOBILCLSvZuPc4eBGFZRlyKmkJeotS9e7_8DlwhWkx9I7sxOAsgHsoZPKjzPWaZQU4SnXUDwaLfzvaU4jTvr491ipqd9Y6rBI8OJcaVEO7ssZfqKGt21pmSeUQG-_uiZAtzjJ8g-HZgJuuKCTnOnSRZpICizSXXtcatU43aFAPHi_XSRdSrz-gogBitIfZO-Y5DDjfoFm8EAg8RZHyIKk4Bv_twb4i2OOdqnMnpHuuQEBlTjzXnpGxk7JGA48_RkZqydDYCAIZFfJXWRJ_uCdaEjbWTcL68t3vCr9ZsNFSWK4sXFhx5oC5kj_QWZJxyXn6UsxYNTudWPWN2e9qE3CQ8fFG3bH8ELerjf4AmQGoo-9f7UE-Dpm0FuVIA07DHIKH3YyHvW4p4dG6XOBwJhKiA--dL79j8zVo0vrvqlBvRS_NDjSVeYgrQI_a3ncDwEl6_4pqVzZw2q5R27qOiI5RQMahuUeA6x06a9z4vxJ6byVI4io0lB6NiBvYKBpLS0fgmuihrRF26DTdEb0PwgUb7=w1440-h509-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/G4U-OAU11L3kkwBnw7sS675hKbtuylpS6Of1f3VjaXArEuVxEyArAmBMa_mu7wc_uHA_EKQZ7ZaGcKcIqXa3cDHnQTF8ARUlhbJEe3OOSf2qPmZDxiftgNbfROEzUoidnAXAbb4rY8t-9DswMrtJesaKLsFT26Fe-g-ijbyKGsER1AoIz9NVNhdv9fN-9kuLMeXyH5aQ5CxjhfNVhCnhTnblk6C5NyMDNB1nXV1Kmg4g1tVNDF0q0S0XIWCIJjX31ayVFxfU6GYZhOTk6893GadB4xO72Ec6b91yDo2Zxxt4hpSKxLHMB_G4GXxuyhV96Pr6XG2uGc6Ael8YEJhTICYB_em5jftRY-D9CYU4FdckB7ddxnUq0s0b7I6j_I08IHJURbV_6gjFu9-loaPm6CTUeXJbKSP34hE4NB3_8NIOUXff9ERh1vI6cDIhl2CAcAt3l5rqyXUm_37V81LdJWytpGvBuBbL7HOKmyyqGkxc1Pn2mOScbLse9oioRknw3ACVUBtQPZfF2tDWVkXk4267QfmQh3_9NK2O9cY-w-JXeR9i8XPSeS7RqHozgS-Jh72sQXsNG_Mjcgig9Wzvv4Sld-ZWxZOgs_z2W0FtjCJEpHs9rMizzg7datgmjfdba9OWOyEadtsmquEFHq5PjpLOAGoWlK4agdmYFJjxF8bMfawLKV60L6_VPYRe3_xPEjZxfSXwNEeLtEYo-a0N2Zp_97TlEynrriZZjt_RDEHCQ79C=w1024-h504-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/4BhbKGbDMVcOvrp6jqYXdoB5oZReHGVdj6ATZxf8aU0_oUZObC9Z2I-lGReUC_OyIh71XsmRUKm0PgkhbW7mgfyYsRTALfQwNqSsfdyQB36HuK0EgS-lTEq9lCulDlfpmxymKq4BK6b3xVxoo_rk0lJmfVKeqJZyrNq4wEvLKPta33aP4dw7flpdyyi_VxkqjKWe-2zse4fflx0fGa5iMUkm3UU7L59hQzXlQaRfSjGlE8McYB7KQ1EkRm_ertMoWBpA4SJOyCX8zOlBCXIABmqNLWiw9re8ZJ3DSfvBEttGpa11CB_J5JD7QtFHNnfCjxq41dEcmpk2xvd3JFIcz5vBSYumwyecbpdnXnURZx1AtwwfWtp_WNkdi-8jBKUy3qJRb3wGVDe9YJ78qIA-InekAOTgMADAB0MftLke6GwoL896PJTo56n2l1IEGv4bgrc8IjBC7ZZKqFBzMcJtfWQb8jmkDQRc6fFdoqmD_2BZmGi-2Nfm1rWfTbO7JbVcQf59T7bTUDrtak5YTXxahPMlLMYbyt-5f31838xNSyuD2lxU0-NXmDjKPX3kGe76DKo-oVFpJbaerkwKFrdVR90HNaiS4TIxKlHiMHsaoijutzKeGc118vD5DhbewmApsx9O-Hpl5y4UEtDbcFyawo25s9U68VImVmQH0B8TaWeznun2jy7NFgt2OmCrw0rUMwCXORlG46bXQq5TamJrg6Yaho2QWN2V74l5bZ5HXLIvtYLM=w963-h267-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/jU6GqmYqHXr_KH33HEPMNyMz7dSXy7q4NpmanV9U0i5wrGorZijsqe5FWHnlgzvtJDBRgYRiSSwZbEGvPfqmZdmUDrBCZq62BT4YzutiL5I34fIDdvmG3azFQNKbp8XJ17o8nVFoJaCo48RVeqswZtAsD3acIiycJ5KveOriVEPrhzuaujyfNFOmVThOG_y3W10XjwC8mrcpig3v6gmZodnqFM36whuP41B5Aqo94PkPGwRdRzNC5Te-GV89OgitSQqVmlZD75Z9vRY5t5NDB80ym2yxraQRM0aXnxTBMYwbkUHy0xBUE_coycla1N2LsfMVHc2rtExYwLyvxdeCu0wn_X_co-aTnhhy0lxRuwCq_MwiqIFSNdtxynv61-z2XyR43rIrQvDwtEHeu1Va-1DXC8oL_T0Q8T_PttP0EEqxh_bUeZkcYOG-DkoY3R6MF8XvRWaxswMvkXUuKJx5sjR4CIsYNK81EWciUC2Q3sAUqfBOsrFuiyYTYR8bZ-DfRoqBDVGirAdmIQjWSHJf4bFBP6g-HKzmrZbtCfH7v8oyiZmv2Lb5QLH3S0OIGh-r17lTXnCDwTQagG9fhoOfo9PIDUHnVXTCbBryKOyCjX9RyBaUDbga3FuJUTr86OSc2XEoeVzrzjha4RTnVk1ozsUPCcc3R66zJuTW8h5ANh4942r_4HtrcawfE6T4tkX2ZSOpoEtAJXBTI3FJfTrTEdJNLkOZxz2mIRC2Fm3JRSYwzy5C=w1332-h429-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/-BikNNcN6TAoGyTa67o-IFgrGSuyezihboTCxX0hwj5_B2CmBPflkkxx7r6dMciovdFBiPyx5LSd5MtkYyJPeqxbaN6ousJIk_bRZ1KyY8DiWjJ6qb2Piu6KGKMwY8eHI_nED7nVY6xEums8udbgVuNVVR-iIgpADvPrqtkDY29uePSwK6xBQWculDqN1ouT5ytCUO6j2dg9gYXzksz-iyYpKHStvYf1n6UWC3YfEsnl9VOwDH5yRA5fSygabX6INicklirI37MqveqD_L2TptmCQvKk2h_-TGHfvFAu7lyOUMRzMlF5VPRKnt39BP7RAa57MaZ9QqVXhgBdic_n4uWXOA8EQPzF7zodl6R2Edzyok5B10sddBCfHLi-QvaeQAJp0O8HVFJp1Wtek0yNoGB67NH6GcDT7H8s72Z6vD_3Vh6yvYCy5DnmajpgzBU0OJSfBzrRiEbTRllHbj-yoFzLzsbIMG1zmX1W0Au3TIYqTgpd-nPgIuRMn6dJSQdFksO2iHvKZjhM5N8yxO6rUoeo4YDk0M9AGv8afgy7s5rNQrr7eLxEgMiZhjC6-hhqWZOvOxUF5IK-SiNoFsgWn3Z6mYT5liYW1721u7aftiYOusi5TO_FrD5Vqfe87qXxVvEMFUyzhHYnUnOJZOGxGTKoJ6EP9a9UG47ckAFzO3qu01wOxTulFbgMSQKlfm_FuHt1mo4RnJwkA1Jnl2LYMvDenT4HRcVRgPK8YiIjWUvVykFR=w673-h257-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/efOmQebPLG9PXBV1nI778cApXk1lzKQuy1kH9oSLSyqxGcJzmErEGdNnHJmL_Ss4evb_TTflggj6YUR_85RxN3KNkXvYZysCydVJ3YpL0wuYvF8xRmtuO5d1bo-48l-uWiOW5HLLChGNJNnWuTZ04NKIUjSW-6WBaWnguk7rhmP0acVQ53WVqcLTK_B46NICt0yAZ7YK_NAoiCBD84v0NxjieMRwrMIN1jJGTIVI_4lbTD4kUmHVfiWbwRAXUIjpYhliDaHlqDl8inDDzaMMAzkie5rURST7bqtNMAPNc1CQJma-EblKGvXAioN7BtyvNTwCKmdRuoXTPpAxFVcflAWaQKYJho6aRy60CjA4Y4wZ13onVrQ0OT_Ap3F_N2XEv6w5Rax0aV1U7ypmh5wFR6lhU6x1P-lsBT_mtGeJmALNGL4RMdROH0ekyZFYWkWiBvLXKjqfx7BZRLTui3TqiGnRywvt7A1o36RglTBLNYtj0TzQageDQvjsmhs5WzYO3ZTtcPMkllEeWvgxwSi6GDBQD9x3Ut6pmNU9kWvLVU-QsUOH-QqRIrEa5PdqjHet1TeL-ap_KqhjidGZf0dBMzFqlUVQ7ajkGMa-cQdJGJq9anmwg3rBF1GI4o5ToJewWjT5ngS2AqAZuiF6qWJuQR3Sh0xY6uEIBRDt-K7Bt2gJVV5lmu4bdKCJ_7l9LIcOMMi2siRNE3c0bFWjt_4y39WmlCseE-7U0-hNPrQtTJiERUi_=w1440-h624-no">
+<meta property="og:updated_time" content="2019-10-09T16:52:28.804Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Creating and Alerting on Logs-based Metrics">
-<meta name="twitter:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
+<meta name="twitter:title" content="建立紀錄指標並基於紀錄指標建立警告">
+<meta name="twitter:description" content="概述Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 
 
@@ -49,13 +56,13 @@
 
 
 
-    <meta name="description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
+    <meta name="description" content="概述Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建">
 <meta name="keywords" content="QWIKLABS,Stackdriver Logging,GCP Stackdriver">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Creating and Alerting on Logs-based Metrics">
+<meta property="og:title" content="建立紀錄指標並基於紀錄指標建立警告">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/creatingAndAlertingOnLogsBasedMetrics/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
+<meta property="og:description" content="概述Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
@@ -75,10 +82,17 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/BL5uGKKwfhvKIUQRh0-qt8CQRCbyUhThrXsDzcAlGszJr7XFqQxGUaZPqx0cD5gfB1XqVsGh0OD-U7oNgL_b1Jbwf7lg-A0XIESwNsw4bT6dBd2HlH1Gxl7cT1UulM25Q5Pz8ImkVzc8YKz8efFjTJmHNvmnUf9mWs5JA_Xgz9uzhpyR8vCgklZj4GeK2YI-RtwK_ODaPFonzd35pl1CTGnOAmgnYd1yqKurO939oqSdocmRf9CxNRqJBM9NSATqbpb3p3f910et5JwneoXOtMap6P8Nw5frUzfkgWO0fdbtckuE0zIaJaLdj479R145WYcti3E0PhWJ-NkUsJ6wSm6MePVGl633IP5W4eL9qBtS3bSKE_ubyXG4occDtEodmAHNTnLWP5IinH71kX1hS8OIsqMzPJLFucIxDko8XJtz6166649I7bQPkybGkwXFDZb7esrgOm2gviaVmhkOTj0WQ8ebo99-aEePmROs9Cz3Lwmq5koDKyPjJYrcgB6VHl5MbJIgHgoP6iFb-_OEo59dkowFwDNOW_7JDlRbXfdVOmOMPtS3NVevWANbSVvuseBCgJu8tBfzfNP_vL5-2TZPE9a9wqJm2bAokuixPS-NsECOgKkytbKkF_KyxM8eTS22Sp8JX54lzrPs9-MyWCKTDotQ_Y2pKuWjLNAeeXEEJRnvuiH42lA=w791-h364-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/EZdNLri7BX5X0ZHkjqi4GakpJsCMqonu1oDUjrUBr_7L5zfhKZUFBwaP1EbPGtLmGdf2naCEvN2vKPZurXn0THPMiZfNutuoQI55s6JdG0v8GDf_6t5X-KrM5bMaC8YpPAtXSeXY5MiKG_8x1--V6-OtQ8DksfBHG87EkLSZCvb2mNV9CmIpowGFuOT32Iavu05elHge7XCvBJNkshoIksZi-kAZRUWabtzJYAjnzrrtuJxHLElZ_Yc-a6Tj7B56TzJsMn5xSN-daXc1JL24ZtTSCy0HQJOREAIlfccrIGKCIYazWvjMUeAuK_yeOjL_1VWMX2OlnykNXa-Wx2mWjqN02aP4yLgR-e8CxHJ0sbRFCFLpyefY0LWP2htaAPQT-h4Hl1G9ztqrtTVk8FMzSE5MbbLQg1YeTuDvy1Khd9lv86sLTLVkbQdc9_nreTPEnBlB8QJVFnd65CDWj0IWVYPox3tvtHqKp6gmluZzOxvqLytXDo6pa-U-5JBe_JzlMhufVNzZu6RHVAvhGHkLmVdsKSFojR3Tjp29GWSL3VDNn9P4rLX6t4YHd9vj4C8XskfbO9zN9Fv6hOlNLtOtAGJYIxvAAO6CgoxesNK7zR6BuiK79QC0ysjycuGF_OAMDcTHXZ0Gn6gqnc3CiVnRRA08cYgT3uULLQAxlVcREtvEyOxy_6QPYsw=w633-h223-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/VhC115hAWXoHaXUZA6y0vamYIr72C5It9EscMINn9PzhcLWMAeyQrWkBX-AAsyD4xScJh_PDWqvv64ebmV1OqU2sDA1LR5ld6Ww934o1132AjBMJ92yC7M3damKyANkP9eF5YsNQNyZBPgp0SpGioNXpuxT4tMazbAt2zcWcAao4x9R9ywsAWXpndxJuZ2mcp16OyzcUwFAIJ2fFdMJv-4gVVX5EuFZTWBzxO20e8GwEyuMFQ4QC-CiX6mnMPPBq0nv30Zcuv3D60tm6dwKOnF3XJZMgu7b4qoTf_sRUpSh20L6mXwiP3LwtC2Wun_96sEevhJbUJr9zSt8aU1ToN_X6lDNMq-mWnZmpwZKWUrmqIzv2PetPLm31-ux4XrWL4L1fXDz_MzJ8gtaRhf5GCDTyOzuY4zp8q_H2DKnJcvSp0PxVJ0S9G-87qOkz-13RCu-O-YA91F5m_Q0O2DpeT_KRysiRlZ8AkrXBv5dcfDkn0MCMzTn7cHfjyEM6o1t6kethcXqegtN5sO-7zf2zLSAUFKSsQkwAsQ6H_PtmCRWglCcGPHEqkLikF5Hk1tEJ7zki5TQFmmp5MovhGN3vp4Ymt5rVOxiTwhWblplX1Mhom7zo3ULXgDqA802NvcZCFicYpQd3_WB8gCX6T2y3w3eoP8YMUCNPwVXfEdjFQY6bdODiELa8vp4=w306-h315-no">
-<meta property="og:updated_time" content="2019-10-07T13:10:54.783Z">
+<meta property="og:image" content="https://lh3.googleusercontent.com/54eJVWKzTuTFPxzIhkEB4n1zgVV-33X_0t4RoDkxsCeovut5zOpc-oZ6RYUyFVxE1nI0Qit33S8lhm6dHMK-Dl4Z0gicC7Gjdo1gE4v9OkzlcoJAaCl838mcDp7kO-8-mVQAPwjmI8C2hGEx37BTIOJZb2S4_U0vX2iy5IkpKxoGSOM40PT8ULJt_I4_HoScZyplRFMZyv2H2Zu0M6XIq8FkaTFrSxRtfT8dj10KWhmaa7fPLmjjsgUY3eie2LiCwFRHdYmMHXpoYe1Wfzbl3ue6diPIEv0w33Vm-p06Z_eLo6qYEJmTHMPgJ410OK82-jcZR1JGeCs4oVoLOJiWJmMMLl5_OEODOmyFVguuKySP0obAHuABljBOwq0arDW_PNLCKWf_yOLsDW-CE9wNW84NHaeSAJdyyErCnRDGA7P1rHud_nw6K2QAqEd25O28aLdagD8HWXs4TriqkLUc-ZD9ElpDeFWpt6bZZbsi8rAzYefugQN7EGQY0EyLhRJfDqoNZ_GsrVHbyrlTc5BbZHIB_rTap7XLqNmgCxEDx3talTNEKan0M5KePaVesP-k3fA5iHW1b5mtMrvGbdLT5wWgYTc5wn5gQar6suYmw6IS4S13b5FJJeK6AFCoaTKigpBu2Ii5nq4cpYVBFTLrky_9Fq5HUsEtqzuYoCMgbZYliHf7lk3iEAU=w473-h924-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/SNptriwenWS6eqbNqXiG8n4ZB7D2wkbLWZdEQ-G8jnRxfaK80v4PPvbTvOnEtS2FWxywDUkECec40Jp_VtV5r5k2LoKLAar-pTxKweJi7uh8kZfKO_WyeeYUFTpQ8P-cGxdTSpt_SqiSjgHhFMatrd7ZexnrM1NAxjbhTEID_xffin78moGa4fF20bDBX3EH5ljFfTVquQgUCmFaonhPx6TgtfOBILCLSvZuPc4eBGFZRlyKmkJeotS9e7_8DlwhWkx9I7sxOAsgHsoZPKjzPWaZQU4SnXUDwaLfzvaU4jTvr491ipqd9Y6rBI8OJcaVEO7ssZfqKGt21pmSeUQG-_uiZAtzjJ8g-HZgJuuKCTnOnSRZpICizSXXtcatU43aFAPHi_XSRdSrz-gogBitIfZO-Y5DDjfoFm8EAg8RZHyIKk4Bv_twb4i2OOdqnMnpHuuQEBlTjzXnpGxk7JGA48_RkZqydDYCAIZFfJXWRJ_uCdaEjbWTcL68t3vCr9ZsNFSWK4sXFhx5oC5kj_QWZJxyXn6UsxYNTudWPWN2e9qE3CQ8fFG3bH8ELerjf4AmQGoo-9f7UE-Dpm0FuVIA07DHIKH3YyHvW4p4dG6XOBwJhKiA--dL79j8zVo0vrvqlBvRS_NDjSVeYgrQI_a3ncDwEl6_4pqVzZw2q5R27qOiI5RQMahuUeA6x06a9z4vxJ6byVI4io0lB6NiBvYKBpLS0fgmuihrRF26DTdEb0PwgUb7=w1440-h509-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/G4U-OAU11L3kkwBnw7sS675hKbtuylpS6Of1f3VjaXArEuVxEyArAmBMa_mu7wc_uHA_EKQZ7ZaGcKcIqXa3cDHnQTF8ARUlhbJEe3OOSf2qPmZDxiftgNbfROEzUoidnAXAbb4rY8t-9DswMrtJesaKLsFT26Fe-g-ijbyKGsER1AoIz9NVNhdv9fN-9kuLMeXyH5aQ5CxjhfNVhCnhTnblk6C5NyMDNB1nXV1Kmg4g1tVNDF0q0S0XIWCIJjX31ayVFxfU6GYZhOTk6893GadB4xO72Ec6b91yDo2Zxxt4hpSKxLHMB_G4GXxuyhV96Pr6XG2uGc6Ael8YEJhTICYB_em5jftRY-D9CYU4FdckB7ddxnUq0s0b7I6j_I08IHJURbV_6gjFu9-loaPm6CTUeXJbKSP34hE4NB3_8NIOUXff9ERh1vI6cDIhl2CAcAt3l5rqyXUm_37V81LdJWytpGvBuBbL7HOKmyyqGkxc1Pn2mOScbLse9oioRknw3ACVUBtQPZfF2tDWVkXk4267QfmQh3_9NK2O9cY-w-JXeR9i8XPSeS7RqHozgS-Jh72sQXsNG_Mjcgig9Wzvv4Sld-ZWxZOgs_z2W0FtjCJEpHs9rMizzg7datgmjfdba9OWOyEadtsmquEFHq5PjpLOAGoWlK4agdmYFJjxF8bMfawLKV60L6_VPYRe3_xPEjZxfSXwNEeLtEYo-a0N2Zp_97TlEynrriZZjt_RDEHCQ79C=w1024-h504-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/4BhbKGbDMVcOvrp6jqYXdoB5oZReHGVdj6ATZxf8aU0_oUZObC9Z2I-lGReUC_OyIh71XsmRUKm0PgkhbW7mgfyYsRTALfQwNqSsfdyQB36HuK0EgS-lTEq9lCulDlfpmxymKq4BK6b3xVxoo_rk0lJmfVKeqJZyrNq4wEvLKPta33aP4dw7flpdyyi_VxkqjKWe-2zse4fflx0fGa5iMUkm3UU7L59hQzXlQaRfSjGlE8McYB7KQ1EkRm_ertMoWBpA4SJOyCX8zOlBCXIABmqNLWiw9re8ZJ3DSfvBEttGpa11CB_J5JD7QtFHNnfCjxq41dEcmpk2xvd3JFIcz5vBSYumwyecbpdnXnURZx1AtwwfWtp_WNkdi-8jBKUy3qJRb3wGVDe9YJ78qIA-InekAOTgMADAB0MftLke6GwoL896PJTo56n2l1IEGv4bgrc8IjBC7ZZKqFBzMcJtfWQb8jmkDQRc6fFdoqmD_2BZmGi-2Nfm1rWfTbO7JbVcQf59T7bTUDrtak5YTXxahPMlLMYbyt-5f31838xNSyuD2lxU0-NXmDjKPX3kGe76DKo-oVFpJbaerkwKFrdVR90HNaiS4TIxKlHiMHsaoijutzKeGc118vD5DhbewmApsx9O-Hpl5y4UEtDbcFyawo25s9U68VImVmQH0B8TaWeznun2jy7NFgt2OmCrw0rUMwCXORlG46bXQq5TamJrg6Yaho2QWN2V74l5bZ5HXLIvtYLM=w963-h267-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/jU6GqmYqHXr_KH33HEPMNyMz7dSXy7q4NpmanV9U0i5wrGorZijsqe5FWHnlgzvtJDBRgYRiSSwZbEGvPfqmZdmUDrBCZq62BT4YzutiL5I34fIDdvmG3azFQNKbp8XJ17o8nVFoJaCo48RVeqswZtAsD3acIiycJ5KveOriVEPrhzuaujyfNFOmVThOG_y3W10XjwC8mrcpig3v6gmZodnqFM36whuP41B5Aqo94PkPGwRdRzNC5Te-GV89OgitSQqVmlZD75Z9vRY5t5NDB80ym2yxraQRM0aXnxTBMYwbkUHy0xBUE_coycla1N2LsfMVHc2rtExYwLyvxdeCu0wn_X_co-aTnhhy0lxRuwCq_MwiqIFSNdtxynv61-z2XyR43rIrQvDwtEHeu1Va-1DXC8oL_T0Q8T_PttP0EEqxh_bUeZkcYOG-DkoY3R6MF8XvRWaxswMvkXUuKJx5sjR4CIsYNK81EWciUC2Q3sAUqfBOsrFuiyYTYR8bZ-DfRoqBDVGirAdmIQjWSHJf4bFBP6g-HKzmrZbtCfH7v8oyiZmv2Lb5QLH3S0OIGh-r17lTXnCDwTQagG9fhoOfo9PIDUHnVXTCbBryKOyCjX9RyBaUDbga3FuJUTr86OSc2XEoeVzrzjha4RTnVk1ozsUPCcc3R66zJuTW8h5ANh4942r_4HtrcawfE6T4tkX2ZSOpoEtAJXBTI3FJfTrTEdJNLkOZxz2mIRC2Fm3JRSYwzy5C=w1332-h429-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/-BikNNcN6TAoGyTa67o-IFgrGSuyezihboTCxX0hwj5_B2CmBPflkkxx7r6dMciovdFBiPyx5LSd5MtkYyJPeqxbaN6ousJIk_bRZ1KyY8DiWjJ6qb2Piu6KGKMwY8eHI_nED7nVY6xEums8udbgVuNVVR-iIgpADvPrqtkDY29uePSwK6xBQWculDqN1ouT5ytCUO6j2dg9gYXzksz-iyYpKHStvYf1n6UWC3YfEsnl9VOwDH5yRA5fSygabX6INicklirI37MqveqD_L2TptmCQvKk2h_-TGHfvFAu7lyOUMRzMlF5VPRKnt39BP7RAa57MaZ9QqVXhgBdic_n4uWXOA8EQPzF7zodl6R2Edzyok5B10sddBCfHLi-QvaeQAJp0O8HVFJp1Wtek0yNoGB67NH6GcDT7H8s72Z6vD_3Vh6yvYCy5DnmajpgzBU0OJSfBzrRiEbTRllHbj-yoFzLzsbIMG1zmX1W0Au3TIYqTgpd-nPgIuRMn6dJSQdFksO2iHvKZjhM5N8yxO6rUoeo4YDk0M9AGv8afgy7s5rNQrr7eLxEgMiZhjC6-hhqWZOvOxUF5IK-SiNoFsgWn3Z6mYT5liYW1721u7aftiYOusi5TO_FrD5Vqfe87qXxVvEMFUyzhHYnUnOJZOGxGTKoJ6EP9a9UG47ckAFzO3qu01wOxTulFbgMSQKlfm_FuHt1mo4RnJwkA1Jnl2LYMvDenT4HRcVRgPK8YiIjWUvVykFR=w673-h257-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/efOmQebPLG9PXBV1nI778cApXk1lzKQuy1kH9oSLSyqxGcJzmErEGdNnHJmL_Ss4evb_TTflggj6YUR_85RxN3KNkXvYZysCydVJ3YpL0wuYvF8xRmtuO5d1bo-48l-uWiOW5HLLChGNJNnWuTZ04NKIUjSW-6WBaWnguk7rhmP0acVQ53WVqcLTK_B46NICt0yAZ7YK_NAoiCBD84v0NxjieMRwrMIN1jJGTIVI_4lbTD4kUmHVfiWbwRAXUIjpYhliDaHlqDl8inDDzaMMAzkie5rURST7bqtNMAPNc1CQJma-EblKGvXAioN7BtyvNTwCKmdRuoXTPpAxFVcflAWaQKYJho6aRy60CjA4Y4wZ13onVrQ0OT_Ap3F_N2XEv6w5Rax0aV1U7ypmh5wFR6lhU6x1P-lsBT_mtGeJmALNGL4RMdROH0ekyZFYWkWiBvLXKjqfx7BZRLTui3TqiGnRywvt7A1o36RglTBLNYtj0TzQageDQvjsmhs5WzYO3ZTtcPMkllEeWvgxwSi6GDBQD9x3Ut6pmNU9kWvLVU-QsUOH-QqRIrEa5PdqjHet1TeL-ap_KqhjidGZf0dBMzFqlUVQ7ajkGMa-cQdJGJq9anmwg3rBF1GI4o5ToJewWjT5ngS2AqAZuiF6qWJuQR3Sh0xY6uEIBRDt-K7Bt2gJVV5lmu4bdKCJ_7l9LIcOMMi2siRNE3c0bFWjt_4y39WmlCseE-7U0-hNPrQtTJiERUi_=w1440-h624-no">
+<meta property="og:updated_time" content="2019-10-09T16:52:28.804Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Creating and Alerting on Logs-based Metrics">
-<meta name="twitter:description" content="概述&amp;lt;未完待續&amp;gt;Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使">
+<meta name="twitter:title" content="建立紀錄指標並基於紀錄指標建立警告">
+<meta name="twitter:description" content="概述Logs-based metrics (紀錄指標) 是由 Stackdriver Monitoring 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建">
 <meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
 
 
@@ -278,6 +292,24 @@
                     
                     <a class="navbar-item" href="#標籤">11&nbsp;&nbsp;<b>標籤</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#heatmap-客製顯示面板">12&nbsp;&nbsp;<b>heatmap 客製顯示面板</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#確認警告事件">13&nbsp;&nbsp;<b>確認警告事件</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#恭喜！">14&nbsp;&nbsp;<b>恭喜！</b></a>
+                    
                 </div>
             </div>
             
@@ -321,12 +353,12 @@
     <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            Creating and Alerting on Logs-based Metrics
+            建立紀錄指標並基於紀錄指標建立警告
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
-            <time datetime="2019-09-30T07:44:58.000Z" itemprop="datePublished">9月 30 2019</time>
+            <time datetime="2019-10-09T16:50:00.000Z" itemprop="datePublished">10月 10 2019</time>
         </span>
         
         <span class="column is-narrow article-category">
@@ -338,13 +370,13 @@
         <span class="column is-narrow">
             
             
-            38 分钟 讀完 (大概 5700 字)
+            1 小时 讀完 (大概 7762 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>&lt;未完待續&gt;<br><strong>Logs-based metrics (紀錄指標)</strong> 是由 <a href="https://cloud.google.com/monitoring/docs/" target="_blank" rel="noopener">Stackdriver Monitoring</a> 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建立圖表以及警告政策。 紀錄指標是由紀錄的資料產生的時間序列, 在本教程中你將會動手實作上面所提到的。</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>Logs-based metrics (紀錄指標)</strong> 是由 <a href="https://cloud.google.com/monitoring/docs/" target="_blank" rel="noopener">Stackdriver Monitoring</a> 提供的, 基於記錄數據內容的指標。 他可以幫你發現動向, 從紀錄中取出數字數據, 還有建立一個特定的指標來完成事件觸發, 這樣都特定的記錄數據出現時, 就可以發出警告。 在 Stackdriver Monitoring 服務中, 你可以同時使用系統提供的指標, 或是使用者自定義的紀錄指標來建立圖表以及警告政策。 紀錄指標是由紀錄的資料產生的時間序列, 在本教程中你將會動手實作上面所提到的。</p>
 <a id="more"></a>
 <p><br><br><br><br><br></p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
@@ -536,7 +568,74 @@
 <p>再來點擊 <strong>Add item</strong> 來建立一個標籤</p>
 <p><img src="https://lh3.googleusercontent.com/VhC115hAWXoHaXUZA6y0vamYIr72C5It9EscMINn9PzhcLWMAeyQrWkBX-AAsyD4xScJh_PDWqvv64ebmV1OqU2sDA1LR5ld6Ww934o1132AjBMJ92yC7M3damKyANkP9eF5YsNQNyZBPgp0SpGioNXpuxT4tMazbAt2zcWcAao4x9R9ywsAWXpndxJuZ2mcp16OyzcUwFAIJ2fFdMJv-4gVVX5EuFZTWBzxO20e8GwEyuMFQ4QC-CiX6mnMPPBq0nv30Zcuv3D60tm6dwKOnF3XJZMgu7b4qoTf_sRUpSh20L6mXwiP3LwtC2Wun_96sEevhJbUJr9zSt8aU1ToN_X6lDNMq-mWnZmpwZKWUrmqIzv2PetPLm31-ux4XrWL4L1fXDz_MzJ8gtaRhf5GCDTyOzuY4zp8q_H2DKnJcvSp0PxVJ0S9G-87qOkz-13RCu-O-YA91F5m_Q0O2DpeT_KRysiRlZ8AkrXBv5dcfDkn0MCMzTn7cHfjyEM6o1t6kethcXqegtN5sO-7zf2zLSAUFKSsQkwAsQ6H_PtmCRWglCcGPHEqkLikF5Hk1tEJ7zki5TQFmmp5MovhGN3vp4Ymt5rVOxiTwhWblplX1Mhom7zo3ULXgDqA802NvcZCFicYpQd3_WB8gCX6T2y3w3eoP8YMUCNPwVXfEdjFQY6bdODiELa8vp4=w306-h315-no" alt></p>
 <p><br><br><br><br><br></p>
-<h2 id="標籤"><a href="#標籤" class="headerlink" title="標籤"></a>標籤</h2>
+<h2 id="標籤"><a href="#標籤" class="headerlink" title="標籤"></a>標籤</h2><p><a href="https://cloud.google.com/logging/docs/logs-based-metrics/labels#create-label" target="_blank" rel="noopener">Labels</a> 讓紀錄指標可以含有多個時間序列 - 每一個標籤值。 所有的紀錄指標都有一些預設的標籤。</p>
+<p>在本教程中, 你將會建立一個指標, 條件為當一個 uptime check 的紀錄產生, 且這個紀錄含有 “food” 標籤</p>
+<p>如果你還沒完成這件事情, 點擊 <strong>Add Item</strong></p>
+<p>填入以下資訊：</p>
+<ul>
+<li>Name: foods</li>
+<li>Label Type: String</li>
+<li>Field Name: search for “resource” and choose “protoPayload.resource”</li>
+<li>點擊 <strong>Build</strong> 按鈕, 然後輸入表達式: <code>/?food=(.*)</code></li>
+<li>點擊 <strong>Done</strong></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/54eJVWKzTuTFPxzIhkEB4n1zgVV-33X_0t4RoDkxsCeovut5zOpc-oZ6RYUyFVxE1nI0Qit33S8lhm6dHMK-Dl4Z0gicC7Gjdo1gE4v9OkzlcoJAaCl838mcDp7kO-8-mVQAPwjmI8C2hGEx37BTIOJZb2S4_U0vX2iy5IkpKxoGSOM40PT8ULJt_I4_HoScZyplRFMZyv2H2Zu0M6XIq8FkaTFrSxRtfT8dj10KWhmaa7fPLmjjsgUY3eie2LiCwFRHdYmMHXpoYe1Wfzbl3ue6diPIEv0w33Vm-p06Z_eLo6qYEJmTHMPgJ410OK82-jcZR1JGeCs4oVoLOJiWJmMMLl5_OEODOmyFVguuKySP0obAHuABljBOwq0arDW_PNLCKWf_yOLsDW-CE9wNW84NHaeSAJdyyErCnRDGA7P1rHud_nw6K2QAqEd25O28aLdagD8HWXs4TriqkLUc-ZD9ElpDeFWpt6bZZbsi8rAzYefugQN7EGQY0EyLhRJfDqoNZ_GsrVHbyrlTc5BbZHIB_rTap7XLqNmgCxEDx3talTNEKan0M5KePaVesP-k3fA5iHW1b5mtMrvGbdLT5wWgYTc5wn5gQar6suYmw6IS4S13b5FJJeK6AFCoaTKigpBu2Ii5nq4cpYVBFTLrky_9Fq5HUsEtqzuYoCMgbZYliHf7lk3iEAU=w473-h924-no" alt></p>
+<p><strong>注意：</strong> 要確定你有仔細的設定好標籤值提取器。 一個錯誤可能會導致很大量的活躍時間序列。 超過時間序列限制會導致指標被限制住, 圖表表現下降, 以及額外的時間序列超時成本</p>
+<p>點擊 <strong>Create Metric</strong></p>
+<p>現在你將會看到你的使用者定義指標被加到紀錄指標的畫面</p>
+<p><img src="https://lh3.googleusercontent.com/SNptriwenWS6eqbNqXiG8n4ZB7D2wkbLWZdEQ-G8jnRxfaK80v4PPvbTvOnEtS2FWxywDUkECec40Jp_VtV5r5k2LoKLAar-pTxKweJi7uh8kZfKO_WyeeYUFTpQ8P-cGxdTSpt_SqiSjgHhFMatrd7ZexnrM1NAxjbhTEID_xffin78moGa4fF20bDBX3EH5ljFfTVquQgUCmFaonhPx6TgtfOBILCLSvZuPc4eBGFZRlyKmkJeotS9e7_8DlwhWkx9I7sxOAsgHsoZPKjzPWaZQU4SnXUDwaLfzvaU4jTvr491ipqd9Y6rBI8OJcaVEO7ssZfqKGt21pmSeUQG-_uiZAtzjJ8g-HZgJuuKCTnOnSRZpICizSXXtcatU43aFAPHi_XSRdSrz-gogBitIfZO-Y5DDjfoFm8EAg8RZHyIKk4Bv_twb4i2OOdqnMnpHuuQEBlTjzXnpGxk7JGA48_RkZqydDYCAIZFfJXWRJ_uCdaEjbWTcL68t3vCr9ZsNFSWK4sXFhx5oC5kj_QWZJxyXn6UsxYNTudWPWN2e9qE3CQ8fFG3bH8ELerjf4AmQGoo-9f7UE-Dpm0FuVIA07DHIKH3YyHvW4p4dG6XOBwJhKiA--dL79j8zVo0vrvqlBvRS_NDjSVeYgrQI_a3ncDwEl6_4pqVzZw2q5R27qOiI5RQMahuUeA6x06a9z4vxJ6byVI4io0lB6NiBvYKBpLS0fgmuihrRF26DTdEb0PwgUb7=w1440-h509-no" alt></p>
+<p><br><br><br><br><br></p>
+<p>建立 Foodcount 警告政策<br>現在你將建立一個 Foodcount 的警告政策, 就是那個你剛建立的指標<br>在 Stackdriver 主控台, 重整螢幕, 然後點擊 <strong>Alerting &gt; Create a Policy</strong></p>
+<p><img src="https://lh3.googleusercontent.com/G4U-OAU11L3kkwBnw7sS675hKbtuylpS6Of1f3VjaXArEuVxEyArAmBMa_mu7wc_uHA_EKQZ7ZaGcKcIqXa3cDHnQTF8ARUlhbJEe3OOSf2qPmZDxiftgNbfROEzUoidnAXAbb4rY8t-9DswMrtJesaKLsFT26Fe-g-ijbyKGsER1AoIz9NVNhdv9fN-9kuLMeXyH5aQ5CxjhfNVhCnhTnblk6C5NyMDNB1nXV1Kmg4g1tVNDF0q0S0XIWCIJjX31ayVFxfU6GYZhOTk6893GadB4xO72Ec6b91yDo2Zxxt4hpSKxLHMB_G4GXxuyhV96Pr6XG2uGc6Ael8YEJhTICYB_em5jftRY-D9CYU4FdckB7ddxnUq0s0b7I6j_I08IHJURbV_6gjFu9-loaPm6CTUeXJbKSP34hE4NB3_8NIOUXff9ERh1vI6cDIhl2CAcAt3l5rqyXUm_37V81LdJWytpGvBuBbL7HOKmyyqGkxc1Pn2mOScbLse9oioRknw3ACVUBtQPZfF2tDWVkXk4267QfmQh3_9NK2O9cY-w-JXeR9i8XPSeS7RqHozgS-Jh72sQXsNG_Mjcgig9Wzvv4Sld-ZWxZOgs_z2W0FtjCJEpHs9rMizzg7datgmjfdba9OWOyEadtsmquEFHq5PjpLOAGoWlK4agdmYFJjxF8bMfawLKV60L6_VPYRe3_xPEjZxfSXwNEeLtEYo-a0N2Zp_97TlEynrriZZjt_RDEHCQ79C=w1024-h504-no" alt></p>
+<p>你也可以從 Google Cloud 主控台, 到 Stackdriver 區塊然後點擊 <strong>Logging</strong> , 然後一樣照著上面的動作來建立</p>
+<p>設定以下的條件：</p>
+<p><strong>條件:</strong> 點擊 <strong>Add Condition</strong> 。 在 Find Resource 欄位輸入 “logging/user/“ 然後選擇 “logging/user/Foodcount” 。 門檻為 0 以及 1 分鐘, 然後 <strong>save</strong></p>
+<p><strong>通知:</strong> 輸入你的個人信箱到 email 欄位來接收 email 通知</p>
+<p><strong>命名這個政策:</strong> 輸入 “food alert”</p>
+<p>點擊 <strong>save</strong></p>
+<p>當下一輪的 uptime check 發生, 門檻一定會高於 1 分鐘, 所以警告會被觸發, 且你將會看到一個事件出現在 Monitoring Overview 頁面</p>
+<p><br><br><br><br><br></p>
+<p>分布 (Distribution) 以及延遲 (latency) 指標<br><strong>分佈指標</strong> 從符合篩選的數據中累積數字資料。 指標含有一個 <a href="https://cloud.google.com/logging/docs/reference/v2/rest/v2/projects.metrics#metrickind" target="_blank" rel="noopener">Distribution</a> 物件的時間序列, 每一個都含有以下的東西:</p>
+<ul>
+<li>在分佈中, 數值的數量累積</li>
+<li>數值的平均</li>
+<li>偏差值平方的總和</li>
+<li>一組直方 buckets 以及 每個 bucket 中都有數值的總和。 你可以使用預設的 bucket 設計, 或是選擇你自己想要的</li>
+</ul>
+<p>一個分佈指標常見的使用情境是追蹤延遲。 當接收到每一筆記錄數據, 延遲值會從記錄數據中被取出, 並且加到分佈中。 在規律的間隔下, 累積的分佈被寫到 Stackdriver Monitoring。 接下來你將建立一個追蹤延遲的指標</p>
+<p>到 <strong>Logs-based Metric</strong> 視窗</p>
+<p>在 Logs Viewer 控制列上, 在你的指標, 你可以建立一個只會計算你想要的記錄數據的篩選器。</p>
+<p>在頁面上方, 點擊 <strong>Create Metric</strong> </p>
+<p>在 Metric Editor 控制列, 填入以下欄位</p>
+<ul>
+<li>Name: AppLatency</li>
+<li>將 Type 變更為 “Distribution”</li>
+<li>Field name 為 “latency”, 並選擇 “protoPayload.latency”</li>
+</ul>
+<p>點擊 <strong>Create Metric</strong></p>
+<p>你的新指標出現在 Logs Viewer 指標的列表中, 並且立即出現在相關的 Stackdriver Monitoring 選單</p>
+<p>在紀錄指標頁面, 點擊 AppLatency 指標旁的三個小點圖案, 然後選擇 **View in Metrics Explorer 來檢視分佈指標的結果。 你可能需要重整 Stackdriver 的頁面</p>
+<p><img src="https://lh3.googleusercontent.com/4BhbKGbDMVcOvrp6jqYXdoB5oZReHGVdj6ATZxf8aU0_oUZObC9Z2I-lGReUC_OyIh71XsmRUKm0PgkhbW7mgfyYsRTALfQwNqSsfdyQB36HuK0EgS-lTEq9lCulDlfpmxymKq4BK6b3xVxoo_rk0lJmfVKeqJZyrNq4wEvLKPta33aP4dw7flpdyyi_VxkqjKWe-2zse4fflx0fGa5iMUkm3UU7L59hQzXlQaRfSjGlE8McYB7KQ1EkRm_ertMoWBpA4SJOyCX8zOlBCXIABmqNLWiw9re8ZJ3DSfvBEttGpa11CB_J5JD7QtFHNnfCjxq41dEcmpk2xvd3JFIcz5vBSYumwyecbpdnXnURZx1AtwwfWtp_WNkdi-8jBKUy3qJRb3wGVDe9YJ78qIA-InekAOTgMADAB0MftLke6GwoL896PJTo56n2l1IEGv4bgrc8IjBC7ZZKqFBzMcJtfWQb8jmkDQRc6fFdoqmD_2BZmGi-2Nfm1rWfTbO7JbVcQf59T7bTUDrtak5YTXxahPMlLMYbyt-5f31838xNSyuD2lxU0-NXmDjKPX3kGe76DKo-oVFpJbaerkwKFrdVR90HNaiS4TIxKlHiMHsaoijutzKeGc118vD5DhbewmApsx9O-Hpl5y4UEtDbcFyawo25s9U68VImVmQH0B8TaWeznun2jy7NFgt2OmCrw0rUMwCXORlG46bXQq5TamJrg6Yaho2QWN2V74l5bZ5HXLIvtYLM=w963-h267-no" alt></p>
+<p>在圖表上方的下方選單改變圖表的風格為 heatmap</p>
+<p><img src="https://lh3.googleusercontent.com/jU6GqmYqHXr_KH33HEPMNyMz7dSXy7q4NpmanV9U0i5wrGorZijsqe5FWHnlgzvtJDBRgYRiSSwZbEGvPfqmZdmUDrBCZq62BT4YzutiL5I34fIDdvmG3azFQNKbp8XJ17o8nVFoJaCo48RVeqswZtAsD3acIiycJ5KveOriVEPrhzuaujyfNFOmVThOG_y3W10XjwC8mrcpig3v6gmZodnqFM36whuP41B5Aqo94PkPGwRdRzNC5Te-GV89OgitSQqVmlZD75Z9vRY5t5NDB80ym2yxraQRM0aXnxTBMYwbkUHy0xBUE_coycla1N2LsfMVHc2rtExYwLyvxdeCu0wn_X_co-aTnhhy0lxRuwCq_MwiqIFSNdtxynv61-z2XyR43rIrQvDwtEHeu1Va-1DXC8oL_T0Q8T_PttP0EEqxh_bUeZkcYOG-DkoY3R6MF8XvRWaxswMvkXUuKJx5sjR4CIsYNK81EWciUC2Q3sAUqfBOsrFuiyYTYR8bZ-DfRoqBDVGirAdmIQjWSHJf4bFBP6g-HKzmrZbtCfH7v8oyiZmv2Lb5QLH3S0OIGh-r17lTXnCDwTQagG9fhoOfo9PIDUHnVXTCbBryKOyCjX9RyBaUDbga3FuJUTr86OSc2XEoeVzrzjha4RTnVk1ozsUPCcc3R66zJuTW8h5ANh4942r_4HtrcawfE6T4tkX2ZSOpoEtAJXBTI3FJfTrTEdJNLkOZxz2mIRC2Fm3JRSYwzy5C=w1332-h429-no" alt></p>
+<p>Metric Explorer 的結果大概會需要 3~5 分鐘。 你可以一些時候再回到這個頁面來核對結果</p>
+<p>你也可以從 Stackdriver 主控台, 到 <strong>Resources &gt; Metrics Explorer</strong> 輸入你的指標名稱</p>
+<p><br><br><br><br><br></p>
+<h2 id="heatmap-客製顯示面板"><a href="#heatmap-客製顯示面板" class="headerlink" title="heatmap 客製顯示面板"></a>heatmap 客製顯示面板</h2><p>建立一個客製的面板來顯示特定的指標是一個檢視資料很好的方式。 接下來你會建立一個客製面板來顯示你方才使用的延遲指標</p>
+<p>在 Stackdriver 主控台, 點擊 <strong>Dashboard &gt; Create Dashboard</strong> , 然在右手邊點擊 <strong>Add Chart</strong></p>
+<p><strong>Resource type:</strong> GAE Application<br><strong>Metric:</strong> Response latency</p>
+<p>圖表將會以你使用的指標自我命名, 你可以將他更名為任何你想要的 - 在這個範例中為 “Heatmap”</p>
+<p>在螢幕下方點擊 <strong>Save</strong></p>
+<p>面板需要一個名字 - 點擊 <strong>Untitled</strong> 然後命名它為 “App Response”</p>
+<p><img src="https://lh3.googleusercontent.com/-BikNNcN6TAoGyTa67o-IFgrGSuyezihboTCxX0hwj5_B2CmBPflkkxx7r6dMciovdFBiPyx5LSd5MtkYyJPeqxbaN6ousJIk_bRZ1KyY8DiWjJ6qb2Piu6KGKMwY8eHI_nED7nVY6xEums8udbgVuNVVR-iIgpADvPrqtkDY29uePSwK6xBQWculDqN1ouT5ytCUO6j2dg9gYXzksz-iyYpKHStvYf1n6UWC3YfEsnl9VOwDH5yRA5fSygabX6INicklirI37MqveqD_L2TptmCQvKk2h_-TGHfvFAu7lyOUMRzMlF5VPRKnt39BP7RAa57MaZ9QqVXhgBdic_n4uWXOA8EQPzF7zodl6R2Edzyok5B10sddBCfHLi-QvaeQAJp0O8HVFJp1Wtek0yNoGB67NH6GcDT7H8s72Z6vD_3Vh6yvYCy5DnmajpgzBU0OJSfBzrRiEbTRllHbj-yoFzLzsbIMG1zmX1W0Au3TIYqTgpd-nPgIuRMn6dJSQdFksO2iHvKZjhM5N8yxO6rUoeo4YDk0M9AGv8afgy7s5rNQrr7eLxEgMiZhjC6-hhqWZOvOxUF5IK-SiNoFsgWn3Z6mYT5liYW1721u7aftiYOusi5TO_FrD5Vqfe87qXxVvEMFUyzhHYnUnOJZOGxGTKoJ6EP9a9UG47ckAFzO3qu01wOxTulFbgMSQKlfm_FuHt1mo4RnJwkA1Jnl2LYMvDenT4HRcVRgPK8YiIjWUvVykFR=w673-h257-no" alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="確認警告事件"><a href="#確認警告事件" class="headerlink" title="確認警告事件"></a>確認警告事件</h2><p>回到 Stackdriver 的 <strong>Monitoring Overview</strong> 檢視 uptime check 政策的警告。 你也可以回到 <strong>Resource</strong> 頁面的 Metrics Explorer</p>
+<p>點擊 <strong>Alerting &gt; Policies</strong> overview, 然後點擊政策的名字來更清楚的檢視 newVM 警告。 因為問題已經自我解決了, 點擊 Resolved 視窗, 然後你可以看到 new VM 發生的事件通知</p>
+<p>如果你有設定任何 email 通知, 收信並確認核對收到的警告。 這個可能會花更久的時間, 但沒關係, 就算這個教程結束了, 你還是可以收到。</p>
+<p><img src="https://lh3.googleusercontent.com/efOmQebPLG9PXBV1nI778cApXk1lzKQuy1kH9oSLSyqxGcJzmErEGdNnHJmL_Ss4evb_TTflggj6YUR_85RxN3KNkXvYZysCydVJ3YpL0wuYvF8xRmtuO5d1bo-48l-uWiOW5HLLChGNJNnWuTZ04NKIUjSW-6WBaWnguk7rhmP0acVQ53WVqcLTK_B46NICt0yAZ7YK_NAoiCBD84v0NxjieMRwrMIN1jJGTIVI_4lbTD4kUmHVfiWbwRAXUIjpYhliDaHlqDl8inDDzaMMAzkie5rURST7bqtNMAPNc1CQJma-EblKGvXAioN7BtyvNTwCKmdRuoXTPpAxFVcflAWaQKYJho6aRy60CjA4Y4wZ13onVrQ0OT_Ap3F_N2XEv6w5Rax0aV1U7ypmh5wFR6lhU6x1P-lsBT_mtGeJmALNGL4RMdROH0ekyZFYWkWiBvLXKjqfx7BZRLTui3TqiGnRywvt7A1o36RglTBLNYtj0TzQageDQvjsmhs5WzYO3ZTtcPMkllEeWvgxwSi6GDBQD9x3Ut6pmNU9kWvLVU-QsUOH-QqRIrEa5PdqjHet1TeL-ap_KqhjidGZf0dBMzFqlUVQ7ajkGMa-cQdJGJq9anmwg3rBF1GI4o5ToJewWjT5ngS2AqAZuiF6qWJuQR3Sh0xY6uEIBRDt-K7Bt2gJVV5lmu4bdKCJ_7l9LIcOMMi2siRNE3c0bFWjt_4y39WmlCseE-7U0-hNPrQtTJiERUi_=w1440-h624-no" alt></p>
+<p>別忘了點擊 Metrics Explorer 視窗並重整頁面來檢視 heatmap</p>
+<h2 id="恭喜！"><a href="#恭喜！" class="headerlink" title="恭喜！"></a>恭喜！</h2><p>你已經完成本教程！</p>
+
     
     </div>
     
@@ -552,14 +651,12 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
-            
-            <a href="/zh-tw/buildSftpServerOnLinux/">在 Linux 上建立一個 SFTP Server</a>
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh-tw/Linux/">Linux 基礎篇 - 學習筆記</a>
+            <a href="/zh-tw/buildAWebDavServerWithNginx/">用 NGINX 配置一個 WebDAV Server</a>
             
         </span>
     </div>
