@@ -24,7 +24,7 @@
 <meta property="og:image" content="https://i.imgur.com/R93HoCB.png">
 <meta property="og:image" content="https://i.imgur.com/Izad8Ix.png">
 <meta property="og:image" content="https://i.imgur.com/StDKTwU.png">
-<meta property="og:updated_time" content="2019-10-10T12:29:32.189Z">
+<meta property="og:updated_time" content="2019-10-14T06:12:31.337Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Node.js">
 <meta name="twitter:description" content="前言這是一份未整理的 Node.js 學習筆記">
@@ -63,7 +63,7 @@
 <meta property="og:image" content="https://i.imgur.com/R93HoCB.png">
 <meta property="og:image" content="https://i.imgur.com/Izad8Ix.png">
 <meta property="og:image" content="https://i.imgur.com/StDKTwU.png">
-<meta property="og:updated_time" content="2019-10-10T12:29:32.189Z">
+<meta property="og:updated_time" content="2019-10-14T06:12:31.337Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="My learning journey in Node.js">
 <meta name="twitter:description" content="前言這是一份未整理的 Node.js 學習筆記">
@@ -382,6 +382,18 @@
                     
                     <a class="navbar-item" href="#結果">5.6&nbsp;&nbsp;結果</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#serve-static-file-in-Express">6&nbsp;&nbsp;<b>serve static file in Express</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Error-Handing-in-Express">7&nbsp;&nbsp;<b>Error Handing in Express</b></a>
+                    
                 </div>
             </div>
             
@@ -442,7 +454,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 7648 字)
+            1 小时 讀完 (大概 8391 字)
         </span>
         
     </div>
@@ -659,13 +671,56 @@
 <h3 id="設立規則"><a href="#設立規則" class="headerlink" title="設立規則"></a>設立規則</h3><p>在 controller 定規則, 新增一個 method</p>
 <figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line">validate(method)&#123;</span><br><span class="line">    <span class="hljs-keyword">switch</span> (method) &#123;</span><br><span class="line">        <span class="hljs-keyword">case</span> <span class="hljs-string">'getCountHost'</span>: &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> [</span><br><span class="line">                body(<span class="hljs-string">'measurement'</span>).exists(),</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">case</span> <span class="hljs-string">'getSumData'</span>: &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> [</span><br><span class="line">                body(<span class="hljs-string">'measurement'</span>).exists(),</span><br><span class="line">                body(<span class="hljs-string">'host'</span>).exists(),</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">case</span> <span class="hljs-string">'getData'</span>: &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> [</span><br><span class="line">                body(<span class="hljs-string">'measurement'</span>).exists(),</span><br><span class="line">                body(<span class="hljs-string">'host'</span>).exists(),</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><br></p>
-<h3 id="驗證並回報錯誤"><a href="#驗證並回報錯誤" class="headerlink" title="驗證並回報錯誤"></a>驗證並回報錯誤</h3><p>在 controller 中定義錯誤並設定回報格式<br><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> errors = validationResult(req);</span><br><span class="line"><span class="hljs-keyword">if</span> (!errors.isEmpty()) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">400</span>).send(Output(<span class="hljs-literal">false</span>, [], errors.errors))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="驗證並回報錯誤"><a href="#驗證並回報錯誤" class="headerlink" title="驗證並回報錯誤"></a>驗證並回報錯誤</h3><p>在 controller 中定義錯誤並設定回報格式<br><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> errors = validationResult(req);</span><br><span class="line"><span class="hljs-keyword">if</span> (!errors.isEmpty()) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">400</span>).send(Output(<span class="hljs-literal">false</span>, [], errors.errors[<span class="hljs-number">0</span>].msg))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><br></p>
 <h3 id="使用-validator"><a href="#使用-validator" class="headerlink" title="使用 validator"></a>使用 validator</h3><p>以 middleware 的方式使用 validator<br><figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line">App.post(<span class="hljs-string">'/netdatadb/sum'</span>, NetdataController.validate(<span class="hljs-string">'getSumData'</span>), NetdataController.getSumData);</span><br></pre></td></tr></table></figure></p>
 <p><br></p>
 <h3 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h3><p>若有錯誤, 結果如下：</p>
 <figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="hljs-attr">"succeeded"</span>: <span class="hljs-literal">false</span>,</span><br><span class="line">  <span class="hljs-attr">"data"</span>: [],</span><br><span class="line">  <span class="hljs-attr">"message"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="hljs-attr">"msg"</span>: <span class="hljs-string">"Invalid value"</span>,</span><br><span class="line">      <span class="hljs-attr">"param"</span>: <span class="hljs-string">"measurement"</span>,</span><br><span class="line">      <span class="hljs-attr">"location"</span>: <span class="hljs-string">"body"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><br><br><br><br><br></p>
+<h2 id="serve-static-file-in-Express"><a href="#serve-static-file-in-Express" class="headerlink" title="serve static file in Express"></a>serve static file in Express</h2><figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line">app.use(<span class="hljs-string">'/static'</span>, express.static(path.join(__dirname, <span class="hljs-string">'public'</span>)))</span><br></pre></td></tr></table></figure>
+<p><strong>path.join(__dirname, ‘public’)</strong>: 使用絕對路徑讀取檔案</p>
+<p>以下為請求的路徑範例：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://localhost:3000/static/images/kitten.jpg</span><br><span class="line">http://localhost:3000/static/css/style.css</span><br><span class="line">http://localhost:3000/static/js/app.js</span><br><span class="line">http://localhost:3000/static/images/bg.png</span><br><span class="line">http://localhost:3000/static/hello.html</span><br></pre></td></tr></table></figure></p>
+<h2 id="Error-Handing-in-Express"><a href="#Error-Handing-in-Express" class="headerlink" title="Error Handing in Express"></a>Error Handing in Express</h2><p><a href="https://expressjs.com/en/guide/error-handling.html" target="_blank" rel="noopener">參考文件</a></p>
+<ul>
+<li><strong>同步的錯誤需要被 catch 嗎？</strong> 不需要</li>
+<li><p><strong>對 controller 的 error handler 的 error catch?</strong></p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line">exports.catchErrors = <span class="hljs-function">(<span class="hljs-params">fn</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> fn(req, res, next).catch(next);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>next()</code> 與 <code>next(err)</code> 的分別？</strong> <code>next()</code> 是將當前的 middleware 終止, 並導向下一個 middleware, 而 <code>next(err)</code> 則是會直接導向 err handler</p>
+</li>
+<li><strong>異步錯誤需要特別被 catch 嗎？</strong> 需要哦！</li>
+<li><p><strong>下面的代碼中, next 的位置是怎麼樣的一種寫法？</strong> 將 next 置於 callback 的位置, 當沒有錯時, 跳往下一個 handler, 而當有錯誤時, 將錯誤導向 error handler</p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line">app.get(<span class="hljs-string">'/'</span>, [</span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res, next</span>) </span>&#123;</span><br><span class="line">    fs.writeFile(<span class="hljs-string">'/inaccessible-path'</span>, <span class="hljs-string">'data'</span>, next)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;</span><br><span class="line">    res.send(<span class="hljs-string">'OK'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 asynchronous 中, 如何處理 error?</strong> 若出錯, 要將 err 放到 next() 中帶往 error handler</p>
+</li>
+<li><p><strong>下面的代碼中, 處理 error 的邏輯是什麼？</strong> 當 fs.readFile 沒錯時, 跳往下一個 handler, 如果有錯, 跳往 error handler</p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line">app.get(<span class="hljs-string">'/'</span>, [</span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res, next</span>) </span>&#123;</span><br><span class="line">    fs.readFile(<span class="hljs-string">'/maybe-valid-file'</span>, <span class="hljs-string">'utf-8'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, data</span>) </span>&#123;</span><br><span class="line">      res.locals.data = data</span><br><span class="line">      next(err)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;</span><br><span class="line">    res.locals.data = res.locals.data.split(<span class="hljs-string">','</span>)[<span class="hljs-number">1</span>]</span><br><span class="line">    res.send(res.locals.data)</span><br><span class="line">  &#125;</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 production 環境中, Express 會將 stack trace 送往客戶端嗎？</strong> 不會</p>
+</li>
+<li><strong>如果已經開始回 response 了才遇到錯誤, 比如說正在串流到客戶端, Express 預設的 error handler 會結束掉連線嗎？</strong> 會哦</li>
+<li><strong>在使用自定義 error handler 時, 若要避免正在回 response 時遇到錯誤, 要注意什麼？</strong> 要檢查 header 是否已經傳送了, 若是, 則要將錯誤導向 Express 預設 error handler 來中止連線</li>
+<li><p><strong>以下代碼是什麼樣的錯誤處理邏輯？</strong> 如果 header 已經傳送了, 將錯誤傳給 Express 預設 error handler 來中止連線</p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">errorHandler</span> (<span class="hljs-params">err, req, res, next</span>) </span>&#123;</span><br><span class="line">  <span class="hljs-keyword">if</span> (res.headersSent) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> next(err)</span><br><span class="line">  &#125;</span><br><span class="line">  res.status(<span class="hljs-number">500</span>)</span><br><span class="line">  res.render(<span class="hljs-string">'error'</span>, &#123; <span class="hljs-attr">error</span>: err &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>什麼情況之下, 即使已經有建立自定義 error handler 了, Express 還是會將 error 送到預設的 error handler?</strong> 當 next(err) 被呼叫了一次以上</p>
+</li>
+<li><strong>定義一個 error-handling middleware, 需要幾個參數？</strong> 四個</li>
+<li><p><strong>如何在自訂的 error handler 中, 在回應 client 之前, log stack trace?</strong> </p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">console</span>.error(err.stack)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>怎麼寫一個最簡單的 log error 的 middleware?</strong> </p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logErrors</span> (<span class="hljs-params">err, req, res, next</span>) </span>&#123;</span><br><span class="line">  <span class="hljs-built_in">console</span>.error(err.stack)</span><br><span class="line">  next(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>請敘述下面的 error handler 邏輯</strong> 若請求有使用 xhr 的話, 直接回應指定錯誤訊息, 若無, 導向預設 error handler (因為已經呼叫兩次)</p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clientErrorHandler</span> (<span class="hljs-params">err, req, res, next</span>) </span>&#123;</span><br><span class="line">  <span class="hljs-keyword">if</span> (req.xhr) &#123;</span><br><span class="line">    res.status(<span class="hljs-number">500</span>).send(&#123; <span class="hljs-attr">error</span>: <span class="hljs-string">'Something failed!'</span> &#125;)</span><br><span class="line">  &#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">    next(err)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>如果我有兩組以上的 app.get(‘/‘, [fn1, fn2, fn3]), 現在我已經執行了 fn1, 我想要跳掉 fn2, fn3 到下一個 app.get(‘/‘, [fn4, fn5, fn6]), 該怎麼做?</strong> </p>
+<figure class="highlight js hljs"><table><tr><td class="code"><pre><span class="line">fn1(req, res, next)&#123;</span><br><span class="line">   <span class="hljs-comment">//do something </span></span><br><span class="line">    next(<span class="hljs-string">'route'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 
     
     </div>
