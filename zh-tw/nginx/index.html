@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-16T13:45:09.563Z">
+<meta property="og:updated_time" content="2019-10-20T03:43:22.376Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-16T13:45:09.563Z">
+<meta property="og:updated_time" content="2019-10-20T03:43:22.376Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -216,6 +216,24 @@
                     
                     <a class="navbar-item" href="#config">7.2&nbsp;&nbsp;config</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#upstream">8&nbsp;&nbsp;<b>upstream</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#語法-1">8.1&nbsp;&nbsp;語法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#範例-1">8.2&nbsp;&nbsp;範例</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#詳解">8.3&nbsp;&nbsp;詳解</a>
+                    
                 </div>
             </div>
             
@@ -276,7 +294,7 @@
         <span class="column is-narrow">
             
             
-            9 分钟 讀完 (大概 1294 字)
+            10 分钟 讀完 (大概 1474 字)
         </span>
         
     </div>
@@ -362,6 +380,12 @@
 <h2 id="部署-vue-專案"><a href="#部署-vue-專案" class="headerlink" title="部署 vue 專案"></a>部署 vue 專案</h2><h3 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h3><p><code>npm run build</code>, 看 script 怎麼寫, 這邊只管部署</p>
 <p><br></p>
 <h3 id="config"><a href="#config" class="headerlink" title="config"></a>config</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">        <span class="hljs-comment"># Listen port 號</span></span><br><span class="line">        <span class="hljs-attribute">listen</span>       <span class="hljs-number">8080</span>;</span><br><span class="line">        <span class="hljs-comment"># Server name</span></span><br><span class="line">        <span class="hljs-attribute">server_name</span>  localhost;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># Log 位置</span></span><br><span class="line">        <span class="hljs-attribute">access_log</span>  logs/host.access.log;</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment"># root 位置, 可以參考上面的 root 詳解</span></span><br><span class="line">        <span class="hljs-attribute">root</span>   /Users/rainy/Desktop/MyWork/Work/website/dist;</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment"># 預設檔案</span></span><br><span class="line">        <span class="hljs-attribute">index</span> index.html index.htm;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">            <span class="hljs-comment"># try to find $uri, and then $uri/, and if they both are not found, go for @router</span></span><br><span class="line">            <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ <span class="hljs-variable">@router</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="hljs-comment"># If the path is found, go for index file below</span></span><br><span class="line">            <span class="hljs-attribute">index</span>  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-attribute">location</span> <span class="hljs-variable">@router</span> &#123;</span><br><span class="line">            <span class="hljs-comment"># rewite whatever to /index.html</span></span><br><span class="line">            </span><br><span class="line">            <span class="hljs-comment"># 不管 request 是什麼, 都 rewrite 到 /index.html, 並且執行 last, last 代表說, 結束這一次的 rewrite 規則, 並且使用 rewrite 後的結果重新對 server 發一次請求</span></span><br><span class="line">            <span class="hljs-attribute">rewrite</span><span class="hljs-regexp"> ^.*$</span> /index.html <span class="hljs-literal">last</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br><br><br><br><br></p>
+<h2 id="upstream"><a href="#upstream" class="headerlink" title="upstream"></a>upstream</h2><h3 id="語法-1"><a href="#語法-1" class="headerlink" title="語法"></a>語法</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Syntax:	upstream name &#123; ... &#125;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	http</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="範例-1"><a href="#範例-1" class="headerlink" title="範例"></a>範例</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">upstream</span> backend &#123;</span><br><span class="line">    <span class="hljs-attribute">server</span> backend1.example.com weight=<span class="hljs-number">5</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> <span class="hljs-number">127.0.0.1:8080</span>       max_fails=<span class="hljs-number">3</span> fail_timeout=<span class="hljs-number">30s</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> unix:/tmp/backend3;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server</span> backup1.example.com  backup;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">proxy_pass</span> http://backend;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="詳解"><a href="#詳解" class="headerlink" title="詳解"></a>詳解</h3><p>定義多個 server, server 可以 listen 不同的 port 號, TCP 以及 UNIX-domain socket 可以混用<br>預設的話, 會採用權重輪詢分配請求到不同的 server, 以上面的範例來看, 每 7 個 request 中, 5 個會被分配到 <code>backend1.example.com</code> (weight=5), 2 個分別到 <code>127.0.0.1:8080</code> 以及 <code>unix:/tmp/backend3</code><br>如果在溝通途中有錯誤, 請求會被分派到下一個 server, 直到出現成功回應的 server 。 如果裡面都沒有可以成功回應的, 那客戶端會收到最後一個 server 的回應 (backup)</p>
 
     
     </div>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>kubernetes 學習筆記 - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言Kubernetes 的學習筆記, 內容未整理  kubectlcreatecreate -f FILENAME  建立元件 kubectl create component componentName    logs 取得 log kubectl logs componentName  取得即時 loglogs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINE">
+<meta name="keywords" content="GCP Kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes 學習筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetesNote/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言Kubernetes 的學習筆記, 內容未整理  kubectlcreatecreate -f FILENAME  建立元件 kubectl create component componentName    logs 取得 log kubectl logs componentName  取得即時 loglogs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINE">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/VcNvBDKr_W_skO3hS7hbWqv3I-WrJVzEcTtqPeBe752obR3dPK3qEYP7AE2IQhG7wpfwYkMILDL4dn5RLFEsgtcLbX--HIs166UeLxdt9PXHYNPtKZKwVn9eIpjf6XUoMRaccAEPapcA-W_SKtz8M74fTxpY8oJa2_tpieSQmXKVjQlIhWEXmS2_KKG-2DO5Ons-V7VWl3pdlbiUA-NBsO8xTuO0_xNX0XxGoPFN8GgiEC0LzN84xyykiyKqgB0OVftSs9ip74a8e0AOFvZhf8r63IdVfoMNk1_vrCrL46ypftzMa-VSGYIHG49wN9qxoeirrvL3WqBC0OhMJqYBMpoSnBz-hCi8cYrjElI1D2ggcVDRNOR73OShPdHU_X--b0brCsXadG6rFIOHEvNA2Fs3G28XRE00QMIpqgvgkKv29mvP6ufbVUxuMV5eD68zdUVxKBTgmm7J3EH1UNdGAXLoNW_49qOKFLdmcEUTf8K5ecRdRMb3F0t2r1h5wcwesHNJGBrSpOHISCCkUIE4Z_Co3FRp4f1mCm9ULAlCN2J1c6b2u1iASnxd8QJwyzZhkaFhrxhoBQHGzbh1fk-ehky-dSulNJDRs3hODditzKe85SeJYGEE3w9smvMfBgtO0V3P5rhM5Hi2ZpQDNfbkMqRIvCGAf0o7H4MTP6zCfiQs-ZGJL27t0BbS5t3mf9l5FCfdqh-5h90MsXF80cRDUOtpi_V-pOkN7Sj5wJ2sG9EcRM86=w960-h540-no">
+<meta property="og:updated_time" content="2019-10-21T08:12:06.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kubernetes 學習筆記">
+<meta name="twitter:description" content="前言Kubernetes 的學習筆記, 內容未整理  kubectlcreatecreate -f FILENAME  建立元件 kubectl create component componentName    logs 取得 log kubectl logs componentName  取得即時 loglogs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINE">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/kubernetesNote/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言Kubernetes 的學習筆記, 內容未整理  kubectlcreatecreate -f FILENAME  建立元件 kubectl create component componentName    logs 取得 log kubectl logs componentName  取得即時 loglogs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINE">
+<meta name="keywords" content="GCP Kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes 學習筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetesNote/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言Kubernetes 的學習筆記, 內容未整理  kubectlcreatecreate -f FILENAME  建立元件 kubectl create component componentName    logs 取得 log kubectl logs componentName  取得即時 loglogs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINE">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/VcNvBDKr_W_skO3hS7hbWqv3I-WrJVzEcTtqPeBe752obR3dPK3qEYP7AE2IQhG7wpfwYkMILDL4dn5RLFEsgtcLbX--HIs166UeLxdt9PXHYNPtKZKwVn9eIpjf6XUoMRaccAEPapcA-W_SKtz8M74fTxpY8oJa2_tpieSQmXKVjQlIhWEXmS2_KKG-2DO5Ons-V7VWl3pdlbiUA-NBsO8xTuO0_xNX0XxGoPFN8GgiEC0LzN84xyykiyKqgB0OVftSs9ip74a8e0AOFvZhf8r63IdVfoMNk1_vrCrL46ypftzMa-VSGYIHG49wN9qxoeirrvL3WqBC0OhMJqYBMpoSnBz-hCi8cYrjElI1D2ggcVDRNOR73OShPdHU_X--b0brCsXadG6rFIOHEvNA2Fs3G28XRE00QMIpqgvgkKv29mvP6ufbVUxuMV5eD68zdUVxKBTgmm7J3EH1UNdGAXLoNW_49qOKFLdmcEUTf8K5ecRdRMb3F0t2r1h5wcwesHNJGBrSpOHISCCkUIE4Z_Co3FRp4f1mCm9ULAlCN2J1c6b2u1iASnxd8QJwyzZhkaFhrxhoBQHGzbh1fk-ehky-dSulNJDRs3hODditzKe85SeJYGEE3w9smvMfBgtO0V3P5rhM5Hi2ZpQDNfbkMqRIvCGAf0o7H4MTP6zCfiQs-ZGJL27t0BbS5t3mf9l5FCfdqh-5h90MsXF80cRDUOtpi_V-pOkN7Sj5wJ2sG9EcRM86=w960-h540-no">
+<meta property="og:updated_time" content="2019-10-21T08:12:06.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kubernetes 學習筆記">
+<meta name="twitter:description" content="前言Kubernetes 的學習筆記, 內容未整理  kubectlcreatecreate -f FILENAME  建立元件 kubectl create component componentName    logs 取得 log kubectl logs componentName  取得即時 loglogs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINE">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray 的技術捲軸
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#kubectl">2&nbsp;&nbsp;<b>kubectl</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#create">2.1&nbsp;&nbsp;create</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#logs">2.2&nbsp;&nbsp;logs</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#exec">2.3&nbsp;&nbsp;exec</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions">3&nbsp;&nbsp;<b>Questions</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#元件">4&nbsp;&nbsp;<b>元件</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Pod">4.1&nbsp;&nbsp;Pod</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Service">4.2&nbsp;&nbsp;Service</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/kubernetesNote/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/kubernetesNote/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            kubernetes 學習筆記
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-10-20T09:05:06.000Z" itemprop="datePublished">10月 20 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/部署/">部署</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 分钟 讀完 (大概 497 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Kubernetes 的學習筆記, 內容未整理</p>
+<p><br><br><br><br><br></p>
+<h2 id="kubectl"><a href="#kubectl" class="headerlink" title="kubectl"></a>kubectl</h2><h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p><code>create -f FILENAME</code></p>
+<ul>
+<li>建立元件 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create component componentName</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="logs"><a href="#logs" class="headerlink" title="logs"></a>logs</h3><ul>
+<li><p>取得 log</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl logs componentName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取得即時 log<br><code>logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]</code></p>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl logs -f componentName</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h3><p><code>exec (POD | TYPE/NAME) [-c CONTAINER] [flags] -- COMMAND [args...]</code></p>
+<h2 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h2><ul>
+<li><strong>In Kubernetes, 如何列出 pods?</strong> kubectl get pods</li>
+<li><strong>In Kubernetes, 如何暴露一個 deployment, 並建立一個外部的平衡負載?</strong> kubectl expose deployment nginx –port 80 –type LoadBalancer</li>
+<li><strong>In Kubernetes, 如何列出 service？</strong> kubectl get services</li>
+<li><strong>In Kubernetes, Pod 內可以裝幾個容器？</strong> 一個或多個</li>
+<li><strong>In Kubernetes, 什麼元件提供了 namespace?</strong> Pods</li>
+<li><strong>In Kubernetes, 一個 Pod 有幾個 IP?</strong> 一個</li>
+<li><strong>In Kubernetes, 如何利用 YAML 檔案建立一個 pod</strong> kubectl create -f configFile.yaml</li>
+<li><strong>In Kubernetes, 如何取得物件的更多資訊？</strong> kubectl describe component componentName</li>
+<li><strong>In Kubernetes, 假設我本地的 port 為 10080, Pod 的 port 為 80, 如何將兩個連接起來？</strong> kubectl port-forward podName 10080:80</li>
+<li><strong>In Kubernetes, 如何取得 log</strong> kubectl logs [-f] componentName</li>
+<li><strong>In Kubernetes, 如何在容器內開一個 shell?</strong> kubectl exec podName -c containerName -it –stdin /bin/sh</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="元件"><a href="#元件" class="headerlink" title="元件"></a>元件</h2><h3 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h3><p><img src="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no" alt></p>
+<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><p><img src="https://lh3.googleusercontent.com/VcNvBDKr_W_skO3hS7hbWqv3I-WrJVzEcTtqPeBe752obR3dPK3qEYP7AE2IQhG7wpfwYkMILDL4dn5RLFEsgtcLbX--HIs166UeLxdt9PXHYNPtKZKwVn9eIpjf6XUoMRaccAEPapcA-W_SKtz8M74fTxpY8oJa2_tpieSQmXKVjQlIhWEXmS2_KKG-2DO5Ons-V7VWl3pdlbiUA-NBsO8xTuO0_xNX0XxGoPFN8GgiEC0LzN84xyykiyKqgB0OVftSs9ip74a8e0AOFvZhf8r63IdVfoMNk1_vrCrL46ypftzMa-VSGYIHG49wN9qxoeirrvL3WqBC0OhMJqYBMpoSnBz-hCi8cYrjElI1D2ggcVDRNOR73OShPdHU_X--b0brCsXadG6rFIOHEvNA2Fs3G28XRE00QMIpqgvgkKv29mvP6ufbVUxuMV5eD68zdUVxKBTgmm7J3EH1UNdGAXLoNW_49qOKFLdmcEUTf8K5ecRdRMb3F0t2r1h5wcwesHNJGBrSpOHISCCkUIE4Z_Co3FRp4f1mCm9ULAlCN2J1c6b2u1iASnxd8QJwyzZhkaFhrxhoBQHGzbh1fk-ehky-dSulNJDRs3hODditzKe85SeJYGEE3w9smvMfBgtO0V3P5rhM5Hi2ZpQDNfbkMqRIvCGAf0o7H4MTP6zCfiQs-ZGJL27t0BbS5t3mf9l5FCfdqh-5h90MsXF80cRDUOtpi_V-pOkN7Sj5wJ2sG9EcRM86=w960-h540-no" alt></p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Kubernetes/">#GCP Kubernetes</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/deploymentManagerFullProduction/">Deployment Manager - Full Production</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/kubernetesNote/';
+        this.page.identifier = 'zh-tw/kubernetesNote/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
