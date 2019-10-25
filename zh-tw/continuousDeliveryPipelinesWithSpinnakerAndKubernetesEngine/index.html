@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Continuous Delivery Pipelines with Spinnaker and Kubernetes Engine - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
+<meta name="keywords" content="QWIKLABS,Google Kubernetes,Cloud Architecture,GCP Spinnaker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Continuous Delivery Pipelines with Spinnaker and Kubernetes Engine">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/OVHl6v0jbFxu2vDqcTEgfCZsvqInDSZml7NkaVeUn5fZMhWlrr9oqkdJreV6ivPnWboTLhnpyq6k-hu-GBDU9iliEYMGXa9qnbsXkPofYS2he53XnJAJ9C89Mu4U20ans1euDdIkrVlDxTu8IjJJELOqv6mntRAtIdZfMM68aZE_Ip_5lgcPw5sSo2955Tcj49dJD26K_JS1a_44tfwjRLNE0DassqfRoE4mA84WZ0U_LG3kNgKKedvJ3IL0ylpwozGcE6J9p3OI9Wj_0qT9UPZmHVtwdbbDkjMwol5PgyNeWcVKmKfMDVTyl-hch_jxOnUevMGo8VUZRJEW2Hil8-yy0bTLmKFWg_j9-TyTGKnpKf2qVJfse1VCwz0jymUKziwp96zD2LeB8FOWqhqEnPVOsVIhpifnlVTTViy6eTTRAkcqrm_QTtgl7IOk-qSdadePnBXb3xRgAtLbVypTmJT5ooRbCdGm5ldpBX0WMYiFPFDl64CbPklsNEeXUbJoCiNVsE3Z8M581D_A4iwib9cilPWpYmkncepVrsF7fqqnhLxVuP1-6Hxh1vEQIFT1i-ZEHRO9vOZYQWXPqhwcLdd-_zFXwekLdCqqFvA7H-eUABjff-w-3RUBIl8pUu1G4V9GKcUn32LKtipS0R4wj-pO7Z8Q1_TqAIyoVTCsHUMu47jN-dzwCrg9jKUuOPZYEce0vgtaKg8HKk2wYYzTVpdHzgCjhQUr8c-6mVjaLi6PyFMA=w981-h473-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/IilnvaU62AeVzH5onnaYTmxWL5H5PTktIOz4220Hn8nAprO407_qPD01yibweZGjcdR7LE2OcaWjOizItKgs-WKxq2-1YskCbZjmk03b_G0oac7evMXYAwX4l3ZwLntbmq6a7TPMe5RPNSeRW1UOQHLdBek8zOdJ7dLsQ05Nk4ngGDzHkKF7fC9XE-20Gf-5PqKTE3Gjal8Vxaz3TpcgX3b2rY6DVwCD4JT1CMggXgfnCT0LqsG4NKQVSY0k2VP74ndLpLxf4kGZU7w_3ugg2Yp22na9TIV4QON41reaUWZRPlfIsSVJkuU7ry-lojyaKpD6D1aPR76rFSa2nz-549j3bl5otPMXdx8Jr8tuGVSUHDvLr1J9ky212uScvXENu_54jmvjUF3-GELfoFt5vSj9d38YKvXWGxbgGUv9GN7CMNFOhuoY5gc4Dx5oFWIqZlJ-7XMkrMbuOQV57V-TrXVWrLgY_Ene0XZR8E1yIOLl7ee372Mjb__SzISKtUXgtEP6D0ggmkT_dEHmyZVuUD7C3TNDecT3TxExab8AsfwbjJ8tXPX9jXXTmeRy-iHR5tKnmxANrPf5GT1-0_GYZ4JNOhDx2VJW9AVr5_m15xNyb8m5uqk2JSJVIXcSGHVDG90SmABbIXpBWelL5FVK5GK2yzRr7InjCN5tuZS9o8H_vMr2npbkke5kOtBA42PacBS9rQXscU-sZKyaR4kUxCjXY7KbNJqfi90Ynp-JLM8726HG=w194-h115-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/ICyqD4RUxolYLbuA1J4A7GYUVo5Dnh4KD4XrHvShi3CeIfsNaavgaYzO4d4l8MtAMCYCg8P59hANbGnTZeP9ECttrEnxsPAvWaev77HqKQSOYAUAOFKmUdpEyV9mqsibz9gAcuO2iScvVdhzK1mDES49Y8hDTDEYLqP9g-1AP_bvqNDrSLHwcYP5fQiiAv9_wb3wu3fen0ClkSbp5w6RnNtBcCa0kEuVVgkd49SPQvgcMeaDX2nOMnaCGqHTjUn1If9s7TwTJudDehQp9NDvD3M6VAL_CbGLGnd0GyC046Dzw02dQEYT80_PAGEc9HQLrgDro-SBaIBe0KM7XE2lc9g0_ZiyloNLs9zSUMcT-ckVHXhU66yvFrEIgYEk_iUWmF8OwruEpPuHSdsC9vPZoSu2GZhVC-gJlTbRHKbJPopIBLhovN-IoCQKc8wNjCwY_crlw4n4qEnwWIr1r93jda_58wDoWUw84brGW3bn27O0btU_uZ57GsyURX4ako-fJGbMb-CeO3IQBCSrbzKoZjPIEj_hj8_yvdhirVOQeAr7W5RTdvfWvaUL49ZJIKxVLyDeUHa5fgqrOQLjftKDljwc4HQ1g1HybOjYgAEyV6-WfeNNuMNZMSj38F1g0021Y_nhGRxz-I67WF-N1MgETQb_QQTX9LXLHPrLbF8C21LuiQGkq2t5gK-Lg1DMh32f7Fjj7RkqgpkND2GJAKJkonvyGvdbqeR5-RdDggRfYrDquxhZ=w1578-h1010-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/CPyR498aUCCfe2ZiypjUBsInAcJjSPkjS8quIFVeB51Q_fiExZeV8pnYJFC392As0x_gqi7I7SvEQvlbICwLU_qDC1Z6BKMbMwVzXM22RTjVySirhPLfd7P6LslnSJC_m9x-cwzH3bUVzwVGNb2nfD855EHsbXkUnYpHbooWqJc0v--l5VnSucJUB_NZ3-_o6jC_Z1C4i0rReVc_Q1c67WOH82LNtcH2TGqu-CmFKbULmZf-6BFuQORrn3zqX0Fd0Te14UFgNYsrZ7SbVjjyQZjhtbmzhY53TI8pVLNqNrSHTVc18CfX_UvfbYC2syFBRVeqhysREm1HFpRe5D5Cyg-IQgFNaCLvfZDy3QA-2N4gx58CenwiYJXY1cj_7JX_wUkhNwoUsVky0dobRdGJLVX1gD3yAITlJfhYs92OnRik8v7zGEyo4n8VYHcm-VPU5z0z00hwU0dcW0P9FUKZsK5rrMs416HZdAcz5uLbhQWDwGddjQ7ss-tq2I6sCNpkEfjK7bJrA83JXAuxAkVOlrm8uh4HbDbgaJPa2srOfdDFRijzOXApXwVDrNCh2aOlBQOmvg9Msq5MJM1S_j2w27zNUKiOGQQBVzm8ljMRiklZLNTbHJj2mH0D3jtc_-I_VMhegNYwW3oxynOTeZ3M8djt5e6KbXbSeOwyaIWLw61A7Rm_eQT0XLmAIUJqz_Gad5O-aNar7m6NQ7N4THgfz_s8ROmD_QcRScQwu4qAeJ8mUb61=w297-h487-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pvltmB1KBQ44NfSyu00mLo7ck8pFMbqPrHuTjqH-qMyxsz93isnGclYuStT0PBSx89--CPQXjmVbPQ6LSoPupVss7tYRaRajN_ROne1i8ba4KGu8ex9JpExuc6nl9zSqKoeYhHCjE0MQ6o9eZVVDjKrvL0e0xbf99MVIsRibjFDJpHgJz4I6IDmFZ-alpM-1ZCeOBrMAVZFn7wZAYiBn9YOO3cVLce8E8RBpv6HoANqhPtaibW89E6-m8bTaqdPFimT8_4lrpT-yPD3HCyvNyNqYKuN4bR8oCiGZNZxlep-80Lq6o86vTjalCgOnj1R6k15k37JrgoxBrbviRKtK9JL265Cfu2qPcdgpnQEWbwTYdRDPxCx36LI8FH5VTrINtpzsSROgtLT4dxzWLYxQ29JipSHtGdP4guNQcN91Zb-sjujM2V-bkiQTsiqj9QEUk1blvkKLCeTxX74GpX6IUwkDZ69WLVuNjubGn6LpuIixKwgu8uyxO9j-yXmNa9UF51OR8QsS6Pnpewzh5khQ1Q6Hnv_hdST-7McFbplEf6GmoEGrK7WLmSeH-wqLo4VgDiLXUgADGG00kJAMtQbDnW071t1FYpnUvm_hLtzxScGpn_-FduoC2WKmrj2_KYc4gXX4JcsNYOM-XaCzv_sYuslBb7AClYniOm0NIHWvorD2VQqi0MZPMtZCkfMtIENFPwgQRxAs0g-ouOuhdv--GSjkimkrlRIU0xaDOxdLJyrqc9CF=w820-h717-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/D-cGDe6njTaa3QScEBw2tPb8e8LbceTpmxGbH78HZVh6zGQ1iULi2m9Yd1VCzGbRO6NWLyUaD5Bwp46bwJWuv_bCBwpwCBJUAdsoxiq1nm9arlnRjbSVuE04_AFnPa6dOA-L4q-2nxhljrVUUNc7qIco_Zqp_r449SD4V1TC8Q-Q1nJLCr4cf_eLI1GLCU8QjfRr6psyaxHefeKAxmg0BfUx8vVt11r9hHusYl939dzW8ldq6mJHuV1QXDdrG668gG8nO69y-DQHflqd37GDILwNxiYDfIOL8LEMZ37PZgcYZ6Bl-UsYoxUoPmph_je4EsK1gXw0dWOCdQ_FzNImaFFdoVqTACAejRqCLAz_zlqE_OMnt24XBEZGhnCIJQZxeM9u473lY4VEzVWPVtLbblaP8YArI2hxa0_vBz5L-wUVg3y4-Fv-t-1SdTwrtatR7XYIdJiXz2KphBdScSGPntMxOgf-ZK4AdjxD6OXWKAa4IxhxIaKDeqxSPZ7VzWxby_SyJ7LeeJXexoVyOlZ2Lgp36aJB2AlyGcrH7L8KtmWFwXmvP5_LyLWgNar0jpHBzQZQWSybl_w8N68d-tSjwAcV-NGKioliAWB5LyO9h__g9Z8QstRCU3-e9Jg-TDGBREc_0S402YAvJRf8z3lS9tzd1yNPe2EGlejJ_ohf_jUxBA6Edoixe24xn0GG_OP43Dp9jgT6WcWsSLJUR7PTRBNGZmnmVX0I0PiERg4z5QCzcOYf=w981-h187-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/XLykbVfwk_a2G9vV3wxUT24tjl32_r6LHO_jBLiMre4ziMOMBFMlnOxaPfumPTZKGq7fWXjZ8-r53N39xzzLYOKichlWNhllLoDOiFzu4zncxSPCxjrB2kVGMG-5_euaYjOc-mK7RFB5-5JhIHWCD-WmuWGmhs7et3v_qQXBq6x5AFig3Y09uanbGP4uQ2Pqrl0fUYLgv-acjZCCpAEFdzYi8ZB4QtySbSD90JSvvZIRu9LtySdpe668yGTrGClbnzxN1dMFFBRtNHtT6nySJC0umC5uI5CnJx2eXjpTe0WS0gkgewP5XzXWp5sXn2tk-UxEQ9k1uHAEHfOh2b79-8pOGmemNhgoGIwvDWPi0fuwmnVJN0MGQ3zdUBPNhL_SfanHnMc0G6olQw-KSe66hceIImj4PXRONwsC-g28uYBcWIAlG3LQaZIXwEZvoGws-t_AFVfR2tGZ-tJWNzvDolC2upCExmgGqoOxNfeLZ19wg4crBAxE0H2Sxm2PxgDjSVd8s09bOIJw6ljpn-op_nK6vAuWDefdOueIwdNbo-Hg05ozJXKLThkiU2S1gXh07NNu6Qg9WpbmTEN22E8dmVcH8iQEcRIG-FDOdxQw2NXceFTzc6vKBbtKvCgQiaME2CvSZl-2WyRqB0NQ6Xjiiek7RixYGDv-2RHWH0iLHCdqp6Jo_M9oTE8X4_ZIItALXjZX6WgSasQd3N06S9wbeYtF68ccB17B4QO3sjMPgJONVj3-=w753-h452-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/G6gX_6nMoApwNrfuPAhPl21ZOecs0QYiQB5C9XhCxw_Z0XO16uMCAMhIxkiDrTHxBfY8HkBYOaDyZcaiTP5fLS_M_pBBxsxtX7uQh_Cd2Bv1ZbN5RgyK43G71S4Pi-EszNtS4fw54kcI1_3YdnvV6X9l9J4wI2SN2GN8E3kiLDIDwuu-bO2AZChz80FGnFMtujO8rAqbE6MM3-2NuNP3htne-f6BqQIHqCwMeRrqXHMMGLuesryHO-nNwrqDTW0485IF56OoY00eiEjwI2n25622va4EBqBfQS4qCaip1ysiGEl2MEqfV_iDMavTHvlbgZMJXMOh3KwboFjgqHvj7X0uwwdMVBQp-d7WoCLBLHt3FnVplmavsFo4kEQ5gLdAOqZkqLDhT3bGn1eDXukAQQr2X-a10-gwgBO4VQL3wbtcU-IG9B7hzWi7OnLRQ70H2VSn0AbO8XBBUILayMSnTq7OR2v4KE0AR1lpx8v55uOhwr3M7NNdP3ZQXzuXt8Cd96_HcceGkyGoXPXAXEjCHSlsB-DMxDekNmz9dyHp-FidDh1QomOFaO_vQfwMHX5ALNQx1Yc4rcnjUIR2lRGjido0aYLOQCLzw65AwogBWc9BZyQD8uY7RQNIInOTXELFfZ1khDfo2Mhr-DGrl3HWhvpCNmIYbM2w4RPehPZC4yVaoXVi-TCpsGmQGB8OMTUIL0KZitNtNgbvBRWsPzj09XisfpCEZ1aIy95G-orM11SYJi1x=w1212-h1261-no">
+<meta property="og:updated_time" content="2019-10-25T08:07:34.493Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Continuous Delivery Pipelines with Spinnaker and Kubernetes Engine">
+<meta name="twitter:description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
+<meta name="keywords" content="QWIKLABS,Google Kubernetes,Cloud Architecture,GCP Spinnaker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Continuous Delivery Pipelines with Spinnaker and Kubernetes Engine">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/OVHl6v0jbFxu2vDqcTEgfCZsvqInDSZml7NkaVeUn5fZMhWlrr9oqkdJreV6ivPnWboTLhnpyq6k-hu-GBDU9iliEYMGXa9qnbsXkPofYS2he53XnJAJ9C89Mu4U20ans1euDdIkrVlDxTu8IjJJELOqv6mntRAtIdZfMM68aZE_Ip_5lgcPw5sSo2955Tcj49dJD26K_JS1a_44tfwjRLNE0DassqfRoE4mA84WZ0U_LG3kNgKKedvJ3IL0ylpwozGcE6J9p3OI9Wj_0qT9UPZmHVtwdbbDkjMwol5PgyNeWcVKmKfMDVTyl-hch_jxOnUevMGo8VUZRJEW2Hil8-yy0bTLmKFWg_j9-TyTGKnpKf2qVJfse1VCwz0jymUKziwp96zD2LeB8FOWqhqEnPVOsVIhpifnlVTTViy6eTTRAkcqrm_QTtgl7IOk-qSdadePnBXb3xRgAtLbVypTmJT5ooRbCdGm5ldpBX0WMYiFPFDl64CbPklsNEeXUbJoCiNVsE3Z8M581D_A4iwib9cilPWpYmkncepVrsF7fqqnhLxVuP1-6Hxh1vEQIFT1i-ZEHRO9vOZYQWXPqhwcLdd-_zFXwekLdCqqFvA7H-eUABjff-w-3RUBIl8pUu1G4V9GKcUn32LKtipS0R4wj-pO7Z8Q1_TqAIyoVTCsHUMu47jN-dzwCrg9jKUuOPZYEce0vgtaKg8HKk2wYYzTVpdHzgCjhQUr8c-6mVjaLi6PyFMA=w981-h473-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/IilnvaU62AeVzH5onnaYTmxWL5H5PTktIOz4220Hn8nAprO407_qPD01yibweZGjcdR7LE2OcaWjOizItKgs-WKxq2-1YskCbZjmk03b_G0oac7evMXYAwX4l3ZwLntbmq6a7TPMe5RPNSeRW1UOQHLdBek8zOdJ7dLsQ05Nk4ngGDzHkKF7fC9XE-20Gf-5PqKTE3Gjal8Vxaz3TpcgX3b2rY6DVwCD4JT1CMggXgfnCT0LqsG4NKQVSY0k2VP74ndLpLxf4kGZU7w_3ugg2Yp22na9TIV4QON41reaUWZRPlfIsSVJkuU7ry-lojyaKpD6D1aPR76rFSa2nz-549j3bl5otPMXdx8Jr8tuGVSUHDvLr1J9ky212uScvXENu_54jmvjUF3-GELfoFt5vSj9d38YKvXWGxbgGUv9GN7CMNFOhuoY5gc4Dx5oFWIqZlJ-7XMkrMbuOQV57V-TrXVWrLgY_Ene0XZR8E1yIOLl7ee372Mjb__SzISKtUXgtEP6D0ggmkT_dEHmyZVuUD7C3TNDecT3TxExab8AsfwbjJ8tXPX9jXXTmeRy-iHR5tKnmxANrPf5GT1-0_GYZ4JNOhDx2VJW9AVr5_m15xNyb8m5uqk2JSJVIXcSGHVDG90SmABbIXpBWelL5FVK5GK2yzRr7InjCN5tuZS9o8H_vMr2npbkke5kOtBA42PacBS9rQXscU-sZKyaR4kUxCjXY7KbNJqfi90Ynp-JLM8726HG=w194-h115-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/ICyqD4RUxolYLbuA1J4A7GYUVo5Dnh4KD4XrHvShi3CeIfsNaavgaYzO4d4l8MtAMCYCg8P59hANbGnTZeP9ECttrEnxsPAvWaev77HqKQSOYAUAOFKmUdpEyV9mqsibz9gAcuO2iScvVdhzK1mDES49Y8hDTDEYLqP9g-1AP_bvqNDrSLHwcYP5fQiiAv9_wb3wu3fen0ClkSbp5w6RnNtBcCa0kEuVVgkd49SPQvgcMeaDX2nOMnaCGqHTjUn1If9s7TwTJudDehQp9NDvD3M6VAL_CbGLGnd0GyC046Dzw02dQEYT80_PAGEc9HQLrgDro-SBaIBe0KM7XE2lc9g0_ZiyloNLs9zSUMcT-ckVHXhU66yvFrEIgYEk_iUWmF8OwruEpPuHSdsC9vPZoSu2GZhVC-gJlTbRHKbJPopIBLhovN-IoCQKc8wNjCwY_crlw4n4qEnwWIr1r93jda_58wDoWUw84brGW3bn27O0btU_uZ57GsyURX4ako-fJGbMb-CeO3IQBCSrbzKoZjPIEj_hj8_yvdhirVOQeAr7W5RTdvfWvaUL49ZJIKxVLyDeUHa5fgqrOQLjftKDljwc4HQ1g1HybOjYgAEyV6-WfeNNuMNZMSj38F1g0021Y_nhGRxz-I67WF-N1MgETQb_QQTX9LXLHPrLbF8C21LuiQGkq2t5gK-Lg1DMh32f7Fjj7RkqgpkND2GJAKJkonvyGvdbqeR5-RdDggRfYrDquxhZ=w1578-h1010-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/CPyR498aUCCfe2ZiypjUBsInAcJjSPkjS8quIFVeB51Q_fiExZeV8pnYJFC392As0x_gqi7I7SvEQvlbICwLU_qDC1Z6BKMbMwVzXM22RTjVySirhPLfd7P6LslnSJC_m9x-cwzH3bUVzwVGNb2nfD855EHsbXkUnYpHbooWqJc0v--l5VnSucJUB_NZ3-_o6jC_Z1C4i0rReVc_Q1c67WOH82LNtcH2TGqu-CmFKbULmZf-6BFuQORrn3zqX0Fd0Te14UFgNYsrZ7SbVjjyQZjhtbmzhY53TI8pVLNqNrSHTVc18CfX_UvfbYC2syFBRVeqhysREm1HFpRe5D5Cyg-IQgFNaCLvfZDy3QA-2N4gx58CenwiYJXY1cj_7JX_wUkhNwoUsVky0dobRdGJLVX1gD3yAITlJfhYs92OnRik8v7zGEyo4n8VYHcm-VPU5z0z00hwU0dcW0P9FUKZsK5rrMs416HZdAcz5uLbhQWDwGddjQ7ss-tq2I6sCNpkEfjK7bJrA83JXAuxAkVOlrm8uh4HbDbgaJPa2srOfdDFRijzOXApXwVDrNCh2aOlBQOmvg9Msq5MJM1S_j2w27zNUKiOGQQBVzm8ljMRiklZLNTbHJj2mH0D3jtc_-I_VMhegNYwW3oxynOTeZ3M8djt5e6KbXbSeOwyaIWLw61A7Rm_eQT0XLmAIUJqz_Gad5O-aNar7m6NQ7N4THgfz_s8ROmD_QcRScQwu4qAeJ8mUb61=w297-h487-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pvltmB1KBQ44NfSyu00mLo7ck8pFMbqPrHuTjqH-qMyxsz93isnGclYuStT0PBSx89--CPQXjmVbPQ6LSoPupVss7tYRaRajN_ROne1i8ba4KGu8ex9JpExuc6nl9zSqKoeYhHCjE0MQ6o9eZVVDjKrvL0e0xbf99MVIsRibjFDJpHgJz4I6IDmFZ-alpM-1ZCeOBrMAVZFn7wZAYiBn9YOO3cVLce8E8RBpv6HoANqhPtaibW89E6-m8bTaqdPFimT8_4lrpT-yPD3HCyvNyNqYKuN4bR8oCiGZNZxlep-80Lq6o86vTjalCgOnj1R6k15k37JrgoxBrbviRKtK9JL265Cfu2qPcdgpnQEWbwTYdRDPxCx36LI8FH5VTrINtpzsSROgtLT4dxzWLYxQ29JipSHtGdP4guNQcN91Zb-sjujM2V-bkiQTsiqj9QEUk1blvkKLCeTxX74GpX6IUwkDZ69WLVuNjubGn6LpuIixKwgu8uyxO9j-yXmNa9UF51OR8QsS6Pnpewzh5khQ1Q6Hnv_hdST-7McFbplEf6GmoEGrK7WLmSeH-wqLo4VgDiLXUgADGG00kJAMtQbDnW071t1FYpnUvm_hLtzxScGpn_-FduoC2WKmrj2_KYc4gXX4JcsNYOM-XaCzv_sYuslBb7AClYniOm0NIHWvorD2VQqi0MZPMtZCkfMtIENFPwgQRxAs0g-ouOuhdv--GSjkimkrlRIU0xaDOxdLJyrqc9CF=w820-h717-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/D-cGDe6njTaa3QScEBw2tPb8e8LbceTpmxGbH78HZVh6zGQ1iULi2m9Yd1VCzGbRO6NWLyUaD5Bwp46bwJWuv_bCBwpwCBJUAdsoxiq1nm9arlnRjbSVuE04_AFnPa6dOA-L4q-2nxhljrVUUNc7qIco_Zqp_r449SD4V1TC8Q-Q1nJLCr4cf_eLI1GLCU8QjfRr6psyaxHefeKAxmg0BfUx8vVt11r9hHusYl939dzW8ldq6mJHuV1QXDdrG668gG8nO69y-DQHflqd37GDILwNxiYDfIOL8LEMZ37PZgcYZ6Bl-UsYoxUoPmph_je4EsK1gXw0dWOCdQ_FzNImaFFdoVqTACAejRqCLAz_zlqE_OMnt24XBEZGhnCIJQZxeM9u473lY4VEzVWPVtLbblaP8YArI2hxa0_vBz5L-wUVg3y4-Fv-t-1SdTwrtatR7XYIdJiXz2KphBdScSGPntMxOgf-ZK4AdjxD6OXWKAa4IxhxIaKDeqxSPZ7VzWxby_SyJ7LeeJXexoVyOlZ2Lgp36aJB2AlyGcrH7L8KtmWFwXmvP5_LyLWgNar0jpHBzQZQWSybl_w8N68d-tSjwAcV-NGKioliAWB5LyO9h__g9Z8QstRCU3-e9Jg-TDGBREc_0S402YAvJRf8z3lS9tzd1yNPe2EGlejJ_ohf_jUxBA6Edoixe24xn0GG_OP43Dp9jgT6WcWsSLJUR7PTRBNGZmnmVX0I0PiERg4z5QCzcOYf=w981-h187-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/XLykbVfwk_a2G9vV3wxUT24tjl32_r6LHO_jBLiMre4ziMOMBFMlnOxaPfumPTZKGq7fWXjZ8-r53N39xzzLYOKichlWNhllLoDOiFzu4zncxSPCxjrB2kVGMG-5_euaYjOc-mK7RFB5-5JhIHWCD-WmuWGmhs7et3v_qQXBq6x5AFig3Y09uanbGP4uQ2Pqrl0fUYLgv-acjZCCpAEFdzYi8ZB4QtySbSD90JSvvZIRu9LtySdpe668yGTrGClbnzxN1dMFFBRtNHtT6nySJC0umC5uI5CnJx2eXjpTe0WS0gkgewP5XzXWp5sXn2tk-UxEQ9k1uHAEHfOh2b79-8pOGmemNhgoGIwvDWPi0fuwmnVJN0MGQ3zdUBPNhL_SfanHnMc0G6olQw-KSe66hceIImj4PXRONwsC-g28uYBcWIAlG3LQaZIXwEZvoGws-t_AFVfR2tGZ-tJWNzvDolC2upCExmgGqoOxNfeLZ19wg4crBAxE0H2Sxm2PxgDjSVd8s09bOIJw6ljpn-op_nK6vAuWDefdOueIwdNbo-Hg05ozJXKLThkiU2S1gXh07NNu6Qg9WpbmTEN22E8dmVcH8iQEcRIG-FDOdxQw2NXceFTzc6vKBbtKvCgQiaME2CvSZl-2WyRqB0NQ6Xjiiek7RixYGDv-2RHWH0iLHCdqp6Jo_M9oTE8X4_ZIItALXjZX6WgSasQd3N06S9wbeYtF68ccB17B4QO3sjMPgJONVj3-=w753-h452-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/G6gX_6nMoApwNrfuPAhPl21ZOecs0QYiQB5C9XhCxw_Z0XO16uMCAMhIxkiDrTHxBfY8HkBYOaDyZcaiTP5fLS_M_pBBxsxtX7uQh_Cd2Bv1ZbN5RgyK43G71S4Pi-EszNtS4fw54kcI1_3YdnvV6X9l9J4wI2SN2GN8E3kiLDIDwuu-bO2AZChz80FGnFMtujO8rAqbE6MM3-2NuNP3htne-f6BqQIHqCwMeRrqXHMMGLuesryHO-nNwrqDTW0485IF56OoY00eiEjwI2n25622va4EBqBfQS4qCaip1ysiGEl2MEqfV_iDMavTHvlbgZMJXMOh3KwboFjgqHvj7X0uwwdMVBQp-d7WoCLBLHt3FnVplmavsFo4kEQ5gLdAOqZkqLDhT3bGn1eDXukAQQr2X-a10-gwgBO4VQL3wbtcU-IG9B7hzWi7OnLRQ70H2VSn0AbO8XBBUILayMSnTq7OR2v4KE0AR1lpx8v55uOhwr3M7NNdP3ZQXzuXt8Cd96_HcceGkyGoXPXAXEjCHSlsB-DMxDekNmz9dyHp-FidDh1QomOFaO_vQfwMHX5ALNQx1Yc4rcnjUIR2lRGjido0aYLOQCLzw65AwogBWc9BZyQD8uY7RQNIInOTXELFfZ1khDfo2Mhr-DGrl3HWhvpCNmIYbM2w4RPehPZC4yVaoXVi-TCpsGmQGB8OMTUIL0KZitNtNgbvBRWsPzj09XisfpCEZ1aIy95G-orM11SYJi1x=w1212-h1261-no">
+<meta property="og:updated_time" content="2019-10-25T08:07:34.493Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Continuous Delivery Pipelines with Spinnaker and Kubernetes Engine">
+<meta name="twitter:description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray 的技術捲軸
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#目標">2&nbsp;&nbsp;<b>目標</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#管道結構">3&nbsp;&nbsp;<b>管道結構</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#應用交付管道">3.1&nbsp;&nbsp;應用交付管道</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#前言">4&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">5&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-Google-Cloud-Shell">5.1&nbsp;&nbsp;啟動 Google Cloud Shell</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定環境">6&nbsp;&nbsp;<b>設定環境</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定身份以及存取管理">6.1&nbsp;&nbsp;設定身份以及存取管理</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定-Cloud-Pub-Sub-來觸發-Spinnaker-管道">7&nbsp;&nbsp;<b>設定 Cloud Pub/Sub 來觸發 Spinnaker 管道</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度">7.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用-Helm-部署-Spinnaker">8&nbsp;&nbsp;<b>使用 Helm 部署 Spinnaker</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-Helm">8.1&nbsp;&nbsp;安裝 Helm</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定-Spinnaker">8.2&nbsp;&nbsp;設定 Spinnaker</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#部署-Spinnaker-chart">8.3&nbsp;&nbsp;部署 Spinnaker chart</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度-1">8.4&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立-Docker-鏡像">9&nbsp;&nbsp;<b>建立 Docker 鏡像</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立源碼倉庫">9.1&nbsp;&nbsp;建立源碼倉庫</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定建立觸發者">9.2&nbsp;&nbsp;設定建立觸發者</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#準備將使用在-Spinnaker-的-Kubernetes-Manifests">9.3&nbsp;&nbsp;準備將使用在 Spinnaker 的 Kubernetes Manifests</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Continuous Delivery Pipelines with Spinnaker and Kubernetes Engine
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-10-20T02:46:40.000Z" itemprop="datePublished">10月 20 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            34 分钟 讀完 (大概 5170 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。<br>當你修改了應用的程式碼, 這個變更會觸發持續交付管道, 使用新的版本來重新建立, 測試, 以及部署。</p>
+<p><br><br><br><br><br></p>
+<h2 id="目標"><a href="#目標" class="headerlink" title="目標"></a>目標</h2><ul>
+<li>藉由啟動 <a href="https://cloud.google.com/shell/" target="_blank" rel="noopener">Google Cloud Shell</a> 來設定你的環境, 在裡面建立 Kubernetes Engine 叢集, 設定你的身份以及使用者管理方案</li>
+<li>下載範例應用, 建立一個 Git 倉庫, 然後上傳到 Google Cloud Source Repository</li>
+<li>使用 <a href="https://github.com/kubernetes/helm" target="_blank" rel="noopener">Helm</a> 將 Spinnaker 部署到 Kubernetes Engine</li>
+<li>建立你的 Docker 鏡像</li>
+<li>建立觸發者, 當你的應用變更時, 會建立 Docker 鏡像</li>
+<li>設定 Spinnaker 管道來可靠的, 持續地將應用部署到 Kubernetes Engine</li>
+<li>部署一個變更過的程式碼, 觸發管道, 然後檢視滾動更新到正式環境的過程</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="管道結構"><a href="#管道結構" class="headerlink" title="管道結構"></a>管道結構</h2><p>你需要一個能夠可靠的建立, 測試, 以及更新軟體的自動化的程序來持續地將你的應用更新到使用者手上。 程式碼變更需要全自動化的經由一個管道, 這個管道包含成品建立, 單元測試, 功能測試, 以及正式環境部署。<br>在某些情況下, 你會想要一個程式碼更新只作用到某部分的用戶, 這樣一來, 這個更新就可以在應用到所有用戶之前實際的先跑過了一次。 如果其中一個 <a href="https://martinfowler.com/bliki/CanaryRelease.html" target="_blank" rel="noopener">canary</a> 發佈確定不太適合, 你的自動化程序必須要能夠很快的將它回復到更新前的版本。</p>
+<p><img src="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no" alt></p>
+<p>使用 Kubernetes Engine 以及 Spinnaker, 你可以建立一個可信賴的持續交付流程, 這個流程可以幫你確保你的軟體在開發以及核對之後, 可正確的被交付。 儘管快速部署是我們的最終目標, 但在更新的版次成為正式環境的選項之一之前, 我們必須確保它通過了所有的自動化驗證。 當更新通過了所有的自動化驗證, 你也可以再進行手動驗證, 以及更進一步的實施發布前的測試。</p>
+<p>在你的團隊確定這個應用已經可以上正式環境了, 團隊中的其中一個成員可以手動核准這次的正式環境部署。</p>
+<p><br></p>
+<h3 id="應用交付管道"><a href="#應用交付管道" class="headerlink" title="應用交付管道"></a>應用交付管道</h3><p>在本教程中, 你將建立一個如下圖般的持續交付管道</p>
+<p><img src="https://lh3.googleusercontent.com/OVHl6v0jbFxu2vDqcTEgfCZsvqInDSZml7NkaVeUn5fZMhWlrr9oqkdJreV6ivPnWboTLhnpyq6k-hu-GBDU9iliEYMGXa9qnbsXkPofYS2he53XnJAJ9C89Mu4U20ans1euDdIkrVlDxTu8IjJJELOqv6mntRAtIdZfMM68aZE_Ip_5lgcPw5sSo2955Tcj49dJD26K_JS1a_44tfwjRLNE0DassqfRoE4mA84WZ0U_LG3kNgKKedvJ3IL0ylpwozGcE6J9p3OI9Wj_0qT9UPZmHVtwdbbDkjMwol5PgyNeWcVKmKfMDVTyl-hch_jxOnUevMGo8VUZRJEW2Hil8-yy0bTLmKFWg_j9-TyTGKnpKf2qVJfse1VCwz0jymUKziwp96zD2LeB8FOWqhqEnPVOsVIhpifnlVTTViy6eTTRAkcqrm_QTtgl7IOk-qSdadePnBXb3xRgAtLbVypTmJT5ooRbCdGm5ldpBX0WMYiFPFDl64CbPklsNEeXUbJoCiNVsE3Z8M581D_A4iwib9cilPWpYmkncepVrsF7fqqnhLxVuP1-6Hxh1vEQIFT1i-ZEHRO9vOZYQWXPqhwcLdd-_zFXwekLdCqqFvA7H-eUABjff-w-3RUBIl8pUu1G4V9GKcUn32LKtipS0R4wj-pO7Z8Q1_TqAIyoVTCsHUMu47jN-dzwCrg9jKUuOPZYEce0vgtaKg8HKk2wYYzTVpdHzgCjhQUr8c-6mVjaLi6PyFMA=w981-h473-no" alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+<p><br><br><br><br><br></p>
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
+<p>詳讀所有的教學。 Labs 是有時間限制的, 而且你不可以停止時間倒數。 倒數計時器在你按下 Start Lab 按鈕後開始倒數, 上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Qwiklabs 的手把手環境, 讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程, 而不是在一個模擬或是展示的環境。 我們透過提供你一個全新的、暫時的帳號密碼, 在計時器歸零之前, 你可以用來登入並存取 Google Cloud Platform。</p>
+<p><strong>你需要什麼？</strong></p>
+<p>要完成這個 lab, 你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><strong>備註：</strong> 如果你已經有你自己的個人 GCP 帳號或專案,請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台, 然後開啟命令列工具</p>
+<p><strong>如何開始你的 lab, 然後登入 Console?</strong></p>
+<ol>
+<li>按下 <b>Start Lab</b> 按鈕。 如果你需要付費, 會有一個彈出視窗來讓你選擇付費的方式。 在左方你會看到一個面板, 上面有暫時的帳號密碼, 你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<ol start="2">
+<li>複製 <code>username</code>, 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗, 顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p><strong>tip:</strong> 開啟一個全新的視窗,然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<ol start="4">
+<li>登入頁面開啟, 貼上之前複製的 <code>username</code> 以及 <code>password</code>, 然後貼上</li>
+</ol>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼,不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號, 請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受 <code>terms</code> 以及 <code>conditions</code></li>
+<li>不要增加 <code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候, GCP 控制台將會在這個視窗開啟。</p>
+<div style="padding:0px 14px 0px 14px; margin:0px 0px; background-color:rgba(26,115,232,0.08)"><br><font size="2px"><br><strong>注意：</strong> 按下左上方位於 <code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code>, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務<br><br><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt><br></font><br></div>
+
+<p><br></p>
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。 它提供了5GB的 home 資料夾, 並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code>, 右上的工具列,點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<ol start="2">
+<li>在打開的對話框裡, 按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。 當你連結成功, 這代表你已成功獲得授權, 且此專案已被設為你的專案ID, 例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具, 他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command, 你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+<p>輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+<p>範例輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+<p>輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<p><br><br><br><br><br></p>
+<h2 id="設定環境"><a href="#設定環境" class="headerlink" title="設定環境"></a>設定環境</h2><p>設定本教程中需要的基礎設施以及身份。 首先, 你將建立 Kubernetes Engine 叢集來部署 Spinnaker 以及範例應用</p>
+<ul>
+<li><p>設定預設 zone</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/zone us-central1<span class="hljs-_">-f</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 Spinnaker 教學範例, 建立一個 Kubernetes Engine</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters create spinnaker-tutorial \</span><br><span class="line">    --machine-type=n1-standard-2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>這個部署將會耗費 <strong>5 到 10 分鐘</strong>。 你可能會看到一個預設範圍的警告, 你可以忽略他們, 因為對本教程沒有影響。 等待部署完成。</p>
+<p>完成之後, 你會看到一些細節資訊, 像是名稱, 地區, 版本, ip-address, 機器類型, node 版本, node 數量, 以及叢集的狀態顯示該叢集已經處於運行中</p>
+<p><br></p>
+<h3 id="設定身份以及存取管理"><a href="#設定身份以及存取管理" class="headerlink" title="設定身份以及存取管理"></a>設定身份以及存取管理</h3><p>建立一個 Cloud Identity Access Management (Cloud IAM) <a href="https://cloud.google.com/iam/docs/service-accounts" target="_blank" rel="noopener">service account</a> 來賦予 Spinnaker 權限, 允許它可以將資料存到 Cloud Storage 。 Spinnaker 將管道資料儲存到 Cloud Storage 以確保可靠度以及復原能力。 如果你的 Spinnaker 部署無預期的失敗了, 你可以利用存取相同管道內的資料, 在幾分鐘內建立一個相同的部署。</p>
+<p>經由以下步驟來上傳啟動腳本到 Cloud Storage</p>
+<ul>
+<li>建立 service account:</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam service-accounts create spinnaker-account \</span><br><span class="line">-- display-name spinnaker-account</span><br></pre></td></tr></table></figure>
+<ul>
+<li>將 service account 的 email 以及目前的專案 ID 存到環境變數, 之後的指令會用到</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> SA_EMAIL=$(gcloud iam service-account list \</span><br><span class="line">--filter=<span class="hljs-string">"displayName:spinnaker-account"</span> \</span><br><span class="line">--format=<span class="hljs-string">'value(email)'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> PROJECT=$(gcloud info --format=<span class="hljs-string">'value(config.project)'</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>賦予 service account <code>storage.admin</code> 的角色</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud projects add-iam-policy-binding <span class="hljs-variable">$PROJECT</span> \</span><br><span class="line">--role roles/storage.admin \</span><br><span class="line">--member serviceAccount:<span class="hljs-variable">$SA_EMAIL</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>下載 service account 的 key 。 在之後的步驟, 你將會安裝 Spinnaker 以及上傳這個 key 到 Kubernetes Engine:</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam service-accounts keys create spinnaker-sa.json \</span><br><span class="line">--iam-account <span class="hljs-variable">$SA_EMAIL</span></span><br></pre></td></tr></table></figure>
+<p>(輸出)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">created key [12f224e036437704b91a571792462ca6fc4cd438] of <span class="hljs-built_in">type</span> [json] as [spinnaker-sa.json] <span class="hljs-keyword">for</span> [spinnaker-account@qwiklabs-gcp-gcpd-f5e16da10e5d.iam.gserviceaccount.com]</span><br></pre></td></tr></table></figure>
+<p><br><br><br><br><br></p>
+<h2 id="設定-Cloud-Pub-Sub-來觸發-Spinnaker-管道"><a href="#設定-Cloud-Pub-Sub-來觸發-Spinnaker-管道" class="headerlink" title="設定 Cloud Pub/Sub 來觸發 Spinnaker 管道"></a>設定 Cloud Pub/Sub 來觸發 Spinnaker 管道</h2><ul>
+<li>建立 Cloud Pub/Sub 主題來接收 Container Registry 的通知</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud pubsub topics create projects/<span class="hljs-variable">$PROJECT</span>/topics/gcr</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>建立一個訂閱, 所以 Spinnaker 可以讀取並接收到鏡像已被推送的通知</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud pubsub subscriptions create gcr-triggers \</span><br><span class="line">-- topic projects/<span class="hljs-variable">$&#123;PROJECT&#125;</span>topics/gcr</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>給予 Spinnaker 的 service account 權限, 所以它可以讀取 gcr-triggers 的訂閱</p>
+</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> SA_EMAIL=$(gcloud iam service-accounts list \</span><br><span class="line">--filter=<span class="hljs-string">"displayName:spinnaker-account"</span> \</span><br><span class="line">--format=<span class="hljs-string">'value(email)'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud beta pubsub subscriptions add-iam-policy-binding gcr-triggers \</span><br><span class="line">    --role roles/pubsub.subscriber --member serviceAccount:<span class="hljs-variable">$SA_EMAIL</span></span><br></pre></td></tr></table></figure>
+<h3 id="測試進度"><a href="#測試進度" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經完成環境設定，你將獲得一個評價分數。</p>
+<p><img src alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="使用-Helm-部署-Spinnaker"><a href="#使用-Helm-部署-Spinnaker" class="headerlink" title="使用 Helm 部署 Spinnaker"></a>使用 Helm 部署 Spinnaker</h2><p>在本節中, 你會使用 <a href="https://github.com/kubernetes/helm" target="_blank" rel="noopener">Helm</a> 從 <a href="https://github.com/kubernetes/charts" target="_blank" rel="noopener">Charts</a> 倉庫來部署 Spinnaker 。 Helm 是一個套件管理器, 你可以用它來設定以及部署 <a href="http://kubeapps.com/" target="_blank" rel="noopener">Kubernetes applications</a></p>
+<p><br></p>
+<h3 id="安裝-Helm"><a href="#安裝-Helm" class="headerlink" title="安裝 Helm"></a>安裝 Helm</h3><ul>
+<li>下載以及安裝 <code>helm</code> 二進制檔</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">wget https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>解壓縮到本地系統</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">tar zxfv helm-v2.10.0-linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cp linux-amd64/helm .</span><br></pre></td></tr></table></figure>
+<p>給予 Tiller 在叢集中 cluster-admin role 的權限, Tiller 是 Helm 的伺服器端</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrolebinding user-admin-binding \</span><br><span class="line">--clusterrole=cluster-admin --user=$(gcloud config get-value account)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create serviceaccount tiller \</span><br><span class="line">--namespace kube-system</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrolebinding tiller-admin-binding \</span><br><span class="line">--clusterrole=cluster-admin --serviceaccount=kube-system:tiller</span><br></pre></td></tr></table></figure>
+<ul>
+<li>賦予 Spinnaker <code>cluster-admin</code> 的權限, 所以 Spinnaker 可以部署資源到所有的命名空間上</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrolebinding --clusterrole=cluster-admin \</span><br><span class="line">--serviceaccount=default:default spinnaker-admin</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安裝 Helm 以及 Tiller 到叢集, Tiller 是 Helm 的 Server 端</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">./heml init --service-account=tiller</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">./heml repo update</span><br></pre></td></tr></table></figure>
+<ul>
+<li>輸入以下指令, 確定 Helm 已經正確安裝了。 如果 Helm 安裝正確, client 端及 server 端都會輸出 v2.10.0</li>
+</ul>
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Client: &amp;version.Version&#123;SemVer:&quot;v2.10.0&quot;, GitCommit:&quot;618447cbf203d147601b4b9bd7f8c37a5d39fbb4&quot;, GitTreeState:&quot;clean&quot;&#125;</span><br><span class="line">Server: &amp;version.Version&#123;SemVer:&quot;v2.10.0&quot;, GitCommit:&quot;618447cbf203d147601b4b9bd7f8c37a5d39fbb4&quot;, GitTreeState:&quot;clean&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="設定-Spinnaker"><a href="#設定-Spinnaker" class="headerlink" title="設定 Spinnaker"></a>設定 Spinnaker</h3><ul>
+<li>還是在 Cloud Shell, 建立一個儲存區讓 Spinnaker 可以儲存管道設定資料</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> PROJECT=$(gcloud info \</span><br><span class="line">--format=<span class="hljs-string">'value(config.project)'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> BUCKET=<span class="hljs-variable">$PROJECT</span>-spinnaker-config</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil mb -c regional -l us-central1 gs://<span class="hljs-variable">$BUCKET</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>輸入以下指令來建立 <code>spinnaker-config.yaml</code> 檔, 該檔告訴 Helm 該如何安裝 Spinnaker</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> SA_JSON=$(cat spinnaker-sa.json)</span><br><span class="line"><span class="hljs-built_in">export</span> PROJECT=$(gcloud info --format=<span class="hljs-string">'value(config.project)'</span>)</span><br><span class="line"><span class="hljs-built_in">export</span> BUCKET=<span class="hljs-variable">$PROJECT</span>-spinnaker-config</span><br><span class="line">cat &gt; spinnaker-config.yaml &lt;&lt;EOF</span><br><span class="line">gcs:</span><br><span class="line">  enabled: <span class="hljs-literal">true</span></span><br><span class="line">  bucket: <span class="hljs-variable">$BUCKET</span></span><br><span class="line">  project: <span class="hljs-variable">$PROJECT</span></span><br><span class="line">  jsonKey: <span class="hljs-string">'$SA_JSON'</span></span><br><span class="line"></span><br><span class="line">dockerRegistries:</span><br><span class="line">- name: gcr</span><br><span class="line">  address: https://gcr.io</span><br><span class="line">  username: _json_key</span><br><span class="line">  password: <span class="hljs-string">'$SA_JSON'</span></span><br><span class="line">  email: 1234@5678.com</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Disable minio as the default storage backend</span></span><br><span class="line">minio:</span><br><span class="line">  enabled: <span class="hljs-literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Configure Spinnaker to enable GCP services</span></span><br><span class="line">halyard:</span><br><span class="line">  spinnakerVersion: 1.10.2</span><br><span class="line">  image:</span><br><span class="line">    tag: 1.12.0</span><br><span class="line">  additionalScripts:</span><br><span class="line">    create: <span class="hljs-literal">true</span></span><br><span class="line">    data:</span><br><span class="line">      enable_gcs_artifacts.sh: |-</span><br><span class="line">        \<span class="hljs-variable">$HAL_COMMAND</span> config artifact gcs account add gcs-<span class="hljs-variable">$PROJECT</span> --json-path /opt/gcs/key.json</span><br><span class="line">        \<span class="hljs-variable">$HAL_COMMAND</span> config artifact gcs <span class="hljs-built_in">enable</span></span><br><span class="line">      enable_pubsub_triggers.sh: |-</span><br><span class="line">        \<span class="hljs-variable">$HAL_COMMAND</span> config pubsub google <span class="hljs-built_in">enable</span></span><br><span class="line">        \<span class="hljs-variable">$HAL_COMMAND</span> config pubsub google subscription add gcr-triggers \</span><br><span class="line">          --subscription-name gcr-triggers \</span><br><span class="line">          --json-path /opt/gcs/key.json \</span><br><span class="line">          --project <span class="hljs-variable">$PROJECT</span> \</span><br><span class="line">          --message-format GCR</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="部署-Spinnaker-chart"><a href="#部署-Spinnaker-chart" class="headerlink" title="部署 Spinnaker chart"></a>部署 Spinnaker chart</h3><ul>
+<li>使用 Helm 命令列介面, 用設定檔來部署 chart</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">./helm install -n <span class="hljs-built_in">cd</span> stable/spinnaker -f spinnaker-config.yaml \</span><br><span class="line">--timeout 600 --version 1.1.6 --<span class="hljs-built_in">wait</span></span><br></pre></td></tr></table></figure>
+<p>這個指令大概會需要 <strong>5~6 分鐘</strong> 完成</p>
+<ul>
+<li>在指令完成後, 輸入以下指令來設定從 Cloud Shell 到 Spinnaker 的 port 轉發規則</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DECK_POD=$(kubectl get pods --namespace default -l <span class="hljs-string">"cluster=spin-deck"</span> \</span><br><span class="line">-o jsonpath=<span class="hljs-string">"&#123;.items[0].metadata.name&#125;"</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl port-forward --namespace default <span class="hljs-variable">$DECK_POD</span> 8080:9000 &gt;&gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+<p>這個指令會花好幾分鐘完成。 再繼續之前, 確認他已經完成了。</p>
+<ul>
+<li>點擊 Cloud shell 視窗上方的 <strong>Web Preview</strong> 圖案, 並選擇 <strong>Preview on port 8080</strong> 來打開 Spinnaker 使用者介面</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/IilnvaU62AeVzH5onnaYTmxWL5H5PTktIOz4220Hn8nAprO407_qPD01yibweZGjcdR7LE2OcaWjOizItKgs-WKxq2-1YskCbZjmk03b_G0oac7evMXYAwX4l3ZwLntbmq6a7TPMe5RPNSeRW1UOQHLdBek8zOdJ7dLsQ05Nk4ngGDzHkKF7fC9XE-20Gf-5PqKTE3Gjal8Vxaz3TpcgX3b2rY6DVwCD4JT1CMggXgfnCT0LqsG4NKQVSY0k2VP74ndLpLxf4kGZU7w_3ugg2Yp22na9TIV4QON41reaUWZRPlfIsSVJkuU7ry-lojyaKpD6D1aPR76rFSa2nz-549j3bl5otPMXdx8Jr8tuGVSUHDvLr1J9ky212uScvXENu_54jmvjUF3-GELfoFt5vSj9d38YKvXWGxbgGUv9GN7CMNFOhuoY5gc4Dx5oFWIqZlJ-7XMkrMbuOQV57V-TrXVWrLgY_Ene0XZR8E1yIOLl7ee372Mjb__SzISKtUXgtEP6D0ggmkT_dEHmyZVuUD7C3TNDecT3TxExab8AsfwbjJ8tXPX9jXXTmeRy-iHR5tKnmxANrPf5GT1-0_GYZ4JNOhDx2VJW9AVr5_m15xNyb8m5uqk2JSJVIXcSGHVDG90SmABbIXpBWelL5FVK5GK2yzRr7InjCN5tuZS9o8H_vMr2npbkke5kOtBA42PacBS9rQXscU-sZKyaR4kUxCjXY7KbNJqfi90Ynp-JLM8726HG=w194-h115-no" alt></p>
+<p>會先看到歡迎畫面, 然後是 Spinnaker 使用者介面</p>
+<p><img src="https://lh3.googleusercontent.com/ICyqD4RUxolYLbuA1J4A7GYUVo5Dnh4KD4XrHvShi3CeIfsNaavgaYzO4d4l8MtAMCYCg8P59hANbGnTZeP9ECttrEnxsPAvWaev77HqKQSOYAUAOFKmUdpEyV9mqsibz9gAcuO2iScvVdhzK1mDES49Y8hDTDEYLqP9g-1AP_bvqNDrSLHwcYP5fQiiAv9_wb3wu3fen0ClkSbp5w6RnNtBcCa0kEuVVgkd49SPQvgcMeaDX2nOMnaCGqHTjUn1If9s7TwTJudDehQp9NDvD3M6VAL_CbGLGnd0GyC046Dzw02dQEYT80_PAGEc9HQLrgDro-SBaIBe0KM7XE2lc9g0_ZiyloNLs9zSUMcT-ckVHXhU66yvFrEIgYEk_iUWmF8OwruEpPuHSdsC9vPZoSu2GZhVC-gJlTbRHKbJPopIBLhovN-IoCQKc8wNjCwY_crlw4n4qEnwWIr1r93jda_58wDoWUw84brGW3bn27O0btU_uZ57GsyURX4ako-fJGbMb-CeO3IQBCSrbzKoZjPIEj_hj8_yvdhirVOQeAr7W5RTdvfWvaUL49ZJIKxVLyDeUHa5fgqrOQLjftKDljwc4HQ1g1HybOjYgAEyV6-WfeNNuMNZMSj38F1g0021Y_nhGRxz-I67WF-N1MgETQb_QQTX9LXLHPrLbF8C21LuiQGkq2t5gK-Lg1DMh32f7Fjj7RkqgpkND2GJAKJkonvyGvdbqeR5-RdDggRfYrDquxhZ=w1578-h1010-no" alt></p>
+<p>保持這個視窗開啟, 這是我們存取 Spinnaker UI 的地方</p>
+<p><br></p>
+<h3 id="測試進度-1"><a href="#測試進度-1" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經正確的使用 Kubernetes Helm 部署 Spinnaker chart，你將獲得一個評價分數。</p>
+<p><img src alt></p>
+<p><br><br><br><br><br></p>
+<h2 id="建立-Docker-鏡像"><a href="#建立-Docker-鏡像" class="headerlink" title="建立 Docker 鏡像"></a>建立 Docker 鏡像</h2><p>在本節中, 你將設定 Cloud Build 來偵測程式碼變更, 建立 Docker 鏡像, 然後推送到 Container Registry</p>
+<p><br></p>
+<h3 id="建立源碼倉庫"><a href="#建立源碼倉庫" class="headerlink" title="建立源碼倉庫"></a>建立源碼倉庫</h3><ul>
+<li>在 Cloud Shell, 下載範例應用源碼</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">wget https://gke-spinnaker.storage.googleapis.com/sample-app-v2.tgz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>解壓縮</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">tar xzfv sample-app-v2.tgz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>進到源碼目錄</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> sample-app</span><br></pre></td></tr></table></figure>
+<ul>
+<li>設定在 Git 當中的 username 以及 email, 將 <code>[USERNAME]</code> 替換成你自己的</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git config --global user.email <span class="hljs-string">"<span class="hljs-variable">$(gcloud config get-value core/account)</span>"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="hljs-string">"[USERNAME]"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>做第一個 commit</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="hljs-string">"Initial commit"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>建立源碼倉庫</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud <span class="hljs-built_in">source</span> repos create sample-app</span><br></pre></td></tr></table></figure>
+<p>如果看到你可能會被收費的訊息, 請無視</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git config credential.helper gcloud.sh</span><br></pre></td></tr></table></figure>
+<ul>
+<li>將剛剛建立的源碼倉庫設為遠端</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> PROJECT=$(gcloud info --format=<span class="hljs-string">'value(config.project)'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git remote add origin https://source.developers.google.com/p/<span class="hljs-variable">$PROJECT</span>/r/sample-app</span><br></pre></td></tr></table></figure>
+<ul>
+<li>推送程式碼到新的倉庫的 master 分支</li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在主控台點擊 <strong>Navigation Menu &gt; Source Repositories</strong>, 確認你可以看到你的源碼</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/CPyR498aUCCfe2ZiypjUBsInAcJjSPkjS8quIFVeB51Q_fiExZeV8pnYJFC392As0x_gqi7I7SvEQvlbICwLU_qDC1Z6BKMbMwVzXM22RTjVySirhPLfd7P6LslnSJC_m9x-cwzH3bUVzwVGNb2nfD855EHsbXkUnYpHbooWqJc0v--l5VnSucJUB_NZ3-_o6jC_Z1C4i0rReVc_Q1c67WOH82LNtcH2TGqu-CmFKbULmZf-6BFuQORrn3zqX0Fd0Te14UFgNYsrZ7SbVjjyQZjhtbmzhY53TI8pVLNqNrSHTVc18CfX_UvfbYC2syFBRVeqhysREm1HFpRe5D5Cyg-IQgFNaCLvfZDy3QA-2N4gx58CenwiYJXY1cj_7JX_wUkhNwoUsVky0dobRdGJLVX1gD3yAITlJfhYs92OnRik8v7zGEyo4n8VYHcm-VPU5z0z00hwU0dcW0P9FUKZsK5rrMs416HZdAcz5uLbhQWDwGddjQ7ss-tq2I6sCNpkEfjK7bJrA83JXAuxAkVOlrm8uh4HbDbgaJPa2srOfdDFRijzOXApXwVDrNCh2aOlBQOmvg9Msq5MJM1S_j2w27zNUKiOGQQBVzm8ljMRiklZLNTbHJj2mH0D3jtc_-I_VMhegNYwW3oxynOTeZ3M8djt5e6KbXbSeOwyaIWLw61A7Rm_eQT0XLmAIUJqz_Gad5O-aNar7m6NQ7N4THgfz_s8ROmD_QcRScQwu4qAeJ8mUb61=w297-h487-no" alt></p>
+<ul>
+<li>點擊 <strong>sample-app</strong></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/pvltmB1KBQ44NfSyu00mLo7ck8pFMbqPrHuTjqH-qMyxsz93isnGclYuStT0PBSx89--CPQXjmVbPQ6LSoPupVss7tYRaRajN_ROne1i8ba4KGu8ex9JpExuc6nl9zSqKoeYhHCjE0MQ6o9eZVVDjKrvL0e0xbf99MVIsRibjFDJpHgJz4I6IDmFZ-alpM-1ZCeOBrMAVZFn7wZAYiBn9YOO3cVLce8E8RBpv6HoANqhPtaibW89E6-m8bTaqdPFimT8_4lrpT-yPD3HCyvNyNqYKuN4bR8oCiGZNZxlep-80Lq6o86vTjalCgOnj1R6k15k37JrgoxBrbviRKtK9JL265Cfu2qPcdgpnQEWbwTYdRDPxCx36LI8FH5VTrINtpzsSROgtLT4dxzWLYxQ29JipSHtGdP4guNQcN91Zb-sjujM2V-bkiQTsiqj9QEUk1blvkKLCeTxX74GpX6IUwkDZ69WLVuNjubGn6LpuIixKwgu8uyxO9j-yXmNa9UF51OR8QsS6Pnpewzh5khQ1Q6Hnv_hdST-7McFbplEf6GmoEGrK7WLmSeH-wqLo4VgDiLXUgADGG00kJAMtQbDnW071t1FYpnUvm_hLtzxScGpn_-FduoC2WKmrj2_KYc4gXX4JcsNYOM-XaCzv_sYuslBb7AClYniOm0NIHWvorD2VQqi0MZPMtZCkfMtIENFPwgQRxAs0g-ouOuhdv--GSjkimkrlRIU0xaDOxdLJyrqc9CF=w820-h717-no" alt></p>
+<p><br></p>
+<h3 id="設定建立觸發者"><a href="#設定建立觸發者" class="headerlink" title="設定建立觸發者"></a>設定建立觸發者</h3><p>設定 Container Builder, 所以每次你推送 <a href="https://git-scm.com/book/en/v2/Git-Basics-Tagging" target="_blank" rel="noopener">Git tags</a> 到你的源碼倉庫時, 會自動建立以及推送 Docker 鏡像。 Container Builder 會自動切換到你的程式碼, 依照你倉庫中的 Dockerfile 來建立 Docker 鏡像, 然後推送鏡像到 Google Cloud Container Registry</p>
+<p><img src="https://lh3.googleusercontent.com/D-cGDe6njTaa3QScEBw2tPb8e8LbceTpmxGbH78HZVh6zGQ1iULi2m9Yd1VCzGbRO6NWLyUaD5Bwp46bwJWuv_bCBwpwCBJUAdsoxiq1nm9arlnRjbSVuE04_AFnPa6dOA-L4q-2nxhljrVUUNc7qIco_Zqp_r449SD4V1TC8Q-Q1nJLCr4cf_eLI1GLCU8QjfRr6psyaxHefeKAxmg0BfUx8vVt11r9hHusYl939dzW8ldq6mJHuV1QXDdrG668gG8nO69y-DQHflqd37GDILwNxiYDfIOL8LEMZ37PZgcYZ6Bl-UsYoxUoPmph_je4EsK1gXw0dWOCdQ_FzNImaFFdoVqTACAejRqCLAz_zlqE_OMnt24XBEZGhnCIJQZxeM9u473lY4VEzVWPVtLbblaP8YArI2hxa0_vBz5L-wUVg3y4-Fv-t-1SdTwrtatR7XYIdJiXz2KphBdScSGPntMxOgf-ZK4AdjxD6OXWKAa4IxhxIaKDeqxSPZ7VzWxby_SyJ7LeeJXexoVyOlZ2Lgp36aJB2AlyGcrH7L8KtmWFwXmvP5_LyLWgNar0jpHBzQZQWSybl_w8N68d-tSjwAcV-NGKioliAWB5LyO9h__g9Z8QstRCU3-e9Jg-TDGBREc_0S402YAvJRf8z3lS9tzd1yNPe2EGlejJ_ohf_jUxBA6Edoixe24xn0GG_OP43Dp9jgT6WcWsSLJUR7PTRBNGZmnmVX0I0PiERg4z5QCzcOYf=w981-h187-no" alt></p>
+<ul>
+<li>在 Cloud Platform 主控台, 點擊 <strong>Navigation menu &gt; Cloud Build &gt; Triggers</strong></li>
+<li>點擊 <strong>Create trigger</strong></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/XLykbVfwk_a2G9vV3wxUT24tjl32_r6LHO_jBLiMre4ziMOMBFMlnOxaPfumPTZKGq7fWXjZ8-r53N39xzzLYOKichlWNhllLoDOiFzu4zncxSPCxjrB2kVGMG-5_euaYjOc-mK7RFB5-5JhIHWCD-WmuWGmhs7et3v_qQXBq6x5AFig3Y09uanbGP4uQ2Pqrl0fUYLgv-acjZCCpAEFdzYi8ZB4QtySbSD90JSvvZIRu9LtySdpe668yGTrGClbnzxN1dMFFBRtNHtT6nySJC0umC5uI5CnJx2eXjpTe0WS0gkgewP5XzXWp5sXn2tk-UxEQ9k1uHAEHfOh2b79-8pOGmemNhgoGIwvDWPi0fuwmnVJN0MGQ3zdUBPNhL_SfanHnMc0G6olQw-KSe66hceIImj4PXRONwsC-g28uYBcWIAlG3LQaZIXwEZvoGws-t_AFVfR2tGZ-tJWNzvDolC2upCExmgGqoOxNfeLZ19wg4crBAxE0H2Sxm2PxgDjSVd8s09bOIJw6ljpn-op_nK6vAuWDefdOueIwdNbo-Hg05ozJXKLThkiU2S1gXh07NNu6Qg9WpbmTEN22E8dmVcH8iQEcRIG-FDOdxQw2NXceFTzc6vKBbtKvCgQiaME2CvSZl-2WyRqB0NQ6Xjiiek7RixYGDv-2RHWH0iLHCdqp6Jo_M9oTE8X4_ZIItALXjZX6WgSasQd3N06S9wbeYtF68ccB17B4QO3sjMPgJONVj3-=w753-h452-no" alt></p>
+<ul>
+<li>選擇 <strong>Cloud Source Repository</strong>, 然後點擊 <strong>Continue</strong></li>
+<li>選擇你新建立的 <code>sample-app</code> 倉庫, 然後點擊 <strong>Continue</strong></li>
+<li><p>設定以下的觸發設定</p>
+<ul>
+<li><strong>Name:</strong> <code>sample-app-tags</code></li>
+<li><strong>Trigger type:</strong> Tag</li>
+<li><strong>Tag (regex):</strong> <code>v.*</code></li>
+<li><strong>Build configuration:</strong> <code>Cloud Build configuration file (yaml or json)</code></li>
+<li><strong>cloudbuild.yaml location:</strong> <code>/cloudbuild.yaml</code></li>
+</ul>
+</li>
+<li><p>點擊 <strong>Create trigger</strong></p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/G6gX_6nMoApwNrfuPAhPl21ZOecs0QYiQB5C9XhCxw_Z0XO16uMCAMhIxkiDrTHxBfY8HkBYOaDyZcaiTP5fLS_M_pBBxsxtX7uQh_Cd2Bv1ZbN5RgyK43G71S4Pi-EszNtS4fw54kcI1_3YdnvV6X9l9J4wI2SN2GN8E3kiLDIDwuu-bO2AZChz80FGnFMtujO8rAqbE6MM3-2NuNP3htne-f6BqQIHqCwMeRrqXHMMGLuesryHO-nNwrqDTW0485IF56OoY00eiEjwI2n25622va4EBqBfQS4qCaip1ysiGEl2MEqfV_iDMavTHvlbgZMJXMOh3KwboFjgqHvj7X0uwwdMVBQp-d7WoCLBLHt3FnVplmavsFo4kEQ5gLdAOqZkqLDhT3bGn1eDXukAQQr2X-a10-gwgBO4VQL3wbtcU-IG9B7hzWi7OnLRQ70H2VSn0AbO8XBBUILayMSnTq7OR2v4KE0AR1lpx8v55uOhwr3M7NNdP3ZQXzuXt8Cd96_HcceGkyGoXPXAXEjCHSlsB-DMxDekNmz9dyHp-FidDh1QomOFaO_vQfwMHX5ALNQx1Yc4rcnjUIR2lRGjido0aYLOQCLzw65AwogBWc9BZyQD8uY7RQNIInOTXELFfZ1khDfo2Mhr-DGrl3HWhvpCNmIYbM2w4RPehPZC4yVaoXVi-TCpsGmQGB8OMTUIL0KZitNtNgbvBRWsPzj09XisfpCEZ1aIy95G-orM11SYJi1x=w1212-h1261-no" alt></p>
+<p>從現在開始, 只要你推送一個帶有前綴為 “v” 的 Git tag 到你的源碼倉庫, Container Builder 會自動的建立並推送應用的 Docker 鏡像到 Container Registry</p>
+<p><br></p>
+<h3 id="準備將使用在-Spinnaker-的-Kubernetes-Manifests"><a href="#準備將使用在-Spinnaker-的-Kubernetes-Manifests" class="headerlink" title="準備將使用在 Spinnaker 的 Kubernetes Manifests"></a>準備將使用在 Spinnaker 的 Kubernetes Manifests</h3>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Google-Kubernetes/">#Google Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Cloud-Architecture/">#Cloud Architecture</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Spinnaker/">#GCP Spinnaker</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/kubernetesNote/">kubernetes 學習筆記</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/deploymentManagerFullProduction/">GCP Deployment Manager - 正式環境</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/';
+        this.page.identifier = 'zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
