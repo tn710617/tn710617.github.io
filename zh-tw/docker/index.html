@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://i.imgur.com/rvXklxG.png">
 <meta property="og:image" content="https://i.imgur.com/I47eC9I.png">
 <meta property="og:image" content="https://i.imgur.com/ofPsRZo.png">
-<meta property="og:updated_time" content="2019-10-28T11:54:06.813Z">
+<meta property="og:updated_time" content="2019-10-29T02:49:32.897Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker 技術筆記">
 <meta name="twitter:description" content="前言這是一份未整理過的 Docker 學習筆記">
@@ -53,7 +53,7 @@
 <meta property="og:image" content="https://i.imgur.com/rvXklxG.png">
 <meta property="og:image" content="https://i.imgur.com/I47eC9I.png">
 <meta property="og:image" content="https://i.imgur.com/ofPsRZo.png">
-<meta property="og:updated_time" content="2019-10-28T11:54:06.813Z">
+<meta property="og:updated_time" content="2019-10-29T02:49:32.897Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker 技術筆記">
 <meta name="twitter:description" content="前言這是一份未整理過的 Docker 學習筆記">
@@ -378,7 +378,7 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Multi-Stage">21&nbsp;&nbsp;<b>Multi Stage</b></a>
+                    <a class="navbar-item" href="#Multi-Stage-多階段構建">21&nbsp;&nbsp;<b>Multi Stage (多階段構建)</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -556,7 +556,7 @@
         <span class="column is-narrow">
             
             
-            34 分钟 讀完 (大概 5060 字)
+            36 分钟 讀完 (大概 5396 字)
         </span>
         
     </div>
@@ -740,11 +740,12 @@
 <li>將現有的 container 存成一個新的 image<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker commit -m <span class="hljs-string">'imageMessage'</span> -a <span class="hljs-string">'AuthorName'</span> containerSHA imageName:imageTag</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h2 id="Multi-Stage"><a href="#Multi-Stage" class="headerlink" title="Multi Stage"></a>Multi Stage</h2><ul>
-<li><code>Multi Stage Build</code> 範本<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">FROM node:latest AS storefront</span><br><span class="line">WORKDIR /usr/src/atsea/app/react-app</span><br><span class="line">COPY react-app .</span><br><span class="line">RUN npm install</span><br><span class="line">RUN npm run build</span><br><span class="line"></span><br><span class="line">FROM maven:latest AS appserver</span><br><span class="line">WORKDIR /usr/src/atsea</span><br><span class="line">COPY pom.xml .</span><br><span class="line">RUN mvn -B -f pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve</span><br><span class="line">COPY . .</span><br><span class="line">RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests</span><br><span class="line"></span><br><span class="line">FROM java:8-jdk-alpine</span><br><span class="line">RUN adduser -Dh /home/gordon gordon</span><br><span class="line">WORKDIR /static</span><br><span class="line">COPY --from=storefront /usr/src/atsea/app/react-app/build/ .</span><br><span class="line">WORKDIR /app</span><br><span class="line">COPY --from=appserver /usr/src/atsea/target/AtSea-0.0.1-SNAPSHOT.jar .</span><br><span class="line">ENTRYPOINT [<span class="hljs-string">"java"</span>, <span class="hljs-string">"-jar"</span>, <span class="hljs-string">"/app/AtSea-0.0.1-SNAPSHOT.jar"</span>]</span><br><span class="line">CMD [<span class="hljs-string">"--spring.profiles.active=postgres"</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="Multi-Stage-多階段構建"><a href="#Multi-Stage-多階段構建" class="headerlink" title="Multi Stage (多階段構建)"></a>Multi Stage (多階段構建)</h2><ul>
+<li><code>Multi Stage Build</code> 範本<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 給予該層一個名字, storefront</span></span><br><span class="line">FROM node:latest AS storefront</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 指定目前工作目錄</span></span><br><span class="line">WORKDIR /usr/src/atsea/app/react-app</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 複製 context 中的 react-app 到當前目錄, 即上一行指令的 react-app</span></span><br><span class="line">COPY react-app .</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 執行 npm install</span></span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 執行 npm run build</span></span><br><span class="line">RUN npm run build</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 給予該層一個名字, 即 appserver</span></span><br><span class="line">FROM maven:latest AS appserver</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 指定目前的工作目錄, 即 /usr/src/atsea</span></span><br><span class="line">WORKDIR /usr/src/atsea</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 複製 context 中的 pom.xml 到當前位置, 即 atsea</span></span><br><span class="line">COPY pom.xml .</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 執行以下指令</span></span><br><span class="line">RUN mvn -B -f pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 複製 context 中的所有檔案到容器內的當前目錄下, 即 atsea</span></span><br><span class="line">COPY . .</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 執行以下指令</span></span><br><span class="line">RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 該是最終鏡像了, 沒給 alias</span></span><br><span class="line">FROM java:8-jdk-alpine</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 執行以下命令</span></span><br><span class="line">RUN adduser -Dh /home/gordon gordon</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 指令當前工作目錄</span></span><br><span class="line">WORKDIR /static</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 從上面建構 storefront 中, 複製 /usr/src/atsea/app/react-app/build/ 當中的所有資料到當前工作目錄, 即 /static</span></span><br><span class="line">COPY --from=storefront /usr/src/atsea/app/react-app/build/ .</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 指令當前工作目錄, 即 /app</span></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 從上面建構的 appserver 中, 複製 /usr/src/atsea/target/AtSea-0.0.1-SNAPSHOT.jar 到當前工作目錄, 即 appserver</span></span><br><span class="line">COPY --from=appserver /usr/src/atsea/target/AtSea-0.0.1-SNAPSHOT.jar .</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 指令 ENTRYPOINT, 該命令為容器啟動後默認一定會執行的命令, 無法被替換</span></span><br><span class="line">ENTRYPOINT [<span class="hljs-string">"java"</span>, <span class="hljs-string">"-jar"</span>, <span class="hljs-string">"/app/AtSea-0.0.1-SNAPSHOT.jar"</span>]</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># CMD 在這個位置的角色為上面的 ENTRYPOINT 的 flag, 若在容器啟動指令輸入其他命令, 該 CMD 將會被替換掉</span></span><br><span class="line">CMD [<span class="hljs-string">"--spring.profiles.active=postgres"</span>]</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p><code>-t</code> 用來指定 <code>image</code> 的名字<br><code>-f</code> 可以用來指定名稱不是 <code>Dockfile</code> 的 <code>Dockerfile</code><br><code>From</code> 指定基礎 <code>image</code> 來源<br><code>RUN</code> 可以在 <code>image</code> 內執行 <code>command</code> 並建立新的 <code>layer</code> ，每一個 <code>RUN</code> 都會建立一層 <code>layer</code><br><code>COPY</code> 可以增加複製檔案到你的 <code>image</code> 內<br><code>EXPOSE</code> 暴露 APP 用的 <code>port</code><br><code>ENTRYPOINT</code> 設定當 <code>image</code> 被啟動為一個 <code>container</code> 時，預設執行的指令</p>
+<p><br><br><br><br><br></p>
 <h2 id="Docker-image-pull"><a href="#Docker-image-pull" class="headerlink" title="Docker image pull"></a>Docker image pull</h2><ul>
 <li><p>拉下 <code>image</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker image pull ubuntu:latest</span><br></pre></td></tr></table></figure>
@@ -1045,6 +1046,8 @@
 <li><strong>在 Docker image 中, ENTRYPOINT 的設定為 [“/bin/echo”, “Hello”], CMD 為[“world”], 當我執行容器 <code>docker run -it [image]</code>, 輸出為？</strong> Hello world</li>
 <li><strong>在 Docker image 中, ENTRYPOINT 的設定為 [“/bin/echo”, “Hello”], CMD 為[“world”], 當我執行容器 <code>docker run -it [image] Ray</code>, 輸出為？</strong> Hello Ray</li>
 <li><strong>在 Docker image 中, ENTRYPOINT 為 shell 格式時, CMD 跟 docker run 的參數會？</strong> 被無視</li>
+<li><strong>在 Dockerfile 中, 哪三個指令會增加新的層數？</strong> RUN, ADD, COPY</li>
+<li><strong>在多階段構建中, 如何從指令層數 COPY 東西過來當層</strong> 藉由 <code>AS</code> 給該層一個名字, 然後使用 <code>COPY --from NAME</code> </li>
 </ul>
 
     
