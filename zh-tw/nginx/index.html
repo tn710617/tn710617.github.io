@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-20T03:43:22.376Z">
+<meta property="og:updated_time" content="2019-10-30T10:44:22.765Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-10-20T03:43:22.376Z">
+<meta property="og:updated_time" content="2019-10-30T10:44:22.765Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -234,6 +234,22 @@
                     
                     <a class="navbar-item" href="#詳解">8.3&nbsp;&nbsp;詳解</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#PHP-FPM">9&nbsp;&nbsp;<b>PHP-FPM</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#fast">9.1&nbsp;&nbsp;fast</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">10&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    
                 </div>
             </div>
             
@@ -294,7 +310,7 @@
         <span class="column is-narrow">
             
             
-            10 分钟 讀完 (大概 1474 字)
+            13 分钟 讀完 (大概 1892 字)
         </span>
         
     </div>
@@ -386,6 +402,25 @@
 <h3 id="範例-1"><a href="#範例-1" class="headerlink" title="範例"></a>範例</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">upstream</span> backend &#123;</span><br><span class="line">    <span class="hljs-attribute">server</span> backend1.example.com weight=<span class="hljs-number">5</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> <span class="hljs-number">127.0.0.1:8080</span>       max_fails=<span class="hljs-number">3</span> fail_timeout=<span class="hljs-number">30s</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> unix:/tmp/backend3;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server</span> backup1.example.com  backup;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">proxy_pass</span> http://backend;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><br></p>
 <h3 id="詳解"><a href="#詳解" class="headerlink" title="詳解"></a>詳解</h3><p>定義多個 server, server 可以 listen 不同的 port 號, TCP 以及 UNIX-domain socket 可以混用<br>預設的話, 會採用權重輪詢分配請求到不同的 server, 以上面的範例來看, 每 7 個 request 中, 5 個會被分配到 <code>backend1.example.com</code> (weight=5), 2 個分別到 <code>127.0.0.1:8080</code> 以及 <code>unix:/tmp/backend3</code><br>如果在溝通途中有錯誤, 請求會被分派到下一個 server, 直到出現成功回應的 server 。 如果裡面都沒有可以成功回應的, 那客戶端會收到最後一個 server 的回應 (backup)</p>
+<p><br><br><br><br><br></p>
+<h2 id="PHP-FPM"><a href="#PHP-FPM" class="headerlink" title="PHP-FPM"></a>PHP-FPM</h2><h3 id="fast"><a href="#fast" class="headerlink" title="fast"></a>fast</h3><ul>
+<li>請求網址為 <code>http://lemp.test/test.php/foo/bar.php?v=1</code></li>
+<li>各項資訊如下:<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">array (</span><br><span class="line">  &apos;USER&apos; =&gt; &apos;www-data&apos;,</span><br><span class="line">  &apos;HOME&apos; =&gt; &apos;/var/www&apos;,</span><br><span class="line">  &apos;FCGI_ROLE&apos; =&gt; &apos;RESPONDER&apos;,</span><br><span class="line">  &apos;QUERY_STRING&apos; =&gt; &apos;v=1&apos;,</span><br><span class="line">  &apos;REQUEST_METHOD&apos; =&gt; &apos;GET&apos;,</span><br><span class="line">  &apos;CONTENT_TYPE&apos; =&gt; &apos;&apos;,</span><br><span class="line">  &apos;CONTENT_LENGTH&apos; =&gt; &apos;&apos;,</span><br><span class="line">  &apos;SCRIPT_FILENAME&apos; =&gt; &apos;/var/www/test.php&apos;,</span><br><span class="line">  &apos;SCRIPT_NAME&apos; =&gt; &apos;/test.php&apos;,</span><br><span class="line">  &apos;PATH_INFO&apos; =&gt; &apos;/foo/bar.php&apos;,</span><br><span class="line">  &apos;REQUEST_URI&apos; =&gt; &apos;/test.php/foo/bar.php?v=1&apos;,</span><br><span class="line">  &apos;DOCUMENT_URI&apos; =&gt; &apos;/test.php/foo/bar.php&apos;,</span><br><span class="line">  &apos;DOCUMENT_ROOT&apos; =&gt; &apos;/var/www&apos;,</span><br><span class="line">  &apos;SERVER_PROTOCOL&apos; =&gt; &apos;HTTP/1.1&apos;,</span><br><span class="line">  &apos;GATEWAY_INTERFACE&apos; =&gt; &apos;CGI/1.1&apos;,</span><br><span class="line">  &apos;SERVER_SOFTWARE&apos; =&gt; &apos;nginx/1.4.0&apos;,</span><br><span class="line">  &apos;REMOTE_ADDR&apos; =&gt; &apos;192.168.56.1&apos;,</span><br><span class="line">  &apos;REMOTE_PORT&apos; =&gt; &apos;44644&apos;,</span><br><span class="line">  &apos;SERVER_ADDR&apos; =&gt; &apos;192.168.56.3&apos;,</span><br><span class="line">  &apos;SERVER_PORT&apos; =&gt; &apos;80&apos;,</span><br><span class="line">  &apos;SERVER_NAME&apos; =&gt; &apos;&apos;,</span><br><span class="line">  &apos;HTTPS&apos; =&gt; &apos;&apos;,</span><br><span class="line">  &apos;REDIRECT_STATUS&apos; =&gt; &apos;200&apos;,</span><br><span class="line">  &apos;HTTP_HOST&apos; =&gt; &apos;lemp.test&apos;,</span><br><span class="line">  &apos;HTTP_USER_AGENT&apos; =&gt; &apos;Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:20.0) Gecko/20100101 Firefox/20.0&apos;,</span><br><span class="line">  &apos;HTTP_ACCEPT&apos; =&gt; &apos;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&apos;,</span><br><span class="line">  &apos;HTTP_ACCEPT_LANGUAGE&apos; =&gt; &apos;en-US,en;q=0.5&apos;,</span><br><span class="line">  &apos;HTTP_ACCEPT_ENCODING&apos; =&gt; &apos;gzip, deflate&apos;,</span><br><span class="line">  &apos;HTTP_CONNECTION&apos; =&gt; &apos;keep-alive&apos;,</span><br><span class="line">  &apos;PHP_SELF&apos; =&gt; &apos;/test.php/foo/bar.php&apos;,</span><br><span class="line">  &apos;REQUEST_TIME&apos; =&gt; 1367829847,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><p><strong>以下的設定中, <code>location ~ \.php$</code> 中, 最終帶過去的 fastcgi_param 是什麼？</strong> $query_string, 原本的 $request_method 跟 $document_root, $fastcgi_script_name 會處於未設定</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># server context</span></span><br><span class="line"><span class="hljs-attribute">root</span> /var/www/html;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">fastcgi_param</span> REQUEST_METHOD <span class="hljs-variable">$request_method</span>;</span><br><span class="line"><span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$document_root</span><span class="hljs-variable">$fastcgi_script_name</span>;</span><br><span class="line"><span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> /scripts &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> QUERY_STRING <span class="hljs-variable">$query_string</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> <span class="hljs-number">127.0.0.1:9000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在以下的設定中, 如果使用 PHP-FPM 的話, 最終傳出的 fastcgi_param TEST 跟 DOCUMENT_ROOT 是？</strong> three, override</p>
+</li>
+<li><strong>不同的 FastCGI 處理器的作用方式依樣嗎？</strong> 不同哦</li>
+<li><strong>因為不同的 FastCGI 處理器行為不同, 所以宣告 fastcgi_param 時, 建議宣告幾次？</strong> 1次</li>
+<li><strong>當我們使用 PHP-FPM, 要 pass fastcgi_params 時, 怎樣可以在不同的 location 中在保留共同變數的同時, 又可以客制新的變數？</strong> 使用 include 共同檔案, 如下：<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">root</span> /var/www/html;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> /scripts &#123;</span><br><span class="line">    <span class="hljs-attribute">include</span> fastcgi_common;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">include</span> fastcgi_common;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> QUERY_STRING <span class="hljs-variable">$query_string</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> CONTENT_TYPE <span class="hljs-variable">$content_type</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> CONTENT_LENGTH <span class="hljs-variable">$content_length</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> <span class="hljs-number">127.0.0.1:9000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
 
     
     </div>
