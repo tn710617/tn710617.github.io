@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-13T13:32:47.576Z">
+<meta property="og:updated_time" content="2019-11-14T10:45:32.925Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-13T13:32:47.576Z">
+<meta property="og:updated_time" content="2019-11-14T10:45:32.925Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -236,7 +236,7 @@
         <span class="column is-narrow">
             
             
-            7 分钟 讀完 (大概 1087 字)
+            9 分钟 讀完 (大概 1330 字)
         </span>
         
     </div>
@@ -352,6 +352,15 @@
 </li>
 <li><p><strong>Laravel 當中, 哪裡可以設定 queue 的名字？</strong> </p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">config 資料夾中的 queue</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 當中, 以下的 agent_id 驗證 exists 邏輯代表什麼意思？</strong> 在 users table 當中, 帶入的 agent_id 必須要跟 table 裡頭的 id 相同, 且 role_id 必須得跟 Role::AGENT 相同</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">        request()-&gt;validate([</span><br><span class="line">            <span class="hljs-string">'q'</span>        =&gt; <span class="hljs-string">'nullable | string | max:255'</span>,</span><br><span class="line">            <span class="hljs-string">'row'</span>      =&gt; <span class="hljs-string">'nullable | int | digits_between:1,3'</span>,</span><br><span class="line">            <span class="hljs-string">'agent_id'</span> =&gt; <span class="hljs-string">'nullable | exists:users,id,role_id,'</span>.Role::AGENT,</span><br><span class="line">        ]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼代表什麼意思？</strong> 取得 User model 的 merchant scope, eager load owner relation, 當 $q 不為 null, 執行 closure, 接上 closure 中的 query builder, 在 username, name, email 三個欄位中模糊搜尋 $q</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">     $users = User::merchant()</span><br><span class="line">         -&gt;with(<span class="hljs-string">'owner'</span>)</span><br><span class="line">         -&gt;when($q, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query, $q)</span> </span>&#123;</span><br><span class="line">             <span class="hljs-keyword">return</span> $query-&gt;where(<span class="hljs-string">'username'</span>, <span class="hljs-string">'LIKE'</span>, <span class="hljs-string">'%'</span>.$q.<span class="hljs-string">'%'</span>)</span><br><span class="line">                 -&gt;orWhere(<span class="hljs-string">'name'</span>, <span class="hljs-string">'LIKE'</span>, <span class="hljs-string">'%'</span>.$q.<span class="hljs-string">'%'</span>)</span><br><span class="line">                 -&gt;orWhere(<span class="hljs-string">'email'</span>, <span class="hljs-string">'LIKE'</span>, <span class="hljs-string">'%'</span>.$q.<span class="hljs-string">'%'</span>);</span><br><span class="line">         &#125;);</span><br><span class="line">         </span><br><span class="line"> <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeMerchant</span><span class="hljs-params">(Builder $query)</span></span></span><br><span class="line"><span class="hljs-function"> </span>&#123;</span><br><span class="line">     <span class="hljs-keyword">return</span> $query-&gt;where(<span class="hljs-string">'role_id'</span>, Role::MERCHANT);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼的 appends 邏輯是什麼?</strong> 在 Laravel 的分頁模式中, 若未將全部來自於前端的 query 帶入, 那分頁的 url 將會缺少必要的 query, 等於只有第一頁會有 帶入的 query 結果</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> UserCollection($users-&gt;paginate($row)-&gt;appends(request()-&gt;query-&gt;all()));</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 
