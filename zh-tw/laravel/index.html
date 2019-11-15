@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-14T10:45:32.925Z">
+<meta property="og:updated_time" content="2019-11-15T13:39:42.676Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-14T10:45:32.925Z">
+<meta property="og:updated_time" content="2019-11-15T13:39:42.676Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -236,7 +236,7 @@
         <span class="column is-narrow">
             
             
-            9 分钟 讀完 (大概 1330 字)
+            13 分钟 讀完 (大概 1996 字)
         </span>
         
     </div>
@@ -361,6 +361,29 @@
 </li>
 <li><p><strong>以下的 Laravel 程式碼的 appends 邏輯是什麼?</strong> 在 Laravel 的分頁模式中, 若未將全部來自於前端的 query 帶入, 那分頁的 url 將會缺少必要的 query, 等於只有第一頁會有 帶入的 query 結果</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> UserCollection($users-&gt;paginate($row)-&gt;appends(request()-&gt;query-&gt;all()));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中的 latest 代表什麼意思？</strong> 以 id 排序</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$transactions = auth()-&gt;user()-&gt;transactions()</span><br><span class="line">    -&gt;whereBetween(<span class="hljs-string">'created_at'</span>, [$startedAt, $endedAt])</span><br><span class="line">    -&gt;latest(<span class="hljs-string">'id'</span>)</span><br><span class="line">    -&gt;with(<span class="hljs-string">'wallet'</span>)</span><br><span class="line">    -&gt;paginate()</span><br><span class="line">    -&gt;appends($request-&gt;query-&gt;all());</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中的 fill 代表什麼意思？</strong> 將值注入 userBankCard model, 帶入參數可以是一個 array</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$userBankCard-&gt;fill(</span><br><span class="line">    $request-&gt;only(</span><br><span class="line">        <span class="hljs-string">'card_holder_name'</span>, <span class="hljs-string">'card_number'</span>, <span class="hljs-string">'bank_name'</span></span><br><span class="line">    )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, 為什麼要使用 collect function？</strong> 這樣如果前端帶錯, 帶成 string 的話, 會先將 string 轉成 collection, 再轉成 array</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$userBankCards = UserBankCard::when(request()-&gt;q, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query, $q)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> <span class="hljs-title">use</span> <span class="hljs-params">($q)</span> </span>&#123;</span><br><span class="line">        $query-&gt;where(<span class="hljs-string">'card_holder_name'</span>, <span class="hljs-string">'LIKE'</span>, <span class="hljs-string">'%'</span> . $q . <span class="hljs-string">'%'</span>)</span><br><span class="line">            -&gt;orWhere(<span class="hljs-string">'card_number'</span>, <span class="hljs-string">'LIKE'</span>, <span class="hljs-string">'%'</span> . $q . <span class="hljs-string">'%'</span>)</span><br><span class="line">            -&gt;orWhere(<span class="hljs-string">'bank_name'</span>, <span class="hljs-string">'LIKE'</span>, <span class="hljs-string">"%$q%"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;)</span><br><span class="line">    -&gt;when(request()-&gt;status, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query, $status)</span> </span>&#123;</span><br><span class="line">        $query-&gt;whereIn(<span class="hljs-string">'status'</span>, collect($status)-&gt;toArray());</span><br><span class="line">    &#125;)</span><br><span class="line">    -&gt;where(<span class="hljs-string">'user_id'</span>, auth()-&gt;user()-&gt;getKey())</span><br><span class="line">    -&gt;paginate($row)</span><br><span class="line">    -&gt;appends(request()-&gt;query-&gt;all());</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼代表什麼意思？</strong> 取得 Deposit model, 以帶入日期過濾, 以 SUCCESS status 過濾, 以 system_bank_card_type 分類, 在取得四個值, 分別是 system_bank_card_type, total_amount, total_fee, total_count, 若照預設, 會是一個 collection 裡面有兩個 model, index 為 0 跟 1, 使用 keyBy 來將 0 跟 1 依照 system_bank_card_type 做區分, 所以會變成一個 collection 裡頭有兩個 model, 以 system_bank_card_type 做區分</p>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$depositStats = Deposit::whereBetween(<span class="hljs-string">'created_at'</span>, [$startDate, $endDate])-&gt;where(<span class="hljs-string">'status'</span>, Deposit::STATUS_SUCCESS)-&gt;groupBy(<span class="hljs-string">'system_bank_card_type'</span>)-&gt;get([</span><br><span class="line">    <span class="hljs-string">'system_bank_card_type'</span>,</span><br><span class="line">    DB::raw(<span class="hljs-string">'SUM(amount) AS total_amount, SUM(fee) AS total_fee, COUNT(id) AS total_count'</span>)</span><br><span class="line">])-&gt;keyBy(<span class="hljs-string">'system_bank_card_type'</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼為什麼要使用 first？</strong> 因為該 query 撈出來後, 只會有一筆 model, 如果是用 get 的話, 會是一個 collection 裡有一個 model, 所以直接使用 first() 即可</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$withdrawStat = Withdraw::whereBetween(<span class="hljs-string">'created_at'</span>, [$startDate, $endDate])-&gt;where(<span class="hljs-string">'status'</span>, Withdraw::STATUS_SUCCESS)-&gt;first([</span><br><span class="line">    DB::raw(<span class="hljs-string">'SUM(amount) AS total_amount, SUM(fee) AS total_fee, COUNT(id) AS total_count'</span>)</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, keyBy 的用途是？</strong> 如果不使用 keyBy 的話, 正常來說一個 collection 裡頭有多個 model 會以默認 index, 0, 1, 2 …, keyBy 可以使用指定的 key 來給 model 分組, 在這個例子中, 就是以 model 下的 slug 欄位的值做分組</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$wallets = auth()-&gt;user()-&gt;wallets()-&gt;get()-&gt;keyBy(<span class="hljs-string">'slug'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, data_get 的用途是？</strong> $depositStats 結構像是這樣 <code>$depositStats = [&#39;BankCard::TYPE_FEE&#39; =&gt; [&#39;total_count&#39;, &#39;total_amount&#39;, &#39;total_count&#39;, &#39;total_amount&#39;]]</code>, data_get 可以取得一個 collection 裡頭的巢狀 array 值</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> response()-&gt;json([</span><br><span class="line">    <span class="hljs-string">'data'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'fee_wallet_deposit_success_count'</span> =&gt; data_get($depositStats, [BankCard::TYPE_FEE, <span class="hljs-string">'total_count'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">        <span class="hljs-string">'fee_wallet_deposit_success_amount'</span> =&gt; data_get($depositStats, [BankCard::TYPE_FEE, <span class="hljs-string">'total_amount'</span>], <span class="hljs-number">0</span>) / <span class="hljs-number">100</span>, <span class="hljs-comment">// todo remove hard code</span></span><br><span class="line">        <span class="hljs-string">'withdraw_wallet_deposit_success_count'</span> =&gt; data_get($depositStats, [BankCard::TYPE_WITHDRAW, <span class="hljs-string">'total_count'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">        <span class="hljs-string">'withdraw_wallet_deposit_success_amount'</span> =&gt; data_get($depositStats, [BankCard::TYPE_WITHDRAW, <span class="hljs-string">'total_amount'</span>], <span class="hljs-number">0</span>) / <span class="hljs-number">100</span>, <span class="hljs-comment">// todo remove hard code</span></span><br><span class="line">        <span class="hljs-string">'withdraw_success_count'</span> =&gt; $withdrawStat-&gt;total_count ?? <span class="hljs-number">0</span>,</span><br><span class="line">        <span class="hljs-string">'withdraw_success_amount'</span> =&gt; ($withdrawStat-&gt;total_amount ?? <span class="hljs-number">0</span>) / <span class="hljs-number">100</span>, <span class="hljs-comment">// todo remove hard code</span></span><br><span class="line">        <span class="hljs-string">'fee_wallet_balance'</span> =&gt; data_get($wallets, [User::SLUG_FEE_WALLET, <span class="hljs-string">'balanceFloat'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">        <span class="hljs-string">'withdraw_wallet_balance'</span> =&gt; data_get($wallets, [User::SLUG_WITHDRAW_WALLET, <span class="hljs-string">'balanceFloat'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">    ],</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 
