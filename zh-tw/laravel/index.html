@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-15T13:39:42.676Z">
+<meta property="og:updated_time" content="2019-11-16T13:07:32.212Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-15T13:39:42.676Z">
+<meta property="og:updated_time" content="2019-11-16T13:07:32.212Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -236,7 +236,7 @@
         <span class="column is-narrow">
             
             
-            13 分钟 讀完 (大概 1996 字)
+            18 分钟 讀完 (大概 2637 字)
         </span>
         
     </div>
@@ -377,13 +377,51 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$depositStats = Deposit::whereBetween(<span class="hljs-string">'created_at'</span>, [$startDate, $endDate])-&gt;where(<span class="hljs-string">'status'</span>, Deposit::STATUS_SUCCESS)-&gt;groupBy(<span class="hljs-string">'system_bank_card_type'</span>)-&gt;get([</span><br><span class="line">    <span class="hljs-string">'system_bank_card_type'</span>,</span><br><span class="line">    DB::raw(<span class="hljs-string">'SUM(amount) AS total_amount, SUM(fee) AS total_fee, COUNT(id) AS total_count'</span>)</span><br><span class="line">])-&gt;keyBy(<span class="hljs-string">'system_bank_card_type'</span>);</span><br></pre></td></tr></table></figure>
 <ul>
 <li><p><strong>以下的 Laravel 程式碼為什麼要使用 first？</strong> 因為該 query 撈出來後, 只會有一筆 model, 如果是用 get 的話, 會是一個 collection 裡有一個 model, 所以直接使用 first() 即可</p>
-<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$withdrawStat = Withdraw::whereBetween(<span class="hljs-string">'created_at'</span>, [$startDate, $endDate])-&gt;where(<span class="hljs-string">'status'</span>, Withdraw::STATUS_SUCCESS)-&gt;first([</span><br><span class="line">    DB::raw(<span class="hljs-string">'SUM(amount) AS total_amount, SUM(fee) AS total_fee, COUNT(id) AS total_count'</span>)</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$withdrawStat = Withdraw::whereBetween(<span class="hljs-string">'created_at'</span>, [$startDate, $endDate])</span><br><span class="line">    -&gt;where(<span class="hljs-string">'status'</span>, Withdraw::STATUS_SUCCESS)</span><br><span class="line">    -&gt;first([</span><br><span class="line">    DB::raw(<span class="hljs-string">'SUM(amount) AS total_amount, SUM(fee) AS total_fee, COUNT(id) AS total_count'</span>)</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>以下的 Laravel 程式碼中, keyBy 的用途是？</strong> 如果不使用 keyBy 的話, 正常來說一個 collection 裡頭有多個 model 會以默認 index, 0, 1, 2 …, keyBy 可以使用指定的 key 來給 model 分組, 在這個例子中, 就是以 model 下的 slug 欄位的值做分組</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$wallets = auth()-&gt;user()-&gt;wallets()-&gt;get()-&gt;keyBy(<span class="hljs-string">'slug'</span>);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>以下的 Laravel 程式碼中, data_get 的用途是？</strong> $depositStats 結構像是這樣 <code>$depositStats = [&#39;BankCard::TYPE_FEE&#39; =&gt; [&#39;total_count&#39;, &#39;total_amount&#39;, &#39;total_count&#39;, &#39;total_amount&#39;]]</code>, data_get 可以取得一個 collection 裡頭的巢狀 array 值</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> response()-&gt;json([</span><br><span class="line">    <span class="hljs-string">'data'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'fee_wallet_deposit_success_count'</span> =&gt; data_get($depositStats, [BankCard::TYPE_FEE, <span class="hljs-string">'total_count'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">        <span class="hljs-string">'fee_wallet_deposit_success_amount'</span> =&gt; data_get($depositStats, [BankCard::TYPE_FEE, <span class="hljs-string">'total_amount'</span>], <span class="hljs-number">0</span>) / <span class="hljs-number">100</span>, <span class="hljs-comment">// todo remove hard code</span></span><br><span class="line">        <span class="hljs-string">'withdraw_wallet_deposit_success_count'</span> =&gt; data_get($depositStats, [BankCard::TYPE_WITHDRAW, <span class="hljs-string">'total_count'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">        <span class="hljs-string">'withdraw_wallet_deposit_success_amount'</span> =&gt; data_get($depositStats, [BankCard::TYPE_WITHDRAW, <span class="hljs-string">'total_amount'</span>], <span class="hljs-number">0</span>) / <span class="hljs-number">100</span>, <span class="hljs-comment">// todo remove hard code</span></span><br><span class="line">        <span class="hljs-string">'withdraw_success_count'</span> =&gt; $withdrawStat-&gt;total_count ?? <span class="hljs-number">0</span>,</span><br><span class="line">        <span class="hljs-string">'withdraw_success_amount'</span> =&gt; ($withdrawStat-&gt;total_amount ?? <span class="hljs-number">0</span>) / <span class="hljs-number">100</span>, <span class="hljs-comment">// todo remove hard code</span></span><br><span class="line">        <span class="hljs-string">'fee_wallet_balance'</span> =&gt; data_get($wallets, [User::SLUG_FEE_WALLET, <span class="hljs-string">'balanceFloat'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">        <span class="hljs-string">'withdraw_wallet_balance'</span> =&gt; data_get($wallets, [User::SLUG_WITHDRAW_WALLET, <span class="hljs-string">'balanceFloat'</span>], <span class="hljs-number">0</span>),</span><br><span class="line">    ],</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼代表什麼意思？</strong> 定義一個 unique rule, 並且將範圍限定在特定的 user 上, 代表不同 user 之間的訂單不需要 unique</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$orderNumberUniqueRule = Rule::unique($withdrawTable, <span class="hljs-string">'order_number'</span>)-&gt;where(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> <span class="hljs-title">use</span> <span class="hljs-params">($user)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'user_id'</span>, $user-&gt;getKey());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel function 的作用是什麼？</strong></p>
+</li>
+</ul>
+<ol>
+<li>將 request 裡的參數除了 sign 之外都調出來</li>
+<li>排列這些 key</li>
+<li>首先使用 http_build_query function 針對剛剛的參數來產生一組 url 加密的字串, 然後將這字串與 user 的 secret_key 欄位內的值相串, 然後使用 url 解密這一整個字串, 最後再使用 md5 處理取得 hash 值, 我們比對這個值跟帶進來的 sign 有沒有一樣, 如果不一樣就是不合法</li>
+<li>唯有知道 secret_key 的雙方可以對內容加解密, 而經由這樣的加解密驗證, 確保 request 的內容再傳送過程中未被串改<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">signValid</span><span class="hljs-params">(Request $request, $secretKey)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $allParametersExceptSign = $request-&gt;except(<span class="hljs-string">'sign'</span>);</span><br><span class="line"></span><br><span class="line">    ksort($allParametersExceptSign);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> strcasecmp(</span><br><span class="line">            md5(urldecode(http_build_query($allParametersExceptSign)) . $secretKey),</span><br><span class="line">            $request-&gt;sign</span><br><span class="line">        ) === <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li><strong>以下的 Laravel function 的作用是什麼？</strong></li>
+</ul>
+<ol>
+<li>宣告 lock-key 以及持有時間</li>
+<li>嘗試取得 lock-key, 如果不可得, 持續嘗試五秒</li>
+<li>用 transaction 實作, 若有任何錯誤皆返回</li>
+<li>如果無法取得 lock-key, 返回錯誤</li>
+<li>回返錯誤訊息</li>
+<li>如果 lock-key 還被持有中, 釋放 lock-key<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lock</span><span class="hljs-params">(User $user, $action)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $lock = Cache::lock($user-&gt;lockKey(), <span class="hljs-number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        $lock-&gt;block(<span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> DB::transaction($action);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (LockTimeoutException $e)</span><br><span class="line">    &#123;</span><br><span class="line">        abort(Response::HTTP_CONFLICT, <span class="hljs-string">'请稍候再试'</span>);</span><br><span class="line">    &#125; <span class="hljs-keyword">finally</span></span><br><span class="line">    &#123;</span><br><span class="line">        optional($lock)-&gt;release();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼中, balance 是扣款前還是扣款後？</strong> 扣款前, 因為 $transaction 還沒被執行完畢</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$transaction = $user-&gt;withdrawFloat($request-&gt;input(<span class="hljs-string">'amount'</span>), [</span><br><span class="line">    <span class="hljs-string">'before_balance'</span> =&gt; $user-&gt;balance,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼是什麼意思呢？</strong> 將資料存入 mysql 中的 json 欄位</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$deposit-&gt;user_bank_meta = (object)[</span><br><span class="line">    <span class="hljs-string">'subbranch'</span> =&gt; $userBankCard-&gt;subbranch,</span><br><span class="line">    <span class="hljs-string">'province'</span> =&gt; $userBankCard-&gt;province,</span><br><span class="line">    <span class="hljs-string">'city'</span> =&gt; $userBankCard-&gt;city,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>下面的 Laravel 程式碼是什麼意思？</strong> 將檔案存在 $deposit-&gt;getTable(), 檔名為 $deposit-&gt;system_order_number, 使用 filesystem.cloud, 可設為 s3</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$request-&gt;file(<span class="hljs-string">'payment_instrument'</span>)</span><br><span class="line">    -&gt;storeAs($deposit-&gt;getTable(), $deposit-&gt;system_order_number, config(<span class="hljs-string">'filesystems.cloud'</span>));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>下面的 Laravel Requests 代表什麼意思？</strong> 使用 captcha 的 extension captcha_api 來驗證, 因為該驗證器一定需要一個 key, 如果在 validation 期間 key 為 null, 那直接就回 500 了, 所以這邊處理, 當沒有 captcha_key 時, 給一個隨機 10 碼, 這樣會驗不過(key 沒帶原本就應該驗不過), 但是不會 500</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rules</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'username'</span>    =&gt; <span class="hljs-string">'required_without:email|string'</span>,</span><br><span class="line">        <span class="hljs-string">'email'</span>       =&gt; <span class="hljs-string">'required_without:username|email'</span>,</span><br><span class="line">        <span class="hljs-string">'password'</span>    =&gt; <span class="hljs-string">'required|string'</span>,</span><br><span class="line">        <span class="hljs-string">'captcha_key'</span> =&gt; <span class="hljs-string">'required'</span>,</span><br><span class="line">        <span class="hljs-string">'captcha'</span>     =&gt; <span class="hljs-string">'required|captcha_api:'</span>.(<span class="hljs-keyword">$this</span>-&gt;request-&gt;get(<span class="hljs-string">'captcha_key'</span>) ?? Str::random(<span class="hljs-number">10</span>)),</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 
