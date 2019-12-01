@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-28T13:52:52.436Z">
+<meta property="og:updated_time" content="2019-11-30T10:04:28.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-28T13:52:52.436Z">
+<meta property="og:updated_time" content="2019-11-30T10:04:28.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -160,7 +160,7 @@
                     
                     
                     
-                    <a class="navbar-item" href="#優化設定">2.1.2&nbsp;&nbsp;優化設定</a>
+                    <a class="navbar-item" href="#Optimization">2.1.2&nbsp;&nbsp;Optimization</a>
                     
                     
                     <hr class="navbar-divider">
@@ -248,7 +248,7 @@
         <span class="column is-narrow">
             
             
-            28 分钟 讀完 (大概 4163 字)
+            28 分钟 讀完 (大概 4256 字)
         </span>
         
     </div>
@@ -258,8 +258,7 @@
 <a id="more"></a>
 <p><br><br><br><br><br></p>
 <h2 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h2><h3 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h3><h4 id="Server-Configuration"><a href="#Server-Configuration" class="headerlink" title="Server Configuration"></a>Server Configuration</h4><h5 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h5><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    // 監聽 80 port</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line">    <span class="hljs-attribute">server_name</span> example.com;</span><br><span class="line">    // Document root</span><br><span class="line">    <span class="hljs-attribute">root</span> /example.com/public;</span><br><span class="line"></span><br><span class="line">    // iframe 以及 object 保護</span><br><span class="line">    <span class="hljs-attribute">add_header</span> X-Frame-Options <span class="hljs-string">"SAMEORIGIN"</span>;</span><br><span class="line">    // XSS 保護</span><br><span class="line">    <span class="hljs-attribute">add_header</span> X-XSS-Protection <span class="hljs-string">"1; mode=block"</span>;</span><br><span class="line">    // 禁止 NGINX 自動判斷資源型態</span><br><span class="line">    <span class="hljs-attribute">add_header</span> X-Content-Type-Options <span class="hljs-string">"nosniff"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">index</span> index.html index.htm index.php;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">charset</span> utf-<span class="hljs-number">8</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">        // 先尋找 $uri, 在尋找 $uri/, 都沒有的話, 重寫規則成 /index.php?query_string</span><br><span class="line">        <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ /index.php?<span class="hljs-variable">$query_string</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 若 location 等於 /favicon.ico, 不記入 log</span><br><span class="line">    <span class="hljs-attribute">location</span> = /favicon.ico &#123; <span class="hljs-attribute">access_log</span> <span class="hljs-literal">off</span>; <span class="hljs-attribute">log_not_found</span> <span class="hljs-literal">off</span>; &#125;</span><br><span class="line">    // 若 location 等於 /robots.txt, 不記入 log</span><br><span class="line">    <span class="hljs-attribute">location</span> = /robots.txt  &#123; <span class="hljs-attribute">access_log</span> <span class="hljs-literal">off</span>; <span class="hljs-attribute">log_not_found</span> <span class="hljs-literal">off</span>; &#125;</span><br><span class="line"></span><br><span class="line">    // error 導向 /index.php, 由 Laravel 處理</span><br><span class="line">    <span class="hljs-attribute">error_page</span> <span class="hljs-number">404</span> /index.php;</span><br><span class="line"></span><br><span class="line">    // 結尾是 .php 結尾的話, 進入此 location</span><br><span class="line">    <span class="hljs-attribute">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">        // 經由 unix 通道 pass, 若跨主機或使用容器的話, 需使用 TCP</span><br><span class="line">        <span class="hljs-attribute">fastcgi_pass</span> unix:/var/run/php/php7.2-fpm.sock;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">        // </span><br><span class="line">        <span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$realpath_root</span><span class="hljs-variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="hljs-attribute">include</span> fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> <span class="hljs-regexp">~ /\.(?!well-known).*</span> &#123;</span><br><span class="line">        <span class="hljs-attribute">deny</span> all;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><br></p>
-<h4 id="優化設定"><a href="#優化設定" class="headerlink" title="優化設定"></a>優化設定</h4><ul>
+<ul>
 <li><p><strong>add_header X-Frame-Options 的用途是？</strong> </p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">用來指示文件是否能夠載入 &lt;frame&gt;, &lt;iframe&gt;, 以及 &lt;object&gt;</span><br></pre></td></tr></table></figure>
 </li>
@@ -277,6 +276,24 @@
 </li>
 <li><p><strong>add_header X-Content-Type-Options “nosniff”; 的用途？</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">網路上的資源有各種類型, 通常瀏覽器會根據 header 的 Content-Type 來分辨它們的類型。如：&quot;text/html&quot; 代表 html 文檔, &quot;image/png&quot; 是 PNG 圖片, &quot;text/css&quot; 是 CSS 樣式文檔。然而, 有些資源的 Content-Type 是錯的或者未定義。這時, 某些瀏覽器會啟用 MIME-sniffing 來猜測該資源的類型, 解析內容並執行。</span><br><span class="line"></span><br><span class="line">例如, 我們即使給一個 html 文檔指定 Content-Type 為 &quot;text/plain&quot;, 在 IE8 中這個文檔依然會被當做 html 來解析。利用瀏覽器的這個特性, 攻擊者甚至可以讓原本應該解析為圖片的請求被解析為 JavaScript 。通過下面這個響應頭可以禁用瀏覽器的類型猜測行為：</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h4><h5 id="Autoloader-Optimization"><a href="#Autoloader-Optimization" class="headerlink" title="Autoloader Optimization"></a>Autoloader Optimization</h5><ul>
+<li><strong>部署 Production 環境時, 如何優化 Composer 的 class autoloader map?</strong><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer install --optimize-autoloader --no-dev</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h5 id="Optimizing-Configuration-Loading"><a href="#Optimizing-Configuration-Loading" class="headerlink" title="Optimizing Configuration Loading"></a>Optimizing Configuration Loading</h5><ul>
+<li><p><strong>部署 Laravel 到 production 時, 如何優化 cache?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan config:cache</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>當執行 <code>php artisan config:cache</code>, .env 檔會失效, 那該如何在程式碼中使用 .env 呢？</strong> 可以寫在 config 裡</p>
+</li>
+</ul>
+<p><br></p>
+<h5 id="Optimizing-Route-Loading"><a href="#Optimizing-Route-Loading" class="headerlink" title="Optimizing Route Loading"></a>Optimizing Route Loading</h5><ul>
+<li><strong>當部署 Laravel 到 production 時, 該怎麼優化 route?</strong><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan route:cache</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p><br><br><br><br><br></p>
