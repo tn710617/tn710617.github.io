@@ -5,7 +5,7 @@
 <title>GCP Deployment Manager - 正式環境 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述在本教程中, 你將會使用一個叫做 Deployment Manager 的基礎設施策劃工具來啟動一個服務, 並且使用 Stackdriver 來監控這個服務。 在 Stackdriver, 你將會使用 Stackdriver 主控台來設定基礎的黑盒子監控, 並且建立一個運行時間確認 (Uptime Check) 來觸發事件通知 (alert notification)">
-<meta name="keywords" content="QWIKLABS,Google Kubernetes,Cloud Architecture">
+<meta name="keywords" content="QWIKLABS,Cloud Architecture,Google Deployment Manager">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GCP Deployment Manager - 正式環境">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/deploymentManagerFullProduction/index.html">
@@ -43,7 +43,7 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/sqfo80gxpWi0TINBd5KPs9ArAAeCqTLk-Jc45MIPs6Y4NXe1tC0Aii85P9kxikPGkSfn8tJM3-8MerE1BC7GhamNK5UgAnQfcjsddJHgFs2y8U3tIPkgQW5t5aXAoOSpAQRTmY0Qpi1K948VznsX-GMxTgGhZnvnCb2oAUvlYCJ8YyqS-OWOh4uSM6Fd-Fk40-jxKajCNCXxqQmUp8ATixgvb--q__zqVKylDMUaXrARu2xJUICAblAenK46CTDJf2noVIjAKZJYuYpfMV36Ybffz13rBoW0Rc7kjDRlOK22l9yNdAR8V3LBLhBmsd99wJSGMpqAWZoteAhMw_epVCvTmdeBoqDyRfB0ggaNdYjJRhO6R9CVqwCvpW1_ykllocYuQmgJZn_55H-GeVuqM5ZoDZwZ29MeJvbRey0SuoN7rEJkZXvbI7Fum7STS4S3ju3KjCYRfAHYLip2yiWDZA-T9H-6SVCWbeidTVy6tht78jzXQrB-cNgCnj75pvuvJmnaZ_ay-aTCose4Wi3zYImqYs-o-KzjLQ10dhYJlit0efOUCXEegAEMFLkmyNYauvPaRX8_B_r4KvdasC0_ueHg2R0pVS6WzT8_O-9uT01qi3SebAXqa2lfrAn3kkPZwlC_uGDgtApj22xADWR0s0otM5AqmAucGms8868ZYz6k_6gWCyHys6yx79BOiPlKoHnDoL1qHJ6wfvuwVpuoLv6UltcYnFJYe2hEPAuCqzhTDv1F=w448-h776-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/s8MzJImEa1-4tzWdX_WAE5dTVz7WfwlHPL1ghcvbAMcQ39SToAeIYmzgViSqXdnMO2N-POhIgp_5z1gzs4qJhkNgdS2UUz0-qWhV1jWEutH7z6eZ8KLMfIr2PgXHfq3hdfKNBQFt-zedtnrAYJF4R-gxxL5GZ6EHSyIxo_V8IYpKzsmQ57-ky0YNlfXWHzftQ55OrfXRGTklPR53MqrVmCQVmCwi_vfNPqsFbbJKBOPohDHsHen_wfUJVkx6DfsGM13Xxnzd8g_wL5955CCSWPEhmVP-DtuJnLtW4aRjZA-yeFqJJfuOg7MPRTsOXPgRV9JjbIbTMgiSzEhsdxigt4LOBrbvprkkj5wIROBHvFHUZNNdjZ4wVSBLdc0aR6GEB8-WQXQ0HaEs_Yfhj8YwxWgjKqmunvZM7fv5wr4ZS7z8gUWJQnOvAdslv6O7OXozg1K-RoSTNRkcVsuvlF8nW8RSBtadYmknAyt5WLqIYDsBPDijVP2SJjUpPQnGjCqS6AdFs0nEX9e1OXyC08h0VnWjbXJgY494_eJebjOKkuKL5UDXQOhS1hyVhlazuWE6SzFA_quPGgwAsr8wVGfRyRPDfiHPusb0EKvfeVXXkwLLqlidDmJgiAWSC7XPZuEyHBxvApfr0IJXGpvpmjamChs7m0wX7cO5zWSyEsUTj4SDUX85BxrPSvCPJS1hfrEfQ_qapLlF9yjH02h-SsvfRo5IvtDA938S9tYJQxmZ493aYIic=w1020-h200-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/K-Wee-XTI-yz8FaV48unCQmpIPPrU2_aGGb7D4lZPw_N8KnbO7VtvloXbrh19RY8moHiqdlXyIbHCKQzwMJhxbinJFb2gtYKDI_BHRnjRORyYn4Doy5OlPDlgd4_3pleerZQlh9rZT_aQSqrcGCiHyi8aFkbXED91_qX3vbzOT28sHjwyeLCHdEesYpoDRwAT9pS0m-KJQoOrrCb9r_ns625cALIAqv5S5hg9Y7je2p8G7EJUHqn62Gg4Xg_H2xAmDYBBb33VZIvGWz3fVBX8IVxwYoBc0XDHXNq2FQyAiDqcnoyapVo1dk8bpMLIy4p1XPMg_lU_q2SeBz23nuLDAjtHGIjdkeBKP-SP1W8sRUSCT8EC9W9t8FHMI8PxKrOrnBvZ_vt6u9u0-Jwe9LEwcMeFx49sDQhfaET1hSnytqiigy0ZsVyaggGdAqXZsPamS6Bl66FBcfV6mWSqo1doNRlMR00v514jDWarp-k1Uh4jcZmn8R0kt2JBKN-gMJxFN61KubMejGSs2BKYvjekvB6Vkokmcrlmmlc_4gB2mkBg3V3a5J6cxnTsGPc_8Vw2qVB-oMnL1uUNMcHJKXPtQ3ZIRpeDLIHqv5N96vX0v3GwXdpjf6dktb5k6vdcBx28ODAc_x0-9VUUJW25zTX12dVE-NoPp0XHoVnJ5hZcd49k5nyBd_cdGDF0NWSucwlHjs7y5Q5IReF6jDrOS_-jAL9F8RM7NYRkalv0Vazmhws2e3D=w1020-h500-no">
-<meta property="og:updated_time" content="2019-11-04T10:45:24.800Z">
+<meta property="og:updated_time" content="2019-12-02T01:56:16.253Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GCP Deployment Manager - 正式環境">
 <meta name="twitter:description" content="概述在本教程中, 你將會使用一個叫做 Deployment Manager 的基礎設施策劃工具來啟動一個服務, 並且使用 Stackdriver 來監控這個服務。 在 Stackdriver, 你將會使用 Stackdriver 主控台來設定基礎的黑盒子監控, 並且建立一個運行時間確認 (Uptime Check) 來觸發事件通知 (alert notification)">
@@ -63,7 +63,7 @@
 
 
     <meta name="description" content="概述在本教程中, 你將會使用一個叫做 Deployment Manager 的基礎設施策劃工具來啟動一個服務, 並且使用 Stackdriver 來監控這個服務。 在 Stackdriver, 你將會使用 Stackdriver 主控台來設定基礎的黑盒子監控, 並且建立一個運行時間確認 (Uptime Check) 來觸發事件通知 (alert notification)">
-<meta name="keywords" content="QWIKLABS,Google Kubernetes,Cloud Architecture">
+<meta name="keywords" content="QWIKLABS,Cloud Architecture,Google Deployment Manager">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GCP Deployment Manager - 正式環境">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/deploymentManagerFullProduction/index.html">
@@ -101,7 +101,7 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/sqfo80gxpWi0TINBd5KPs9ArAAeCqTLk-Jc45MIPs6Y4NXe1tC0Aii85P9kxikPGkSfn8tJM3-8MerE1BC7GhamNK5UgAnQfcjsddJHgFs2y8U3tIPkgQW5t5aXAoOSpAQRTmY0Qpi1K948VznsX-GMxTgGhZnvnCb2oAUvlYCJ8YyqS-OWOh4uSM6Fd-Fk40-jxKajCNCXxqQmUp8ATixgvb--q__zqVKylDMUaXrARu2xJUICAblAenK46CTDJf2noVIjAKZJYuYpfMV36Ybffz13rBoW0Rc7kjDRlOK22l9yNdAR8V3LBLhBmsd99wJSGMpqAWZoteAhMw_epVCvTmdeBoqDyRfB0ggaNdYjJRhO6R9CVqwCvpW1_ykllocYuQmgJZn_55H-GeVuqM5ZoDZwZ29MeJvbRey0SuoN7rEJkZXvbI7Fum7STS4S3ju3KjCYRfAHYLip2yiWDZA-T9H-6SVCWbeidTVy6tht78jzXQrB-cNgCnj75pvuvJmnaZ_ay-aTCose4Wi3zYImqYs-o-KzjLQ10dhYJlit0efOUCXEegAEMFLkmyNYauvPaRX8_B_r4KvdasC0_ueHg2R0pVS6WzT8_O-9uT01qi3SebAXqa2lfrAn3kkPZwlC_uGDgtApj22xADWR0s0otM5AqmAucGms8868ZYz6k_6gWCyHys6yx79BOiPlKoHnDoL1qHJ6wfvuwVpuoLv6UltcYnFJYe2hEPAuCqzhTDv1F=w448-h776-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/s8MzJImEa1-4tzWdX_WAE5dTVz7WfwlHPL1ghcvbAMcQ39SToAeIYmzgViSqXdnMO2N-POhIgp_5z1gzs4qJhkNgdS2UUz0-qWhV1jWEutH7z6eZ8KLMfIr2PgXHfq3hdfKNBQFt-zedtnrAYJF4R-gxxL5GZ6EHSyIxo_V8IYpKzsmQ57-ky0YNlfXWHzftQ55OrfXRGTklPR53MqrVmCQVmCwi_vfNPqsFbbJKBOPohDHsHen_wfUJVkx6DfsGM13Xxnzd8g_wL5955CCSWPEhmVP-DtuJnLtW4aRjZA-yeFqJJfuOg7MPRTsOXPgRV9JjbIbTMgiSzEhsdxigt4LOBrbvprkkj5wIROBHvFHUZNNdjZ4wVSBLdc0aR6GEB8-WQXQ0HaEs_Yfhj8YwxWgjKqmunvZM7fv5wr4ZS7z8gUWJQnOvAdslv6O7OXozg1K-RoSTNRkcVsuvlF8nW8RSBtadYmknAyt5WLqIYDsBPDijVP2SJjUpPQnGjCqS6AdFs0nEX9e1OXyC08h0VnWjbXJgY494_eJebjOKkuKL5UDXQOhS1hyVhlazuWE6SzFA_quPGgwAsr8wVGfRyRPDfiHPusb0EKvfeVXXkwLLqlidDmJgiAWSC7XPZuEyHBxvApfr0IJXGpvpmjamChs7m0wX7cO5zWSyEsUTj4SDUX85BxrPSvCPJS1hfrEfQ_qapLlF9yjH02h-SsvfRo5IvtDA938S9tYJQxmZ493aYIic=w1020-h200-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/K-Wee-XTI-yz8FaV48unCQmpIPPrU2_aGGb7D4lZPw_N8KnbO7VtvloXbrh19RY8moHiqdlXyIbHCKQzwMJhxbinJFb2gtYKDI_BHRnjRORyYn4Doy5OlPDlgd4_3pleerZQlh9rZT_aQSqrcGCiHyi8aFkbXED91_qX3vbzOT28sHjwyeLCHdEesYpoDRwAT9pS0m-KJQoOrrCb9r_ns625cALIAqv5S5hg9Y7je2p8G7EJUHqn62Gg4Xg_H2xAmDYBBb33VZIvGWz3fVBX8IVxwYoBc0XDHXNq2FQyAiDqcnoyapVo1dk8bpMLIy4p1XPMg_lU_q2SeBz23nuLDAjtHGIjdkeBKP-SP1W8sRUSCT8EC9W9t8FHMI8PxKrOrnBvZ_vt6u9u0-Jwe9LEwcMeFx49sDQhfaET1hSnytqiigy0ZsVyaggGdAqXZsPamS6Bl66FBcfV6mWSqo1doNRlMR00v514jDWarp-k1Uh4jcZmn8R0kt2JBKN-gMJxFN61KubMejGSs2BKYvjekvB6Vkokmcrlmmlc_4gB2mkBg3V3a5J6cxnTsGPc_8Vw2qVB-oMnL1uUNMcHJKXPtQ3ZIRpeDLIHqv5N96vX0v3GwXdpjf6dktb5k6vdcBx28ODAc_x0-9VUUJW25zTX12dVE-NoPp0XHoVnJ5hZcd49k5nyBd_cdGDF0NWSucwlHjs7y5Q5IReF6jDrOS_-jAL9F8RM7NYRkalv0Vazmhws2e3D=w1020-h500-no">
-<meta property="og:updated_time" content="2019-11-04T10:45:24.800Z">
+<meta property="og:updated_time" content="2019-12-02T01:56:16.253Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GCP Deployment Manager - 正式環境">
 <meta name="twitter:description" content="概述在本教程中, 你將會使用一個叫做 Deployment Manager 的基礎設施策劃工具來啟動一個服務, 並且使用 Stackdriver 來監控這個服務。 在 Stackdriver, 你將會使用 Stackdriver 主控台來設定基礎的黑盒子監控, 並且建立一個運行時間確認 (Uptime Check) 來觸發事件通知 (alert notification)">
@@ -794,9 +794,9 @@
     
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Google-Kubernetes/">#Google Kubernetes</a></span>
-    
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Cloud-Architecture/">#Cloud Architecture</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Google-Deployment-Manager/">#Google Deployment Manager</a></span>
     
     </div>
     
@@ -804,7 +804,7 @@
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/">使用 Spinnaker 在 Kubernetes 中實作持續交付管道</a>
+            <a href="/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/">使用 Spinnaker 在 Kubernetes Engine 中實作持續交付管道</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">

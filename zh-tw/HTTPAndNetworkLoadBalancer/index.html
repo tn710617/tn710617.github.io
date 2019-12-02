@@ -5,7 +5,7 @@
 <title>設定 Network 以及 HTTP 平衡負載器 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記  概述在這個教程中，你將會學習 network load balance 與 HTTP load balance 之間的不同，以及如何正確地根據你的應用來設定，讓你的應用在 Google Compute Engine VM 上運行平衡負載的功能。有好幾種方法可以在Google Cloud Platform 上實">
-<meta name="keywords" content="QWIKLABS,GCP Essentials,Google Load Baalancers">
+<meta name="keywords" content="GCP Essentials,QWIKLABS,Google Load Balancers">
 <meta property="og:type" content="article">
 <meta property="og:title" content="設定 Network 以及 HTTP 平衡負載器">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/HTTPAndNetworkLoadBalancer/index.html">
@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/2apX2v8MHHX_J_83Wzbe_bwSAtvYpy0iiK4tvbD_6kfguCqMfDLxa_Romlzi2aVmJGIdIi9iHsRQMZJaB6fQk4YvA4rbHebfRzOs1Z19_oMIcGtbcZmzAlCBkx9IW9w3BCeCwVFiKm5yRsaywNuVUqe2IPXtt9tqV45rM-itUgGk3-CiQK-ddju0_V8jt2BVWaz04bGzUDw1dA1UZlETjBC2zD5akrGqbNjL6cJwnJINZSF3DUCm2K7Eex_BIz8HN7b2ZVjreZlvk5jfP9M6qn7co1HpXjXBZGyPTGWNtCdrZ53rHbt7Sl2bPWQy8u85qDbvpjUDRstC2_Wf1nTwM5G3s9CKmN4QIm77f4sjcWQy-XKBA1LzHItyt8lEhCROjx84SJBviaR5leGNfUwg-Bf1sazdUvQ4tjYnXYuvpw_DKkmFzNqRpHXNwxl6Hc0ufoS0BUER4kmKax51rM8z3g3rsLf5_9WsuT73ngIBi-Astx_GMnDtUkVEB7V8zIWKzQpks1YLvf6TvxnTyKa7JTywl4aUfyGCk6-CzqNKDU2gl8SZRgde7DSXcwuP568CpFU0bdTEA_Yw_H1Q_TpoStF8XRnJzoi3SEpUi0y-33smyrIRRzCHHGiiE0anroRwIJ_dmzQ12D7ZEXijnentXH-Pg9pAT-YLGeZoABT4kkcbXocz8-OzaOA=w1034-h262-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pA7515fJS19-2Syf8gLT7iV-tuDBjrqjSmXrBgF8_PHerYQxp0x185WfEq31zCS9YsacFiXPwzSakttU8dtyx7GzDHQI77YuUdue39QGcfZ2FpkJQZq-g5LbRn9Ufx7b2lnOL3s9yVAC8QvzKXmkON_eT0i83shqN3kDApaNHvkWbzi_ngwHYSK45FbRyGiLbv4zaa75BuAF0B-UzrOQGaJgbRLFlM5J0B9RnC2e-_PQUoE09uklcL_6zCVhoY0DyKsfRd5h1sC_sxkPGCQ4e3PgrVJfYKN7tOt_367N33n0YIUiphjPttzYy_HBgUHCjK5SMPXQCB5KWrzh428TIfqYulTKqXEaN_Gab2LW5bxZmrM0HKtVboub5-cN5Oam0_vvBXAPKrg5fMZJnfmbJQ4KZojyJgQyj9H23tIIDQt0ZY6VMk0ma_28nifDhoQ6Q67JXI0wNXSaiTC6wh20XGklLCsNCgUdw_adOp2iFEMp2Ik58xzhri9v4mcgF97tKLOjcYt1OHpFdNy-6kAYt8dCvEalqIhUJAaDBvzYg855suuf6tC7DoGAnnlplNU1tlt0yfa_cc--i9Xhy2T3ZnpO8Hnx9ekKzsuaYWBpTXxY41k9N1gUeColW4lVhiVUyvwwO4jyE8Zgx_x2FsneRemGiITRNcyZk1tGJra_g4k4fRKw7O7XeXc=w1034-h262-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/uGpdRrP912S81P24a74yn4-coVYQre0jRQYCd9uH7DzNT-eUgU-DQv6D0DIuQtQTiS4eClxh9cmZjZY99vFQ1iKWxbr6xkyyt1IDQAn8urgbnV20TCrUV0T4fJjLtM1_EqgPFYhg0JyOFCRyMpnjgEgkyPth1RzMCDT3icG6nXeXZBXwVUISc9mfGZ-2q-l8QrawI1Of_J-qR1OE3GtjQZxWFO0XSf51TzGnlYCYfTPtXFyHpHRUByaJXgKNUyWKFF6s9lN_cnxzNK2lb9ZPDNQnGQv0F5JlsVg0AVp_qpAYz-u6PfJK3i7qvQibUANMTaupwuM9Uv3z4B-VgV4LjLjYS2sWObioxu36GEk40rfYifzwJAfFUNjVNAQS0XCI9Ms07oAcazoZcFQpG7WUU4bLcE1xnqsmNFVHHIV61fCBFjwqqauEQg6aBGQ9dG1g55_Led-oT12MIIzJVJkKespkOw4naHCoA5784H6PQcjC5tpN93qz3yKdPIKfuRcHwLV5pAk3VOLjYa93dCqSXxVizECXpp4vxUIokXrNHnZasLu5gsJPALT5Zdq5ec77LBbwV1ku4Q2Yek9Rnt-P8gdJ7C9WFBmFmxd5hfNiKl9tdF5l5s3vehdTloqfqoN7oWSt8lyaKv6FeEyCZYp9qDeOYuFV3G0dya6q87yQRWFGVOAo-zHoSUc=w1034-h322-no">
-<meta property="og:updated_time" content="2019-11-04T10:45:24.410Z">
+<meta property="og:updated_time" content="2019-12-02T01:38:41.207Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="設定 Network 以及 HTTP 平衡負載器">
 <meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記  概述在這個教程中，你將會學習 network load balance 與 HTTP load balance 之間的不同，以及如何正確地根據你的應用來設定，讓你的應用在 Google Compute Engine VM 上運行平衡負載的功能。有好幾種方法可以在Google Cloud Platform 上實">
@@ -42,7 +42,7 @@
 
 
     <meta name="description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記  概述在這個教程中，你將會學習 network load balance 與 HTTP load balance 之間的不同，以及如何正確地根據你的應用來設定，讓你的應用在 Google Compute Engine VM 上運行平衡負載的功能。有好幾種方法可以在Google Cloud Platform 上實">
-<meta name="keywords" content="QWIKLABS,GCP Essentials,Google Load Baalancers">
+<meta name="keywords" content="GCP Essentials,QWIKLABS,Google Load Balancers">
 <meta property="og:type" content="article">
 <meta property="og:title" content="設定 Network 以及 HTTP 平衡負載器">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/HTTPAndNetworkLoadBalancer/index.html">
@@ -59,7 +59,7 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/2apX2v8MHHX_J_83Wzbe_bwSAtvYpy0iiK4tvbD_6kfguCqMfDLxa_Romlzi2aVmJGIdIi9iHsRQMZJaB6fQk4YvA4rbHebfRzOs1Z19_oMIcGtbcZmzAlCBkx9IW9w3BCeCwVFiKm5yRsaywNuVUqe2IPXtt9tqV45rM-itUgGk3-CiQK-ddju0_V8jt2BVWaz04bGzUDw1dA1UZlETjBC2zD5akrGqbNjL6cJwnJINZSF3DUCm2K7Eex_BIz8HN7b2ZVjreZlvk5jfP9M6qn7co1HpXjXBZGyPTGWNtCdrZ53rHbt7Sl2bPWQy8u85qDbvpjUDRstC2_Wf1nTwM5G3s9CKmN4QIm77f4sjcWQy-XKBA1LzHItyt8lEhCROjx84SJBviaR5leGNfUwg-Bf1sazdUvQ4tjYnXYuvpw_DKkmFzNqRpHXNwxl6Hc0ufoS0BUER4kmKax51rM8z3g3rsLf5_9WsuT73ngIBi-Astx_GMnDtUkVEB7V8zIWKzQpks1YLvf6TvxnTyKa7JTywl4aUfyGCk6-CzqNKDU2gl8SZRgde7DSXcwuP568CpFU0bdTEA_Yw_H1Q_TpoStF8XRnJzoi3SEpUi0y-33smyrIRRzCHHGiiE0anroRwIJ_dmzQ12D7ZEXijnentXH-Pg9pAT-YLGeZoABT4kkcbXocz8-OzaOA=w1034-h262-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pA7515fJS19-2Syf8gLT7iV-tuDBjrqjSmXrBgF8_PHerYQxp0x185WfEq31zCS9YsacFiXPwzSakttU8dtyx7GzDHQI77YuUdue39QGcfZ2FpkJQZq-g5LbRn9Ufx7b2lnOL3s9yVAC8QvzKXmkON_eT0i83shqN3kDApaNHvkWbzi_ngwHYSK45FbRyGiLbv4zaa75BuAF0B-UzrOQGaJgbRLFlM5J0B9RnC2e-_PQUoE09uklcL_6zCVhoY0DyKsfRd5h1sC_sxkPGCQ4e3PgrVJfYKN7tOt_367N33n0YIUiphjPttzYy_HBgUHCjK5SMPXQCB5KWrzh428TIfqYulTKqXEaN_Gab2LW5bxZmrM0HKtVboub5-cN5Oam0_vvBXAPKrg5fMZJnfmbJQ4KZojyJgQyj9H23tIIDQt0ZY6VMk0ma_28nifDhoQ6Q67JXI0wNXSaiTC6wh20XGklLCsNCgUdw_adOp2iFEMp2Ik58xzhri9v4mcgF97tKLOjcYt1OHpFdNy-6kAYt8dCvEalqIhUJAaDBvzYg855suuf6tC7DoGAnnlplNU1tlt0yfa_cc--i9Xhy2T3ZnpO8Hnx9ekKzsuaYWBpTXxY41k9N1gUeColW4lVhiVUyvwwO4jyE8Zgx_x2FsneRemGiITRNcyZk1tGJra_g4k4fRKw7O7XeXc=w1034-h262-no">
 <meta property="og:image" content="https://lh3.googleusercontent.com/uGpdRrP912S81P24a74yn4-coVYQre0jRQYCd9uH7DzNT-eUgU-DQv6D0DIuQtQTiS4eClxh9cmZjZY99vFQ1iKWxbr6xkyyt1IDQAn8urgbnV20TCrUV0T4fJjLtM1_EqgPFYhg0JyOFCRyMpnjgEgkyPth1RzMCDT3icG6nXeXZBXwVUISc9mfGZ-2q-l8QrawI1Of_J-qR1OE3GtjQZxWFO0XSf51TzGnlYCYfTPtXFyHpHRUByaJXgKNUyWKFF6s9lN_cnxzNK2lb9ZPDNQnGQv0F5JlsVg0AVp_qpAYz-u6PfJK3i7qvQibUANMTaupwuM9Uv3z4B-VgV4LjLjYS2sWObioxu36GEk40rfYifzwJAfFUNjVNAQS0XCI9Ms07oAcazoZcFQpG7WUU4bLcE1xnqsmNFVHHIV61fCBFjwqqauEQg6aBGQ9dG1g55_Led-oT12MIIzJVJkKespkOw4naHCoA5784H6PQcjC5tpN93qz3yKdPIKfuRcHwLV5pAk3VOLjYa93dCqSXxVizECXpp4vxUIokXrNHnZasLu5gsJPALT5Zdq5ec77LBbwV1ku4Q2Yek9Rnt-P8gdJ7C9WFBmFmxd5hfNiKl9tdF5l5s3vehdTloqfqoN7oWSt8lyaKv6FeEyCZYp9qDeOYuFV3G0dya6q87yQRWFGVOAo-zHoSUc=w1034-h322-no">
-<meta property="og:updated_time" content="2019-11-04T10:45:24.410Z">
+<meta property="og:updated_time" content="2019-12-02T01:38:41.207Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="設定 Network 以及 HTTP 平衡負載器">
 <meta name="twitter:description" content="前言本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記  概述在這個教程中，你將會學習 network load balance 與 HTTP load balance 之間的不同，以及如何正確地根據你的應用來設定，讓你的應用在 Google Compute Engine VM 上運行平衡負載的功能。有好幾種方法可以在Google Cloud Platform 上實">
@@ -464,11 +464,11 @@
     
     <div class="columns is-variable is-1 is-multiline is-mobile">
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
-    
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Essentials/">#GCP Essentials</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Google-Load-Baalancers/">#Google Load Baalancers</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Google-Load-Balancers/">#Google Load Balancers</a></span>
     
     </div>
     
@@ -481,7 +481,7 @@
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh-tw/createAPersistentDisk/">在 GCP 上建立一個 persistent disk</a>
+            <a href="/zh-tw/CloudShellAndgcloud/">Cloud Shell 及 Gcloud 簡介！</a>
             
         </span>
     </div>
