@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-02T08:21:11.557Z">
+<meta property="og:updated_time" content="2019-12-02T09:37:08.977Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-02T08:21:11.557Z">
+<meta property="og:updated_time" content="2019-12-02T09:37:08.977Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言Laravel 學習筆記, 學什麼記什麼！">
@@ -262,7 +262,7 @@
         <span class="column is-narrow">
             
             
-            31 分钟 讀完 (大概 4642 字)
+            32 分钟 讀完 (大概 4791 字)
         </span>
         
     </div>
@@ -568,7 +568,14 @@
 <li><p><strong>下面的 Laravel Requests 代表什麼意思？</strong> 使用 captcha 的 extension captcha_api 來驗證, 因為該驗證器一定需要一個 key, 如果在 validation 期間 key 為 null, 那直接就回 500 了, 所以這邊處理, 當沒有 captcha_key 時, 給一個隨機 10 碼, 這樣會驗不過(key 沒帶原本就應該驗不過), 但是不會 500</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rules</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'username'</span>    =&gt; <span class="hljs-string">'required_without:email|string'</span>,</span><br><span class="line">        <span class="hljs-string">'email'</span>       =&gt; <span class="hljs-string">'required_without:username|email'</span>,</span><br><span class="line">        <span class="hljs-string">'password'</span>    =&gt; <span class="hljs-string">'required|string'</span>,</span><br><span class="line">        <span class="hljs-string">'captcha_key'</span> =&gt; <span class="hljs-string">'required'</span>,</span><br><span class="line">        <span class="hljs-string">'captcha'</span>     =&gt; <span class="hljs-string">'required|captcha_api:'</span>.(<span class="hljs-keyword">$this</span>-&gt;request-&gt;get(<span class="hljs-string">'captcha_key'</span>) ?? Str::random(<span class="hljs-number">10</span>)),</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
+<li><p><strong>以下的 Laravel 程式碼中, where 內為什麼只有一個參數？</strong><br><code>Laravel 中, 如果 request 中的 parameter 與資料庫中的欄位名稱相同, 就可以直接用這種方式 query</code></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">        $bankCard = BankCard::where($request-&gt;only(<span class="hljs-string">'card_number'</span>))</span><br><span class="line">        -&gt;withTrashed()</span><br><span class="line">        -&gt;first() ?? BankCard::create($data);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼是什麼意思？</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">1. query 出 card_number 的 model</span><br><span class="line">2. withTrashed 代表強制顯示已被 soft deleted 的 model</span><br><span class="line">3. 取出第一筆</span><br><span class="line">4. 若無結果, 則根據輸入的資料建立一張卡</span><br><span class="line">5. 更新 bankCard</span><br><span class="line">6. 若 bankCard 為 soft deleted, 解除它</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">        $bankCard = BankCard::where($request-&gt;only(<span class="hljs-string">'card_number'</span>))</span><br><span class="line">        -&gt;withTrashed()</span><br><span class="line">        -&gt;first() ?? BankCard::create($data);</span><br><span class="line">        </span><br><span class="line">        $bankCard-&gt;update($data);</span><br><span class="line">        $bankCard-&gt;restore();</span><br></pre></td></tr></table></figure>
 
     
     </div>
