@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Laravel - 基礎 - 路由器 - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
+<meta name="keywords" content="Laravel,Laravel Routing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - 基礎 - 路由器">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravelTheBasicsRouting/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2019-12-08T21:50:35.112Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - 基礎 - 路由器">
+<meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravelTheBasicsRouting/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
+<meta name="keywords" content="Laravel,Laravel Routing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - 基礎 - 路由器">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravelTheBasicsRouting/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2019-12-08T21:50:35.112Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - 基礎 - 路由器">
+<meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray 的技術捲軸
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Basic-Routing">2&nbsp;&nbsp;<b>Basic Routing</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Available-Router-Methods">2.1&nbsp;&nbsp;Available Router Methods</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CSRF-Protection">2.2&nbsp;&nbsp;CSRF Protection</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redirect-Routes">2.3&nbsp;&nbsp;Redirect Routes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#View-Routes">2.4&nbsp;&nbsp;View Routes</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Route-Parameters">3&nbsp;&nbsp;<b>Route Parameters</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Required-Parameters">3.1&nbsp;&nbsp;Required Parameters</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Optional-Parameters">3.2&nbsp;&nbsp;Optional Parameters</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Regular-Expression-Constraints">3.3&nbsp;&nbsp;Regular Expression Constraints</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Global-Constraints">3.3.1&nbsp;&nbsp;Global Constraints</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Named-Routes">4&nbsp;&nbsp;<b>Named Routes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Route-Groups">5&nbsp;&nbsp;<b>Route Groups</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Middleware">5.1&nbsp;&nbsp;Middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Namespaces">5.2&nbsp;&nbsp;Namespaces</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Sub-Domain-Routing">5.3&nbsp;&nbsp;Sub-Domain Routing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Route-Prefixes">5.4&nbsp;&nbsp;Route Prefixes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Route-Name-Prefixes">5.5&nbsp;&nbsp;Route Name Prefixes</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Route-Model-Binding">6&nbsp;&nbsp;<b>Route Model Binding</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Implicit-Binding">6.1&nbsp;&nbsp;Implicit Binding</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-the-key-Name">6.1.1&nbsp;&nbsp;Customizing the key Name</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Explicit-Binding">6.2&nbsp;&nbsp;Explicit Binding</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Resolution-Logic">6.2.1&nbsp;&nbsp;Customizing The Resolution Logic</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Fallback-Routes">7&nbsp;&nbsp;<b>Fallback Routes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Rate-Limiting">8&nbsp;&nbsp;<b>Rate Limiting</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Dynamic-Rate-Limiting">8.1&nbsp;&nbsp;Dynamic Rate Limiting</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Distanct-Guest-amp-Authenticated-User-Rate-Limits">8.2&nbsp;&nbsp;Distanct Guest &amp;amp;amp; Authenticated User Rate Limits</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Form-Method-Spoofing">9&nbsp;&nbsp;<b>Form Method Spoofing</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Accessing-The-Current-Route">9.1&nbsp;&nbsp;Accessing The Current Route</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravelTheBasicsRouting/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravelTheBasicsRouting/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - 基礎 - 路由器
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-12-08T20:03:40.000Z" itemprop="datePublished">12月 9 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/開發/">開發</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            17 分钟 讀完 (大概 2475 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。</p>
+<a id="more"></a>
+<p><br><br><br><br><br></p>
+<h2 id="Basic-Routing"><a href="#Basic-Routing" class="headerlink" title="Basic Routing"></a>Basic Routing</h2><h3 id="Available-Router-Methods"><a href="#Available-Router-Methods" class="headerlink" title="Available Router Methods"></a>Available Router Methods</h3><ul>
+<li><strong>Laravel 中, 怎樣才能建立一個可以回應多個 HTTP method 的 route?</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::match([<span class="hljs-string">'get'</span>, <span class="hljs-string">'post'</span>], <span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Route::any(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="CSRF-Protection"><a href="#CSRF-Protection" class="headerlink" title="CSRF Protection"></a>CSRF Protection</h3><ul>
+<li><p><strong>Laravel 中, 哪些 HTTP method 會有 CSRF Protection?</strong> </p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">POST</span><br><span class="line">PUT</span><br><span class="line">DELETE</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 的 CSRF Protection 中, 是如何將 XSRF TOKEN 傳給前端的？</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">1. Laravel 把 token 存在 Session 當中</span><br><span class="line">2. 把 Session 對應的 Cookie 傳給前端</span><br><span class="line">3. 前端帶著對應的 Cookie, token 上來</span><br><span class="line">4. Laravel 用 Cookie 找 Session 對應的值, 並驗證前端送來的 token</span><br><span class="line">Laravel =&gt; Cookie, token =&gt; 前端 =&gt; Cookie, token =&gt; Laravel</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 的 CSRF Protection 中, XSRF Token 會放在哪裡傳給前端？</strong><br><code>Cookie</code></p>
+</li>
+<li><p><strong>Laravel 的 CSRF Protection 中, XSRF Token 會否加密再傳給前端？</strong> <code>會的</code></p>
+</li>
+<li><p><strong>Laravel 的 CSRF Protection 中, 後端會傳什麼給前端？</strong><br><code>與 Session 相對應的 Cookie 以及寫在 Cookie 內的 token</code></p>
+</li>
+<li><p><strong>Laravel 的 CSRF Protection 中, 前端會傳什麼給後端？</strong><br><code>後端之前傳來的 Cookie 資訊以及裡頭的 token</code></p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Redirect-Routes"><a href="#Redirect-Routes" class="headerlink" title="Redirect Routes"></a>Redirect Routes</h3><ul>
+<li><p><strong>HTTP 轉址中, 301 跟 302 差在哪？</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">301: 永久轉址, 搜尋引擎會把新網址當作唯一 url</span><br><span class="line">302: 暫時轉址, 搜尋引擎會知道這只是暫時的</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如何利用 route 轉址？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::redirect(<span class="hljs-string">'/here'</span>, <span class="hljs-string">'/there'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如何利用 route 轉址, 並且帶上狀態碼？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::redirect(<span class="hljs-string">'/here'</span>, <span class="hljs-string">'/there'</span>, <span class="hljs-number">301</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 哪一個 route method 可以轉址 301？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::permanentRedirect(<span class="hljs-string">'/here'</span>, <span class="hljs-string">'/there'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="View-Routes"><a href="#View-Routes" class="headerlink" title="View Routes"></a>View Routes</h3><ul>
+<li><p><strong>Laravel 中, 如果我知道我只是要 return 一個 view, 可以使用哪一個 route 的 method?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::view(<span class="hljs-string">'/welcome'</span>, <span class="hljs-string">'welcome'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如果我使用了 route 的 view method, 而我想要將參數帶過去, 可以怎麼做?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::view(<span class="hljs-string">'/welcome'</span>, <span class="hljs-string">'welcome'</span>, [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Taylor'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Route-Parameters"><a href="#Route-Parameters" class="headerlink" title="Route Parameters"></a>Route Parameters</h2><h3 id="Required-Parameters"><a href="#Required-Parameters" class="headerlink" title="Required Parameters"></a>Required Parameters</h3><ul>
+<li><p><strong>Laravel 中, 如何在 URL 中定義參數?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;id&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($id)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">'User '</span>.$id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如何在 URL 中定義多個參數?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'posts/&#123;post&#125;/comments/&#123;comment&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($postId, $commentId)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 定義 URL 中的參數時, 可以用 <code>-</code> 嗎？ 如果不行, 那要用什麼?</strong></p>
+<ul>
+<li>不可</li>
+<li>可使用 underscore (<code>_</code>)</li>
+</ul>
+</li>
+<li><p><strong>Laravel 中, 取得從 URL 中定義的參數時, 是看名字, 還是看順序？</strong><br>順序, controller 參數的名字不重要, 隨便亂取都可以, 只看順序</p>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, 假設 a = 1, b = 2, 那 $c 跟 $d 的 dd() 結果為何？</strong><br><code>2, 1</code>, Laravel 會自動找到參數並按照帶入的順序排列</p>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span><span class="hljs-params">($d, MerchantDepositIndex $request, $c, DepositManager $manager)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        dd($c, $d);</span><br><span class="line">        $row = request(<span class="hljs-string">'row'</span>, (<span class="hljs-keyword">new</span> Deposit)-&gt;getPerPage());</span><br><span class="line"></span><br><span class="line">        $deposits = $manager-&gt;get($request);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> DepositCollection::make($deposits-&gt;latest()-&gt;paginate($row)-&gt;appends(request()-&gt;query-&gt;all()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">        Route::apiResource(<span class="hljs-string">'deposits/&#123;a&#125;/&#123;b&#125;'</span>, <span class="hljs-string">'DepositController'</span>)-&gt;only([<span class="hljs-string">'index'</span>, <span class="hljs-string">'show'</span>]);</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="Optional-Parameters"><a href="#Optional-Parameters" class="headerlink" title="Optional Parameters"></a>Optional Parameters</h3><ul>
+<li><strong>Laravel 中, 如果我想要在 URL 中定義一個可有可無的參數時, 可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;name?&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($name = null)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $name;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;name?&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($name = <span class="hljs-string">'John'</span>)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $name;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Regular-Expression-Constraints"><a href="#Regular-Expression-Constraints" class="headerlink" title="Regular Expression Constraints"></a>Regular Expression Constraints</h3><ul>
+<li><strong>在 Laravel route 中, 如何使用正則來限制 URL parameters?</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;name&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($name)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;where(<span class="hljs-string">'name'</span>, <span class="hljs-string">'[A-Za-z]+'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;id&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($id)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;where(<span class="hljs-string">'id'</span>, <span class="hljs-string">'[0-9]+'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;id&#125;/&#123;name&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($id, $name)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;where([<span class="hljs-string">'id'</span> =&gt; <span class="hljs-string">'[0-9]+'</span>, <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'[a-z]+'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Global-Constraints"><a href="#Global-Constraints" class="headerlink" title="Global Constraints"></a>Global Constraints</h4><ul>
+<li><p><strong>在 Laravel 中, 如果我想要定義一個全域的正則限制, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Route::pattern(<span class="hljs-string">'id'</span>, <span class="hljs-string">'[0-9]+'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">parent</span>::boot();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 如果我想要定義一個全域的正則限制, 該在哪一個檔案中定義這個規則？</strong><br><code>RouteServiceProvider</code></p>
+</li>
+<li><p><strong>在 Laravel 中, 如果我想要定義一個全域的正則限制, 該使用 Route 的哪一個 method ?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::pattern(<span class="hljs-string">'id'</span>, <span class="hljs-string">'[0-9]+'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 如果我想要定義一個 URL parameter, 這個 parameter 可能是一個 <code>/</code>, 那我該怎麼讓做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'search/&#123;search&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($search)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $search;</span><br><span class="line">&#125;)-&gt;where(<span class="hljs-string">'search'</span>, <span class="hljs-string">'.*'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 如果我想要定義一個 URL parameter, 這個 parameter 可能是一個 <code>/</code>, 那只有在 URL 的哪一個位置是容許的？</strong><br><code>最後一個區塊</code></p>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Named-Routes"><a href="#Named-Routes" class="headerlink" title="Named Routes"></a>Named Routes</h2><ul>
+<li><p><strong>在 Laravel 中, 該怎麼給 route 一個 name 呢？？</strong> </p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/profile'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;name(<span class="hljs-string">'profile'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'user/profile'</span>, <span class="hljs-string">'UserProfileController@show'</span>)-&gt;name(<span class="hljs-string">'profile'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 該怎麼 redirect 到已命名的 route 去？</strong> </p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Generating Redirects...</span></span><br><span class="line"><span class="hljs-keyword">return</span> redirect()-&gt;route(<span class="hljs-string">'profile'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 該怎麼根據已命名的 route 產生 url？</strong> </p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Generating URLs...</span></span><br><span class="line">$url = route(<span class="hljs-string">'profile'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 假設我命名 route 如下, 那當我想產生一個這個 route 的 url 時, 我該怎麼把 {id} 帶進 url, 假設 {id} 的 value 是 1？</strong> </p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;id&#125;/profile'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($id)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;name(<span class="hljs-string">'profile'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$url = route(<span class="hljs-string">'profile'</span>, [<span class="hljs-string">'id'</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>在以下 Laravel 的 route 中, 產生的 url 會長怎樣？</strong><br><code>/user/1/profile?photos=yes</code></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;id&#125;/profile'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($id)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;name(<span class="hljs-string">'profile'</span>);</span><br><span class="line"></span><br><span class="line">$url = route(<span class="hljs-string">'profile'</span>, [<span class="hljs-string">'id'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'photos'</span> =&gt; <span class="hljs-string">'yes'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 的 route 中, 當我要使用已命名的 route 來產生 url 時, 如何帶入 query string？</strong> </p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'user/&#123;id&#125;/profile'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($id)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;name(<span class="hljs-string">'profile'</span>);</span><br><span class="line"></span><br><span class="line">$url = route(<span class="hljs-string">'profile'</span>, [<span class="hljs-string">'id'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'photos'</span> =&gt; <span class="hljs-string">'yes'</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// /user/1/profile?photos=yes</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 的 route 中, 如何驗證 request 是導向一個命名的 route?</strong> </p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Handle an incoming request.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \Illuminate\Http\Request  $request</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \Closure  $next</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> mixed</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span><span class="hljs-params">($request, Closure $next)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> ($request-&gt;route()-&gt;named(<span class="hljs-string">'profile'</span>)) &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> $next($request);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Route-Groups"><a href="#Route-Groups" class="headerlink" title="Route Groups"></a>Route Groups</h2><h3 id="Middleware"><a href="#Middleware" class="headerlink" title="Middleware"></a>Middleware</h3><ul>
+<li><strong>在 Laravel 中, 如果我只是要將 middleware 做用到多個 route 上, 可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::middleware([<span class="hljs-string">'first'</span>, <span class="hljs-string">'second'</span>])-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Uses first &amp; second Middleware</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    Route::get(<span class="hljs-string">'user/profile'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Uses first &amp; second Middleware</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Namespaces"><a href="#Namespaces" class="headerlink" title="Namespaces"></a>Namespaces</h3><ul>
+<li><strong>在 Laravel 中, 如果我只是要將 namespace 做用到多個 route 上, 可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::namespace(<span class="hljs-string">'Admin'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Controllers Within The "App\Http\Controllers\Admin" Namespace</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Sub-Domain-Routing"><a href="#Sub-Domain-Routing" class="headerlink" title="Sub-Domain Routing"></a>Sub-Domain Routing</h3><ul>
+<li><p><strong>在 Laravel 中, 如果我要根據請求的 domain 不同來將請求導向不同的 route, 可以怎麼做？ </strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::domain(<span class="hljs-string">'&#123;account&#125;.myapp.com'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'user/&#123;id&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($account, $id)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 為了確保 sub-domain routing 可被存取, 當我們在定義時, 應該先定義 sub-domain routes 還是 root domain routes?</strong><br><code>sub-domain routes</code></p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Route-Prefixes"><a href="#Route-Prefixes" class="headerlink" title="Route Prefixes"></a>Route Prefixes</h3><ul>
+<li><p><strong>在 Laravel 中, 如果我只是要將 prefix 做用到多個 route 上, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::prefix(<span class="hljs-string">'admin'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Matches The "/admin/users" URL</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel route 將符合什麼樣的 URL ?</strong><br><code>/admin/users</code></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::prefix(<span class="hljs-string">'admin'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Route-Name-Prefixes"><a href="#Route-Name-Prefixes" class="headerlink" title="Route Name Prefixes"></a>Route Name Prefixes</h3><ul>
+<li><strong>在 Laravel 中, 假如我想要指派 name 給很多個 route, 而我想要統一加一個前綴, 像是 admin, 那我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::name(<span class="hljs-string">'admin.'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Route assigned name "admin.users"...</span></span><br><span class="line">    &#125;)-&gt;name(<span class="hljs-string">'users'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Route-Model-Binding"><a href="#Route-Model-Binding" class="headerlink" title="Route Model Binding"></a>Route Model Binding</h2><h3 id="Implicit-Binding"><a href="#Implicit-Binding" class="headerlink" title="Implicit Binding"></a>Implicit Binding</h3><ul>
+<li><p><strong>Laravel 中, 如何實作 model binding?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'api/users/&#123;user&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(App\User $user)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $user-&gt;email;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如果 Model Binding 沒有找到相對應的 Model, 會回傳什麼？?</strong><br><code>404</code></p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Customizing-the-key-Name"><a href="#Customizing-the-key-Name" class="headerlink" title="Customizing the key Name"></a>Customizing the key Name</h4><ul>
+<li><strong>在 Laravel Model Binding 中, 如果我不想要用 id column 來當作 key, 可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the route key for the model.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> string</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRouteKeyName</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">'slug'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Explicit-Binding"><a href="#Explicit-Binding" class="headerlink" title="Explicit Binding"></a>Explicit Binding</h3><ul>
+<li><strong>在 Laravel 當中, 如果我不想使用 type-hinted variable 來觸發 Model Binding, 我想要藉由 URL 的 parameter 命名來觸發的話, 我可以怎麼做？ 舉例來說, <code>/admin/{user}</code> </strong> <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">parent</span>::boot();</span><br><span class="line"></span><br><span class="line">    Route::model(<span class="hljs-string">'user'</span>, App\User::class);</span><br><span class="line">    <span class="hljs-comment">// 這個用法會完全綁定 URL parameter 的名稱, 不需使用 type-hint</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Customizing-The-Resolution-Logic"><a href="#Customizing-The-Resolution-Logic" class="headerlink" title="Customizing The Resolution Logic"></a>Customizing The Resolution Logic</h4><ul>
+<li><p><strong>Laravel 的 model binding 中, 如果我想要定義比單一 column 更複雜的規則, 有幾種做法？</strong><br><code>兩種</code></p>
+</li>
+<li><p><strong>Laravel 的 model binding 中, 如果我想要定義比單一 column 更複雜的規則, 有哪兩種做法？</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">1. RouteServiceProvider 增加規則</span><br><span class="line">2. 在 Model 中定義 method</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 的 model binding 中, 如果我想要定義比單一 column 更複雜的規則, Model 的做法？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Retrieve the model for a bound value.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  mixed  $value</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> \Illuminate\Database\Eloquent\Model|null</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">resolveRouteBinding</span><span class="hljs-params">($value)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;where(<span class="hljs-string">'name'</span>, $value)-&gt;firstOrFail();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 的 model binding 中, 如果我想要定義比單一 column 更複雜的規則, RouteServiceProvider 的做法？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Bootstrap any application services.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">parent</span>::boot();</span><br><span class="line"></span><br><span class="line">    Route::bind(<span class="hljs-string">'user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($value)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> App\User::where(<span class="hljs-string">'name'</span>, $value)-&gt;firstOrFail();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Fallback-Routes"><a href="#Fallback-Routes" class="headerlink" title="Fallback Routes"></a>Fallback Routes</h2><ul>
+<li><p><strong>在 Laravel 中, 一個未找到 route 服務的請求會預設回傳 404, 如果我要自定義一個 route 專門來處理這種情況, 我該怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::fallback(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, fallback route 的位置應該要放在什麼地方？</strong><br><code>最後</code></p>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Rate-Limiting"><a href="#Rate-Limiting" class="headerlink" title="Rate Limiting"></a>Rate Limiting</h2><ul>
+<li><p><strong>在 Laravel 中, 如果我要限制特定 route 或 route 群組在特定時間內接收請求的次數, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::middleware(<span class="hljs-string">'auth:api'</span>, <span class="hljs-string">'throttle:60,1'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, throttle 的兩個參數分別代表什麼意思？</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">次數</span><br><span class="line">分鐘</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::middleware(<span class="hljs-string">'throttle:10|60,1'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="Dynamic-Rate-Limiting"><a href="#Dynamic-Rate-Limiting" class="headerlink" title="Dynamic Rate Limiting"></a>Dynamic Rate Limiting</h3><ul>
+<li><strong>在 Laravel 中, 如果我要動態的來限制來源在特定時間內的存取次數, 比如說, 特定 user 的存取次數限制, 那我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// rate_limit 為該使用者在資料庫內的欄位</span></span><br><span class="line">Route::middleware(<span class="hljs-string">'auth:api'</span>, <span class="hljs-string">'throttle:rate_limit,1'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Distanct-Guest-amp-Authenticated-User-Rate-Limits"><a href="#Distanct-Guest-amp-Authenticated-User-Rate-Limits" class="headerlink" title="Distanct Guest &amp; Authenticated User Rate Limits"></a>Distanct Guest &amp; Authenticated User Rate Limits</h3><ul>
+<li><p><strong>在 Laravel 中, 如果我要限制 guest 以及 authenticated user 在特定時間內不同的存取次數限制, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::middleware(<span class="hljs-string">'throttle:10|60,1'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 如果我要限制 guest 以及 authenticated user 在特定時間內不同的存取次數限制, 且 authenticated user 的次數是動態的, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::middleware(<span class="hljs-string">'auth:api'</span>, <span class="hljs-string">'throttle:10|rate_limit,1'</span>)-&gt;group(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Form-Method-Spoofing"><a href="#Form-Method-Spoofing" class="headerlink" title="Form Method Spoofing"></a>Form Method Spoofing</h2><ul>
+<li><strong>使用 HTML Form 發 API 時, 常常遇到 PUT, PATCH, DELETE 方法不可用, 根本的原因是什麼？</strong><br><code>HTML Forms 不支援以上的 HTTP method</code></li>
+<li><strong>哪幾種 HTTP method 是不被 HTML Form 支援的？</strong><br><code>PUT, PATCH, DELETE</code></li>
+<li><p><strong>要讓 HTML form 可以使用 PUT, PATCH, DELETE 等 method, 可以怎麼做？</strong></p>
+<figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"/foo/bar"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"POST"</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"_method"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"PUT"</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"hidden"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"_token"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"&#123;&#123; csrf_token() &#125;&#125;"</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如何使用 Blade 來產生 <code>_method</code> input？</strong></p>
+<figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"/foo/bar"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"POST"</span>&gt;</span></span><br><span class="line">    @method('PUT')</span><br><span class="line">    @csrf</span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Accessing-The-Current-Route"><a href="#Accessing-The-Current-Route" class="headerlink" title="Accessing The Current Route"></a>Accessing The Current Route</h3><ul>
+<li><p><strong>Laravel 中, 如果我要取得目前 route 的名稱, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$name = \Illuminate\Support\Facades\Route::currentRouteName();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如果我要取得目前 route object, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$name = \Illuminate\Support\Facades\Route::current();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如果我要取得目前 route 的 action, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$name = \Illuminate\Support\Facades\Route::currentRouteAction();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, route 的 action 長什麼樣子？</strong><br><code>App\Http\Controllers\Admin\controllerName@controllerMethodName</code></p>
+</li>
+</ul>
+<ul>
+<li><strong>下面提供所以可以被取得的 route method</strong><br><a href="https://laravel.com/api/master/Illuminate/Routing/Router.html" target="_blank" rel="noopener">underlyingClass of the Route facade</a><br><a href="https://laravel.com/api/master/Illuminate/Routing/Route.html" target="_blank" rel="noopener">Route instance</a></li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Routing/">#Laravel Routing</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravelGettingStartedDeployment/">Laravel - 開始 - 部署</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/multipleVPCNetworks/">&lt;未完成&gt;多個虛擬私人雲端</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravelTheBasicsRouting/';
+        this.page.identifier = 'zh-tw/laravelTheBasicsRouting/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2019 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
