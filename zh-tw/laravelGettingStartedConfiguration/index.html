@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-08T21:27:38.896Z">
+<meta property="og:updated_time" content="2019-12-10T03:12:11.367Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 開始 - 配置">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-08T21:27:38.896Z">
+<meta property="og:updated_time" content="2019-12-10T03:12:11.367Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 開始 - 配置">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -162,6 +162,18 @@
                     
                     <a class="navbar-item" href="#Hiding-Environment-Variables-From-Debug-Pages">2.3&nbsp;&nbsp;Hiding Environment Variables From Debug Pages</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Accessing-Configuration-Values">2.4&nbsp;&nbsp;Accessing Configuration Values</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuration-Caching">2.5&nbsp;&nbsp;Configuration Caching</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Maintenance-Mode">2.6&nbsp;&nbsp;Maintenance Mode</a>
+                    
                 </div>
             </div>
             
@@ -222,7 +234,7 @@
         <span class="column is-narrow">
             
             
-            2 分钟 讀完 (大概 281 字)
+            4 分钟 讀完 (大概 584 字)
         </span>
         
     </div>
@@ -247,10 +259,42 @@
 </ul>
 <p><br></p>
 <h3 id="Hiding-Environment-Variables-From-Debug-Pages"><a href="#Hiding-Environment-Variables-From-Debug-Pages" class="headerlink" title="Hiding Environment Variables From Debug Pages"></a>Hiding Environment Variables From Debug Pages</h3><ul>
+<li><strong>當 Laravel 的環境變數 APP_DEBUG 為 true 時, 默認會輸出所有的環境變數以及內容, 假如我有一些變數不想顯示, 我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 修改 config/app.php 檔案中的 debug_blacklist</span></span><br><span class="line"><span class="hljs-keyword">return</span> [</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-string">'debug_blacklist'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'_ENV'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'APP_KEY'</span>,</span><br><span class="line">            <span class="hljs-string">'DB_PASSWORD'</span>,</span><br><span class="line">        ],</span><br><span class="line"></span><br><span class="line">        <span class="hljs-string">'_SERVER'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'APP_KEY'</span>,</span><br><span class="line">            <span class="hljs-string">'DB_PASSWORD'</span>,</span><br><span class="line">        ],</span><br><span class="line"></span><br><span class="line">        <span class="hljs-string">'_POST'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'password'</span>,</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Accessing-Configuration-Values"><a href="#Accessing-Configuration-Values" class="headerlink" title="Accessing Configuration Values"></a>Accessing Configuration Values</h3><ul>
+<li><p><strong>在 Laravel 中, 若要取得 config 的值, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = config(<span class="hljs-string">'app.timezone'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 若要在程式碼中設定 config 的值, 可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">config([<span class="hljs-string">'app.timezone'</span> =&gt; <span class="hljs-string">'America/Chicago'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Configuration-Caching"><a href="#Configuration-Caching" class="headerlink" title="Configuration Caching"></a>Configuration Caching</h3><ul>
 <li><strong>php artisan config:cache 做了什麼事？</strong> 將所有的 config 檔案 cache 成一份檔案, 以加速運行</li>
 <li><strong>php artisan config:cache 建議在 production 還是 develop 運行？</strong> production</li>
 <li><strong>運行 php artisan config:cache 時, 會否讀 .env 檔？</strong> 不會哦</li>
 <li><strong>所有 Laravel 的設定檔都放在哪裡？</strong> config 資料夾底下</li>
+</ul>
+<p><br></p>
+<h3 id="Maintenance-Mode"><a href="#Maintenance-Mode" class="headerlink" title="Maintenance Mode"></a>Maintenance Mode</h3><ul>
+<li><p><strong>在 Laravel 中, 如果要啟動維護模式, 可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan down</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 如果要啟動維護模式, 並且客制 message 以及 retry 可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan down --message=<span class="hljs-string">"Upgrading Database"</span> --retry=60</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 以下的 </strong>–retry<strong> 代表什麼意思？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan down --message=<span class="hljs-string">"Upgrading Database"</span> --retry=60</span><br></pre></td></tr></table></figure>
+<p>  會設定一個 <code>Retry-After</code> HTTP header, 目前大概只有 Google Bot 會特別去偵測, 在你指定的 downtime 時間不會去爬你的網站</p>
+</li>
+<li><p><strong>在 Laravel 中, 如果在維護模式中, 我僅僅想對指定的 IP 開放, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan down --allow=127.0.0.1 --allow=192.168.0.0/16</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 維護模式中, queue job 還會被處理嗎？</strong><br><code>不會哦</code></p>
+</li>
 </ul>
 
     
@@ -266,7 +310,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravelTheBasicsValidation/">Laravel - 基礎 - 驗證</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
