@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-28T01:19:57.573Z">
+<meta property="og:updated_time" content="2019-12-12T02:14:13.657Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-11-28T01:19:57.573Z">
+<meta property="og:updated_time" content="2019-12-12T02:14:13.657Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -250,6 +250,12 @@
                     
                     <a class="navbar-item" href="#Q-amp-A">10&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#NGINX-Cookbook">11&nbsp;&nbsp;<b>NGINX Cookbook</b></a>
+                    
                 </div>
             </div>
             
@@ -310,7 +316,7 @@
         <span class="column is-narrow">
             
             
-            27 分钟 讀完 (大概 4103 字)
+            29 分钟 讀完 (大概 4391 字)
         </span>
         
     </div>
@@ -575,10 +581,29 @@
 </li>
 <li><strong>NGINX 全域變數中, $time_local 是什麼？</strong> 服務器時間（LOG Format 格式) <code>27/Nov/2019:14:11:38 +0000</code></li>
 <li><strong>NGINX 全域變數中, $uri 是什麼？</strong> 請求中的當前URI(不帶請求參數，參數位於$args)，可以不同於瀏覽器傳遞的$request_uri的值，它可以通過內部重定向，或者使用index指令進行修改，$uri不包含主機名，如”/foo/bar.html”。</li>
-<li><strong>NGINX 全域變數中, 下面的 request url 中, $uri 是哪一段？</strong> <code>/test1/test2</code><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure>
+<li><p><strong>NGINX 全域變數中, 下面的 request url 中, $uri 是哪一段？</strong> <code>/test1/test2</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>參考以下的 NGINX 設定, 並思考接下來一連串的問題</strong></p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">upstream</span> backend &#123;</span><br><span class="line">    <span class="hljs-attribute">server</span> backend1.example.com weight=<span class="hljs-number">5</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> <span class="hljs-number">127.0.0.1:8080</span>       max_fails=<span class="hljs-number">3</span> fail_timeout=<span class="hljs-number">30s</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> unix:/tmp/backend3;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server</span> backup1.example.com  backup;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">proxy_pass</span> http://backend;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以上的 nginx 設定中, 到 <code>/</code> 的請求會被送到哪裡？</strong><br>upstream backend</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 每七個請求中, 會有幾個到 backend1.example.com? 為什麼？</strong><br>5 個<br>因為 weight=5</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 每七個請求中, 會有幾個到 127.0.0.1:8080? 為什麼？</strong><br>1 個<br>因為沒有特別分配權重, 預設平均分配</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 每七個請求中, 會有幾個到 unix:/tmp/backend3 為什麼？</strong><br>1 個<br>因為沒有特別分配權重, 預設平均分配</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 如果送給 server 127.0.0.1:8080 出錯了, 會怎麼樣？</strong><br>送往下一個, 即 unix:/tmp/backend3</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 如果 upstream 中的 server 都無法服務, 會怎麼樣？</strong><br>送給 backup server, 即 backup1.example.com, 客戶會收到這一個 server 的回應</p>
 </li>
 </ul>
 <p><br><br><br><br><br></p>
+<h2 id="NGINX-Cookbook"><a href="#NGINX-Cookbook" class="headerlink" title="NGINX Cookbook"></a>NGINX Cookbook</h2><ul>
+<li><strong>NGINX 中, root 語法的意思是什麼？</strong><br>將會在 root 所定義的位置中尋找請求中帶過來的 URL 部分</li>
+</ul>
 
     
     </div>

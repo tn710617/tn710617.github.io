@@ -171,6 +171,137 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh-tw/siteReliabilityTroubleshootingWithStackdriverAPM/" itemprop="url">&lt;未完成&gt;利用 Stackdriver APM 來增進網站可靠性以及排除錯誤</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-12-12T02:40:37.000Z" itemprop="datePublished">12月 12 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            13 分钟 讀完 (大概 1881 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>此教程的目標是讓你熟悉 Stackdriver 的一些特定的功能, 它讓可以監控 GKE 叢集基礎設施, Istio, 以及部署在這些基礎設施上的應用</p>
+<p><br></p>
+<h3 id="你將會做什麼？"><a href="#你將會做什麼？" class="headerlink" title="你將會做什麼？"></a>你將會做什麼？</h3><ul>
+<li>建立一個 GKE 叢集</li>
+<li>部署微服務應用到這個叢集上</li>
+<li>為這個應用定義延遲 (latency) 以及錯誤 SLIs (Service Level Indicator), 以及 SLOs (Service Level Objective)  </li>
+<li>設置 Stackdriver 來監控你的 SLIs</li>
+<li>部署一個致命的錯誤到你的應用, 然後使用 Stackdriver 來分析以及解決問題</li>
+<li>驗證你的解法是否有處理掉 SLO 的違反</li>
+</ul>
+<p><br></p>
+<h3 id="你將會學到？"><a href="#你將會學到？" class="headerlink" title="你將會學到？"></a>你將會學到？</h3><ul>
+<li>如何部署微服務到一個已經存在的 GKE 叢集</li>
+<li>如何為一個應用選擇適當的 SLIs/SLOs</li>
+<li>如何使用 Stackdriver Monitoring features 來實作 SLIs</li>
+<li>如何使用 Stackdriver Trace, Profiler, 以及 Debugger 來發現程式的問題</li>
+</ul>
+<p><br></p>
+<h3 id="先決條件"><a href="#先決條件" class="headerlink" title="先決條件"></a>先決條件</h3><ul>
+<li>Google Cloud Platform 帳戶以及啟用 billing 帳戶的專案</li>
+<li>Kubernetes 基礎知識</li>
+<li>Stackdriver Monitoring 基礎知識</li>
+<li>錯誤分析排除的基礎知識</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="環境設定"><a href="#環境設定" class="headerlink" title="環境設定"></a>環境設定</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
+<p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Qwiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<p><strong>你需要什麼？</strong></p>
+<p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><strong>備註：</strong> 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台，然後開啟命令列工具</p>
+<p><strong>如何開始你的 lab ，然後登入 Console?</strong></p>
+<ul>
+<li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<ul>
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ul>
+<p><strong>tip:</strong> 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ul>
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<ul>
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ul>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ul>
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ul>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
+<p><br></p>
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ul>
+<li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<ul>
+<li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command ,你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+<p>輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+<p>範例輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+<p>輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<p><br><br><br><br><br></p>
+<h2 id="基礎設施配置"><a href="#基礎設施配置" class="headerlink" title="基礎設施配置"></a>基礎設施配置</h2><p>在本教程中, 你將會連接到 Google Kubernetes Engine 叢集然後驗證它有被正確的建立<br>在 <code>gcloud</code> 中設定 zone:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/zone us-west1-b</span><br></pre></td></tr></table></figure></p>
+<p>設定 project ID:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> PROJECT_ID=$(gcloud info --format=<span class="hljs-string">'value(config.project)'</span>)</span><br></pre></td></tr></table></figure></p>
+
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh-tw/multipleVPCNetworks/" itemprop="url">&lt;未完成&gt;多個虛擬私人雲端</a>
         
     </h1>
