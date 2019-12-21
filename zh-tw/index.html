@@ -181,7 +181,7 @@
         <span class="column is-narrow">
             
             
-            13 分钟 讀完 (大概 1881 字)
+            17 分钟 讀完 (大概 2552 字)
         </span>
         
     </div>
@@ -281,7 +281,35 @@
 <p><br><br><br><br><br></p>
 <h2 id="基礎設施配置"><a href="#基礎設施配置" class="headerlink" title="基礎設施配置"></a>基礎設施配置</h2><p>在本教程中, 你將會連接到 Google Kubernetes Engine 叢集然後驗證它有被正確的建立<br>在 <code>gcloud</code> 中設定 zone:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/zone us-west1-b</span><br></pre></td></tr></table></figure></p>
 <p>設定 project ID:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> PROJECT_ID=$(gcloud info --format=<span class="hljs-string">'value(config.project)'</span>)</span><br></pre></td></tr></table></figure></p>
-
+<p>確認叢集 <code>shop-cluster</code> 已經被建立了<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters list</span><br></pre></td></tr></table></figure></p>
+<p>如果你的叢集狀態顯示 PROVISIONING, 稍待一些時候, 並再次執行上面的指令, 直到狀態為 RUNNING</p>
+<p>當你等待的時候, 設定你的 Stackdriver 工作區來監控你叢集中的應用。</p>
+<p><br><br><br><br><br></p>
+<h2 id="建立-Stackdriver-工作區"><a href="#建立-Stackdriver-工作區" class="headerlink" title="建立 Stackdriver 工作區"></a>建立 Stackdriver 工作區</h2><p>在 <strong>Navigation menu</strong>, 點擊 <strong>Monitoring</strong><br>當你可以看到 Stackdriver 的主控台, 這代表工作區已準備就緒。<br>回到 Cloud Shell 再次確認叢集是否已準備完成：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters list</span><br></pre></td></tr></table></figure></p>
+<p>一旦你看到叢集狀態顯示為 RUNNING, 取得叢集憑證<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters get-credentials shop-clusters --zone us-west1-b</span><br></pre></td></tr></table></figure></p>
+<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Fetching cluster endpoint and auth data.</span><br><span class="line">kubeconfig entry generated for shop-cluster.</span><br></pre></td></tr></table></figure></p>
+<p>確認 nodes 已被建立<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure></p>
+<p>輸出應如下：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                                  STATUS    ROLES     AGE       VERSION</span><br><span class="line">gke-shop-cluster-demo-default-pool1-24748028-3nwh   Ready     &lt;none&gt;    4m        v1.13.7-gke.8</span><br><span class="line">gke-shop-cluster-demo-default-pool1-24748028-3z1g   Ready     &lt;none&gt;    4m        v1.13.7-gke.8</span><br><span class="line">gke-shop-cluster-demo-default-pool1-24748028-4ksd   Ready     &lt;none&gt;    4m        v1.13.7-gke.8</span><br><span class="line">gke-shop-cluster-demo-default-pool1-24748028-f2f2   Ready     &lt;none&gt;    4m        v1.13.7-gke.8</span><br><span class="line">gke-shop-cluster-demo-default-pool1-24748028-gcb3   Ready     &lt;none&gt;    4m        v1.13.7-gke.8</span><br></pre></td></tr></table></figure></p>
+<p><br><br><br><br><br></p>
+<h2 id="部署應用"><a href="#部署應用" class="headerlink" title="部署應用"></a>部署應用</h2><p>在本教程中, 你將部署一個名為 Hipster Shop 的微服務到叢集中以建立一個可被監控的工作範例</p>
+<p>執行以下指令來複製代碼:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> -b APM-Troubleshooting-Demo-2 https://github.com/blipzimmerman/microservices-demo-1</span><br></pre></td></tr></table></figure></p>
+<p>下載並安裝 <code>skaffold</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v0.36.0/skaffold-linux-amd64 &amp;&amp; chmod +x skaffold &amp;&amp; sudo mv skaffold /usr/<span class="hljs-built_in">local</span>/bin</span><br></pre></td></tr></table></figure></p>
+<p>使用 <code>skaffold</code> 安裝應用<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> microservices-demo-1</span><br><span class="line">skaffold run</span><br></pre></td></tr></table></figure></p>
+<p>確認一切都正確運行著：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure></p>
+<p>輸出應類似如下：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                                     READY     STATUS    RESTARTS   AGE</span><br><span class="line">adservice-55f94cfd9c-4lvml               1/1       Running   0          20m</span><br><span class="line">cartservice-6f4946f9b8-6wtff             1/1       Running   2          20m</span><br><span class="line">checkoutservice-5688779d8c-l6crl         1/1       Running   0          20m</span><br><span class="line">currencyservice-665d6f4569-b4sbm         1/1       Running   0          20m</span><br><span class="line">emailservice-684c89bcb8-h48sq            1/1       Running   0          20m</span><br><span class="line">frontend-67c8475b7d-vktsn                1/1       Running   0          20m</span><br><span class="line">loadgenerator-6d646566db-p422w           1/1       Running   0          20m</span><br><span class="line">paymentservice-858d89d64c-hmpkg          1/1       Running   0          20m</span><br><span class="line">productcatalogservice-bcd85cb5-d6xp4     1/1       Running   0          20m</span><br><span class="line">recommendationservice-685d7d6cd9-pxd9g   1/1       Running   0          20m</span><br><span class="line">redis-cart-9b864d47f-c9xc6               1/1       Running   0          20m</span><br><span class="line">shippingservice-5948f9fb5c-vndcp         1/1       Running   0          20m</span><br></pre></td></tr></table></figure></p>
+<p>在進到下一步之前, 重複執行指令直到所有的 pods 都顯示 RUNNING<br>取得應用的 <strong>external IP</strong>:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> EXTERNAL_IP=$(kubectl get service frontend-external | awk <span class="hljs-string">'BEGIN &#123; cnt=0; &#125; &#123; cnt+=1; if (cnt &gt; 1) print $4; &#125;'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>最後, 確認應用已啟動且運行:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -o /dev/null -s -w <span class="hljs-string">"%&#123;http_code&#125;\n"</span>  http://<span class="hljs-variable">$EXTERNAL_IP</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>注意</strong>: 如果回應是 500 錯誤, 你可能需要再次執行指令<br>確認回應應如下:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">200</span><br></pre></td></tr></table></figure></p>
+<p>下載原始碼就將程式碼置於 Cloud Source Repo:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">./setup_csr.sh</span><br></pre></td></tr></table></figure></p>
+<p>現在你的應用已經部署完畢, 接下來我們設定應用的監控。</p>
+<h3 id="資源"><a href="#資源" class="headerlink" title="資源"></a>資源</h3><ul>
+<li><p><a href="https://github.com/GoogleCloudPlatform/microservices-demo" target="_blank" rel="noopener">Microservices Demo Application</a><br>注意: 本教程使用此應用的一個 <a href="https://github.com/blipzimmerman/microservices-demo-1" target="_blank" rel="noopener">fork</a> 來幫助除錯</p>
+</li>
+<li><p><a href="http://skaffold.dev/" target="_blank" rel="noopener">Skaffold</a></p>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="開發範例-SLOs-以及-SLIs"><a href="#開發範例-SLOs-以及-SLIs" class="headerlink" title="開發範例 SLOs 以及 SLIs"></a>開發範例 SLOs 以及 SLIs</h2>
     
     </div>
     
