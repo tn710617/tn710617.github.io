@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-22T07:11:33.687Z">
+<meta property="og:updated_time" content="2019-12-23T12:43:00.681Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-22T07:11:33.687Z">
+<meta property="og:updated_time" content="2019-12-23T12:43:00.681Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -172,6 +172,16 @@
                     
                     <a class="navbar-item" href="#Blocking">3.4&nbsp;&nbsp;Blocking</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Creating-Jobs">4&nbsp;&nbsp;<b>Creating Jobs</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Generating-Job-Classes">4.1&nbsp;&nbsp;Generating Job Classes</a>
+                    
                 </div>
             </div>
             
@@ -232,7 +242,7 @@
         <span class="column is-narrow">
             
             
-            2 分钟 讀完 (大概 258 字)
+            3 分钟 讀完 (大概 514 字)
         </span>
         
     </div>
@@ -267,7 +277,26 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Blocking"><a href="#Blocking" class="headerlink" title="Blocking"></a>Blocking</h3>
+<h3 id="Blocking"><a href="#Blocking" class="headerlink" title="Blocking"></a>Blocking</h3><ul>
+<li><strong>在 Laravel Queue 當中, 如果我使用 redis, 且我想要讓 redis 在進去下一輪的 polling 之前等待數秒, 看有沒有新的 job 進來, 我可以怎麼做？</strong><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&apos;redis&apos; =&gt; [</span><br><span class="line">    &apos;driver&apos; =&gt; &apos;redis&apos;,</span><br><span class="line">    &apos;connection&apos; =&gt; &apos;default&apos;,</span><br><span class="line">    &apos;queue&apos; =&gt; &apos;default&apos;,</span><br><span class="line">    &apos;retry_after&apos; =&gt; 90,</span><br><span class="line">    &apos;block_for&apos; =&gt; 5,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Creating-Jobs"><a href="#Creating-Jobs" class="headerlink" title="Creating Jobs"></a>Creating Jobs</h2><h3 id="Generating-Job-Classes"><a href="#Generating-Job-Classes" class="headerlink" title="Generating Job Classes"></a>Generating Job Classes</h3><ul>
+<li><p><strong>Laravel 中, 一般 job 都會放在哪？</strong><br><code>app/Jobs</code></p>
+</li>
+<li><p><strong>Laravel 中, 如何建立一個 Job?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:job jobName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 當我們注入一個 Model 到 Job, 是會整個 Model 都被注入, 還是只會注入該 Model 的一個辨識物？</strong><br>Only an identifier will be stored in the job</p>
+</li>
+<li><p><strong>在 Laravel 中, 當我在 job 中注入一個 model, 當這個 job 被在 queue 中被取出執行時, 請入該 model 會是我當初注入時的狀態, 還是目前資料庫中最新的狀態？</strong><br>資料庫中的狀態</p>
+</li>
+<li><p><strong>Laravel queue 中, 當我注入 model 到 job 中時, 如果我不想要讓一個 model 的 relation 被載入, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Create a new job instance.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \App\Podcast  $podcast</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(Podcast $podcast)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;podcast = $podcast-&gt;withoutRelations();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
     
     </div>
     
