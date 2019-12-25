@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-23T12:43:00.681Z">
+<meta property="og:updated_time" content="2019-12-24T05:42:26.536Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-23T12:43:00.681Z">
+<meta property="og:updated_time" content="2019-12-24T05:42:26.536Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -182,6 +182,28 @@
                     
                     <a class="navbar-item" href="#Generating-Job-Classes">4.1&nbsp;&nbsp;Generating Job Classes</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Handling-Relationships">4.2&nbsp;&nbsp;Handling Relationships</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Job-Middleware">5&nbsp;&nbsp;<b>Job Middleware</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Dispatching-Jobs">6&nbsp;&nbsp;<b>Dispatching Jobs</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Delayed-Dispatching">7&nbsp;&nbsp;<b>Delayed Dispatching</b></a>
+                    
                 </div>
             </div>
             
@@ -242,7 +264,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 514 字)
+            6 分钟 讀完 (大概 907 字)
         </span>
         
     </div>
@@ -292,8 +314,38 @@
 </li>
 <li><p><strong>在 Laravel 中, 當我在 job 中注入一個 model, 當這個 job 被在 queue 中被取出執行時, 請入該 model 會是我當初注入時的狀態, 還是目前資料庫中最新的狀態？</strong><br>資料庫中的狀態</p>
 </li>
-<li><p><strong>Laravel queue 中, 當我注入 model 到 job 中時, 如果我不想要讓一個 model 的 relation 被載入, 我可以怎麼做？</strong></p>
-<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Create a new job instance.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \App\Podcast  $podcast</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(Podcast $podcast)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;podcast = $podcast-&gt;withoutRelations();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</ul>
+<h3 id="Handling-Relationships"><a href="#Handling-Relationships" class="headerlink" title="Handling Relationships"></a>Handling Relationships</h3><ul>
+<li><strong>Laravel queue 中, 當我注入 model 到 job 中時, 如果我不想要讓一個 model 的 relation 被載入, 我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Create a new job instance.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \App\Podcast  $podcast</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(Podcast $podcast)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;podcast = $podcast-&gt;withoutRelations();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Job-Middleware"><a href="#Job-Middleware" class="headerlink" title="Job Middleware"></a>Job Middleware</h2><ul>
+<li><p><strong>在 Laravel Queue 中, 可以建立一個 Job middleware 嗎？</strong><br>可以</p>
+</li>
+<li><p><strong>在 Laravel Queue 中, 如果我想要建立一個 Job Middleware, 可以建立在什麼位置？</strong><br>什麼位置都可以, 官方範例位置為 <code>app/Jobs/Middleware</code></p>
+</li>
+<li><p><strong>在 Laravel Queue 中, 如果我要建立一個 Job Middleware, 如何建立？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>\<span class="hljs-title">Middleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Redis</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RateLimited</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Process the queued job.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span>  mixed  $job</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span>  callable  $next</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> mixed</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span><span class="hljs-params">($job, $next)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Redis::throttle(<span class="hljs-string">'key'</span>)</span><br><span class="line">                -&gt;block(<span class="hljs-number">0</span>)-&gt;allow(<span class="hljs-number">1</span>)-&gt;every(<span class="hljs-number">5</span>)</span><br><span class="line">                -&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> <span class="hljs-title">use</span> <span class="hljs-params">($job, $next)</span> </span>&#123;</span><br><span class="line">                    <span class="hljs-comment">// Lock obtained...</span></span><br><span class="line"></span><br><span class="line">                    $next($job);</span><br><span class="line">                &#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> <span class="hljs-title">use</span> <span class="hljs-params">($job)</span> </span>&#123;</span><br><span class="line">                    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">                    $job-&gt;release(<span class="hljs-number">5</span>);</span><br><span class="line">                &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel Queue 中, 如果我要在一個 Job 中使用建立好的 Job Middleware, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>\<span class="hljs-title">Middleware</span>\<span class="hljs-title">RateLimited</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the middleware the job should pass through.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> array</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">middleware</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [<span class="hljs-keyword">new</span> RateLimited];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Dispatching-Jobs"><a href="#Dispatching-Jobs" class="headerlink" title="Dispatching Jobs"></a>Dispatching Jobs</h2><ul>
+<li><strong>在 Laravel Queue 中, 該如何 dispatch 一個 job?</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>\<span class="hljs-title">ProcessPodcast</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PodcastController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Store a new podcast.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span>  Request  $request</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> Response</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(Request $request)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Create podcast...</span></span><br><span class="line"></span><br><span class="line">        ProcessPodcast::dispatch($podcast);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Delayed-Dispatching"><a href="#Delayed-Dispatching" class="headerlink" title="Delayed Dispatching"></a>Delayed Dispatching</h2><ul>
+<li><p><strong>在 Laravel Queue 中, 如果我想要 delay 一個 dispatch, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>\<span class="hljs-title">ProcessPodcast</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PodcastController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Store a new podcast.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span>  Request  $request</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> Response</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(Request $request)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Create podcast...</span></span><br><span class="line"></span><br><span class="line">        ProcessPodcast::dispatch($podcast)</span><br><span class="line">                -&gt;delay(now()-&gt;addMinutes(<span class="hljs-number">10</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel Queue 中, AWS 的 SQS 最多支援到 delay 多久？</strong><br>15 分鐘</p>
+</li>
+<li><p><strong>在 Laravel Queue 中, 如果我立即 dispatch 一個 job, 不要 queue, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>\<span class="hljs-title">ProcessPodcast</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PodcastController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Store a new podcast.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@param</span>  Request  $request</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> Response</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(Request $request)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Create podcast...</span></span><br><span class="line"></span><br><span class="line">        ProcessPodcast::dispatchNow($podcast);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 
