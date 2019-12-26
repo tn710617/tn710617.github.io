@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-25T03:33:05.807Z">
+<meta property="og:updated_time" content="2019-12-26T02:33:58.747Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-25T03:33:05.807Z">
+<meta property="og:updated_time" content="2019-12-26T02:33:58.747Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -252,6 +252,12 @@
                     
                     <a class="navbar-item" href="#Timeout">11.3&nbsp;&nbsp;Timeout</a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Rate-Limiting">12&nbsp;&nbsp;<b>Rate Limiting</b></a>
+                    
                 </div>
             </div>
             
@@ -312,7 +318,7 @@
         <span class="column is-narrow">
             
             
-            10 分钟 讀完 (大概 1448 字)
+            12 分钟 讀完 (大概 1810 字)
         </span>
         
     </div>
@@ -447,7 +453,34 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h3>
+<h3 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h3><ul>
+<li><p><strong>Laravel job 當中, 如果我要指定任務可以執行的最大秒數, 通過 CLI, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work --timeout=30</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel job 當中, 如果我要指定任務可以執行的最大秒數, 在 job class 中, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ProcessPodcast</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldQueue</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * The number of seconds the job can run before timing out.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@var</span> int</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> $timeout = <span class="hljs-number">120</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel job 當中, 如果我再 CLI 以及 job 的 class 同時定義的 timeout, 哪一個的優先權比較大？</strong><br>job class</p>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Rate-Limiting"><a href="#Rate-Limiting" class="headerlink" title="Rate Limiting"></a>Rate Limiting</h2><ul>
+<li><p><strong>Laravel queue 當中, 如果我想使用 rate limiting, 哪一個服務會是必要的？</strong><br>redis</p>
+</li>
+<li><p><strong>Laravel queue 當中, 如果我想要限制一個 job 在一定時間內可被執行的次數, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Redis::throttle(<span class="hljs-string">'key'</span>)-&gt;allow(<span class="hljs-number">10</span>)-&gt;every(<span class="hljs-number">60</span>)-&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Job logic...</span></span><br><span class="line">&#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;release(<span class="hljs-number">10</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>下面的 Laravel 程式碼代表什麼意思？</strong><br>每 60 秒最大可執行 10 次, 若失敗的話, 10 秒後 release job</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Redis::throttle(<span class="hljs-string">'key'</span>)-&gt;allow(<span class="hljs-number">10</span>)-&gt;every(<span class="hljs-number">60</span>)-&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Job logic...</span></span><br><span class="line">&#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;release(<span class="hljs-number">10</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>下面的 Laravel 程式碼中的 key, 代表什麼意思？</strong><br>可以是任意 string, 官方範例中, 可以是 <code>job 的類型 + 該 Eloquent Model 的 id</code></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Redis::throttle(<span class="hljs-string">'key'</span>)-&gt;allow(<span class="hljs-number">10</span>)-&gt;every(<span class="hljs-number">60</span>)-&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Job logic...</span></span><br><span class="line">&#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;release(<span class="hljs-number">10</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>下面的 Laravel 程式碼中, 當我 release 該 job, 這樣還會增加該 job 的 attempt 次數嗎？</strong><br>會哦</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Redis::throttle(<span class="hljs-string">'key'</span>)-&gt;allow(<span class="hljs-number">10</span>)-&gt;every(<span class="hljs-number">60</span>)-&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Job logic...</span></span><br><span class="line">&#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;release(<span class="hljs-number">10</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
     
     </div>
     
