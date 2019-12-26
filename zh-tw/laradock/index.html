@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-25T13:27:33.939Z">
+<meta property="og:updated_time" content="2019-12-26T13:31:33.286Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laradock 學記筆記">
 <meta name="twitter:description" content="前言">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-25T13:27:33.939Z">
+<meta property="og:updated_time" content="2019-12-26T13:31:33.286Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laradock 學記筆記">
 <meta name="twitter:description" content="前言">
@@ -220,6 +220,14 @@
                     
                     <a class="navbar-item" href="#執行專案前設置">1.9&nbsp;&nbsp;執行專案前設置</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#非正規設置法">1.10&nbsp;&nbsp;非正規設置法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#NGINX-配置">1.10.1&nbsp;&nbsp;NGINX 配置</a>
+                    
                 </div>
             </div>
             
@@ -280,7 +288,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 讀完 (大概 915 字)
+            9 分钟 讀完 (大概 1294 字)
         </span>
         
     </div>
@@ -349,6 +357,10 @@
 <p><br><br><br><br><br></p>
 <h2 id="啟動專案"><a href="#啟動專案" class="headerlink" title="啟動專案"></a>啟動專案</h2><p>視需求啟動容器<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker-compose up -d mysql nginx workspace redis php-worker</span><br></pre></td></tr></table></figure></p>
 <h2 id="執行專案前設置"><a href="#執行專案前設置" class="headerlink" title="執行專案前設置"></a>執行專案前設置</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker-compose <span class="hljs-built_in">exec</span> workspace php artisan key:generate</span><br><span class="line">docker-compose <span class="hljs-built_in">exec</span> workspace php artisan migrate</span><br><span class="line">docker-compose <span class="hljs-built_in">exec</span> workspace php artisan db:seed</span><br></pre></td></tr></table></figure>
+<p><br><br><br><br><br></p>
+<h2 id="非正規設置法"><a href="#非正規設置法" class="headerlink" title="非正規設置法"></a>非正規設置法</h2><p>以下是個人配置, 旨在利用 Let’s Encrypt Certbot 自動每三個月續簽 SSL 憑證, 並自動套用到每個專案<br>所以會在 Host 處安裝 NGINX + CertBot, 因為自動續簽 SSL 憑證會用到 NGINX 80 port, 所以容器外的 NGINX 會監聽 80 port, 並把符合條件的請求都導向由容器直接監聽的 443 port, 所以會在容器內外都安裝 NGINX</p>
+<h3 id="NGINX-配置"><a href="#NGINX-配置" class="headerlink" title="NGINX 配置"></a>NGINX 配置</h3><p>因為 Let’s Encrypt 的 CertBot 會控制</p>
+<h4 id="容器內"><a href="#容器內" class="headerlink" title="容器內"></a>容器內</h4><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line">// </span><br><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-comment"># For https</span></span><br><span class="line">     <span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;</span><br><span class="line">    <span class="hljs-comment"># listen [::]:443 ssl ipv6only=on;</span></span><br><span class="line">     // 這個資料夾預設會跟 host 的 laradock/nginx/ssl/ 資料夾同步, 所以在外面放入正確的 SSL 憑證即可啟動 HTTPS</span><br><span class="line">     <span class="hljs-attribute">ssl_certificate</span> /etc/nginx/ssl/fullchain.pem;</span><br><span class="line">     <span class="hljs-attribute">ssl_certificate_key</span> /etc/nginx/ssl/privkey.pem;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server_name</span> yourDomainName;</span><br><span class="line">    // 當使用多專案模式時, /var/www 會與 laradock 同層資料夾同步, 所以與 laradock 資料夾同層的專案都會被同步到這個資料夾內</span><br><span class="line">    <span class="hljs-attribute">root</span> /var/www/yourProjectName/public;</span><br><span class="line">    <span class="hljs-attribute">index</span> index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">         <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ /index.php<span class="hljs-variable">$is_args</span><span class="hljs-variable">$args</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">        <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> /index.php =<span class="hljs-number">404</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_pass</span> php-upstream;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_buffers</span> <span class="hljs-number">16</span> <span class="hljs-number">16k</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_buffer_size</span> <span class="hljs-number">32k</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$document_root</span><span class="hljs-variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="hljs-comment">#fixes timeouts</span></span><br><span class="line">        <span class="hljs-attribute">fastcgi_read_timeout</span> <span class="hljs-number">600</span>;</span><br><span class="line">        <span class="hljs-attribute">include</span> fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> <span class="hljs-regexp">~ /\.ht</span> &#123;</span><br><span class="line">        <span class="hljs-attribute">deny</span> all;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> /.well-known/acme-challenge/ &#123;</span><br><span class="line">        <span class="hljs-attribute">root</span> /var/www/letsencrypt/;</span><br><span class="line">        <span class="hljs-attribute">log_not_found</span> <span class="hljs-literal">off</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 此層資料夾會跟 laradock/logs/nginx 資料夾同步, 所以需要更名為你的專案名稱, 否則要是有多專案的話, 每個專案的 log 就重疊了</span><br><span class="line">    <span class="hljs-attribute">error_log</span> /var/log/nginx/yourProjectName_error.log;</span><br><span class="line">    <span class="hljs-attribute">access_log</span> /var/log/nginx/yourProjectName_access.log;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     
     </div>
