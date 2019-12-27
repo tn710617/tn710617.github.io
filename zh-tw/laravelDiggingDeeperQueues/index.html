@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-26T02:33:58.747Z">
+<meta property="og:updated_time" content="2019-12-27T01:59:05.073Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-26T02:33:58.747Z">
+<meta property="og:updated_time" content="2019-12-27T01:59:05.073Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -258,6 +258,40 @@
                     
                     <a class="navbar-item" href="#Rate-Limiting">12&nbsp;&nbsp;<b>Rate Limiting</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Queueing-Closures">13&nbsp;&nbsp;<b>Queueing Closures</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Running-The-Queue-Worker">14&nbsp;&nbsp;<b>Running The Queue Worker</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Specifying-The-Connection-amp-Queue">14.1&nbsp;&nbsp;Specifying The Connection &amp;amp;amp; Queue</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Processing-A-Single-Job">14.2&nbsp;&nbsp;Processing A Single Job</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Processing-All-Queued-Jobs-amp-Then-Exiting">14.3&nbsp;&nbsp;Processing All Queued Jobs &amp;amp;amp; Then Exiting</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Resource-Considerations">14.4&nbsp;&nbsp;Resource Considerations</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Queue-Priorities">15&nbsp;&nbsp;<b>Queue Priorities</b></a>
+                    
                 </div>
             </div>
             
@@ -318,7 +352,7 @@
         <span class="column is-narrow">
             
             
-            12 分钟 讀完 (大概 1810 字)
+            15 分钟 讀完 (大概 2272 字)
         </span>
         
     </div>
@@ -479,8 +513,62 @@
 <li><p><strong>下面的 Laravel 程式碼中, 當我 release 該 job, 這樣還會增加該 job 的 attempt 次數嗎？</strong><br>會哦</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Redis::throttle(<span class="hljs-string">'key'</span>)-&gt;allow(<span class="hljs-number">10</span>)-&gt;every(<span class="hljs-number">60</span>)-&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Job logic...</span></span><br><span class="line">&#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;release(<span class="hljs-number">10</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 </li>
+<li><p><strong>在 Laravel 中, 如何限制一個 job 只能同時由一個 worker 執行？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Redis::funnel(<span class="hljs-string">'key'</span>)-&gt;limit(<span class="hljs-number">1</span>)-&gt;then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Job logic...</span></span><br><span class="line">&#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Could not obtain lock...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;release(<span class="hljs-number">10</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
-
+<p><br><br><br><br><br></p>
+<h2 id="Queueing-Closures"><a href="#Queueing-Closures" class="headerlink" title="Queueing Closures"></a>Queueing Closures</h2><ul>
+<li><p><strong>在 Laravel 中, 什麼情況我們可能會需要 dispatch 一個 closure?</strong><br>當我們想要執行一個簡單的任務, 且需要它被在請求之外的週期執行</p>
+</li>
+<li><p><strong>在 Laravel 中, 如何 dispatch 一個 closure?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$podcast = App\Podcast::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">dispatch(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> <span class="hljs-title">use</span> <span class="hljs-params">($podcast)</span> </span>&#123;</span><br><span class="line">    $podcast-&gt;publish();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Running-The-Queue-Worker"><a href="#Running-The-Queue-Worker" class="headerlink" title="Running The Queue Worker"></a>Running The Queue Worker</h2><ul>
+<li><p><strong>在 Laravel 中, 怎麼樣啟動 worker 來執行 queued job?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 要維持 worker 持續運行, 我們需要額外啟動什麼？</strong><br>程序管理器, 像是 <code>supervisor</code>, 或 <code>pm2</code></p>
+</li>
+<li><p><strong>在 Laravel 中, 當我使用 <code>php artisan queue:work</code>, 當我代碼有變更時, 我需要重新啟動 queue 嗎？</strong><br>需要</p>
+</li>
+<li><p><strong>在 Laravel 中, 如果我運行 <code>php artisan queue:listen</code>, 然後我變更了代碼, 我需要再重新啟動 queue 嗎？</strong><br>不需要</p>
+</li>
+<li><p><strong>在 Laravel 中, 如果我不想要每次變更代碼就重新啟動 queue, 我可以使用哪一個 CLI?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:listen</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, <code>php artisan queue:work</code> 跟 <code>php artisan queue:listen</code> 何者較有效率？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Specifying-The-Connection-amp-Queue"><a href="#Specifying-The-Connection-amp-Queue" class="headerlink" title="Specifying The Connection &amp; Queue"></a>Specifying The Connection &amp; Queue</h3><ul>
+<li><p><strong>在 Laravel 中, 如何透過 CLI 指定 queue connection?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work redis</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 中, 如何透過 CLI 給特定的 queue 指定特定 connection?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work redis --queue=emails</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Processing-A-Single-Job"><a href="#Processing-A-Single-Job" class="headerlink" title="Processing A Single Job"></a>Processing A Single Job</h3><ul>
+<li><strong>在 Laravel 中, 如何透過 CLI 指定 worker 只執行 queued job 一次</strong><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work --once</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Processing-All-Queued-Jobs-amp-Then-Exiting"><a href="#Processing-All-Queued-Jobs-amp-Then-Exiting" class="headerlink" title="Processing All Queued Jobs &amp; Then Exiting"></a>Processing All Queued Jobs &amp; Then Exiting</h3><ul>
+<li><p><strong>在 Laravel 中, 如果我想要讓 queue worker 執行完所有 job 之後就關閉, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work --stop-when-empty</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 指令什麼時候可能會用到？</strong><br>當我們利用容器運行 worker, 而我們需要工作都完成後自動關閉 container 時</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work --stop-when-empty</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Resource-Considerations"><a href="#Resource-Considerations" class="headerlink" title="Resource Considerations"></a>Resource Considerations</h3><p><br><br><br><br><br></p>
+<h2 id="Queue-Priorities"><a href="#Queue-Priorities" class="headerlink" title="Queue Priorities"></a>Queue Priorities</h2>
     
     </div>
     
