@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-27T01:59:05.073Z">
+<meta property="og:updated_time" content="2019-12-28T03:36:48.762Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-27T01:59:05.073Z">
+<meta property="og:updated_time" content="2019-12-28T03:36:48.762Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 深入 - Queues">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要為細讀官方文件並將內容整理成 Q&amp;amp;A 的方式, 因文件內容較多, 會將每一個章節細分成一篇文章, 並且利用 TAG 去做範圍分類。">
@@ -292,6 +292,20 @@
                     
                     <a class="navbar-item" href="#Queue-Priorities">15&nbsp;&nbsp;<b>Queue Priorities</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Queue-Workers-amp-Deployment">16&nbsp;&nbsp;<b>Queue Workers &amp;amp;amp; Deployment</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Job-Expiration">16.1&nbsp;&nbsp;Job Expiration</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Worker-Timeouts">16.2&nbsp;&nbsp;Worker Timeouts</a>
+                    
                 </div>
             </div>
             
@@ -352,7 +366,7 @@
         <span class="column is-narrow">
             
             
-            15 分钟 讀完 (大概 2272 字)
+            17 分钟 讀完 (大概 2612 字)
         </span>
         
     </div>
@@ -567,8 +581,34 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Resource-Considerations"><a href="#Resource-Considerations" class="headerlink" title="Resource Considerations"></a>Resource Considerations</h3><p><br><br><br><br><br></p>
-<h2 id="Queue-Priorities"><a href="#Queue-Priorities" class="headerlink" title="Queue Priorities"></a>Queue Priorities</h2>
+<h3 id="Resource-Considerations"><a href="#Resource-Considerations" class="headerlink" title="Resource Considerations"></a>Resource Considerations</h3><ul>
+<li><strong>在 Laravel 的 queue 中, 因為會緩存在 RAM 中運行, 所以如果我有執行到未釋放的資源, 像是 image 之類的, 那我是否要在 job 執行完成之後釋放掉這些資源？</strong><br>要哦</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Queue-Priorities"><a href="#Queue-Priorities" class="headerlink" title="Queue Priorities"></a>Queue Priorities</h2><ul>
+<li><strong>在 Laravel 的 queue 中, 我要如何排列 queue 的優先順序？</strong><br>可以使用逗號做分隔排序<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work --queue=high,low</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Queue-Workers-amp-Deployment"><a href="#Queue-Workers-amp-Deployment" class="headerlink" title="Queue Workers &amp; Deployment"></a>Queue Workers &amp; Deployment</h2><h3 id="Job-Expiration"><a href="#Job-Expiration" class="headerlink" title="Job Expiration"></a>Job Expiration</h3><ul>
+<li><p><strong>在 Laravel 的 queue 監聽程序中, 我要如何重啟 queue？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:restart</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel 的 queue 監聽 CLI <code>php artisan queue:restart</code>, 會不會讓我丟失執行到一半的工作？</strong><br>不會哦, 它會 gracefully restart, 完成目前手邊工作之後再重啟</p>
+</li>
+<li><p><strong>Laravel 中, 在沒有使用 supervisor 的情況下, 如果我執行 <code>php artisan queue:restart</code>, 會發生什麼事？</strong><br>worker 會關閉</p>
+</li>
+<li><p><strong>Laravel 中, 若要使用 <code>php artisan queue:restart</code>, 務必先要確認什麼服務已經設置好？</strong><br>cache</p>
+</li>
+<li><p><strong>Laravel 中, 當我使用 <code>php artisan queue:restart</code>, queue 會將 restart 的 signal 存在什麼地方？</strong><br>cache</p>
+</li>
+<li><p><strong>Laravel queue 中, 如果我要指定一個 job 在執行之後多久時間之後才可以再被執行 (如果沒被刪除的話), 我可以怎麼做？</strong><br>在 <code>queue.php</code> 的 config 檔案中, 可以設定 <strong>retry_after</strong> 的參數</p>
+</li>
+<li><p><strong>Laravel queue 中, 哪一個服務無法在 queue.php config 中設定 <code>retry_after</code> 參數</strong><br>Amazon SQS</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Worker-Timeouts"><a href="#Worker-Timeouts" class="headerlink" title="Worker Timeouts"></a>Worker Timeouts</h3>
     
     </div>
     
