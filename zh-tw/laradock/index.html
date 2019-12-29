@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-27T13:19:43.274Z">
+<meta property="og:updated_time" content="2019-12-29T03:40:45.896Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laradock 學記筆記">
 <meta name="twitter:description" content="前言">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-27T13:19:43.274Z">
+<meta property="og:updated_time" content="2019-12-29T03:40:45.896Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laradock 學記筆記">
 <meta name="twitter:description" content="前言">
@@ -240,6 +240,18 @@
                     
                     <a class="navbar-item" href="#其他配置檔">1.11.3&nbsp;&nbsp;其他配置檔</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Jenkins">1.12&nbsp;&nbsp;Jenkins</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定">1.12.1&nbsp;&nbsp;設定</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Shell-Script">1.12.2&nbsp;&nbsp;Shell Script</a>
+                    
                 </div>
             </div>
             
@@ -300,7 +312,7 @@
         <span class="column is-narrow">
             
             
-            13 分钟 讀完 (大概 1893 字)
+            13 分钟 讀完 (大概 2004 字)
         </span>
         
     </div>
@@ -471,7 +483,13 @@
 <h3 id="其他配置檔"><a href="#其他配置檔" class="headerlink" title="其他配置檔"></a>其他配置檔</h3><h4 id="docker-compose-yaml"><a href="#docker-compose-yaml" class="headerlink" title="docker-compose.yaml"></a>docker-compose.yaml</h4><p>取拿掉 80 port 對應, 因為 80 port 會由容器外的 NGINX 監聽<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">"$&#123;NGINX_HOST_HTTPS_PORT&#125;:443"</span></span><br></pre></td></tr></table></figure></p>
 <p><br></p>
 <h4 id="Laradock-的-env"><a href="#Laradock-的-env" class="headerlink" title="Laradock 的 .env"></a>Laradock 的 .env</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">// 因為 80 port 沒開, 所以參數也不需設定</span><br><span class="line">### NGINX #################################################</span><br><span class="line"></span><br><span class="line">NGINX_HOST_HTTP_PORT=</span><br><span class="line">NGINX_HOST_HTTPS_PORT=443</span><br><span class="line">NGINX_HOST_LOG_PATH=./logs/nginx/</span><br><span class="line">NGINX_SITES_PATH=./nginx/sites/</span><br><span class="line">NGINX_PHP_UPSTREAM_CONTAINER=php-fpm</span><br><span class="line">NGINX_PHP_UPSTREAM_PORT=9000</span><br><span class="line">NGINX_SSL_PATH=./nginx/ssl/</span><br></pre></td></tr></table></figure>
+<p><br><br><br><br><br></p>
+<h2 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h2><h3 id="設定"><a href="#設定" class="headerlink" title="設定"></a>設定</h3><p>簡易個人 side project 用的 CD 可參考 <a href="https://tn710617.github.io/zh-tw/implementCIWithJenkinsOnAWS/">這篇文章</a></p>
 <p><br></p>
+<h3 id="Shell-Script"><a href="#Shell-Script" class="headerlink" title="Shell Script"></a>Shell Script</h3><ul>
+<li>從容器連到欲部署的 Server<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh -i /var/jenkins_home/yourDeployKey root@yourServerIP \</span><br><span class="line"><span class="hljs-string">"cd /yourProjectLocation/ &amp;&amp; \\</span></span><br><span class="line"><span class="hljs-string">git reset @^ --hard &amp;&amp; git pull \\</span></span><br><span class="line"><span class="hljs-string">&amp;&amp; cd /laradockProjectLocation/ \\</span></span><br><span class="line"><span class="hljs-string">&amp;&amp; /usr/bin/docker-compose exec -T workspace php /var/www/yourProjectName/artisan migrate --force \\</span></span><br><span class="line"><span class="hljs-string">&amp;&amp; /usr/bin/docker-compose exec -T workspace composer install -d /var/www/yourProjectName \\</span></span><br><span class="line"><span class="hljs-string">&amp;&amp; /usr/bin/docker-compose exec -T workspace php /var/www/yourProjectName/artisan queue:restart \\</span></span><br><span class="line"><span class="hljs-string">&amp;&amp; /usr/bin/docker-compose exec -T workspace php /var/www/yourProjectName/artisan db:seed"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 
     
     </div>
