@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-24T07:02:38.771Z">
+<meta property="og:updated_time" content="2019-12-30T04:13:00.797Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2019-12-24T07:02:38.771Z">
+<meta property="og:updated_time" content="2019-12-30T04:13:00.797Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
@@ -210,7 +210,7 @@
         <span class="column is-narrow">
             
             
-            19 分钟 讀完 (大概 2833 字)
+            20 分钟 讀完 (大概 3024 字)
         </span>
         
     </div>
@@ -376,6 +376,18 @@
 <li><p><strong>以下的 Laravel 程式碼中, 邏輯是怎麼樣的？</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">如果環境是在 production 的話, 檢查來源 ip, 來源 ip 可能有很多個, 取最後一個代表 client, 若不存在則拒絕存取</span><br></pre></td></tr></table></figure>
   <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span><span class="hljs-params">($request, Closure $next)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (app()-&gt;environment([<span class="hljs-string">'production'</span>])) &#123;</span><br><span class="line">            abort_if(!IPs::where(<span class="hljs-string">'address'</span>, Arr::last($request-&gt;ips()))-&gt;exists(),     Response::HTTP_UNAUTHORIZED,</span><br><span class="line">                <span class="hljs-string">'Invalid source'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> $next($request);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的兩段 Laravel 在 Resource 中的程式碼, 有什麼差異？</strong></p>
+<ol>
+<li><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'withdraws'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;whenLoaded(<span class="hljs-string">'withdraws'</span>, Withdraw::collection(<span class="hljs-keyword">$this</span>-&gt;withdraws))</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'withdraws'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;whenLoaded(<span class="hljs-string">'withdraws'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line"><span class="hljs-keyword">return</span> Withdraw::collection(<span class="hljs-keyword">$this</span>-&gt;withdraws);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>第一個 block 中, PHP 會先去執行作為參數帶入的 $this-&gt;withdraws, 再將結果帶入 whenLoaded, 這便符合了 whenLoaded 的 relation 載入條件, 所以依然會將當前 resource 下的 relation 顯示出來, 實際運行上因為會先執行 $this-&gt;withdraws, 因此也會造成效能上的浪費</p>
+<p>第二個 block 中, closure 在被呼叫之前, PHP 並不會去解析它, 所以會先執行 whenLoaded 函式, 如果條件吻合, 才會執行 closure, 所以不會去執行 $this-&gt;withdraws, 自然 whenLoaded 的條件就不會吻合, resource 中也就不會多撈一層</p>
+</li>
+</ol>
 </li>
 </ul>
 
