@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>&lt;未完成&gt; GKE Migrating to Containers - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
+<meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Google Kubernetes Engine Best Practices">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;未完成&gt; GKE Migrating to Containers">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/GKEMigratingToContainers/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/YdS1hsjFMRU52tjOS85HRSL3gnxkqy6ST82MqQixoK_H6JkFE08M6NTEp1dU4rSqUIdXsLXsWvmm4efqmkgAVQ7vZeti5pG9tjRCLVTSMfvdXYdSHE0yApBPIt40Pu63hPo11BpXbPdaJ5cWwEUaQ9JPTufG_ZWjMIAAvSLa2Hq4aWprQR0NIZR4SBrbeKAKbweyHpFjx-apgvxROHg9AV9na0xr1r5m9F1XNQDFiE3oI_Z8KH1Tldir01T4nstXNsth4HUUgevXfgJIOassCi3qReR0slEWps-Qujjzbf1bqWjQQEFsavpGQDRSoundIKEuY9XrIL3hmezM6baJARqknxPWJwbNJpvtdIdrjFGN3vs8OsboWtCpAd-lI1G3YfsyQNArH0dr1VD3o8htJ2RlwtYW50G6CtiNijldkaKlGIMf6UlkSbdiLVgWZTDBcOJ5jCntOj_Nd7bjC723F11PJ76G5rqFGc2exUvhNoOWjwucq08c05oIWLAJmKvYq70tpITVvg8-z2RQ8wF9YSdf8soum6QP6Z9kLcpvP_t54Z1Pfme4L523HahHSjtEXy7pvnUS8BBqIXPihHWowENS6uWQ3I5cgc2-J1GSHr26jw11Z7xAaV3X4QHalrLGSW045Elq9WKYXPIMphrMWaNEQdI7ZnE51x5SU1QreA83kFHVXVOriVemTWPax57RJTAcgfcv94hJ7KNU8h1Ce51htK_G48_XJSdGgRDo-5oYA8w_xQ=w670-h320-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/M6BHtKWI3_sOAt-JdqyLFyfWAMdMWB2k88feffNlafTcsXBw1U99DHvpiif2ISaeBBquTn3b0Lr0NZxqzUIKqaQeDq1VlOLpDMj8_QGw9kHShJKMeA2CQ7CXROUAeSH1OcKC4LwrSgMXKLvh0WG-81flNBqEn-2gzvidsuUqgvBHx4I8f-XEN_sdbyB9k6Hc1CkyUZGxzIc1LWiTG1doQr-eHNeDrdFWpbFOb0JCeX3EvumlhM7UxXAenP_cdSc7-q1Vbw1dY_kTTHCLlXd-mqNGsICe6mrsvXp_svmaZU2c_MhN82M54Qy6JSHWYUdqc0s8SXVAqwzlbDidZrd1YJnLli-hTJyz59q8VxelkiCmYlZ_paSeJGrT1bDXZooMwh6tseE4hed4V5O9XFeh5-SbY7AxnSnY_BT3AOBs6xzTPHvqigDGjZu9kuDy4ACFuse67ZEhVn4Pl2x-l-Ss6JxTRn5wds3igx-oghqze0XrBBvH1G7jk6uTtyd9ZsM3aOQI311GTfyRL4ANSen-bE-7qX7jz717bXpzmAmF70nv1d1m9TY8h8N0vmNhRoNN6FMrqmwkVGUpUcf4Y9VZjSziEfvmWuiwpFUx5Rua8csCsILnQqIQFtggT61ttzalSbsxxus8VvxlFy22PkmUv3-qEXPrjyuZQJ2JF5a9AcDEG5ryJvycMaZKI9rcrLExyPqLryCs7NERLo2yJf5b2f_ZhiuMv0D6OtSByIAvC_ZxCWYoBg=w584-h300-no">
+<meta property="og:updated_time" content="2020-01-04T04:09:15.555Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="&lt;未完成&gt; GKE Migrating to Containers">
+<meta name="twitter:description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/GKEMigratingToContainers/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
+<meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Google Kubernetes Engine Best Practices">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;未完成&gt; GKE Migrating to Containers">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/GKEMigratingToContainers/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/YdS1hsjFMRU52tjOS85HRSL3gnxkqy6ST82MqQixoK_H6JkFE08M6NTEp1dU4rSqUIdXsLXsWvmm4efqmkgAVQ7vZeti5pG9tjRCLVTSMfvdXYdSHE0yApBPIt40Pu63hPo11BpXbPdaJ5cWwEUaQ9JPTufG_ZWjMIAAvSLa2Hq4aWprQR0NIZR4SBrbeKAKbweyHpFjx-apgvxROHg9AV9na0xr1r5m9F1XNQDFiE3oI_Z8KH1Tldir01T4nstXNsth4HUUgevXfgJIOassCi3qReR0slEWps-Qujjzbf1bqWjQQEFsavpGQDRSoundIKEuY9XrIL3hmezM6baJARqknxPWJwbNJpvtdIdrjFGN3vs8OsboWtCpAd-lI1G3YfsyQNArH0dr1VD3o8htJ2RlwtYW50G6CtiNijldkaKlGIMf6UlkSbdiLVgWZTDBcOJ5jCntOj_Nd7bjC723F11PJ76G5rqFGc2exUvhNoOWjwucq08c05oIWLAJmKvYq70tpITVvg8-z2RQ8wF9YSdf8soum6QP6Z9kLcpvP_t54Z1Pfme4L523HahHSjtEXy7pvnUS8BBqIXPihHWowENS6uWQ3I5cgc2-J1GSHr26jw11Z7xAaV3X4QHalrLGSW045Elq9WKYXPIMphrMWaNEQdI7ZnE51x5SU1QreA83kFHVXVOriVemTWPax57RJTAcgfcv94hJ7KNU8h1Ce51htK_G48_XJSdGgRDo-5oYA8w_xQ=w670-h320-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/M6BHtKWI3_sOAt-JdqyLFyfWAMdMWB2k88feffNlafTcsXBw1U99DHvpiif2ISaeBBquTn3b0Lr0NZxqzUIKqaQeDq1VlOLpDMj8_QGw9kHShJKMeA2CQ7CXROUAeSH1OcKC4LwrSgMXKLvh0WG-81flNBqEn-2gzvidsuUqgvBHx4I8f-XEN_sdbyB9k6Hc1CkyUZGxzIc1LWiTG1doQr-eHNeDrdFWpbFOb0JCeX3EvumlhM7UxXAenP_cdSc7-q1Vbw1dY_kTTHCLlXd-mqNGsICe6mrsvXp_svmaZU2c_MhN82M54Qy6JSHWYUdqc0s8SXVAqwzlbDidZrd1YJnLli-hTJyz59q8VxelkiCmYlZ_paSeJGrT1bDXZooMwh6tseE4hed4V5O9XFeh5-SbY7AxnSnY_BT3AOBs6xzTPHvqigDGjZu9kuDy4ACFuse67ZEhVn4Pl2x-l-Ss6JxTRn5wds3igx-oghqze0XrBBvH1G7jk6uTtyd9ZsM3aOQI311GTfyRL4ANSen-bE-7qX7jz717bXpzmAmF70nv1d1m9TY8h8N0vmNhRoNN6FMrqmwkVGUpUcf4Y9VZjSziEfvmWuiwpFUx5Rua8csCsILnQqIQFtggT61ttzalSbsxxus8VvxlFy22PkmUv3-qEXPrjyuZQJ2JF5a9AcDEG5ryJvycMaZKI9rcrLExyPqLryCs7NERLo2yJf5b2f_ZhiuMv0D6OtSByIAvC_ZxCWYoBg=w584-h300-no">
+<meta property="og:updated_time" content="2020-01-04T04:09:15.555Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="&lt;未完成&gt; GKE Migrating to Containers">
+<meta name="twitter:description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    Ray 的技術捲軸
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/friends">好友</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#學習目標">2&nbsp;&nbsp;<b>學習目標</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#架構">3&nbsp;&nbsp;<b>架構</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/GKEMigratingToContainers/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/GKEMigratingToContainers/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            &lt;未完成&gt; GKE Migrating to Containers
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-01-04T03:34:31.000Z" itemprop="datePublished">1月 4 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            7 分钟 讀完 (大概 1007 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <p>容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 <a href="https://cloud.google.com/kubernetes-engine/" target="_blank" rel="noopener">Kubernetes Engine (GKE)</a>, 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 <a href="https://cloud.google.com/kubernetes-engine/" target="_blank" rel="noopener">GKE</a></p>
+<a id="more"></a>
+<p><br><br><br><br><br></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>容器化部署應用有許多的好處, 像是：</p>
+<ul>
+<li>隔離 - 應用們有各自的 libraries; 各個應用之間不會因為有不同的 libraries 而產生衝突。</li>
+<li>限制(CPU/memory) - 應用們不會佔用其他應用的資源</li>
+<li>可攜帶 - 容器含有任何所需的東西, 且不會被 OS 或雲端服務商綁死</li>
+<li>輕量化 - 共享 Kernel, 比完整的 OS 鏡像還要輕量且快速</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="學習目標"><a href="#學習目標" class="headerlink" title="學習目標"></a>學習目標</h2><p>這個專案示範了轉移一個名為 <a href="https://github.com/GoogleCloudPlatform/gke-migration-to-containers/blob/master/container/prime-flask-server.py" target="_blank" rel="noopener">Prime-flask</a> 的簡單 Python 應用, 到：</p>
+<ul>
+<li>一台 <a href="https://cloud.google.com/compute/docs/instances/" target="_blank" rel="noopener">虛擬機(Debian VM)</a>, <code>Prime-flask</code> 是被部署在這台機器上的唯一應用, 就好像是傳統的運行在一台實體資料中心上的應用。</li>
+<li>一個容器化版本的 <code>Prime-flask</code>, 被部署在 <a href="https://cloud.google.com/container-optimized-os/" target="_blank" rel="noopener">Container-Optimized OS (COS)</a></li>
+<li>使用 [Kubernetes] 將 <code>Prime-flask</code> 部署在 Kubernetes Engine 上, 並且使負載平衡來暴露服務。</li>
+</ul>
+<p>在完成部署後, 你將會針對最後版本的部署實施一個負載測試, 並且擴縮服務來適應負載</p>
+<p>在教程途中, 如果有遇到什麼錯誤, 可以重新執行失敗的 script, 因為偶而會因為網路連線問題出錯, 重試之後就好了。</p>
+<p>本教程由 GKE Helmsman 工程師建立, 讓你更了解如何轉移到容器。 你可以在<a href="https://github.com/GoogleCloudPlatform/gke-migration-to-containers.git" target="_blank" rel="noopener">這</a>檢視範例, 並且, 我們歡迎任何人貢獻這個專案。</p>
+<p><br><br><br><br><br></p>
+<h2 id="架構"><a href="#架構" class="headerlink" title="架構"></a>架構</h2><p><strong>佈局 1</strong>: 運行 Debian 的虛擬機, 應用被直接部署到主機的 OS, 無容器<br><img src="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no" alt></p>
+<p><strong>佈局 2</strong>: 虛擬機運行容器優化的 OS, 應用被部署在容器內<br><img src="https://lh3.googleusercontent.com/YdS1hsjFMRU52tjOS85HRSL3gnxkqy6ST82MqQixoK_H6JkFE08M6NTEp1dU4rSqUIdXsLXsWvmm4efqmkgAVQ7vZeti5pG9tjRCLVTSMfvdXYdSHE0yApBPIt40Pu63hPo11BpXbPdaJ5cWwEUaQ9JPTufG_ZWjMIAAvSLa2Hq4aWprQR0NIZR4SBrbeKAKbweyHpFjx-apgvxROHg9AV9na0xr1r5m9F1XNQDFiE3oI_Z8KH1Tldir01T4nstXNsth4HUUgevXfgJIOassCi3qReR0slEWps-Qujjzbf1bqWjQQEFsavpGQDRSoundIKEuY9XrIL3hmezM6baJARqknxPWJwbNJpvtdIdrjFGN3vs8OsboWtCpAd-lI1G3YfsyQNArH0dr1VD3o8htJ2RlwtYW50G6CtiNijldkaKlGIMf6UlkSbdiLVgWZTDBcOJ5jCntOj_Nd7bjC723F11PJ76G5rqFGc2exUvhNoOWjwucq08c05oIWLAJmKvYq70tpITVvg8-z2RQ8wF9YSdf8soum6QP6Z9kLcpvP_t54Z1Pfme4L523HahHSjtEXy7pvnUS8BBqIXPihHWowENS6uWQ3I5cgc2-J1GSHr26jw11Z7xAaV3X4QHalrLGSW045Elq9WKYXPIMphrMWaNEQdI7ZnE51x5SU1QreA83kFHVXVOriVemTWPax57RJTAcgfcv94hJ7KNU8h1Ce51htK_G48_XJSdGgRDo-5oYA8w_xQ=w670-h320-no" alt></p>
+<p><strong>佈局 3</strong>: Kubernetes Engine (GKE) 平台, 很多容器運行在很多機器上<br><img src="https://lh3.googleusercontent.com/M6BHtKWI3_sOAt-JdqyLFyfWAMdMWB2k88feffNlafTcsXBw1U99DHvpiif2ISaeBBquTn3b0Lr0NZxqzUIKqaQeDq1VlOLpDMj8_QGw9kHShJKMeA2CQ7CXROUAeSH1OcKC4LwrSgMXKLvh0WG-81flNBqEn-2gzvidsuUqgvBHx4I8f-XEN_sdbyB9k6Hc1CkyUZGxzIc1LWiTG1doQr-eHNeDrdFWpbFOb0JCeX3EvumlhM7UxXAenP_cdSc7-q1Vbw1dY_kTTHCLlXd-mqNGsICe6mrsvXp_svmaZU2c_MhN82M54Qy6JSHWYUdqc0s8SXVAqwzlbDidZrd1YJnLli-hTJyz59q8VxelkiCmYlZ_paSeJGrT1bDXZooMwh6tseE4hed4V5O9XFeh5-SbY7AxnSnY_BT3AOBs6xzTPHvqigDGjZu9kuDy4ACFuse67ZEhVn4Pl2x-l-Ss6JxTRn5wds3igx-oghqze0XrBBvH1G7jk6uTtyd9ZsM3aOQI311GTfyRL4ANSen-bE-7qX7jz717bXpzmAmF70nv1d1m9TY8h8N0vmNhRoNN6FMrqmwkVGUpUcf4Y9VZjSziEfvmWuiwpFUx5Rua8csCsILnQqIQFtggT61ttzalSbsxxus8VvxlFy22PkmUv3-qEXPrjyuZQJ2JF5a9AcDEG5ryJvycMaZKI9rcrLExyPqLryCs7NERLo2yJf5b2f_ZhiuMv0D6OtSByIAvC_ZxCWYoBg=w584-h300-no" alt></p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Kubernetes-Engine/">#GCP Kubernetes Engine</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Google-Kubernetes-Engine-Best-Practices/">#Google Kubernetes Engine Best Practices</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravelEloquentORMRelationships/">Laravel - EloquentORM - Relationships</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/GKEMigratingToContainers/';
+        this.page.identifier = 'zh-tw/GKEMigratingToContainers/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                           
+                           <i class="fab fa-medium"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
