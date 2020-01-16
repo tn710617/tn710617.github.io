@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-14T02:21:16.250Z">
+<meta property="og:updated_time" content="2020-01-15T03:53:45.969Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-14T02:21:16.250Z">
+<meta property="og:updated_time" content="2020-01-15T03:53:45.969Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -262,23 +262,19 @@
                     
                     
                     
-                    <a class="navbar-item" href="#Relationships-Methods-Vs-Dynamic-Properties">4.1&nbsp;&nbsp;Relationships Methods Vs. Dynamic Properties</a>
+                    <a class="navbar-item" href="#Querying-Relationship-Existence">4.1&nbsp;&nbsp;Querying Relationship Existence</a>
                     
                     
                     
-                    <a class="navbar-item" href="#Querying-Relationship-Existence">4.2&nbsp;&nbsp;Querying Relationship Existence</a>
+                    <a class="navbar-item" href="#Querying-Relationship-Absence">4.2&nbsp;&nbsp;Querying Relationship Absence</a>
                     
                     
                     
-                    <a class="navbar-item" href="#Querying-Relationship-Absence">4.3&nbsp;&nbsp;Querying Relationship Absence</a>
+                    <a class="navbar-item" href="#Querying-Polymorphic-Relationships">4.3&nbsp;&nbsp;Querying Polymorphic Relationships</a>
                     
                     
                     
-                    <a class="navbar-item" href="#Querying-Polymorphic-Relationships">4.4&nbsp;&nbsp;Querying Polymorphic Relationships</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Counting-Relate-Models">4.5&nbsp;&nbsp;Counting Relate Models</a>
+                    <a class="navbar-item" href="#Counting-Relate-Models">4.4&nbsp;&nbsp;Counting Relate Models</a>
                     
                     
                     <hr class="navbar-divider">
@@ -398,7 +394,7 @@
         <span class="column is-narrow">
             
             
-            28 分钟 讀完 (大概 4214 字)
+            31 分钟 讀完 (大概 4639 字)
         </span>
         
     </div>
@@ -711,9 +707,35 @@
 </li>
 </ul>
 <p><br><br><br><br><br></p>
-<h2 id="Querying-Relations"><a href="#Querying-Relations" class="headerlink" title="Querying Relations"></a>Querying Relations</h2><h3 id="Relationships-Methods-Vs-Dynamic-Properties"><a href="#Relationships-Methods-Vs-Dynamic-Properties" class="headerlink" title="Relationships Methods Vs. Dynamic Properties"></a>Relationships Methods Vs. Dynamic Properties</h3><p><br></p>
-<h3 id="Querying-Relationship-Existence"><a href="#Querying-Relationship-Existence" class="headerlink" title="Querying Relationship Existence"></a>Querying Relationship Existence</h3><p><br></p>
-<h3 id="Querying-Relationship-Absence"><a href="#Querying-Relationship-Absence" class="headerlink" title="Querying Relationship Absence"></a>Querying Relationship Absence</h3><p><br></p>
+<h2 id="Querying-Relations"><a href="#Querying-Relations" class="headerlink" title="Querying Relations"></a>Querying Relations</h2><ul>
+<li><strong>Laravel query 當中, 當我使用 orWhere 時, 如果我要限制 where condition 的範圍, 我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$user-&gt;posts()</span><br><span class="line">        -&gt;where(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> $query-&gt;where(<span class="hljs-string">'active'</span>, <span class="hljs-number">1</span>)</span><br><span class="line">                         -&gt;orWhere(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;='</span>, <span class="hljs-number">100</span>);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// select * from posts</span></span><br><span class="line"><span class="hljs-comment">// where user_id = ? and (active = 1 or votes &gt;= 100)</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Querying-Relationship-Existence"><a href="#Querying-Relationship-Existence" class="headerlink" title="Querying Relationship Existence"></a>Querying Relationship Existence</h3><ul>
+<li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我只要取得至少有一個 Comment 的 Post, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Retrieve all posts that have at least one comment...</span></span><br><span class="line">$posts = App\Post::has(<span class="hljs-string">'comments'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我只要取得有三個以上 Comment 的 Post, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Retrieve all posts that have three or more comments...</span></span><br><span class="line">$posts = App\Post::has(<span class="hljs-string">'comments'</span>, <span class="hljs-string">'&gt;='</span>, <span class="hljs-number">3</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我只要取得有至少一個以上 Comment 的 Post, 且這個 comment 的 content 要含有 ‘foo’, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Retrieve posts with at least one comment containing words like foo%...</span></span><br><span class="line">$posts = App\Post::whereHas(<span class="hljs-string">'comments'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'content'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">&#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我只要取得有十個以上 Comment 的 Post, 且 10 個 Comment 的 content 都要含有 ‘foo’, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Retrieve posts with at least ten comments containing words like foo%...</span></span><br><span class="line">$posts = App\Post::whereHas(<span class="hljs-string">'comments'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'content'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">&#125;, <span class="hljs-string">'&gt;='</span>, <span class="hljs-number">10</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Querying-Relationship-Absence"><a href="#Querying-Relationship-Absence" class="headerlink" title="Querying Relationship Absence"></a>Querying Relationship Absence</h3><ul>
+<li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我要取得沒有任何 comments 的 post, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$posts = App\Post::doesntHave(<span class="hljs-string">'comments'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我要取得沒有某些特定 comment 的 post, 而這些特定的 comment 的 content 會含有 ‘foo’, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$posts = App\Post::whereDoesntHave(<span class="hljs-string">'comments'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'content'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">&#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
 <h3 id="Querying-Polymorphic-Relationships"><a href="#Querying-Polymorphic-Relationships" class="headerlink" title="Querying Polymorphic Relationships"></a>Querying Polymorphic Relationships</h3><p><br></p>
 <h3 id="Counting-Relate-Models"><a href="#Counting-Relate-Models" class="headerlink" title="Counting Relate Models"></a>Counting Relate Models</h3><p><br><br><br><br><br></p>
 <h2 id="Eager-Loading"><a href="#Eager-Loading" class="headerlink" title="Eager Loading"></a>Eager Loading</h2><h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><p><br></p>
