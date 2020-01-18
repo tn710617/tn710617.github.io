@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-15T03:53:45.969Z">
+<meta property="og:updated_time" content="2020-01-17T06:27:59.157Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-15T03:53:45.969Z">
+<meta property="og:updated_time" content="2020-01-17T06:27:59.157Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -394,7 +394,7 @@
         <span class="column is-narrow">
             
             
-            31 分钟 讀完 (大概 4639 字)
+            34 分钟 讀完 (大概 5038 字)
         </span>
         
     </div>
@@ -734,9 +734,26 @@
 <li><p><strong>在 Laravel relationship 當中, 假如我的 Post model 與 Comment model 關聯, 我要取得沒有某些特定 comment 的 post, 而這些特定的 comment 的 content 會含有 ‘foo’, 那我可以怎麼做？</strong></p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$posts = App\Post::whereDoesntHave(<span class="hljs-string">'comments'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'content'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">&#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
 </li>
+<li><p><strong>在 Laravel relationship 中, 假設我有 post, comment, 以及 author Model, 現在我要取得 comment 的 author 未被 banned 的 post (以 post 的 comment 的 author 為條件 query), 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$posts = App\Post::whereDoesntHave(<span class="hljs-string">'comments.author'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'banned'</span>, <span class="hljs-number">1</span>);</span><br><span class="line">&#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 <p><br></p>
-<h3 id="Querying-Polymorphic-Relationships"><a href="#Querying-Polymorphic-Relationships" class="headerlink" title="Querying Polymorphic Relationships"></a>Querying Polymorphic Relationships</h3><p><br></p>
+<h3 id="Querying-Polymorphic-Relationships"><a href="#Querying-Polymorphic-Relationships" class="headerlink" title="Querying Polymorphic Relationships"></a>Querying Polymorphic Relationships</h3><ul>
+<li><p><strong>在 Laravel polymorphic relationship 當中, 假如 Post 與 Video Model 都有多個 Comment Model, 現在我要取得 comment, 所屬的 video 或 post 的 <code>title</code> 含有 <code>foo%</code>, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Retrieve comments associated to posts or videos with a title like foo%...</span></span><br><span class="line">$comments = App\Comment::whereHasMorph(</span><br><span class="line">    <span class="hljs-string">'commentable'</span>,</span><br><span class="line">    [<span class="hljs-string">'App\Post'</span>, <span class="hljs-string">'App\Video'</span>],</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">        $query-&gt;where(<span class="hljs-string">'title'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 如果今天我的 Comment model 與 video 以及 post 有 polymorphic 的 relation, 那我想要取得 comment, 且該 comment 所屬的 post 的 title 不可含有 <code>foo</code>, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Retrieve comments associated to posts with a title not like foo%...</span></span><br><span class="line">$comments = App\Comment::whereDoesntHaveMorph(</span><br><span class="line">    <span class="hljs-string">'commentable'</span>,</span><br><span class="line">    <span class="hljs-string">'App\Post'</span>,</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">        $query-&gt;where(<span class="hljs-string">'title'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 中, 假如 Post model, Video model 與 Comment model 有 polymorphic 的關係, 現在我想要取得某些 Comment, 條件是 Video 的 title 必須含有 <code>foo</code>, 而 Post 的 title 或 content 必須含有 <code>foo</code>, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$comments = App\Comment::whereHasMorph(</span><br><span class="line">    <span class="hljs-string">'commentable'</span>,</span><br><span class="line">    [<span class="hljs-string">'App\Post'</span>, <span class="hljs-string">'App\Video'</span>],</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query, $type)</span> </span>&#123;</span><br><span class="line">        $query-&gt;where(<span class="hljs-string">'title'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> ($type === <span class="hljs-string">'App\Post'</span>) &#123;</span><br><span class="line">            $query-&gt;orWhere(<span class="hljs-string">'content'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel polymorphic relationship 中, Comment model 與很多其他的 model 都有 morph relation, 如果我要一次性取得所有的 morph model, 不管我有幾個, 並且從這些 relation 當中搜尋任何 title 含有 <code>foo</code> 的 comment, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$comments = App\Comment::whereHasMorph(<span class="hljs-string">'commentable'</span>, <span class="hljs-string">'*'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'title'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">&#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
 <h3 id="Counting-Relate-Models"><a href="#Counting-Relate-Models" class="headerlink" title="Counting Relate Models"></a>Counting Relate Models</h3><p><br><br><br><br><br></p>
 <h2 id="Eager-Loading"><a href="#Eager-Loading" class="headerlink" title="Eager Loading"></a>Eager Loading</h2><h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><p><br></p>
 <h3 id="Lazy-Eager-Loading"><a href="#Lazy-Eager-Loading" class="headerlink" title="Lazy Eager Loading"></a>Lazy Eager Loading</h3><p><br><br><br><br><br></p>
