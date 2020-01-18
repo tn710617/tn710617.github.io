@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-17T06:27:59.157Z">
+<meta property="og:updated_time" content="2020-01-18T02:56:07.126Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-17T06:27:59.157Z">
+<meta property="og:updated_time" content="2020-01-18T02:56:07.126Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -394,7 +394,7 @@
         <span class="column is-narrow">
             
             
-            34 分钟 讀完 (大概 5038 字)
+            37 分钟 讀完 (大概 5536 字)
         </span>
         
     </div>
@@ -754,7 +754,35 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Counting-Relate-Models"><a href="#Counting-Relate-Models" class="headerlink" title="Counting Relate Models"></a>Counting Relate Models</h3><p><br><br><br><br><br></p>
+<h3 id="Counting-Relate-Models"><a href="#Counting-Relate-Models" class="headerlink" title="Counting Relate Models"></a>Counting Relate Models</h3><ul>
+<li><p><strong>Laravel relationship 中, 假設今天我的 Post model 有很多 Comment model, 我想要拿到每個 Post model 下有幾個 Comment model, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$posts = App\Post::withCount(<span class="hljs-string">'comments'</span>)-&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($posts <span class="hljs-keyword">as</span> $post) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $post-&gt;comments_count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel relationship 中, 假設今天我的 Post model 有 votes 以及 comments 的 relationships, 如果我現在想要取得每個 Post model 當中有幾個 Vote 跟 Comment, 其中, Comment 有特殊的條件, Comment 的 content 必須含有 <code>foo</code>, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$posts = App\Post::withCount([<span class="hljs-string">'votes'</span>, <span class="hljs-string">'comments'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'content'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'foo%'</span>);</span><br><span class="line">&#125;])-&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;votes_count;</span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;comments_count;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel relationship 中, 當我使用了 withCount method, Laravel 會在取得的 model 中加入哪一個欄位？</strong><br><code>{relation}_count</code></p>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel relationship 中, 假設今天我的 Post model 有 comments 的 relationships, 假如現在我要取得每個 Post 有幾個 comment, 以及我要自定義一個 comment 叫做 <code>pending_comments_count</code>, 條件是該 comment 的 <code>approved</code> 必須是 <code>false</code>, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"></span><br><span class="line">$posts = App\Post::withCount([</span><br><span class="line">    <span class="hljs-string">'comments'</span>,</span><br><span class="line">    <span class="hljs-string">'comments as pending_comments_count'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Builder $query)</span> </span>&#123;</span><br><span class="line">        $query-&gt;where(<span class="hljs-string">'approved'</span>, <span class="hljs-keyword">false</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">])-&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;comments_count;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;pending_comments_count;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel Query Builder 當中, 如果我要同時使用 <code>select</code> 以及 <code>withCount</code>, 哪一種需排在前面？</strong><br><code>select</code></p>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel 當中, 如果說現在我要同時取得 Post 中的 <code>title</code> 以及 <code>body</code> 欄位, 以及其 relation <code>comments</code> 的數量, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$posts = App\Post::select([<span class="hljs-string">'title'</span>, <span class="hljs-string">'body'</span>])-&gt;withCount(<span class="hljs-string">'comments'</span>)-&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;title;</span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;body;</span><br><span class="line"><span class="hljs-keyword">echo</span> $posts[<span class="hljs-number">0</span>]-&gt;comments_count;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 當中, 如果我的 Book model 有很多 <code>genres</code> model relation, 現在我已取得特定的那一個 Book model, 我要再取得所屬的 <code>genres</code> 的數量, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$book = App\Book::first();</span><br><span class="line"></span><br><span class="line">$book-&gt;loadCount(<span class="hljs-string">'genres'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel 當中, 如果我的 Book model 有很多 <code>reviews</code> relation, 現在我已取得特定的那一個 Book model, 我要再取得所屬的 <code>reviews</code> 的數量, 但有一個特別的條件, 那就是 <code>reviews</code> 的 <code>rating</code> 必須要等於 5, 那我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$book-&gt;loadCount([<span class="hljs-string">'reviews'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'rating'</span>, <span class="hljs-number">5</span>);</span><br><span class="line">&#125;])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
 <h2 id="Eager-Loading"><a href="#Eager-Loading" class="headerlink" title="Eager Loading"></a>Eager Loading</h2><h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><p><br></p>
 <h3 id="Lazy-Eager-Loading"><a href="#Lazy-Eager-Loading" class="headerlink" title="Lazy Eager Loading"></a>Lazy Eager Loading</h3><p><br><br><br><br><br></p>
 <h2 id="Inserting-amp-Updating-Related-Models"><a href="#Inserting-amp-Updating-Related-Models" class="headerlink" title="Inserting &amp; Updating Related Models"></a>Inserting &amp; Updating Related Models</h2><h3 id="The-save-method"><a href="#The-save-method" class="headerlink" title="The save method"></a>The <code>save</code> method</h3><p><br></p>
