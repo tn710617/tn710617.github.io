@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-18T02:56:07.126Z">
+<meta property="og:updated_time" content="2020-01-19T03:02:07.487Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-18T02:56:07.126Z">
+<meta property="og:updated_time" content="2020-01-19T03:02:07.487Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -284,11 +284,23 @@
                     
                     
                     
-                    <a class="navbar-item" href="#Constraining-Eager-Loads">5.1&nbsp;&nbsp;Constraining Eager Loads</a>
+                    <a class="navbar-item" href="#Eager-Loading-Multiple-Relationships">5.1.1&nbsp;&nbsp;Eager Loading Multiple Relationships</a>
                     
                     
                     
-                    <a class="navbar-item" href="#Lazy-Eager-Loading">5.2&nbsp;&nbsp;Lazy Eager Loading</a>
+                    <a class="navbar-item" href="#Nested-Eager-Loading">5.1.2&nbsp;&nbsp;Nested Eager Loading</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Nested-Eager-Loading-morphTo-Relationships">5.1.3&nbsp;&nbsp;Nested Eager Loading morphTo Relationships</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Constraining-Eager-Loads">5.2&nbsp;&nbsp;Constraining Eager Loads</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Lazy-Eager-Loading">5.3&nbsp;&nbsp;Lazy Eager Loading</a>
                     
                     
                     <hr class="navbar-divider">
@@ -394,7 +406,7 @@
         <span class="column is-narrow">
             
             
-            37 分钟 讀完 (大概 5536 字)
+            40 分钟 讀完 (大概 5983 字)
         </span>
         
     </div>
@@ -783,7 +795,81 @@
 </li>
 </ul>
 <p><br><br><br><br><br></p>
-<h2 id="Eager-Loading"><a href="#Eager-Loading" class="headerlink" title="Eager Loading"></a>Eager Loading</h2><h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><p><br></p>
+<h2 id="Eager-Loading"><a href="#Eager-Loading" class="headerlink" title="Eager Loading"></a>Eager Loading</h2><ul>
+<li><p><strong>以下的 Laravel 程式碼中, author 為 book model 的 relation, 假設 $books 有 25 個 book model, 那以下的程式碼共會 query 幾次？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>answer</strong>:<br>26 次, 取所有的 book model 共花一次, 取各個 model 的 author relation 再花 25 次</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel 中, 假設以下為我的原始程式碼, 我要如何使用 eager loading 將所有的 author relation 一次取出?</strong></p>
+<ul>
+<li><p><strong>原始程式碼</strong>：</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::with(<span class="hljs-string">'author'</span>)-&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼中, 實際上下的 MySQL query 是哪兩句？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>：</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::with(<span class="hljs-string">'author'</span>)-&gt;get();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>query 語法</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">select * from books</span><br><span class="line">select * from authors where id in (1, 2, 3, 4, 5, ...)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Eager-Loading-Multiple-Relationships"><a href="#Eager-Loading-Multiple-Relationships" class="headerlink" title="Eager Loading Multiple Relationships"></a>Eager Loading Multiple Relationships</h4><ul>
+<li><p><strong>在以下的 Laravel 程式碼中, 我如果想要一次性的 eager load relations <code>author</code> 跟 <code>publisher</code>, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>：</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::with([<span class="hljs-string">'author'</span>, <span class="hljs-string">'publisher'</span>])-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Nested-Eager-Loading"><a href="#Nested-Eager-Loading" class="headerlink" title="Nested Eager Loading"></a>Nested Eager Loading</h4><ul>
+<li><p><strong>在以下的 Laravel 程式碼中, 如果我要一次性的 eager load book 的 author relation, 以及 author 的 contacts relation, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>：</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::with(<span class="hljs-string">'author.contacts'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Nested-Eager-Loading-morphTo-Relationships"><a href="#Nested-Eager-Loading-morphTo-Relationships" class="headerlink" title="Nested Eager Loading morphTo Relationships"></a>Nested Eager Loading <code>morphTo</code> Relationships</h4><ul>
+<li><p><strong>如以下的 Laravel relation definition 當中, <code>ActivityFeed</code> 跟 <code>Event</code>, <code>Photo</code>, 以及 <code>Post</code> 有 </strong>morphTo<strong> 的關係。 現在假設, <code>Event</code> 與 <code>calender</code> 有關係, <code>Photo</code> 與 <code>Tags</code> 有關係, <code>Post</code> 與 <code>author</code> 有關係, 我要如何從 <code>ActivityFeed</code> 一次性的 eager load 撈出所有的 relationships?</strong></p>
+<ul>
+<li><p><strong>Relation definition</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ActivityFeed</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Get the parent of the activity feed record.</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parentable</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;morphTo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Relations</span>\<span class="hljs-title">MorphTo</span>;</span><br><span class="line"></span><br><span class="line">$activities = ActivityFeed::query()</span><br><span class="line">    -&gt;with([<span class="hljs-string">'parentable'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(MorphTo $morphTo)</span> </span>&#123;</span><br><span class="line">        $morphTo-&gt;morphWith([</span><br><span class="line">            Event::class =&gt; [<span class="hljs-string">'calendar'</span>],</span><br><span class="line">            Photo::class =&gt; [<span class="hljs-string">'tags'</span>],</span><br><span class="line">            Post::class =&gt; [<span class="hljs-string">'author'</span>],</span><br><span class="line">        ]);</span><br><span class="line">    &#125;])-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><p><br></p>
 <h3 id="Lazy-Eager-Loading"><a href="#Lazy-Eager-Loading" class="headerlink" title="Lazy Eager Loading"></a>Lazy Eager Loading</h3><p><br><br><br><br><br></p>
 <h2 id="Inserting-amp-Updating-Related-Models"><a href="#Inserting-amp-Updating-Related-Models" class="headerlink" title="Inserting &amp; Updating Related Models"></a>Inserting &amp; Updating Related Models</h2><h3 id="The-save-method"><a href="#The-save-method" class="headerlink" title="The save method"></a>The <code>save</code> method</h3><p><br></p>
 <h3 id="The-create-Method"><a href="#The-create-Method" class="headerlink" title="The create Method"></a>The <code>create</code> Method</h3><p><br></p>
