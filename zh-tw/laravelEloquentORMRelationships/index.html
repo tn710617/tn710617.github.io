@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-19T03:02:07.487Z">
+<meta property="og:updated_time" content="2020-01-20T02:34:29.239Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-19T03:02:07.487Z">
+<meta property="og:updated_time" content="2020-01-20T02:34:29.239Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -296,6 +296,14 @@
                     
                     
                     
+                    <a class="navbar-item" href="#Eager-Loading-Specific-Columns">5.1.4&nbsp;&nbsp;Eager Loading Specific Columns</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Eager-Loading-By-Default">5.1.5&nbsp;&nbsp;Eager Loading By Default</a>
+                    
+                    
+                    
                     <a class="navbar-item" href="#Constraining-Eager-Loads">5.2&nbsp;&nbsp;Constraining Eager Loads</a>
                     
                     
@@ -406,7 +414,7 @@
         <span class="column is-narrow">
             
             
-            40 分钟 讀完 (大概 5983 字)
+            44 分钟 讀完 (大概 6597 字)
         </span>
         
     </div>
@@ -869,8 +877,100 @@
 </ul>
 </li>
 </ul>
-<h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><p><br></p>
-<h3 id="Lazy-Eager-Loading"><a href="#Lazy-Eager-Loading" class="headerlink" title="Lazy Eager Loading"></a>Lazy Eager Loading</h3><p><br><br><br><br><br></p>
+<p><br></p>
+<h4 id="Eager-Loading-Specific-Columns"><a href="#Eager-Loading-Specific-Columns" class="headerlink" title="Eager Loading Specific Columns"></a>Eager Loading Specific Columns</h4><ul>
+<li><p><strong>在以下的 Laravel 程式碼中, 如果我只想要 eager load author relation 中的 id 以及 name columns, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($books <span class="hljs-keyword">as</span> $book) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $book-&gt;author-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::with(<span class="hljs-string">'author:id,name'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>在 Laravel 當中, 如果說我今天使用 eager loading 來取得部份的 column, 有哪一個 column 是必須的？</strong><br>id</li>
+</ul>
+<p><br></p>
+<h4 id="Eager-Loading-By-Default"><a href="#Eager-Loading-By-Default" class="headerlink" title="Eager Loading By Default"></a>Eager Loading By Default</h4><ul>
+<li><p><strong>在以下的 Laravel relation definition 當中, 如果說我想要預設 eager load <code>author</code> 這一個 relation, 那我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>Relation definition</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Book</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Get the author that wrote the book.</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">author</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\Author'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Book</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * The relationships that should always be loaded.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@var</span> array</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> $with = [<span class="hljs-string">'author'</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Get the author that wrote the book.</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">author</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\Author'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>在以下的 Laravel relation definition 當中, 如果說我想要從某次的 query 當中移除 <code>$with</code> 所賦予的 <code>default eager loading</code> 效果, 那我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>Relation definition</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Book</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * The relationships that should always be loaded.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@var</span> array</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> $with = [<span class="hljs-string">'author'</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Get the author that wrote the book.</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">author</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\Author'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::without(<span class="hljs-string">'author'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Constraining-Eager-Loads"><a href="#Constraining-Eager-Loads" class="headerlink" title="Constraining Eager Loads"></a>Constraining Eager Loads</h3><ul>
+<li><p><strong>在以下的 Laravel eager loading 範例程式碼中, 如果我想要指定 eager load <code>title</code> 含有 <code>first</code> 的 <code>posts</code> model, 那我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = App\User::with(<span class="hljs-string">'posts'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = App\User::with([<span class="hljs-string">'posts'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'title'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'%first%'</span>);</span><br><span class="line">&#125;])-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>在以下的 Laravel 範例程式碼中, 我可以加入額外的 <code>query builder</code> method 嗎？</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = App\User::with([<span class="hljs-string">'posts'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;where(<span class="hljs-string">'title'</span>, <span class="hljs-string">'like'</span>, <span class="hljs-string">'%first%'</span>);</span><br><span class="line">&#125;])-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可以</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel eager loading constrain 當中, 像是以下的 Laravel 範例程式碼, 有哪些 query builder method 不適用？</strong><br><code>limit</code> 及 <code>take</code></li>
+</ul>
+<p><br></p>
+<h3 id="Lazy-Eager-Loading"><a href="#Lazy-Eager-Loading" class="headerlink" title="Lazy Eager Loading"></a>Lazy Eager Loading</h3><ul>
+<li><p><strong>假如我的 <code>Book</code> model 有 <code>author</code> 以及 <code>publisher</code> 的 relation, 但我想要在特定的條件下才 eager load relation 如以下的範例程式碼, 那我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> ($someCondition) &#123;</span><br><span class="line">    <span class="hljs-comment">// eager load here</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$books = App\Book::all();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> ($someCondition) &#123;</span><br><span class="line">    $books-&gt;load(<span class="hljs-string">'author'</span>, <span class="hljs-string">'publisher'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>在以下的 Laravel 範例程式碼中, 如果我想要 lazy eager load <code>books</code>, 並加入 <code>orderBy(&#39;published_date&#39;, &#39;asc&#39;)</code> 的 query constraint, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$author-&gt;load(<span class="hljs-string">'books'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$author-&gt;load([<span class="hljs-string">'books'</span> =&gt; <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;orderBy(<span class="hljs-string">'published_date'</span>, <span class="hljs-string">'asc'</span>);</span><br><span class="line">&#125;]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 如果我要 lazy eager loading 尚未 load 過的 relation, 我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">format</span><span class="hljs-params">(Book $book)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $book-&gt;loadMissing(<span class="hljs-string">'author'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; $book-&gt;name,</span><br><span class="line">        <span class="hljs-string">'author'</span> =&gt; $book-&gt;author-&gt;name,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br><br><br></p>
 <h2 id="Inserting-amp-Updating-Related-Models"><a href="#Inserting-amp-Updating-Related-Models" class="headerlink" title="Inserting &amp; Updating Related Models"></a>Inserting &amp; Updating Related Models</h2><h3 id="The-save-method"><a href="#The-save-method" class="headerlink" title="The save method"></a>The <code>save</code> method</h3><p><br></p>
 <h3 id="The-create-Method"><a href="#The-create-Method" class="headerlink" title="The create Method"></a>The <code>create</code> Method</h3><p><br></p>
 <h3 id="Belongs-To-Relationships"><a href="#Belongs-To-Relationships" class="headerlink" title="Belongs To Relationships"></a>Belongs To Relationships</h3><p><br></p>
