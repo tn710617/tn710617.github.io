@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-20T02:34:29.239Z">
+<meta property="og:updated_time" content="2020-01-21T03:33:18.298Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-20T02:34:29.239Z">
+<meta property="og:updated_time" content="2020-01-21T03:33:18.298Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -311,6 +311,10 @@
                     <a class="navbar-item" href="#Lazy-Eager-Loading">5.3&nbsp;&nbsp;Lazy Eager Loading</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Nested-Lazy-Eager-Loading-amp-morphTo">5.3.1&nbsp;&nbsp;Nested Lazy Eager Loading &amp;amp;amp; morphTo</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -414,7 +418,7 @@
         <span class="column is-narrow">
             
             
-            44 分钟 讀完 (大概 6597 字)
+            1 小时 讀完 (大概 6892 字)
         </span>
         
     </div>
@@ -970,8 +974,43 @@
 <li><strong>Laravel 中, 如果我要 lazy eager loading 尚未 load 過的 relation, 我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">format</span><span class="hljs-params">(Book $book)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $book-&gt;loadMissing(<span class="hljs-string">'author'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; $book-&gt;name,</span><br><span class="line">        <span class="hljs-string">'author'</span> =&gt; $book-&gt;author-&gt;name,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+<p><br></p>
+<h4 id="Nested-Lazy-Eager-Loading-amp-morphTo"><a href="#Nested-Lazy-Eager-Loading-amp-morphTo" class="headerlink" title="Nested Lazy Eager Loading &amp; morphTo"></a>Nested Lazy Eager Loading &amp; <code>morphTo</code></h4><ul>
+<li><p><strong>Laravel 中, 假設我有一個 ActivityFeed Model, 它跟 <code>Event</code>, <code>Photo</code>, <code>Post</code> Model 有 <code>morphTo</code> 的關係, 如下面範例。 而 <code>Event</code> 又與 <code>Calendar</code> 有關, <code>Photo</code> 與 <code>Tag</code> 有關, 而 <code>Post</code> 與 <code>Author</code> 有關。 現在我要先 eager load ActivityFeed 的 <code>morphTo</code> 關係, 再使用 lazy eager loading 取得以上 <code>morphTo</code> 各自的 relationship, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>範例 relation</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ActivityFeed</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Get the parent of the activity feed record.</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parentable</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;morphTo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$activities = ActivityFeed::with(<span class="hljs-string">'parentable'</span>)</span><br><span class="line">    -&gt;get()</span><br><span class="line">    -&gt;loadMorph(<span class="hljs-string">'parentable'</span>, [</span><br><span class="line">        Event::class =&gt; [<span class="hljs-string">'calendar'</span>],</span><br><span class="line">        Photo::class =&gt; [<span class="hljs-string">'tags'</span>],</span><br><span class="line">        Post::class =&gt; [<span class="hljs-string">'author'</span>],</span><br><span class="line">    ]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
 <p><br><br><br><br><br></p>
-<h2 id="Inserting-amp-Updating-Related-Models"><a href="#Inserting-amp-Updating-Related-Models" class="headerlink" title="Inserting &amp; Updating Related Models"></a>Inserting &amp; Updating Related Models</h2><h3 id="The-save-method"><a href="#The-save-method" class="headerlink" title="The save method"></a>The <code>save</code> method</h3><p><br></p>
+<h2 id="Inserting-amp-Updating-Related-Models"><a href="#Inserting-amp-Updating-Related-Models" class="headerlink" title="Inserting &amp; Updating Related Models"></a>Inserting &amp; Updating Related Models</h2><h3 id="The-save-method"><a href="#The-save-method" class="headerlink" title="The save method"></a>The <code>save</code> method</h3><ul>
+<li><p><strong>在 Laravel 當中, 如果說我一個 Post model 有許多 Comment model, 在以下的範例程式碼中, 除了直接對 comment model 做操作之外, 我要如何儲存 comment 與 post 之間的 relation?</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$comment = <span class="hljs-keyword">new</span> App\Comment([<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>]);</span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$comment = <span class="hljs-keyword">new</span> App\Comment([<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>]);</span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line">$post-&gt;comments()-&gt;save($comment);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>在 Laravel 當中, 在以下的範例程式碼當中, 我要如何一次儲存複數的 model?</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$comment = <span class="hljs-keyword">new</span> App\Comment([<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>]);</span><br><span class="line"></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$post-&gt;comments()-&gt;save($comment);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$post-&gt;comments()-&gt;saveMany([</span><br><span class="line">    <span class="hljs-keyword">new</span> App\Comment([<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>]),</span><br><span class="line">    <span class="hljs-keyword">new</span> App\Comment([<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'Another comment.'</span>]),</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
 <h3 id="The-create-Method"><a href="#The-create-Method" class="headerlink" title="The create Method"></a>The <code>create</code> Method</h3><p><br></p>
 <h3 id="Belongs-To-Relationships"><a href="#Belongs-To-Relationships" class="headerlink" title="Belongs To Relationships"></a>Belongs To Relationships</h3><p><br></p>
 <h3 id="Many-To-Many-Relationships"><a href="#Many-To-Many-Relationships" class="headerlink" title="Many To Many Relationships"></a>Many To Many Relationships</h3><h4 id="Attaching-Detaching"><a href="#Attaching-Detaching" class="headerlink" title="Attaching / Detaching"></a>Attaching / Detaching</h4><ul>
