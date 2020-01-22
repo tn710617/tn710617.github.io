@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-22T02:02:52.935Z">
+<meta property="og:updated_time" content="2020-01-22T07:48:09.150Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-22T02:02:52.935Z">
+<meta property="og:updated_time" content="2020-01-22T07:48:09.150Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -326,11 +326,19 @@
                     
                     
                     
+                    <a class="navbar-item" href="#Recursively-Saving-Models-amp-Relationships">6.1.1&nbsp;&nbsp;Recursively Saving Models &amp;amp;amp; Relationships</a>
+                    
+                    
+                    
                     <a class="navbar-item" href="#The-create-Method">6.2&nbsp;&nbsp;The create Method</a>
                     
                     
                     
                     <a class="navbar-item" href="#Belongs-To-Relationships">6.3&nbsp;&nbsp;Belongs To Relationships</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Default-Models">6.3.1&nbsp;&nbsp;Default Models</a>
                     
                     
                     
@@ -418,7 +426,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 6896 字)
+            1 小时 讀完 (大概 7587 字)
         </span>
         
     </div>
@@ -1011,9 +1019,141 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="The-create-Method"><a href="#The-create-Method" class="headerlink" title="The create Method"></a>The <code>create</code> Method</h3><p><br></p>
-<h3 id="Belongs-To-Relationships"><a href="#Belongs-To-Relationships" class="headerlink" title="Belongs To Relationships"></a>Belongs To Relationships</h3><p><br></p>
-<h3 id="Many-To-Many-Relationships"><a href="#Many-To-Many-Relationships" class="headerlink" title="Many To Many Relationships"></a>Many To Many Relationships</h3><h4 id="Attaching-Detaching"><a href="#Attaching-Detaching" class="headerlink" title="Attaching / Detaching"></a>Attaching / Detaching</h4><ul>
+<h4 id="Recursively-Saving-Models-amp-Relationships"><a href="#Recursively-Saving-Models-amp-Relationships" class="headerlink" title="Recursively Saving Models &amp; Relationships"></a>Recursively Saving Models &amp; Relationships</h4><ul>
+<li><p><strong>以下的 Laravel 程式碼代表什麼意思?</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$post-&gt;comments[<span class="hljs-number">0</span>]-&gt;message = <span class="hljs-string">'Message'</span>;</span><br><span class="line">$post-&gt;comments[<span class="hljs-number">0</span>]-&gt;author-&gt;name = <span class="hljs-string">'Author Name'</span>;</span><br><span class="line"></span><br><span class="line">$post-&gt;push();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>指定 post 的 comment relation 的第一個 model 的 message 為 ‘Message’</li>
+<li>指定 post 的 comment relation 的第一個 model 的 author relation 的 name 為 ‘Author Name’</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel 當中, 如果我的 relation 是 Post-&gt;hasMany-&gt;comment, 現在我要變更第一個 comment 的 message 欄位為 ‘Message’, 以及 comment 的 author relation 的 name 欄位為 ‘Author Name’, 我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$post-&gt;comments[<span class="hljs-number">0</span>]-&gt;message = <span class="hljs-string">'Message'</span>;</span><br><span class="line">$post-&gt;comments[<span class="hljs-number">0</span>]-&gt;author-&gt;name = <span class="hljs-string">'Author Name'</span>;</span><br><span class="line"></span><br><span class="line">$post-&gt;push();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="The-create-Method"><a href="#The-create-Method" class="headerlink" title="The create Method"></a>The <code>create</code> Method</h3><ul>
+<li><strong>Laravel relationship 當中, save 跟 create method 的差別在於？</strong><ul>
+<li>save 接受的參數為 model</li>
+<li>create 接受的參數為 array</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼代表什麼意思？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$comment = $post-&gt;comments()-&gt;create([</span><br><span class="line">    <span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel relation 中, 如果我的 relation 是 <code>Post-&gt;hasMany-&gt;comments</code>, 現在我要帶入 array 來建立新的 relational comment, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$comment = $post-&gt;comments()-&gt;create([</span><br><span class="line">    <span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, 該怎麼儲存 post 與 comment 的 relation?</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line">$comment = [<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line">$comment = [<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>];</span><br><span class="line">$comment = $post-&gt;comments()-&gt;create($comment);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>以下的 Laravel 程式碼中, 我該怎麼使用定義好的多個 array 來建立 post-&gt;hasMany-&gt;comments 的 relation?</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$comment1 = [<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'A new comment.'</span>];</span><br><span class="line">$comment2 = [<span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'Another new comment.'</span>];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$post = App\Post::find(<span class="hljs-number">1</span>);</span><br><span class="line">$post-&gt;comments()-&gt;createMany([$comment1, $comment2]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>如果我要使用多個 array 來建立 relation, 我可以使用哪一個 method?</strong><br>createMany</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Belongs-To-Relationships"><a href="#Belongs-To-Relationships" class="headerlink" title="Belongs To Relationships"></a>Belongs To Relationships</h3><ul>
+<li><p><strong>以下的 Laravel 程式碼是什麼意思？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$account = App\Account::find(<span class="hljs-number">10</span>);</span><br><span class="line"></span><br><span class="line">$user-&gt;account()-&gt;associate($account);</span><br><span class="line"></span><br><span class="line">$user-&gt;save();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>取得目標 account</li>
+<li>在該 user 的 account relation 中新增上面取得的 account model</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼是什麼意思？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$manager = auth()-&gt;user();</span><br><span class="line">$sub_account-&gt;manager()-&gt;dissociate();</span><br><span class="line">$sub_account-&gt;save();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>sub_account belongs to manager</li>
+<li>將 sub_account 的 foreign key 設為 null</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼是什麼意思？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$manager = auth()-&gt;user();</span><br><span class="line">$sub_account-&gt;manager()-&gt;associate($manager);</span><br><span class="line">$sub_account-&gt;save();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>sub_account belongs to manager</li>
+<li>將 sub_account 的 foreign key 設為 $manager</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Laravel 程式碼中, $manager 可以是什麼？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$manager = auth()-&gt;user();</span><br><span class="line">$sub_account-&gt;manager()-&gt;associate($manager);</span><br><span class="line">$sub_account-&gt;save();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>Eloquent Model</li>
+<li>也可以是任意字元, 會儲存在 foreign key</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel relation 當中, 如果我要更新 belongs to 的 relation, subAccount belongs to Manager, 如下面的程式碼中, 我已取得 manager 的 model, 除了直接使用 update method 去更新該 table 之外, 我可以使用哪個 method?</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$manager = App\Manager::find(<span class="hljs-number">10</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$manager = App\Manager::find(<span class="hljs-number">10</span>);</span><br><span class="line">$sub_account-&gt;manager()-&gt;associate($manager);</span><br><span class="line">$sub_account-&gt;save();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>Laravel relation 當中, 如果我要移除 belongs to 表格的 relation, 除了直接使用 update method 去更新該 table 之外, 我可以使用哪個 method?</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sub_account-&gt;manager()-&gt;dissociate();</span><br><span class="line">$sub_account-&gt;save();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Default-Models"><a href="#Default-Models" class="headerlink" title="Default Models"></a>Default Models</h4><h3 id="Many-To-Many-Relationships"><a href="#Many-To-Many-Relationships" class="headerlink" title="Many To Many Relationships"></a>Many To Many Relationships</h3><h4 id="Attaching-Detaching"><a href="#Attaching-Detaching" class="headerlink" title="Attaching / Detaching"></a>Attaching / Detaching</h4><ul>
 <li><p><strong>Laravel many to many relation 中, 如果我要單純新增一筆 relation 紀錄, 我可以怎麼做?</strong></p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$user = App\User::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$user-&gt;roles()-&gt;attach($roleId);</span><br></pre></td></tr></table></figure>
 </li>
