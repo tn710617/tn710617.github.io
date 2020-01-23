@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-23T01:43:46.945Z">
+<meta property="og:updated_time" content="2020-01-23T03:42:00.545Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-23T01:43:46.945Z">
+<meta property="og:updated_time" content="2020-01-23T03:42:00.545Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -426,7 +426,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 7609 字)
+            1 小时 讀完 (大概 7775 字)
         </span>
         
     </div>
@@ -1161,7 +1161,43 @@
 </li>
 </ul>
 <p><br></p>
-<h4 id="Default-Models"><a href="#Default-Models" class="headerlink" title="Default Models"></a>Default Models</h4><h3 id="Many-To-Many-Relationships"><a href="#Many-To-Many-Relationships" class="headerlink" title="Many To Many Relationships"></a>Many To Many Relationships</h3><h4 id="Attaching-Detaching"><a href="#Attaching-Detaching" class="headerlink" title="Attaching / Detaching"></a>Attaching / Detaching</h4><ul>
+<h4 id="Default-Models"><a href="#Default-Models" class="headerlink" title="Default Models"></a>Default Models</h4><ul>
+<li><strong>Laravel 當中, 哪些種類的 relation 可以定義 default model?</strong><ul>
+<li>belongsTo</li>
+<li>hasOne</li>
+<li>hasOneThrough</li>
+<li>morphOne</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel 當中, 如果我的 relation definition 如下, 現在我要定義一個 default model, name 為 guest author 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the author of the post.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">user</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\User'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer 1</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the author of the post.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">user</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\User'</span>)-&gt;withDefault([</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Guest Author'</span>,</span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer 2</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the author of the post.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">user</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\User'</span>)-&gt;withDefault(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($user, $post)</span> </span>&#123;</span><br><span class="line">        $user-&gt;name = <span class="hljs-string">'Guest Author'</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Laravel relation definition, 如果該 relation 不存在, 會回傳什麼？</strong>        </p>
+<ul>
+<li><p><strong>範例 relation definition</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the author of the post.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">user</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\User'</span>)-&gt;withDefault([</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Guest Author'</span>,</span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Guest Author"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Many-To-Many-Relationships"><a href="#Many-To-Many-Relationships" class="headerlink" title="Many To Many Relationships"></a>Many To Many Relationships</h3><h4 id="Attaching-Detaching"><a href="#Attaching-Detaching" class="headerlink" title="Attaching / Detaching"></a>Attaching / Detaching</h4><ul>
 <li><p><strong>Laravel many to many relation 中, 如果我要單純新增一筆 relation 紀錄, 我可以怎麼做?</strong></p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$user = App\User::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$user-&gt;roles()-&gt;attach($roleId);</span><br></pre></td></tr></table></figure>
 </li>
