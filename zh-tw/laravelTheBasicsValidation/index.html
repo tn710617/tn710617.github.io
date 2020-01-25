@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-24T05:58:24.245Z">
+<meta property="og:updated_time" content="2020-01-25T07:26:18.516Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - 基礎 - 驗證">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-24T05:58:24.245Z">
+<meta property="og:updated_time" content="2020-01-25T07:26:18.516Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - 基礎 - 驗證">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -163,6 +163,10 @@
                     
                     
                     <a class="navbar-item" href="#Displaying-The-Validation-Errors">2.2&nbsp;&nbsp;Displaying The Validation Errors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-error-Directive">2.2.1&nbsp;&nbsp;The @error Directive</a>
                     
                     
                     
@@ -322,7 +326,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 436 字)
+            7 分钟 讀完 (大概 990 字)
         </span>
         
     </div>
@@ -367,9 +371,68 @@
 <h3 id="Displaying-The-Validation-Errors"><a href="#Displaying-The-Validation-Errors" class="headerlink" title="Displaying The Validation Errors"></a>Displaying The Validation Errors</h3><ul>
 <li><strong>Laravel validation 中, 我們不需要特別的 bind error message 以及 <code>GET</code> route, 但卻能夠把 error message 帶過去, 為什麼？</strong><br>因為 Laravel 將 error message 放在 <a href="https://laravel.com/docs/6.x/session#flash-data" target="_blank" rel="noopener">flash session</a> 當中</li>
 </ul>
+<ul>
+<li><strong>Laravel validation 中, <code>$errors</code> 變數是什麼的 instance?</strong><br><code>Illuminate\Support\MessageBag</code></li>
+</ul>
+<ul>
+<li><strong>Laravel validation 中, <code>$errors</code> 變數是被哪一個 middleware 將之與 view 連接在一起?</strong><br><code>Illuminate\View\Middleware\ShareErrorsFromSession</code></li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 如果我想要在 view 中顯示 errors, 我可以怎麼做？</strong><figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">&lt;!-- /resources/views/post/create.blade.php --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Create Post<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line">@if ($errors-&gt;any())</span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"alert alert-danger"</span>&gt;</span></span><br><span class="line">        <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span></span><br><span class="line">            @foreach ($errors-&gt;all() as $error)</span><br><span class="line">                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>&#123;&#123; $error &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span><br><span class="line">            @endforeach</span><br><span class="line">        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="line">@endif</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">&lt;!-- Create Post Form --&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 <p><br></p>
-<h3 id="A-Note-On-Optional-Fields"><a href="#A-Note-On-Optional-Fields" class="headerlink" title="A Note On Optional Fields"></a>A Note On Optional Fields</h3><p><br><br><br><br><br></p>
-<h2 id="Form-Request-Validation"><a href="#Form-Request-Validation" class="headerlink" title="Form Request Validation"></a>Form Request Validation</h2><h3 id="Creating-Form-Requests"><a href="#Creating-Form-Requests" class="headerlink" title="Creating Form Requests"></a>Creating Form Requests</h3><p><br></p>
+<h4 id="The-error-Directive"><a href="#The-error-Directive" class="headerlink" title="The @error Directive"></a>The <code>@error</code> Directive</h4><p>涉及前端, 目前尚不熟, 待日後學習前端時補上</p>
+<p><br></p>
+<h3 id="A-Note-On-Optional-Fields"><a href="#A-Note-On-Optional-Fields" class="headerlink" title="A Note On Optional Fields"></a>A Note On Optional Fields</h3><ul>
+<li><strong>Laravel 中, 空的 string 會被轉化成 null, 這是為什麼?</strong><br>因為以下兩個 global middleware<ul>
+<li><code>TrimStrings</code></li>
+<li><code>ConvertEmptyStringsToNull</code></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel validation 當中, 如果我要一直 input 是允許 null 的, 我可以加入哪一個 rule?</strong><br>nullable</li>
+</ul>
+<p><br><br><br><br><br></p>
+<h2 id="Form-Request-Validation"><a href="#Form-Request-Validation" class="headerlink" title="Form Request Validation"></a>Form Request Validation</h2><h3 id="Creating-Form-Requests"><a href="#Creating-Form-Requests" class="headerlink" title="Creating Form Requests"></a>Creating Form Requests</h3><ul>
+<li><p><strong>Laravel 中, 如果我要用 CLI 建立一個 “form request”, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:request StoreBlogPort</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel validation 當中, 我已經建立了一個 “form request”, 如果我想要加入驗證規則的話, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the validation rules that apply to the request.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> array</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rules</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'title'</span> =&gt; <span class="hljs-string">'required|unique:posts|max:255'</span>,</span><br><span class="line">        <span class="hljs-string">'body'</span> =&gt; <span class="hljs-string">'required'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在以下的 Laravel validation “form request” 當中, 如果在 rule method 當中我需要一些 dependency, 那我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>form request</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the validation rules that apply to the request.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> array</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rules</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'title'</span> =&gt; <span class="hljs-string">'required|unique:posts|max:255'</span>,</span><br><span class="line">        <span class="hljs-string">'body'</span> =&gt; <span class="hljs-string">'required'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>直接用 type-hint 加到 parameters 裏頭</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>在我建立一個 Laravel validation “form request” 後, 我該怎麼使用它呢？</strong><br>在 controller method type hint 這個 “form request”</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Store the incoming blog post.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  StoreBlogPost  $request</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Response</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(StoreBlogPost $request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// The incoming request is valid...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Retrieve the validated input data...</span></span><br><span class="line">    $validated = $request-&gt;validated();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以下的 validation “form request” 中, 如果我要拿到驗證過的 request, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>範例程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Store the incoming blog post.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  StoreBlogPost  $request</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Response</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(StoreBlogPost $request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// The incoming request is valid...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Store the incoming blog post.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  StoreBlogPost  $request</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Response</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(StoreBlogPost $request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// The incoming request is valid...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Retrieve the validated input data...</span></span><br><span class="line">    $validated = $request-&gt;validated();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>在 Laravel validation “form request” 當中, 如果我想要在 validate 之後再做額外的驗證, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Configure the validator instance.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \Illuminate\Validation\Validator  $validator</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">withValidator</span><span class="hljs-params">($validator)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $validator-&gt;after(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($validator)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">$this</span>-&gt;somethingElseIsInvalid()) &#123;</span><br><span class="line">            $validator-&gt;errors()-&gt;add(<span class="hljs-string">'field'</span>, <span class="hljs-string">'Something is wrong with this field!'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 Laravel validation “form request” 當中, 如果我想要在 validate 之後再做額外的驗證, 我可以在 “form request” 當中使用哪一個 method？</strong><br>withValidator</p>
+</li>
+</ul>
+<p><br></p>
 <h3 id="Authorizing-Form-Requests"><a href="#Authorizing-Form-Requests" class="headerlink" title="Authorizing Form Requests"></a>Authorizing Form Requests</h3><p><br></p>
 <h3 id="Customizing-The-Error-Messages"><a href="#Customizing-The-Error-Messages" class="headerlink" title="Customizing The Error Messages"></a>Customizing The Error Messages</h3><p><br></p>
 <h3 id="Customizing-The-Validation-Attributes"><a href="#Customizing-The-Validation-Attributes" class="headerlink" title="Customizing The Validation Attributes"></a>Customizing The Validation Attributes</h3><p><br></p>
