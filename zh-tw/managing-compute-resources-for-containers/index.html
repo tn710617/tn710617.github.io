@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-30T22:12:16.403Z">
+<meta property="og:updated_time" content="2020-01-30T22:20:00.814Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
 <meta name="twitter:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-30T22:12:16.403Z">
+<meta property="og:updated_time" content="2020-01-30T22:20:00.814Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
 <meta name="twitter:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
@@ -146,19 +146,21 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Resource-Limit">2&nbsp;&nbsp;<b>Resource Limit</b></a>
+                    <a class="navbar-item" href="#頗析-Memory">2&nbsp;&nbsp;<b>頗析 (Memory)</b></a>
                     
                     
                     
-                    <a class="navbar-item" href="#頗析-Memory">2.1&nbsp;&nbsp;頗析 (Memory)</a>
+                    <a class="navbar-item" href="#頗析-CPU">2.1&nbsp;&nbsp;頗析 (CPU)</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#以下是幫助釐清觀念的-Q-amp-A">3&nbsp;&nbsp;<b>以下是幫助釐清觀念的 Q&amp;amp;amp;A</b></a>
                     
                     
                     
-                    <a class="navbar-item" href="#頗析-CPU">2.2&nbsp;&nbsp;頗析 (CPU)</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#參考資源">2.3&nbsp;&nbsp;參考資源</a>
+                    <a class="navbar-item" href="#參考資源">3.1&nbsp;&nbsp;參考資源</a>
                     
                 </div>
             </div>
@@ -220,7 +222,7 @@
         <span class="column is-narrow">
             
             
-            12 分钟 讀完 (大概 1731 字)
+            12 分钟 讀完 (大概 1761 字)
         </span>
         
     </div>
@@ -228,80 +230,8 @@
     
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 <code>requests</code> 以及 <code>limits</code> 的用途, 不然都傻傻分不清楚！</p>
 <a id="more"></a>
-<h2 id="Resource-Limit"><a href="#Resource-Limit" class="headerlink" title="Resource Limit"></a>Resource Limit</h2><ul>
-<li><p><strong>Kubernetes 中, 如果一個 Pod 卡在 pending status, 那很有可能是甚麼原因？</strong><br>沒有 Node 有足夠的資源來運行這個 Pod</p>
-</li>
-<li><p><strong>Kubernetes 中, Resource 的限制可分為 CPU 以及 Memory, 限制類型主要分成哪兩種？</strong></p>
+<h2 id="頗析-Memory"><a href="#頗析-Memory" class="headerlink" title="頗析 (Memory)"></a>頗析 (Memory)</h2><p>首先, 先針對 memory 的部分來頗析 limits 跟 requests 的詳細運作</p>
 <ul>
-<li>Request</li>
-<li>Limit</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, request 主要代表的是？</strong><br>這個 Pod 正常需要多少的資源可以正常運行</li>
-</ul>
-<ul>
-<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, request resource 對哪一個元件格外重要？</strong><br>scheduler</li>
-</ul>
-<ul>
-<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, limit resource 對哪一個元件格外重要？</strong><br>kubelet</li>
-</ul>
-<ul>
-<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 在選擇要在哪一個 Node 上面運行 Pod 時, 主要會考量哪一種類？</strong><br>request</li>
-</ul>
-<ul>
-<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 跟 request 的關係是？</strong><br>Scheduler 會選擇有足夠資源 (request 要求的資源) 的 node 來運行該 pod</li>
-</ul>
-<ul>
-<li><p><strong>以下的 Kubernetes yaml 檔所代表的意思是?</strong></p>
-<ul>
-<li><p><strong>yaml 檔</strong>:</p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">resources:</span></span><br><span class="line"><span class="hljs-attr">  requests:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">  limits:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">100</span><span class="hljs-string">Mi</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Answer</strong>:</p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 定義資源限制</span></span><br><span class="line"><span class="hljs-attr">resources:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 requests 種類限制, scheduler 會選擇有足夠 request 資源的 Node 來運行該 Pod</span></span><br><span class="line"><span class="hljs-attr">  requests:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line">  <span class="hljs-comment"># 定義 limits 種類限制, Kubelet 會根據 limits 資源來決定是否重啟該 Pod</span></span><br><span class="line"><span class="hljs-attr">  limits:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">100</span><span class="hljs-string">Mi</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>Kubernetes 中, 1 MiB 等於多少？</strong><br>1 MiB = 1024 KiB = 1024 * 1024 = 1048576 Bytes</p>
-</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 1 MB 等於多少？</strong><br>1 MB = 1000 KB = 1000 * 1000 = 1000000 Bytes</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 一個 Pod 的資源總限制是 <code>什麼</code> 的總和？</strong><br>該 Pod 內所有容器的資源限制加總</li>
-</ul>
-<ul>
-<li><p><strong>Cgroup 的全寫是？</strong><br>Control Group</p>
-</li>
-<li><p><strong>Cgroup 簡單解釋?</strong><br>有著一系列相關屬性的容器, 控制 kernel 如何運行程序</p>
-</li>
-</ul>
-<ul>
-<li><strong>Kubernetes resource limit 中, 當我們只設置 limits, 但沒設置 requests 時, 會發生什麼事？</strong><br>Kubernetes 會將 requests 設為 limits 的值</li>
-</ul>
-<ul>
-<li><strong>當宿主機面臨記憶體壓力時, 會做什麼事？</strong><br>會殺掉程序</li>
-</ul>
-<ul>
-<li><strong>當一個程序使用了超過在 cgroup 中規定的 memory 時, 會發生什麼事？</strong><br>該程序會被列入要殺掉的優先名單中</li>
-</ul>
-<ul>
-<li><strong>Server 中的 OOM 的全寫是??</strong><br>Out Of Memory</li>
-</ul>
-<ul>
-<li><strong>Kubernetes resource limit 當中, 當我設定了 requests 的限制, Kubernetes 會否要求 docker 去設定 memory cgroup 中的 soft_limit?</strong><br>不會</li>
-</ul>
-<ul>
-<li><strong>Kubernetes resource limit 當中, requests 若設得太高會發生什麼事？</strong><br>可能會出現沒有 node 可以運行這個 pod, 明明這個 pod 正常不會需要這麼高的 memory</li>
-</ul>
-<ul>
-<li><strong>Kubernetes resource limit 當中, requests 若設得太低會發生什麼事？</strong><br>如果一個 node 的剩餘空間已經沒有很多了, 因為 request 設得低, 所以依然會被分派到這個 node, 但該 pod 實際需要的資源遠高於 request 值, 所以該 node 面臨記憶體壓力時就會優先砍掉這個 pod</li>
-</ul>
-<p><br></p>
-<h3 id="頗析-Memory"><a href="#頗析-Memory" class="headerlink" title="頗析 (Memory)"></a>頗析 (Memory)</h3><ul>
 <li><p>建立一個沒有資源限制的 pod</p>
 <ul>
 <li><p>輸入</p>
@@ -340,7 +270,6 @@
 </li>
 <li><p><strong><code>.HostConfig.Memory</code></strong> 代表的意思是？<br>對應到 <code>docker run</code> 的 <a href="https://docs.docker.com/engine/reference/run/#user-memory-constraints" target="_blank" rel="noopener">–memory 參數</a></p>
 </li>
-<li></li>
 </ul>
 </li>
 </ul>
@@ -384,6 +313,8 @@
 </li>
 </ul>
 </li>
+</ul>
+<ul>
 <li><p>現在讓我們來建立另外一個 pod, 限制 memory limit 為 100Mi</p>
 <ul>
 <li><p>執行以下指令</p>
@@ -469,6 +400,79 @@
 </ul>
 <p><br></p>
 <h3 id="頗析-CPU"><a href="#頗析-CPU" class="headerlink" title="頗析 (CPU)"></a>頗析 (CPU)</h3><p><br></p>
+<h2 id="以下是幫助釐清觀念的-Q-amp-A"><a href="#以下是幫助釐清觀念的-Q-amp-A" class="headerlink" title="以下是幫助釐清觀念的 Q&amp;A"></a>以下是幫助釐清觀念的 Q&amp;A</h2><ul>
+<li><p><strong>Kubernetes 中, 如果一個 Pod 卡在 pending status, 那很有可能是甚麼原因？</strong><br>沒有 Node 有足夠的資源來運行這個 Pod</p>
+</li>
+<li><p><strong>Kubernetes 中, Resource 的限制可分為 CPU 以及 Memory, 限制類型主要分成哪兩種？</strong></p>
+<ul>
+<li>Request</li>
+<li>Limit</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, request 主要代表的是？</strong><br>這個 Pod 正常需要多少的資源可以正常運行</li>
+</ul>
+<ul>
+<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, request resource 對哪一個元件格外重要？</strong><br>scheduler</li>
+</ul>
+<ul>
+<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, limit resource 對哪一個元件格外重要？</strong><br>kubelet</li>
+</ul>
+<ul>
+<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 在選擇要在哪一個 Node 上面運行 Pod 時, 主要會考量哪一種類？</strong><br>request</li>
+</ul>
+<ul>
+<li><strong>Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 跟 request 的關係是？</strong><br>Scheduler 會選擇有足夠資源 (request 要求的資源) 的 node 來運行該 pod</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Kubernetes yaml 檔所代表的意思是?</strong></p>
+<ul>
+<li><p><strong>yaml 檔</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">resources:</span></span><br><span class="line"><span class="hljs-attr">  requests:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">  limits:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">100</span><span class="hljs-string">Mi</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 定義資源限制</span></span><br><span class="line"><span class="hljs-attr">resources:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 requests 種類限制, scheduler 會選擇有足夠 request 資源的 Node 來運行該 Pod</span></span><br><span class="line"><span class="hljs-attr">  requests:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line">  <span class="hljs-comment"># 定義 limits 種類限制, Kubelet 會根據 limits 資源來決定是否重啟該 Pod</span></span><br><span class="line"><span class="hljs-attr">  limits:</span></span><br><span class="line"><span class="hljs-attr">    cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    memory:</span> <span class="hljs-number">100</span><span class="hljs-string">Mi</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>Kubernetes 中, 1 MiB 等於多少？</strong><br>1 MiB = 1024 KiB = 1024 * 1024 = 1048576 Bytes</p>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 1 MB 等於多少？</strong><br>1 MB = 1000 KB = 1000 * 1000 = 1000000 Bytes</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 一個 Pod 的資源總限制是 <code>什麼</code> 的總和？</strong><br>該 Pod 內所有容器的資源限制加總</li>
+</ul>
+<ul>
+<li><p><strong>Cgroup 的全寫是？</strong><br>Control Group</p>
+</li>
+<li><p><strong>Cgroup 簡單解釋?</strong><br>有著一系列相關屬性的容器, 控制 kernel 如何運行程序</p>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 中, 當我們只設置 limits, 但沒設置 requests 時, 會發生什麼事？</strong><br>Kubernetes 會將 requests 設為 limits 的值</li>
+</ul>
+<ul>
+<li><strong>當宿主機面臨記憶體壓力時, 會做什麼事？</strong><br>會殺掉程序</li>
+</ul>
+<ul>
+<li><strong>當一個程序使用了超過在 cgroup 中規定的 memory 時, 會發生什麼事？</strong><br>該程序會被列入要殺掉的優先名單中</li>
+</ul>
+<ul>
+<li><strong>Server 中的 OOM 的全寫是??</strong><br>Out Of Memory</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 當中, 當我設定了 requests 的限制, Kubernetes 會否要求 docker 去設定 memory cgroup 中的 soft_limit?</strong><br>不會</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 當中, requests 若設得太高會發生什麼事？</strong><br>可能會出現沒有 node 可以運行這個 pod, 明明這個 pod 正常不會需要這麼高的 memory</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 當中, requests 若設得太低會發生什麼事？</strong><br>如果一個 node 的剩餘空間已經沒有很多了, 因為 request 設得低, 所以依然會被分派到這個 node, 但該 pod 實際需要的資源遠高於 request 值, 所以該 node 面臨記憶體壓力時就會優先砍掉這個 pod</li>
+</ul>
+<p><br></p>
 <h3 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h3><ul>
 <li><a href="https://link.medium.com/GJYhX4tlF3" target="_blank" rel="noopener">Understanding resource limits in Kubernetes: memory</a></li>
 </ul>
