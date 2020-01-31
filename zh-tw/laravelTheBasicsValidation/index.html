@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-30T03:39:44.884Z">
+<meta property="og:updated_time" content="2020-01-31T02:14:15.796Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - 基礎 - 驗證">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-30T03:39:44.884Z">
+<meta property="og:updated_time" content="2020-01-31T02:14:15.796Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - 基礎 - 驗證">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -236,7 +236,19 @@
                     
                     
                     
+                    <a class="navbar-item" href="#Determining-If-Messages-Exist-For-A-Field">5.1.4&nbsp;&nbsp;Determining If Messages Exist For A Field</a>
+                    
+                    
+                    
                     <a class="navbar-item" href="#Custom-Error-Messages">5.2&nbsp;&nbsp;Custom Error Messages</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Specifying-A-Custom-Message-For-A-Given-Attribute">5.2.1&nbsp;&nbsp;Specifying A Custom Message For A Given Attribute</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Specifying-Custom-Messages-In-Language-Files">5.2.2&nbsp;&nbsp;Specifying Custom Messages In Language Files</a>
                     
                     
                     <hr class="navbar-divider">
@@ -338,7 +350,7 @@
         <span class="column is-narrow">
             
             
-            17 分钟 讀完 (大概 2567 字)
+            21 分钟 讀完 (大概 3201 字)
         </span>
         
     </div>
@@ -611,7 +623,119 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Custom-Error-Messages"><a href="#Custom-Error-Messages" class="headerlink" title="Custom Error Messages"></a>Custom Error Messages</h3><p><br><br><br><br><br></p>
+<h4 id="Determining-If-Messages-Exist-For-A-Field"><a href="#Determining-If-Messages-Exist-For-A-Field" class="headerlink" title="Determining If Messages Exist For A Field"></a>Determining If Messages Exist For A Field</h4><ul>
+<li><p><strong>如以下的 Laravel 程式碼, 我已經拿到了 $errors, 如果說現在我想要判斷某個特定欄位是否有錯誤, 我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$errors = $validator-&gt;errors();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$errors = $validator-&gt;errors();</span><br><span class="line"><span class="hljs-keyword">if</span> ($errors-&gt;has(<span class="hljs-string">'email'</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Custom-Error-Messages"><a href="#Custom-Error-Messages" class="headerlink" title="Custom Error Messages"></a>Custom Error Messages</h3><ul>
+<li><p><strong>Laravel validation 中, 如果說我想要客製化錯誤訊息, 舉例來說, 只要是 <code>required</code> rule 的訊息都客製化成 <code>The xxx is required</code>, 如果要把 <code>xxx</code> 替換成欄位名稱, 我可以怎麼做？</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'required'</span> =&gt; <span class="hljs-string">'The :attribute field is required.'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Laravel validation 中, 如果說我想要客製化錯誤訊息, 已有訊息如下, 那我該把這個訊息放到 <code>哪一個</code> method 的 <code>第幾個</code> argument？</strong></p>
+<ul>
+<li><p><strong>程式碼</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'required'</span> =&gt; <span class="hljs-string">'The :attribute field is required.'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>validator</li>
+<li>第三個</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel validation 中, 如果說我想要客製化錯誤訊息, 已有訊息如下, 那我可以怎麼做？</strong></p>
+<ul>
+<li><p><strong>錯誤訊息</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'required'</span> =&gt; <span class="hljs-string">'The :attribute field is required.'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'required'</span> =&gt; <span class="hljs-string">'The :attribute field is required.'</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$validator = Validator::make($input, $rules, $messages);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>Laravel validation 中, 如果我想要客製化 <code>same</code> rule 的錯誤訊息, 假設想要的訊息內容如下, 我該在 A 以及 B field 分別填入什麼？？</strong></p>
+<ul>
+<li><p><strong>訊息</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'same'</span>    =&gt; <span class="hljs-string">'The A field and B field must match.'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>A: <code>:attribute</code></li>
+<li>B: <code>:other</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel validation 中, 如果我想要客製化 <code>size</code> rule 的錯誤訊息, 假設想要的訊息內容如下, 我該在 A 以及 B field 分別填入什麼？？</strong></p>
+<ul>
+<li><p><strong>訊息</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'size'</span>    =&gt; <span class="hljs-string">'The A filed must be exactly B field.'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>A: <code>:attribute</code></li>
+<li>B: <code>:size</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel validation 中, 如果我想要客製化 <code>between</code> rule 的錯誤訊息, 假設想要的訊息內容如下, 我該在 <code>A</code>, <code>B</code>, <code>C</code>, and <code>D</code> field 分別該填入什麼？？</strong></p>
+<ul>
+<li><p><strong>訊息</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'between'</span> =&gt; <span class="hljs-string">'The A value B is not between C - D.'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>A: <code>:attribute</code></li>
+<li>B: <code>:input</code></li>
+<li>C: <code>:min</code></li>
+<li>D: <code>:max</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Laravel validation 中, 如果我想要客製化 <code>in</code> rule 的錯誤訊息, 假設想要的訊息內容如下, 我該在 <code>A</code>, <code>B</code> field 分別該填入什麼？？</strong></p>
+<ul>
+<li><p><strong>訊息</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'in'</span>      =&gt; <span class="hljs-string">'The A must be one of the following types: B'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>A: <code>:attribute</code></li>
+<li>B: <code>:valutes</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Specifying-A-Custom-Message-For-A-Given-Attribute"><a href="#Specifying-A-Custom-Message-For-A-Given-Attribute" class="headerlink" title="Specifying A Custom Message For A Given Attribute"></a>Specifying A Custom Message For A Given Attribute</h4><ul>
+<li><strong>Laravel validation 中, 如果我想要客製化錯誤訊息, 已有明確的欄位為 <code>email</code>, 規則為 <code>required</code>, 訊息內容為 <code>We need to know your e-mail address!</code>, 那我可以怎麼做？</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$messages = [</span><br><span class="line">    <span class="hljs-string">'email.required'</span> =&gt; <span class="hljs-string">'We need to know your e-mail address!'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Specifying-Custom-Messages-In-Language-Files"><a href="#Specifying-Custom-Messages-In-Language-Files" class="headerlink" title="Specifying Custom Messages In Language Files"></a>Specifying Custom Messages In Language Files</h4><ul>
+<li><strong>Laravel validation 中, 如果我要全域的客製化錯誤訊息, 可以在哪一個檔案中做修改?</strong><br><code>resources/lang/xx/validation.php</code>, xx = 語言種類, 比如說, <code>en</code></li>
+</ul>
+<p><br><br><br><br><br></p>
 <h2 id="Available-Validation-Rules"><a href="#Available-Validation-Rules" class="headerlink" title="Available Validation Rules"></a>Available Validation Rules</h2><p><br><br><br><br><br></p>
 <h2 id="Conditionally-Adding-Rules"><a href="#Conditionally-Adding-Rules" class="headerlink" title="Conditionally Adding Rules"></a>Conditionally Adding Rules</h2><p><br><br><br><br><br></p>
 <h2 id="Validating-Arrays"><a href="#Validating-Arrays" class="headerlink" title="Validating Arrays"></a>Validating Arrays</h2><p><br><br><br><br><br></p>
