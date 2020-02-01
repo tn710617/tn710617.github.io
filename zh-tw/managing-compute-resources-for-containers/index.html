@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-31T04:02:27.997Z">
+<meta property="og:updated_time" content="2020-01-31T13:37:46.196Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
 <meta name="twitter:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-31T04:02:27.997Z">
+<meta property="og:updated_time" content="2020-01-31T13:37:46.196Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
 <meta name="twitter:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
@@ -161,8 +161,10 @@
                     <a class="navbar-item" href="#以下是幫助釐清觀念的-Q-amp-A">4&nbsp;&nbsp;<b>以下是幫助釐清觀念的 Q&amp;amp;amp;A</b></a>
                     
                     
+                    <hr class="navbar-divider">
                     
-                    <a class="navbar-item" href="#參考資源">4.1&nbsp;&nbsp;參考資源</a>
+                    
+                    <a class="navbar-item" href="#參考資源">5&nbsp;&nbsp;<b>參考資源</b></a>
                     
                 </div>
             </div>
@@ -224,14 +226,33 @@
         <span class="column is-narrow">
             
             
-            18 分钟 讀完 (大概 2630 字)
+            28 分钟 讀完 (大概 4137 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 <code>requests</code> 以及 <code>limits</code> 的用途, 不然都傻傻分不清楚！</p>
-<a id="more"></a>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 <code>requests</code> 以及 <code>limits</code> 的用途, 不然都傻傻分不清楚！<br><a id="more"></a></p>
+<p>首先, 在概述會列出 Kubernetes 資源限制的一些規則, 如果你在這一節就找到你要的答案了, 那恭喜你, 慢走不送！</p>
+<p>接下來會有針對 Memory 以及 CPU 的剖析, 剖析什麼呢？ 會從 Kubernetes, 到 Docker, 最後到真正控制 Linux kernel 如何運行程序的 cgroup (Control Group), 一層層的抽絲剝繭！</p>
+<p>最後, 我們在學習的過程中, 尤其是資訊業, 一定會遇到排山倒海, 前仆後繼, 七上八下… 的疑惑, 這是無法避免的, 但也是 Ray 覺得資訊業的著迷之處。 所以啦, Ray 習慣每遇到一個問題就把它記下, 然後找出答案, 用 Q&amp;A 的方式記錄下來, 在下面 Q&amp;A 小節可以找到。 這樣方便 Ray 自己學習吸收, 也方便日後查找。 有興趣可以看看, 啥？你說你沒興趣？ 那你還在這幹嘛？ 還不快去找你有興趣的事！</p>
+<p>廢話不多說, 以下列出規則:</p>
+<ul>
+<li>資源可限制的類型分為 requests 以及 limits 兩種, 每種都可以再指定各自限制的 memory 以及 CPU</li>
+<li>requests 為這個容器正常運行需要的資源, Scheduler 會根據該容器被指定的 requests 資源去挑選適合運行這個容器的 Node, Node 的可用資源需大於此容器被指定的 requests 資源, 這樣方可運行。</li>
+<li>當沒有任何一個 Node 有大於該容器的 requests 資源限制的足夠可用資源時, 該容器將無法被建立, 會處於 pending 狀態</li>
+<li>limits 為此容器最大可調用資源, 當該容器使用了超過被指定的資源限制後…<ul>
+<li>若該資源為 memory, 則該容器會被列在優先處決名單, 當 Node 的記憶體吃緊時, 會將這容器砍了, 此時 Kubelet 偵測到容器跟宣告的狀態不符, 就會再開一個新的。</li>
+<li>若該資源為 CPU, 因為 cgroup 限制的關係, CPU 不會超過指定的資源限制。 若要了解更細節, 請參考<strong>頗析</strong></li>
+</ul>
+</li>
+<li>Kubernetes 中, 1MB = 1000KB = 1000 * 1000 Bytes</li>
+<li>Kubernetes 中, 1MiB = 1024KiB = 1024 * 1024 Bytes</li>
+<li>Kubernetes 中, 1 core = 1000 m</li>
+<li>requests 資源若是設的太低, 則 Node 可輕易地啟動這個 pod, 可該 pod 實際的資源消耗量遠高於 requests 資源, 這樣一來, node 的資源耗費會比起它的預估高很多… 這就像是你交了一個普妹女朋友, 你看人家普妹妳就自以為是這個是低消耗的, 好維護！ 都叫你不要以貌取人了, 你不聽… 一餐吃掉你幾千塊, 一個禮拜刷你的卡買一個包包幾萬塊, 結果你在低估這件事的情況之下, 你就爆了, 嚷嚷要分手。 你看看你, 你這樣跟渣男有什麼分別？ 所以在設定 requests 資源時, 拒當渣男, 也不要製造渣 node, 好嗎？</li>
+<li>如果你只設了 limits, 沒設 requests, 那 Kubernetes 會將 requests 設的跟 limits 一樣, 如果你對你的 pod 資源耗費夠明瞭的話, 這樣倒也不是什麼大問題, 可通常我們會將 limits 設得稍微高一點, 你想想看, 你正常運行這個 pod 根本不需要這麼高的資源, 那是不是會變成每個 node 可運行該 pod 的數量變少了？ </li>
+</ul>
+<p><br><br><br></p>
 <h2 id="頗析-Memory"><a href="#頗析-Memory" class="headerlink" title="頗析 (Memory)"></a>頗析 (Memory)</h2><p>首先, 先針對 memory 的部分來頗析 limits 跟 requests 的詳細運作</p>
 <ul>
 <li><p>建立一個沒有資源限制的 pod</p>
@@ -570,6 +591,15 @@
 </ul>
 </li>
 </ul>
+<ul>
+<li>CPU 頗析的總結<ul>
+<li>period 為百萬分之一秒</li>
+<li>quota 為程序容許在 period 中可調動的 CPU</li>
+<li>100 m 就剛好是 1/10 core, 也是 10000/100000 百萬分之一秒</li>
+<li>CPU 的資源限制中, request 是會作用到 cgroup 的, 該種類在 memory 是不會作用到 cgroup 的</li>
+</ul>
+</li>
+</ul>
 <p><br><br><br></p>
 <h2 id="以下是幫助釐清觀念的-Q-amp-A"><a href="#以下是幫助釐清觀念的-Q-amp-A" class="headerlink" title="以下是幫助釐清觀念的 Q&amp;A"></a>以下是幫助釐清觀念的 Q&amp;A</h2><ul>
 <li><p><strong>Kubernetes 中, 如果一個 Pod 卡在 pending status, 那很有可能是甚麼原因？</strong><br>沒有 Node 有足夠的資源來運行這個 Pod</p>
@@ -656,13 +686,68 @@
 <li><strong>CGroup 將一個 core 分成幾份？</strong><br>1024</li>
 </ul>
 <ul>
-<li><p><strong>Kubernetes 中, 當設定 memory 的 request limit 後, 會作用到 cgroup 嗎？</strong><br>不會</p>
-</li>
-<li><p><strong>Kubernetes 中, 當設定 CPU 的 request limit 後, 會作用到 cgroup 嗎？</strong><br>會</p>
+<li><strong>Kubernetes 中, 當設定 memory 的 request limit 後, 會作用到 cgroup 嗎？</strong><br>不會</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當設定 CPU 的 request limit 後, 會作用到 cgroup 嗎？</strong><br>會</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 中, request resource 是由哪一個 cgroup 系統所管理的?</strong><br><code>cpu shares system</code></li>
+</ul>
+<ul>
+<li><strong>cgroup <code>cpu.cfs_period_us</code> 中的 period 代表幾秒？</strong><br>1/10 秒 或 100000 microseconds (百萬分之一秒)</li>
+</ul>
+<ul>
+<li><strong>cgroup <code>cpu.cfs_quota_us</code> 中的 quota 代表什麼？</strong><br>一個程序在 period 中容許可調用的最大值</li>
+</ul>
+<ul>
+<li><strong>假如我的 CPU request limit 是 200m, 那我的 <code>cpu.cfs_period_us</code> 以及 <code>cpu.cfs_quota_us</code> 分別是多少？</strong><ul>
+<li><code>cpu.cfs_period_us</code>: 100000</li>
+<li><code>cpu.cfs_quota_us</code>: 20000</li>
+</ul>
 </li>
 </ul>
-<p><br></p>
-<h3 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h3><ul>
+<ul>
+<li><strong><code>cpu.cfs_period_us</code> 跟 <code>cpu.cfs_quota_us</code> 是屬於哪一個 cgroup?</strong><br>cpu,cpuacct</li>
+</ul>
+<ul>
+<li><strong><code>cpu.cfs_period_us</code> 跟 <code>cpu.cfs_quota_us</code> 中的 cfs 的意思是?</strong><br>Completely Fair Scheduler</li>
+</ul>
+<ul>
+<li><strong>Linux 的預設 CPU scheduler 是哪一個?</strong><br>CFS (Completely Fair Scheduler)</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當設定 CPU 的 request resource 限制, 會作用到 cgroup 嗎？</strong><br>會哦</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 程序可以超出 <code>CPU request resource 限制</code> 規定的用量嗎？</strong><br>不行</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當程序使用了超過 <code>CPU request resource 限制</code> 規定的用量的話, 會發生什麼事？</strong><br>不會有這種情況, 因為 <code>CPU request resource 限制</code> 規定的用量不允許超出</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 中, 如果我只設定了 limits, 但沒設定 requests, 會發生什麼事？</strong><br>requests 的預設值會被設為跟 limits 一樣</li>
+</ul>
+<ul>
+<li><strong>Kubernetes resource limit 中, 如果我只設定了 requests, 但沒設定 limits, 會發生什麼事？</strong><br>scheduler 會正常根據 requests 的資源數據啟動 pod, 但該 process 的資源使用量將無法被限制</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Kubernetes yaml 設定檔的意思是?</strong></p>
+<ul>
+<li><p><strong>yaml 檔</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">LimitRange</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">default-limit</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  limits:</span></span><br><span class="line"><span class="hljs-attr">  - default:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">100</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    defaultRequest:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">  - max:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">512</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">500</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">  - min:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">    type:</span> <span class="hljs-string">Container</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># API 版本</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-comment"># 種類為 LimitRange</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">LimitRange</span></span><br><span class="line"><span class="hljs-comment"># 該 LimitRange 的 metadata</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># 該 LimitRange 的 name</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">default-limit</span></span><br><span class="line"><span class="hljs-comment"># 該 LimitRange 運行的規格</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 limits</span></span><br><span class="line"><span class="hljs-attr">  limits:</span></span><br><span class="line">    <span class="hljs-comment"># 預設的 resource limits, 若該 namespace 下的 pod 在建立時沒有指定資源限制, 將套用此預設設定</span></span><br><span class="line"><span class="hljs-attr">  - default:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">100</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line">    <span class="hljs-comment"># 預設的 resource requested, 若該 namespace 下的 pod 在建立時沒有指定資源限制, 將套用此預設設定</span></span><br><span class="line"><span class="hljs-attr">    defaultRequest:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line">    <span class="hljs-comment"># 若欲在此 namespace 下建立 pod, 而該 pod 若指定資源限制高於此設定, 將不允許建立</span></span><br><span class="line"><span class="hljs-attr">  - max:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">512</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">500</span><span class="hljs-string">m</span></span><br><span class="line">    <span class="hljs-comment"># 若欲在此 namespace 下建立 pod, 而該 pod 若指定資源限制低於此設定, 將不允許建立</span></span><br><span class="line"><span class="hljs-attr">  - min:</span></span><br><span class="line"><span class="hljs-attr">      memory:</span> <span class="hljs-number">50</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">      cpu:</span> <span class="hljs-number">50</span><span class="hljs-string">m</span></span><br><span class="line">    <span class="hljs-comment"># 限制的類型為 container</span></span><br><span class="line"><span class="hljs-attr">    type:</span> <span class="hljs-string">Container</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>**</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
 <li><a href="https://link.medium.com/GJYhX4tlF3" target="_blank" rel="noopener">Understanding resource limits in Kubernetes: memory</a></li>
 </ul>
 
