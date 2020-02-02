@@ -2,19 +2,19 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>&lt;未完成&gt; Kubernetes - 資源限制 - Ray&#39;s Coding Journey</title>
+<title>Kubernetes - 資源限制 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta name="keywords" content="Kubernetes,Kubernetes Resources">
 <meta property="og:type" content="article">
-<meta property="og:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
+<meta property="og:title" content="Kubernetes - 資源限制">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/managing-compute-resources-for-containers/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-31T13:37:46.196Z">
+<meta property="og:updated_time" content="2020-02-02T09:36:53.220Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
+<meta name="twitter:title" content="Kubernetes - 資源限制">
 <meta name="twitter:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 
 
@@ -33,14 +33,14 @@
     <meta name="description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta name="keywords" content="Kubernetes,Kubernetes Resources">
 <meta property="og:type" content="article">
-<meta property="og:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
+<meta property="og:title" content="Kubernetes - 資源限制">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/managing-compute-resources-for-containers/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-01-31T13:37:46.196Z">
+<meta property="og:updated_time" content="2020-02-02T09:36:53.220Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - 資源限制">
+<meta name="twitter:title" content="Kubernetes - 資源限制">
 <meta name="twitter:description" content="概述Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 requests 以及 limits 的用途, 不然都傻傻分不清楚！">
 
 
@@ -209,7 +209,7 @@
     <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            &lt;未完成&gt; Kubernetes - 資源限制
+            Kubernetes - 資源限制
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -226,7 +226,7 @@
         <span class="column is-narrow">
             
             
-            28 分钟 讀完 (大概 4137 字)
+            31 分钟 讀完 (大概 4654 字)
         </span>
         
     </div>
@@ -744,11 +744,53 @@
 </li>
 </ul>
 <ul>
-<li>**</li>
+<li><strong>Kubernetes request resource 限制中, 1 core = 1000 m, 那允許的最小設定值是多少？</strong><br>1m</li>
+</ul>
+<ul>
+<li><p><strong>Kubernetes 中, 要如何查看 node 有多少可用資源？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe nodes nodeName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如何知道容器有沒有因為資源達到限制而被砍掉？</strong></p>
+<ul>
+<li><p>取得 pod 資訊</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kube describe pod podName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取得前一個 pod 被砍掉的原因</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pod -o go-template=<span class="hljs-string">'&#123;&#123;range.status.containerStatuses&#125;&#125;&#123;&#123;"Container Name: "&#125;&#125;&#123;&#123;.name&#125;&#125;&#123;&#123;"\r\nLastState: "&#125;&#125;&#123;&#123;.lastState&#125;&#125;&#123;&#123;end&#125;&#125;'</span>  simmemleak-hra99</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, local ephemeral storage 指的是什麼地方？</strong><br>root partition</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, emptyDir volumes, container logs, image layers, container writable layers, 這些都是使用哪一塊空間？</strong><br>root partition</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Kubernetes yaml 檔是什麼意思呢？</strong></p>
+<ul>
+<li><p><strong>yaml 檔</strong></p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">frontend</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">db</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">mysql</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line"><span class="hljs-attr">      value:</span> <span class="hljs-string">"password"</span></span><br><span class="line"><span class="hljs-attr">    resources:</span></span><br><span class="line"><span class="hljs-attr">      requests:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"2Gi"</span></span><br><span class="line"><span class="hljs-attr">      limits:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"4Gi"</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">wp</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">wordpress</span></span><br><span class="line"><span class="hljs-attr">    resources:</span></span><br><span class="line"><span class="hljs-attr">      requests:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"2Gi"</span></span><br><span class="line"><span class="hljs-attr">      limits:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"4Gi"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># API 版本</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-comment"># 種類為 Pod</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-comment"># 該 Pod 的 metadata</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># 該 Pod 的 name</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">frontend</span></span><br><span class="line"><span class="hljs-comment"># 該 pod 運行的規格</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-comment"># 定義容器規格</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line">    <span class="hljs-comment"># 容器名稱</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">db</span></span><br><span class="line">    <span class="hljs-comment"># 鏡像名稱</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">mysql</span></span><br><span class="line">    <span class="hljs-comment"># 定義變數</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line">      <span class="hljs-comment"># 變數名稱</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">      <span class="hljs-comment"># 變數值</span></span><br><span class="line"><span class="hljs-attr">      value:</span> <span class="hljs-string">"password"</span></span><br><span class="line">    <span class="hljs-comment"># 定義資源限制</span></span><br><span class="line"><span class="hljs-attr">    resources:</span></span><br><span class="line">      <span class="hljs-comment"># 定義 requests 資源限制</span></span><br><span class="line"><span class="hljs-attr">      requests:</span></span><br><span class="line">        <span class="hljs-comment"># 限制 ephemeral-storage</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"2Gi"</span></span><br><span class="line">      <span class="hljs-comment"># 定義 limits 資源限制</span></span><br><span class="line"><span class="hljs-attr">      limits:</span></span><br><span class="line">        <span class="hljs-comment"># 限制 ephemeral-storage</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"4Gi"</span></span><br><span class="line">    <span class="hljs-comment"># 容器名稱</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">wp</span></span><br><span class="line">    <span class="hljs-comment"># 鏡像名稱</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">wordpress</span></span><br><span class="line">    <span class="hljs-comment"># 定義資源限制</span></span><br><span class="line"><span class="hljs-attr">    resources:</span></span><br><span class="line">      <span class="hljs-comment"># 定義 requests 資源限制</span></span><br><span class="line"><span class="hljs-attr">      requests:</span></span><br><span class="line">        <span class="hljs-comment"># 限制 ephemeral-storage</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"2Gi"</span></span><br><span class="line">      <span class="hljs-comment"># 定義 limits 資源限制</span></span><br><span class="line"><span class="hljs-attr">      limits:</span></span><br><span class="line">        <span class="hljs-comment"># 限制 ephemeral-storage</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"4Gi"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>Kubernetes, 哪一個元件依據 ephemeral-storage 資源分配 pod 到適當的 node?</strong><br>scheduler</p>
+</li>
+<li><p><strong>Kubernetes, 如果一個 pod 裡頭的某個容器的 writable layer 以及 logs 使用量超過的 ephemeral-storage 的資源限制, 會發生什麼事？</strong><br>該 pod 會被砍了</p>
+</li>
+<li><p><strong>Kubernetes, 如果一個 pod 裡頭的所有容器使用的 ephemeral-storage 用量以及 emptyDir volumes 超過了資院限制, 會發生什麼事？</strong><br>該 pod 會被砍了</p>
+</li>
 </ul>
 <p><br><br><br></p>
 <h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
 <li><a href="https://link.medium.com/GJYhX4tlF3" target="_blank" rel="noopener">Understanding resource limits in Kubernetes: memory</a></li>
+<li><a href="https://medium.com/@betz.mark/understanding-resource-limits-in-kubernetes-cpu-time-9eff74d3161b" target="_blank" rel="noopener">Understanding resource limits in kubernetes: cpu time</a></li>
+<li><a href="https://docs.docker.com/engine/reference/run/#cpu-share-constraint" target="_blank" rel="noopener">Docker Documentation</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/" target="_blank" rel="noopener">Kubernetes Documentation</a></li>
 </ul>
 
     
@@ -764,7 +806,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/config-liveness-readiness-startup-probes/">Kubernetes 上的健康檢查</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
