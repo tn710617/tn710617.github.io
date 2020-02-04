@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo man, 本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;amp;A, 適合我個人學習吸收, 考試都考 100 分呢！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-04T04:51:55.058Z">
+<meta property="og:updated_time" content="2020-02-04T11:45:09.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 健康檢查">
 <meta name="twitter:description" content="概述Yo man, 本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;amp;A, 適合我個人學習吸收, 考試都考 100 分呢！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Yo man, 本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;amp;A, 適合我個人學習吸收, 考試都考 100 分呢！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-04T04:51:55.058Z">
+<meta property="og:updated_time" content="2020-02-04T11:45:09.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 健康檢查">
 <meta name="twitter:description" content="概述Yo man, 本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;amp;A, 適合我個人學習吸收, 考試都考 100 分呢！">
@@ -208,7 +208,7 @@
         <span class="column is-narrow">
             
             
-            7 分钟 讀完 (大概 1081 字)
+            10 分钟 讀完 (大概 1438 字)
         </span>
         
     </div>
@@ -294,6 +294,52 @@
 </ul>
 <ul>
 <li><strong>Kubernetes 中, 如果我有一個應用可能啟動需要長一點啟動時間, 舉例來說, 可能容器啟動之後, 應用還需要一段時間才會正常運作, 那我可以使用什麼 probe 來讓 liveness probe 可以在應用啟動完成後馬上開始探測？</strong><br>使用 startup probe</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Kubernetes yaml file 中, 如果超過了 300 秒都沒有成功, Kubernetes 會如何處置這個 pod?</strong></p>
+<ul>
+<li><p><strong>yaml file</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-attr">- name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">  hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>該容器會被砍掉</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Kubernetes yaml file 中, 如果 startupProbe 成功了, Kubernetes 會如何處置這個 pod?</strong></p>
+<ul>
+<li><p><strong>yaml file</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-attr">- name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">  hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>livenessProbe 會開始運作, 接手探測工作</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>請解釋以下 Kubernetes yaml file 中的每一條 directive</strong></p>
+<ul>
+<li><p><strong>yaml file</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-attr">- name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">  hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 定義 port</span></span><br><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line">  <span class="hljs-comment"># port name</span></span><br><span class="line"><span class="hljs-attr">- name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># 容器 port</span></span><br><span class="line"><span class="hljs-attr">  containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-comment"># 宿主機 port</span></span><br><span class="line"><span class="hljs-attr">  hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 定義存活探針</span></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 httpGet 方式</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line">    <span class="hljs-comment"># 呼叫的 path</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-comment"># 呼叫的 port, 使用上面定義的 port</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># 失敗一次就算失敗</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-comment"># 每 10 秒探測一次</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 定義 startup 探針</span></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 httpGet</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line">    <span class="hljs-comment"># 探測 path</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-comment"># 探測 port</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># 失敗 30 次才算失敗</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line">  <span class="hljs-comment"># 每 10 秒探測一次</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當 readiness probe 失敗, 會怎麼樣？</strong><br>將不會從 Kubernetes Service 收到 traffic</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當我使用 httpGet 探測方式時, 該探測行為在 pod 還是在 node?</strong><br>pod</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當我使用 tcpSocket 探測方式時, 該探測行為在 pod 還是在 node?</strong><br>node</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當 startup probe 失敗, 會怎麼樣？</strong><br>該 pod 會被 killed</li>
 </ul>
 
     
