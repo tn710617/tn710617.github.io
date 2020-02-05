@@ -179,98 +179,16 @@
         <span class="column is-narrow">
             
             
-            10 分钟 讀完 (大概 1429 字)
+            10 分钟 讀完 (大概 1430 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～</p>
-<p><br><br><br></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。<br>此處 hooks 中文翻譯為鉤子, 但是 Ray 個人覺得有點彆扭, 可能是 Ray 已經習慣原文 hook, 所以在本篇中不會特別翻譯</p>
-<h2 id="容器-hooks"><a href="#容器-hooks" class="headerlink" title="容器 hooks"></a>容器 hooks</h2><p>共有兩種 hooks, <code>PostStart</code> 以及 <code>PreStop</code></p>
-<ul>
-<li><p><strong>PostStart</strong><br>  在容器啟動之後, 會立即的觸發 <strong>PostStart</strong> hook, 但是無法保證 <strong>PostStart</strong> 會先被觸發, 或者是容器的 ENTRYPOINT 會先被觸發, 因為這個動作是非同步的</p>
-</li>
-<li><p><strong>PreStop</strong><br>  在容器被結束之前, 會觸發 <strong>PreStop</strong>, 這個動作是同步的, 所以 <strong>PreStop</strong> 必須在刪除容器的請求送出之前先完成</p>
-</li>
-</ul>
-<h3 id="Hook-handler-實作"><a href="#Hook-handler-實作" class="headerlink" title="Hook handler 實作"></a>Hook handler 實作</h3><p>容器可以存取一個 hook, 藉由實作以及註冊一個 handler 給這個 hook。 可以在容器中被實作的 hook handler 有兩種：</p>
-<pre><code>- Exec - 在 cgroups 以及命名空間中, 執行一個特定的指令, 像是 `pre-stop.sh`。 這個指令消耗的資源會被算在這個容器上
-- HTTP - 在容器的一個特定端點執行一個 HTTP 請求
-</code></pre><p><br></p>
-<h3 id="執行-hook-handler"><a href="#執行-hook-handler" class="headerlink" title="執行 hook handler"></a>執行 hook handler</h3><p>當 hook 被觸發, Kubernetes 管理系統會執行註冊給該 hook 的 handler<br>Hook handler 的呼叫在裝有這個容器的 Pod 當中是同步的, 這表示說, <code>PostStart</code> hook 的觸發, 以及該容器的 ENTRYPOINT 是非同步的。<br>然而, 如果 hook 耗費太久的時間運行或僵在那, 容器便無法進到 <code>running</code> 狀態, 類似的行為也套用在 <code>PreStop</code> hook 上, 如果 hook 一直卡在執行中, Pod 會一直處於 <code>Terminating</code> 階段, 然後在 <code>terminationGracePeriodSeconds</code> 時間過後會被砍掉, <code>terminationGracePeriodSeconds</code> 是預設的優雅退出的秒數。 如果 <code>PostStart</code> 或 <code>PreStop</code> hook 失敗了, 容器會被 killed<br>使用者應該盡可能地讓 hook handler 越輕量化越好。 然而, 有時候執行一些長的指令還是必要的, 像是在停止容器之前儲存狀態</p>
-<p><br></p>
-<h3 id="Hook-交付保證"><a href="#Hook-交付保證" class="headerlink" title="Hook 交付保證"></a>Hook 交付保證</h3><p>通常 hook 至少會被交付一次, 這表示, 依據不同的事件, hook 有可能被呼叫多次, 像是 <code>PostStart</code> 或 <code>PreStop</code><br>通常 hook 只會交付一次, 但在一些少數的例子中會重複交付, 例如, kubelet 在傳送一個 hook 的途中被重啟, 那當 kubelet 重啟完成後, 這個 hook 可能會被再次傳送</p>
-<p><br></p>
-<h3 id="Debugging-Hook-handler"><a href="#Debugging-Hook-handler" class="headerlink" title="Debugging Hook handler"></a>Debugging Hook handler</h3><p>Hook handler 的 logs 並不會被暴露在 Pod 事件中。 如果一個 handler 因為某些原因失敗了, 它會廣播一個事件。 如果 <code>PostStart</code> 失敗了, 那就是 <code>FailedPostStartHook</code> 事件, 如果是 <code>PreStop</code>, 那就是 <code>FailedPreStopHook</code> 事件, 你可以執行 <code>kubectl describe pod podName</code> 來檢視這些事件, 以下是這個指令取得的一些事件範例：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Events:</span><br><span class="line">  FirstSeen  LastSeen  Count  From                                                   SubObjectPath          Type      Reason               Message</span><br><span class="line">  ---------  --------  -----  ----                                                   -------------          --------  ------               -------</span><br><span class="line">  1m         1m        1      &#123;default-scheduler &#125;                                                          Normal    Scheduled            Successfully assigned test-1730497541-cq1d2 to gke-test-cluster-default-pool-a07e5d30-siqd</span><br><span class="line">  1m         1m        1      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Normal    Pulling              pulling image &quot;test:1.0&quot;</span><br><span class="line">  1m         1m        1      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Normal    Created              Created container with docker id 5c6a256a2567; Security:[seccomp=unconfined]</span><br><span class="line">  1m         1m        1      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Normal    Pulled               Successfully pulled image &quot;test:1.0&quot;</span><br><span class="line">  1m         1m        1      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Normal    Started              Started container with docker id 5c6a256a2567</span><br><span class="line">  38s        38s       1      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Normal    Killing              Killing container with docker id 5c6a256a2567: PostStart handler: Error executing in Docker Container: 1</span><br><span class="line">  37s        37s       1      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Normal    Killing              Killing container with docker id 8df9fdfd7054: PostStart handler: Error executing in Docker Container: 1</span><br><span class="line">  38s        37s       2      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;                         Warning   FailedSync           Error syncing pod, skipping: failed to &quot;StartContainer&quot; for &quot;main&quot; with RunContainerError: &quot;PostStart handler: Error executing in Docker Container: 1&quot;</span><br><span class="line">  1m         22s       2      &#123;kubelet gke-test-cluster-default-pool-a07e5d30-siqd&#125;  spec.containers&#123;main&#125;  Warning   FailedPostStartHook</span><br></pre></td></tr></table></figure></p>
-<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
-<li><strong>Kubernetes 中, 如果 <code>PostStart</code> hook 失敗了, 會廣播什麼事件？</strong><br><code>FailedPostStartHook</code></li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 如果 <code>PreStop</code> hook 失敗了, 會廣播什麼事件？</strong><br><code>FailedPreStopHook</code></li>
-</ul>
-<ul>
-<li><p><strong>Kubernetes 中, 要如何檢視 pod 的事件？</strong></p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod podName</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Kubernetes 中, 如果 hook handler 失敗了, 會發生什麼事？</strong><br>會廣播一個事件</p>
-</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 什麼情況下 hook 有可能被呼叫兩次？</strong><br>當呼叫 hook 到一半時, kebelet 被重啟</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, hook 有可能被呼叫兩次嗎？</strong><br>有可能</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 如果 <code>PostStart</code> 或 <code>PreStop</code> hook 失敗了, 會發生什麼事？</strong><br>容器會被 killed</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 如果 <code>PreStop</code> 一直卡在執行中, 會發生什麼事？</strong><br>pod 會在 <code>terminationGracePeriodSeconds</code> 之後被砍掉</li>
-</ul>
-<ul>
-<li><strong>為什麼 Kubernetes <code>PostStart</code> hook 跟容器的 ENTRYPOINT 是非同步的？</strong><br>因為 <code>PostStart</code> hook 跟裝有該容器的 Pod 是同步的</li>
-</ul>
-<ul>
-<li><strong>Kubernetes hook handler 的呼叫與哪個元件來說是同步的？</strong><br>pod</li>
-</ul>
-<ul>
-<li><strong>Kubernetes hook handler 中, HTTP 做了什麼事？</strong><br>在容器的一個特定端點執行一個 HTTP request</li>
-</ul>
-<ul>
-<li><strong>Kubernetes hook handler 中, Exec 消耗的資源算在哪裡？</strong><br>該容器上</li>
-</ul>
-<ul>
-<li><strong>Kubernetes hook handler 中, Exec 具體來說是什麼？</strong><br>執行一個特定的指令</li>
-</ul>
-<ul>
-<li><p><strong>Kubernetes 中, 可被實作的 hook handler 是哪兩種？</strong></p>
-<ul>
-<li>Exec</li>
-<li>HTTP</li>
-</ul>
-</li>
-<li><p><strong>Kubernetes 中, <code>PreStop</code> hook 跟刪除容器的請求, 哪一個要先完成?</strong><br>PreStop hook</p>
-</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, <code>PreStop</code> hook 觸發時機為?</strong><br>容器被結束前</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, <code>PostStart</code> hook 和 container entrypoint 哪一個會先觸發？</strong><br>不一定, 是非同步的</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, 共有哪兩種 container hooks?</strong><ul>
-<li><strong>PostStart</strong></li>
-<li><strong>PreStop</strong></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><strong>Kubernetes 中, <code>PostStart</code> hook 觸發時機為？</strong><br>容器啟動後</li>
-</ul>
-
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/kubernetes-container-lifecycle-hooks/#more">點擊閱讀</a>
+        </p>
     
     </div>
     

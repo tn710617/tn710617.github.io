@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>Kubernetes - 容器生命週期 Hooks - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="前言Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～  概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行">
+<meta name="description" content="概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。">
 <meta name="keywords" content="Kubernetes,Kubernetes Lifecycle Hooks">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - 容器生命週期 Hooks">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-container-lifecycle-hooks/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～  概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行">
+<meta property="og:description" content="概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-05T13:29:59.602Z">
+<meta property="og:updated_time" content="2020-02-05T13:31:05.330Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 容器生命週期 Hooks">
-<meta name="twitter:description" content="前言Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～  概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行">
+<meta name="twitter:description" content="概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="前言Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～  概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行">
+    <meta name="description" content="概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。">
 <meta name="keywords" content="Kubernetes,Kubernetes Lifecycle Hooks">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - 容器生命週期 Hooks">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-container-lifecycle-hooks/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="前言Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～  概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行">
+<meta property="og:description" content="概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-05T13:29:59.602Z">
+<meta property="og:updated_time" content="2020-02-05T13:31:05.330Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 容器生命週期 Hooks">
-<meta name="twitter:description" content="前言Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～  概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行">
+<meta name="twitter:description" content="概述如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。">
 
 
 
@@ -140,13 +140,13 @@
                     
                     
                     
-                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#概述">2&nbsp;&nbsp;<b>概述</b></a>
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -236,15 +236,18 @@
         <span class="column is-narrow">
             
             
-            10 分钟 讀完 (大概 1429 字)
+            10 分钟 讀完 (大概 1430 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。</p>
+<a id="more"></a>
+<p>此處 hooks 中文翻譯為鉤子, 但是 Ray 個人覺得有點彆扭, 可能是 Ray 已經習慣原文 hook, 所以在本篇中不會特別翻譯</p>
 <p><br><br><br></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>如許多的程式語言框架, 如 Angular, 有著元件生命週期 hooks, Kubernetes 也為容器提供了生命週期 hooks。 Hooks 使容器在管理的生命週期間可以意識到事件的發生, 並且當對應的生命週期 hook 被觸發時, 執行在 handler 中實作的程式碼。<br>此處 hooks 中文翻譯為鉤子, 但是 Ray 個人覺得有點彆扭, 可能是 Ray 已經習慣原文 hook, 所以在本篇中不會特別翻譯</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Kubernetes 的學習筆記, 內文可能會有大量的 Q&amp;A, 因為這是 Ray 的獨特學習方式！ 就像是獨孤求敗之於獨孤九劍一樣～</p>
+<p><br><br><br></p>
 <h2 id="容器-hooks"><a href="#容器-hooks" class="headerlink" title="容器 hooks"></a>容器 hooks</h2><p>共有兩種 hooks, <code>PostStart</code> 以及 <code>PreStop</code></p>
 <ul>
 <li><p><strong>PostStart</strong><br>  在容器啟動之後, 會立即的觸發 <strong>PostStart</strong> hook, 但是無法保證 <strong>PostStart</strong> 會先被觸發, 或者是容器的 ENTRYPOINT 會先被觸發, 因為這個動作是非同步的</p>
