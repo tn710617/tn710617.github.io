@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>Kubernetes - 健康檢查 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="概述">
+<meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta name="keywords" content="Kubernetes,Kubernetes health check">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - 健康檢查">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述">
+<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-05T13:43:30.395Z">
+<meta property="og:updated_time" content="2020-02-06T13:45:31.146Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 健康檢查">
-<meta name="twitter:description" content="概述">
+<meta name="twitter:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="概述">
+    <meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta name="keywords" content="Kubernetes,Kubernetes health check">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - 健康檢查">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述">
+<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-05T13:43:30.395Z">
+<meta property="og:updated_time" content="2020-02-06T13:45:31.146Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 健康檢查">
-<meta name="twitter:description" content="概述">
+<meta name="twitter:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 
 
 
@@ -146,7 +146,25 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#正文開始">2&nbsp;&nbsp;<b>正文開始</b></a>
+                    <a class="navbar-item" href="#定義存活探針指令">2&nbsp;&nbsp;<b>定義存活探針指令</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義-liveness-HTTP-request">3&nbsp;&nbsp;<b>定義 liveness HTTP request</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義-TCP-liveness-probe">4&nbsp;&nbsp;<b>定義 TCP liveness probe</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">5&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -208,16 +226,75 @@
         <span class="column is-narrow">
             
             
-            10 分钟 讀完 (大概 1436 字)
+            18 分钟 讀完 (大概 2627 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><a id="more"></a>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)<br><a href="https://kubernetes.io/docs/admin/kubelet/" target="_blank" rel="noopener">kubelet</a> 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。</p>
+<a id="more"></a>
+<p>kubelet 使用 readiness probe 來決定這個容器是否已經準備就緒, 可以接收流量了。 當一個 Pod 內的所有容器都就緒了, 該 Pod 才算是就緒。 如果一個 Pod 尚未就緒, 它將會從 Service 負載平衡的後端清單中被移除。<br>kubelet 使用 startup probe 來決定一個容器應用是否已經成功啟動了。 當 startup probe 判定為 success 之前, liveness probe 跟 readiness probe 是沒有作用的。 這可以用在某些會花比較久時間來啟動的應用, 這樣就不會在還沒啟動完成前就因為 liveness 判定失敗而給殺掉了。</p>
 <p>本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;A, 適合我個人學習吸收, 考試都考 100 分呢！</p>
 <p><br><br><br></p>
-<h2 id="正文開始"><a href="#正文開始" class="headerlink" title="正文開始"></a>正文開始</h2><ul>
+<h2 id="定義存活探針指令"><a href="#定義存活探針指令" class="headerlink" title="定義存活探針指令"></a>定義存活探針指令</h2><p>許多應用長時間運行後, 就陷入一個壞掉的狀態, 這時候唯有重啟才可恢復。 Kubernetes 提供了 liveness probe 來偵測並且排除這樣的狀況<br>讓我們啟動一個 Pod, 這個 Pod 會運行 <code>k8s.gcr.io/busybox</code> 鏡像, 以下是該 Pod 的設定檔:<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    test:</span> <span class="hljs-string">liveness</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">liveness-exec</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">liveness</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">k8s.gcr.io/busybox</span></span><br><span class="line"><span class="hljs-attr">    args:</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">/bin/sh</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-bullet">-c</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">touch</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">30</span><span class="hljs-string">;</span> <span class="hljs-string">rm</span> <span class="hljs-bullet">-rf</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">600</span></span><br><span class="line"><span class="hljs-attr">    livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">      exec:</span></span><br><span class="line"><span class="hljs-attr">        command:</span></span><br><span class="line"><span class="hljs-bullet">        -</span> <span class="hljs-string">cat</span></span><br><span class="line"><span class="hljs-bullet">        -</span> <span class="hljs-string">/tmp/healthy</span></span><br><span class="line"><span class="hljs-attr">      initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line"><span class="hljs-attr">      periodSeconds:</span> <span class="hljs-number">5</span></span><br></pre></td></tr></table></figure></p>
+<p>這邊針對上面的 yaml file 做解說：</p>
+<ul>
+<li><strong>periodSeconds</strong>: liveness probe 多久檢查一次</li>
+<li><strong>initialDelaySeconds</strong>: 首次啟動後, 要延遲多久在執行</li>
+<li><strong>cat /tmp/healthy</strong>: livenessProbe 會執行這段執行, 如果成功則回傳 0, 其他都是失敗。</li>
+<li>當容器啟動時, 會執行 <code>/bin/sh -c &quot;touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600&quot;</code>, 會先建立 <code>/tmp/healthy</code>, 然後 sleep 30 秒, 所以在這 30 秒間, <code>/tmp/healthy</code> 是存在的。 30 秒後會把 <code>/tmp/healthy</code> 砍了, 然後 sleep 600 秒, 在這 600 秒間, 指令會回傳錯誤</li>
+</ul>
+<p>接著來實際操作一回:</p>
+<ul>
+<li><p>建立 Pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/pods/probe/<span class="hljs-built_in">exec</span>-liveness.yaml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>頭 30 秒, 執行以下指令檢視 Pod 事件：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod liveness-exec</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出未顯示 liveness probe 失敗</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">FirstSeen    LastSeen    Count   From            SubobjectPath           Type        Reason      Message</span><br><span class="line">--------- --------    -----   ----            -------------           --------    ------      -------</span><br><span class="line">24s       24s     1   &#123;default-scheduler &#125;                    Normal      Scheduled   Successfully assigned liveness-exec to worker0</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulling     pulling image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulled      Successfully pulled image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Created     Created container with docker id 86849c15382e; Security:[seccomp=unconfined]</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Started     Started container with docker id 86849c15382e</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>35 秒後, 在檢視一次</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod liveness-exec</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出可以看到, liveness probe 失敗了</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">FirstSeen LastSeen    Count   From            SubobjectPath           Type        Reason      Message</span><br><span class="line">--------- --------    -----   ----            -------------           --------    ------      -------</span><br><span class="line">37s       37s     1   &#123;default-scheduler &#125;                    Normal      Scheduled   Successfully assigned liveness-exec to worker0</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulling     pulling image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulled      Successfully pulled image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Created     Created container with docker id 86849c15382e; Security:[seccomp=unconfined]</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Started     Started container with docker id 86849c15382e</span><br><span class="line">2s        2s      1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Warning     Unhealthy   Liveness probe failed: cat: can&apos;t open &apos;/tmp/healthy&apos;: No such file or directory</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在等 30 秒, 看容器有沒有被重啟</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pod liveness-exec</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>看來是重啟了, 並且重啟次數加一</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME            READY     STATUS    RESTARTS   AGE</span><br><span class="line">liveness-exec   1/1       Running   1          1m</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="定義-liveness-HTTP-request"><a href="#定義-liveness-HTTP-request" class="headerlink" title="定義 liveness HTTP request"></a>定義 liveness HTTP request</h2><p>liveness probe 另外一種方式為 HTTP request, 以下設定檔為運行鏡像 <code>k8s.gcr.io/liveness</code> 的 Pod<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    test:</span> <span class="hljs-string">liveness</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">liveness-http</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">liveness</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">k8s.gcr.io/liveness</span></span><br><span class="line"><span class="hljs-attr">    args:</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">/server</span></span><br><span class="line"><span class="hljs-attr">    livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">      httpGet:</span></span><br><span class="line"><span class="hljs-attr">        path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">        port:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">        httpHeaders:</span></span><br><span class="line"><span class="hljs-attr">        - name:</span> <span class="hljs-string">Custom-Header</span></span><br><span class="line"><span class="hljs-attr">          value:</span> <span class="hljs-string">Awesome</span></span><br><span class="line"><span class="hljs-attr">      initialDelaySeconds:</span> <span class="hljs-number">3</span></span><br><span class="line"><span class="hljs-attr">      periodSeconds:</span> <span class="hljs-number">3</span></span><br></pre></td></tr></table></figure></p>
+<p>針對以上的設定檔做解釋:</p>
+<ul>
+<li><strong>periodSeconds</strong>: 每 3 秒檢查一次</li>
+<li><strong>initialDelaySeconds</strong>: 容器啟動後, 要延遲 3 秒再開始探針</li>
+<li>這次探針實施的方式為傳送 HTTP GET request 到 server 的 port 8080</li>
+<li>如果 <code>/haalthz</code> 回傳 200~399, 則表示成功, 其餘都失敗</li>
+<li><p>如果有興趣可以去看此鏡像的<a href="https://github.com/kubernetes/kubernetes/blob/master/test/images/agnhost/liveness/server.go" target="_blank" rel="noopener">原始碼</a>, 如以下程式碼, 10 秒後開始回傳 500, 10 秒內回傳 200</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http.HandleFunc(&quot;/healthz&quot;, func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">    duration := time.Now().Sub(started)</span><br><span class="line">    if duration.Seconds() &gt; 10 &#123;</span><br><span class="line">        w.WriteHeader(500)</span><br><span class="line">        w.Write([]byte(fmt.Sprintf(&quot;error: %v&quot;, duration.Seconds())))</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        w.WriteHeader(200)</span><br><span class="line">        w.Write([]byte(&quot;ok&quot;))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>kubelet 會在容器啟動後 3 秒開始探測, 所以一開始的健康健康會是 success 的, 但是 10 秒後就會開始 fail, 然後 kubelet 會把容器殺掉並且重啟</p>
+</li>
+</ul>
+<p>以下實際試試 HTTP liveness check</p>
+<ul>
+<li><p>建立 Pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/pods/probe/http-liveness.yaml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>10 秒後, 檢視 liveness probe 事件, 可以發現已經失敗並且又重啟了</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod liveness-http</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在版本 v1.13 之前 (包含 v1.13), 如果在 node 有設定 <code>http_proxy</code> (或 <code>HTTP_PROXY</code>) 環境變數, 則 HTTP liveness 會使用這個 proxy, v1.13 之後的版本不會影響 HTTP liveness probe</p>
+<p><br><br><br></p>
+<h2 id="定義-TCP-liveness-probe"><a href="#定義-TCP-liveness-probe" class="headerlink" title="定義 TCP liveness probe"></a>定義 TCP liveness probe</h2><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
 <li><strong>Kubernetes 中, liveness probe 可以解決什麼問題？</strong><br>一個 container 有在運行, 但是卻無法正常運作</li>
 </ul>
 <ul>
