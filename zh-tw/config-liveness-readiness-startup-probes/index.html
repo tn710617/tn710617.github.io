@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>Kubernetes - 健康檢查 - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta name="keywords" content="Kubernetes,Kubernetes health check">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - 健康檢查">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-06T13:45:31.146Z">
+<meta property="og:updated_time" content="2020-02-07T04:44:10.659Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 健康檢查">
-<meta name="twitter:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta name="twitter:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+    <meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta name="keywords" content="Kubernetes,Kubernetes health check">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - 健康檢查">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-06T13:45:31.146Z">
+<meta property="og:updated_time" content="2020-02-07T04:44:10.659Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - 健康檢查">
-<meta name="twitter:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta name="twitter:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
 
 
 
@@ -164,7 +164,37 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">5&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#使用命名-port">5&nbsp;&nbsp;<b>使用命名 port</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用-startup-probes-來保護啟動較慢的容器">6&nbsp;&nbsp;<b>使用 startup probes 來保護啟動較慢的容器</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義-readiness-probes">7&nbsp;&nbsp;<b>定義 readiness probes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設置-Probes">8&nbsp;&nbsp;<b>設置 Probes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#參考資料">9&nbsp;&nbsp;<b>參考資料</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">10&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -226,13 +256,13 @@
         <span class="column is-narrow">
             
             
-            18 分钟 讀完 (大概 2627 字)
+            28 分钟 讀完 (大概 4206 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)<br><a href="https://kubernetes.io/docs/admin/kubelet/" target="_blank" rel="noopener">kubelet</a> 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 <a href="https://kubernetes.io/docs/admin/kubelet/" target="_blank" rel="noopener">kubelet</a> 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。</p>
 <a id="more"></a>
 <p>kubelet 使用 readiness probe 來決定這個容器是否已經準備就緒, 可以接收流量了。 當一個 Pod 內的所有容器都就緒了, 該 Pod 才算是就緒。 如果一個 Pod 尚未就緒, 它將會從 Service 負載平衡的後端清單中被移除。<br>kubelet 使用 startup probe 來決定一個容器應用是否已經成功啟動了。 當 startup probe 判定為 success 之前, liveness probe 跟 readiness probe 是沒有作用的。 這可以用在某些會花比較久時間來啟動的應用, 這樣就不會在還沒啟動完成前就因為 liveness 判定失敗而給殺掉了。</p>
 <p>本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;A, 適合我個人學習吸收, 考試都考 100 分呢！</p>
@@ -294,7 +324,99 @@
 </ul>
 <p>在版本 v1.13 之前 (包含 v1.13), 如果在 node 有設定 <code>http_proxy</code> (或 <code>HTTP_PROXY</code>) 環境變數, 則 HTTP liveness 會使用這個 proxy, v1.13 之後的版本不會影響 HTTP liveness probe</p>
 <p><br><br><br></p>
-<h2 id="定義-TCP-liveness-probe"><a href="#定義-TCP-liveness-probe" class="headerlink" title="定義 TCP liveness probe"></a>定義 TCP liveness probe</h2><h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<h2 id="定義-TCP-liveness-probe"><a href="#定義-TCP-liveness-probe" class="headerlink" title="定義 TCP liveness probe"></a>定義 TCP liveness probe</h2><p>第三種 liveness probe 使用 TCP Socket, 如下設定檔, kubelet 會嘗試在你容器上的一個特定的 port 開啟一個 socket, 如果可以建立連線, 則成功, 反之則視為失敗<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    app:</span> <span class="hljs-string">goproxy</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">k8s.gcr.io/goproxy:0.1</span></span><br><span class="line"><span class="hljs-attr">    ports:</span></span><br><span class="line"><span class="hljs-attr">    - containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">    readinessProbe:</span></span><br><span class="line"><span class="hljs-attr">      tcpSocket:</span></span><br><span class="line"><span class="hljs-attr">        port:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">      initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line"><span class="hljs-attr">      periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"><span class="hljs-attr">    livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">      tcpSocket:</span></span><br><span class="line"><span class="hljs-attr">        port:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">      initialDelaySeconds:</span> <span class="hljs-number">15</span></span><br><span class="line"><span class="hljs-attr">      periodSeconds:</span> <span class="hljs-number">20</span></span><br></pre></td></tr></table></figure></p>
+<p>以下依序來解釋上面設定檔的步驟：</p>
+<ul>
+<li>TCP 檢查跟 HTTP 檢查很類似</li>
+<li>這個範例同時使用了 readiness probe 以及 liveness probe</li>
+<li>容器啟動五秒後, kubelet 會發送第一個 readiness 探測</li>
+<li>readiness 探測會嘗試連結 <code>goproxy</code> 容器的 port 8080, 如果成功, 表示該容器 ready</li>
+<li>kubelet 會持續的每十秒做一次檢查</li>
+<li>kubelet 會在容器啟動十五秒後, 發送第一個 liveness 探測</li>
+<li>liveness 探測會嘗試連結 <code>goproxy</code> 容器的 port 8080, 如果失敗, 容器會被重新啟動</li>
+<li>liveness probe 每二十秒探測一次</li>
+</ul>
+<p>以下可以實際操作看看：</p>
+<ul>
+<li><p>建立 Pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/pods/probe/tcp-liveness-readiness.yaml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>十五秒後, 檢視 Pod 事件來看看 liveness 的狀態:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod goproxy</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="使用命名-port"><a href="#使用命名-port" class="headerlink" title="使用命名 port"></a>使用命名 port</h2><p>在 HTTP 或 TCP liveness 檢查中, 你可以使用一個命名過的 port, 如下<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-attr">- name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">  hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br></pre></td></tr></table></figure></p>
+<p><br><br><br></p>
+<h2 id="使用-startup-probes-來保護啟動較慢的容器"><a href="#使用-startup-probes-來保護啟動較慢的容器" class="headerlink" title="使用 startup probes 來保護啟動較慢的容器"></a>使用 startup probes 來保護啟動較慢的容器</h2><p>某些時候, 你可能會碰到會花較久時間在容器首次啟動的應用, 這個時候你不需要提高 liveness probe 的失敗門檻, 你可以使用 startup probe, 重點就是, 設定 <code>failureThreshold * periodSeconds</code> 的時間, 這個時間要長於正常應用啟動可能耗費的最大時間, 如下範例：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-attr">- name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"><span class="hljs-attr">  hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line"><span class="hljs-attr">  httpGet:</span></span><br><span class="line"><span class="hljs-attr">    path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line"><span class="hljs-attr">    port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line"><span class="hljs-attr">  failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure></p>
+<p>以下針對上面的配置檔做解說:</p>
+<ul>
+<li>應用會有最長五分鐘的啟動時間 (30 * 10 = 300s)</li>
+<li>一旦 startup probe 被判定為成功, liveness probe 會接手, 從<strong>原本擁有高容許失敗門檻啟動偵測</strong>變成<strong>一次失敗就重啟的卡死偵測</strong></li>
+<li>如果 startup probe 一直失敗, 那超過 300s 後, 容器會被殺掉, 並視乎 <code>restartPolicy</code> 看是否重啟</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="定義-readiness-probes"><a href="#定義-readiness-probes" class="headerlink" title="定義 readiness probes"></a>定義 readiness probes</h2><p>某些時候, 應用會暫時的無法處理流量, 舉例來說, 當在啟動時載入大量資料或是設定檔時, 或是在啟動後依賴外部服務時。 在這些情況下, 你不需要殺掉容器, 但你需要暫時的不將請求送往這些容器。 Kubernetes 提供了 readiness probe 來解決這個問題, 如果一個 Pod 被 readiness probe 回報 not ready 的話, 那該 Pod 將不會收到來自於 Kubernetes Services 的流量<br>Readiness probe 的運行是不間斷的<br>Readiness probe 的設定基本上跟 liveness probe 差不多, 只差在 <code>readinessProbe</code> 換成 <code>livenessProbe</code>, 如下：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">readinessProbe:</span></span><br><span class="line"><span class="hljs-attr">  exec:</span></span><br><span class="line"><span class="hljs-attr">    command:</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">cat</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">/tmp/healthy</span></span><br><span class="line"><span class="hljs-attr">  initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line"><span class="hljs-attr">  periodSeconds:</span> <span class="hljs-number">5</span></span><br></pre></td></tr></table></figure></p>
+<p>Readiness probe 跟 liveness probe 可以一起使用, 避免一些狀況, 例如說該容器暫時還無法處理流量, 但還收到 Service 的請求, 這時候 liveness probe 探測失敗, 就直接將容器殺掉了。</p>
+<p><br><br><br></p>
+<h2 id="設置-Probes"><a href="#設置-Probes" class="headerlink" title="設置 Probes"></a>設置 Probes</h2><p>以下介紹幾個 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#probe-v1-core" target="_blank" rel="noopener">Probes</a> 的 field, 更精確的控制 livenss 跟 readiness 的檢查行為</p>
+<ul>
+<li><code>intialDelaySeconds</code>: 在容器首次啟動時, 控制 liveness probe 或 readiness probe 開始探測的延遲時間, 預設為 0 秒, 最小為 0</li>
+<li><code>periodSeconds</code>: 多久探測一次, 預設 10 秒, 最短 1 秒</li>
+<li><code>timeoutSeconds</code>: 幾秒沒收到回應時判斷為失敗, 預設 1 秒, 最短 1 秒</li>
+<li><code>successThreshold</code>: 在檢查被判定失敗後, 接下來要多少次連續判定成功才算成功, 預設 1 次, liveness 必須設為 1 次, 最小可設為 1 次</li>
+<li><code>failureThreshold</code>: 當 Pod 被偵測到失敗時, Kubernetes 會持續嘗試直到滿足此欄位設定的次數, 這樣才算失敗, 套用在 liveness probe 上就是重啟容器, 而套用在 readiness probe 上就是標示該容器為 unready, 預設為 3 次, 最小可設為 1 次</li>
+</ul>
+<p>以下介紹幾個 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#httpgetaction-v1-core" target="_blank" rel="noopener">HTTP probes</a>, 可設在 <code>httpGet</code> 的欄位：</p>
+<ul>
+<li><code>host</code>: 要連結的 host name, 預設為 pod IP, 相比在 httpHeaders 中設定, 你可能會想要使用這一個欄位來設定</li>
+<li><code>scheme</code>: 連接到 host 的 scheme (HTTP 或 HTTPS), 預設為 HTTP</li>
+<li><code>path</code>: 存取 HTTP server 的路徑</li>
+<li><code>httpHeaders</code>: 客製化設定請求的 header, HTTP 允許重複的 header</li>
+<li><code>port</code>: 可以使用 port number 或已命名的 port, 如果是 port number, 範圍須介於 1 ~ 65535</li>
+</ul>
+<p>針對上面的 HTTP probes 行為做補充解釋:</p>
+<ul>
+<li>如果使用 HTTP probe, kubelet 會發送 HTTP 請求到指定的 path 以及 port 來做檢查</li>
+<li>kubelet 預設使用 pod 的 IP 位址, 除非在 <code>host</code> 欄位有特別指定</li>
+<li>如果 <code>scheme</code> 欄位設為 <code>HTTPS</code>, 則 kubelet 會發送 HTTPS 請求, 並且略過憑證檢查</li>
+<li>大部分的情況, 你不會去設定 <code>host</code> 欄位, 除非以下特殊情況<ul>
+<li>假如你的容器監聽 <strong>127.0.0.1</strong>, 然後 pod 的 <code>hostNetwork</code> 欄位為 true, 那 <code>httpGet</code> 下的 <code>host</code> 欄位需設定為 <strong>127.0.0.1</strong></li>
+<li>如果你的 pod 取決於 virtual hosts, 你不可使用 <code>host</code> 欄位, 而是要設定 <code>httpHeaders</code> 欄位中的 <code>Host</code> header</li>
+</ul>
+</li>
+<li>TCP probe 中, kubelet 是在 node 中建立連線, 不是在 pod 中, 所以 <code>host</code> 欄位中不可使用 service name, 否則 kubelet 將無法解析它</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/" target="_blank" rel="noopener">官方文件</a></li>
+<li><a href="https://medium.com/swlh/fantastic-probes-and-how-to-configure-them-fef7e030bd2f" target="_blank" rel="noopener">Fantastic Probes And How To Configure Them — A Kubernetes Story</a></li>
+</ul>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, 當我使用 TCP probe 時我無法在 <code>httpGet</code> 下的 <code>host</code> 使用 service name, 為什麼？</strong><br>因為 kubelet 是在 node 建立 connection, 並非在 pod</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 如果我將 <code>httpGet</code> 下的 <code>scheme</code> 欄位設置為 <code>HTTPS</code>, 那會怎麼樣？</strong><br>kubelet 會發送 HTTPS 請求且會略過憑證驗證</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 預設 <code>httpGet</code> 下的 <code>host</code> 是什麼？</strong><br>pod 的 ip</li>
+</ul>
+<ul>
+<li><strong>kubernetes 中, <code>failureThreshold</code> 預設為幾次?</strong><br>3 次</li>
+</ul>
+<ul>
+<li><strong>kubernetes 中, <code>successthreshold</code> 在 liveness probe 必須設為多少？</strong><br>1</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 健康檢查可以設定最短多久檢查一次？</strong><br>1 秒</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 健康檢查預設幾秒檢查一次？</strong><br>10 秒</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, startup probe 解決了什麼問題？</strong><br>對於啟動時間較長的應用可以有高容許失敗門檻, 一旦啟動完成後, 切換成低失敗容許門檻的 liveness probe</li>
+</ul>
+<ul>
 <li><strong>Kubernetes 中, liveness probe 可以解決什麼問題？</strong><br>一個 container 有在運行, 但是卻無法正常運作</li>
 </ul>
 <ul>
