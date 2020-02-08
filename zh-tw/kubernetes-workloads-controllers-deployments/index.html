@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-07T14:00:34.926Z">
+<meta property="og:updated_time" content="2020-02-08T09:49:28.406Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-07T14:00:34.926Z">
+<meta property="og:updated_time" content="2020-02-08T09:49:28.406Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -146,7 +146,13 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#使用情境">2&nbsp;&nbsp;<b>使用情境</b></a>
+                    <a class="navbar-item" href="#建立一個-Deployment">2&nbsp;&nbsp;<b>建立一個 Deployment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">3&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -208,7 +214,7 @@
         <span class="column is-narrow">
             
             
-            几秒 讀完 (大概 83 字)
+            5 分钟 讀完 (大概 810 字)
         </span>
         
     </div>
@@ -217,7 +223,77 @@
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets<br>透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。</p>
 <a id="more"></a>
 <p><br><br><br></p>
-<h2 id="使用情境"><a href="#使用情境" class="headerlink" title="使用情境"></a>使用情境</h2>
+<h2 id="建立一個-Deployment"><a href="#建立一個-Deployment" class="headerlink" title="建立一個 Deployment"></a>建立一個 Deployment</h2><p>以下是 Deployment 的範例, 它建立了一個 ReplicaSet 來啟動三個 <code>nginx</code> Pods:<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">nginx-deployment</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    app:</span> <span class="hljs-string">nginx</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  replicas:</span> <span class="hljs-number">3</span></span><br><span class="line"><span class="hljs-attr">  selector:</span></span><br><span class="line"><span class="hljs-attr">    matchLabels:</span></span><br><span class="line"><span class="hljs-attr">      app:</span> <span class="hljs-string">nginx</span></span><br><span class="line"><span class="hljs-attr">  template:</span></span><br><span class="line"><span class="hljs-attr">    metadata:</span></span><br><span class="line"><span class="hljs-attr">      labels:</span></span><br><span class="line"><span class="hljs-attr">        app:</span> <span class="hljs-string">nginx</span></span><br><span class="line"><span class="hljs-attr">    spec:</span></span><br><span class="line"><span class="hljs-attr">      containers:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">nginx</span></span><br><span class="line"><span class="hljs-attr">        image:</span> <span class="hljs-attr">nginx:1.7.9</span></span><br><span class="line"><span class="hljs-attr">        ports:</span></span><br><span class="line"><span class="hljs-attr">        - containerPort:</span> <span class="hljs-number">80</span></span><br></pre></td></tr></table></figure></p>
+<p>這邊針對上面的範例做解說:</p>
+<ul>
+<li>一個叫做 <code>nginx-deployment</code> 的 Deployment 被建立了, 可從 <code>.metadata.name</code> 這裡看到</li>
+<li>這個 Deployment 建立了三個 replicated Pods, 可從 <code>replicas</code> 欄位得知</li>
+<li><code>selector</code> field 用於定義 Deployment 管理的 Pods 對象, 本範例中的對象為 template 中定義的 <code>app: nginx</code></li>
+<li><code>template</code> 欄位中又含有以下子欄位：<ul>
+<li>經由 <code>labels</code> 欄位, 我們給 Pods 貼上標籤 <code>app: nginx</code></li>
+<li>從 <code>.template.spec</code> 欄位, 可以看到 Pods 運行一個容器, <code>nignx</code>, 使用 <code>nginx</code> <a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> 鏡像, 版本 1.7.9</li>
+<li>建立一個容器, 並透過 <code>name</code> 欄位來命名為 <code>nginx</code></li>
+</ul>
+</li>
+</ul>
+<p>現在讓我們來建立一個 Deployment 吧：</p>
+<ul>
+<li><p>使用以下指令建立一個 Deployment, 你可以給指定最後加上 <code>--record</code>, 它會將執行的指令寫入資源的 annotation 欄位中 <code>kubernetes.io/change-cause</code>, 這對之後的追蹤十分有用, 比如說, 可用來檢視每個 Deployment 版本執行的指令</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">kubectl</span> <span class="hljs-string">apply</span> <span class="hljs-bullet">-f</span> <span class="hljs-attr">https://k8s.io/examples/controllers/nginx-deployment.yaml</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>執行 <code>kubectl get deployments</code> 來確認 Deployment 是不是已經建立了。 如果還在建立中, 輸出應如下：</p>
+<ul>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx-deployment   0/3     0            0           1s</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果是在叢集中檢視 Deployments, 會顯示以下欄位</p>
+<ul>
+<li><code>NAME</code> 列出在這個叢集中 Deployments 的名稱</li>
+<li><code>DESIRED</code> 列出宣告的 <em>replicas</em> 的數量, 建立 Deployment 時定義的</li>
+<li><code>CURRENT</code> 顯示目前共有幾個 replicas 在運行</li>
+<li><code>UP-TO-DATE</code> 顯示已被更新來達成期望狀態的 replicas 數量</li>
+<li><code>AVAILABLE</code> 顯示可用的 replicas 數量</li>
+<li><code>AGE</code> 顯示 replica 已運行的時間</li>
+</ul>
+</li>
+<li>replicas 數量的宣告值是根據 <code>.spec.replicas</code> 欄位</li>
+</ul>
+</li>
+<li></li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><p><strong>Kubernetes 中, 當我在建立資源時加上了 <code>--record</code> flag, 我要怎樣才可以看到運行的 command 的紀錄？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe resource resourceName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如果我想要之後使用 <code>kubectl describe</code> 時都可以看到該 resource 之前執行過什麼執行, 那我可以在建立該 resource 時加上哪一個 flag?</strong><br><code>--record</code></p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 的 operator <code>Lt</code> 代表的意思是？</strong><br>該 label 的 value 需<code>小於</code>指定值</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 的 operator <code>Gt</code> 代表的意思是？</strong><br>該 label 的 value 需<code>大於</code>指定值</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 的 operator <code>DoesNotExist</code> 代表的意思是？</strong><br>該 label <code>key</code> 有存在的都算</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 的 operator <code>Exist</code> 代表的意思是？</strong><br>該 label <code>key</code> 有存在的都算</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 的 operator <code>NotIn</code> 代表的意思是？</strong><br>該 label 的 value 需<code>不存在</code>於指定的 array list 當中</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 的 operator <code>In</code> 代表的意思是？</strong><br>該 label 的 value 需<code>存在</code>於指定的 array list 當中</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchLabels</code> field 代表？</strong><br>一對 key/value pair</p>
+</li>
+<li><p><strong>Kubernetes 中, <code>matchExpressions</code> field 有哪幾個 operator？</strong></p>
+<ul>
+<li>In</li>
+<li>NotIn</li>
+<li>Exists</li>
+<li>DoesNotExist</li>
+<li>Lt</li>
+<li>Gt</li>
+</ul>
+</li>
+</ul>
+
     
     </div>
     
