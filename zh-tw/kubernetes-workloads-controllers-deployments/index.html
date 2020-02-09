@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-08T09:49:28.406Z">
+<meta property="og:updated_time" content="2020-02-09T12:53:59.966Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-08T09:49:28.406Z">
+<meta property="og:updated_time" content="2020-02-09T12:53:59.966Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -149,10 +149,38 @@
                     <a class="navbar-item" href="#建立一個-Deployment">2&nbsp;&nbsp;<b>建立一個 Deployment</b></a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Pod-template-hash-label">2.1&nbsp;&nbsp;Pod-template-hash label</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">3&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#Updating-a-Deployment">3&nbsp;&nbsp;<b>Updating a Deployment</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Rollover-aka-multiple-updates-in-flight">3.1&nbsp;&nbsp;Rollover (aka multiple updates in-flight)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Label-selector-更新">3.2&nbsp;&nbsp;Label selector 更新</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#回滾-Deployment">4&nbsp;&nbsp;<b>回滾 Deployment</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認-Deployment-的-Rollout-歷史">4.1&nbsp;&nbsp;確認 Deployment 的 Rollout 歷史</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">5&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -214,7 +242,7 @@
         <span class="column is-narrow">
             
             
-            5 分钟 讀完 (大概 810 字)
+            26 分钟 讀完 (大概 3962 字)
         </span>
         
     </div>
@@ -259,10 +287,288 @@
 <li>replicas 數量的宣告值是根據 <code>.spec.replicas</code> 欄位</li>
 </ul>
 </li>
-<li></li>
+<li><p>執行以下指令來檢視 Deployment rollout status</p>
+<ul>
+<li><p>指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout status deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>預計輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Waiting for rollout to finish: 2 out of 3 new replicas have been updated...</span><br><span class="line">deployment.apps/nginx-deployment successfully rolled out</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>幾秒後, 在執行以下指令一次</p>
+<ul>
+<li><p>指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deployments</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>預計輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx-deployment   3/3     3            3           18s</span><br></pre></td></tr></table></figure>
+<p>可以看到 Deployment 已經建立了三個 replicas, 且所有的 replicas 都是最新狀態以及可用</p>
+</li>
+</ul>
+</li>
+<li><p>檢視被 Deployment 建立的 ReplicaSet (<code>rs</code>)</p>
+<ul>
+<li><p>執行以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>預計輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                          DESIRED   CURRENT   READY   AGE</span><br><span class="line">nginx-deployment-75675f5897   3         3         3       18s</span><br></pre></td></tr></table></figure>
+<p>ReplicaSet 的格式為 <code>[DEPLOYMENT-NAME]-[RANDOM-STRING]</code>, <em>random string</em> 為隨機產生, 且使用 pod-template-hash 為來源之一</p>
+</li>
+</ul>
+</li>
+<li><p>檢視每個 Pod 自動產生的 labels</p>
+<ul>
+<li><p>執行指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods --show-labels</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>預計輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                                READY     STATUS    RESTARTS   AGE       LABELS</span><br><span class="line">nginx-deployment-75675f5897-7ci7o   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453</span><br><span class="line">nginx-deployment-75675f5897-kzszj   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453</span><br><span class="line">nginx-deployment-75675f5897-qqcnn   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453</span><br></pre></td></tr></table></figure>
+<p>已建立完成的 ReplicaSet 會確保有三個 <code>nginx</code> Pods</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>這邊要注意的是, 務必要正確的在 Deployment 中指定適當的 selector 以及 Pod template labels (在本範例中, <code>app:nginx</code>), 不要讓 labels 或 selectors 跟其他的 controllers 有重疊 (包含其他的 Deployments 以及 StatefulSets), Kubernetes 不會阻止這件事, 且如果上述情形發生的話, 可能會產生衝突以及一些預期外的行為</p>
+<p><br></p>
+<h3 id="Pod-template-hash-label"><a href="#Pod-template-hash-label" class="headerlink" title="Pod-template-hash label"></a>Pod-template-hash label</h3><p><strong>注意</strong>: 不可改變這個 label<br><code>pod-template-hash</code> label 由 Deployment controller 加到每一個它所建立的 ReplicaSet 當中。</p>
+<p><br><br><br></p>
+<h2 id="Updating-a-Deployment"><a href="#Updating-a-Deployment" class="headerlink" title="Updating a Deployment"></a>Updating a Deployment</h2><p><strong>注意</strong>: Deployment 的 rollout 唯有當 Deployment 的 Pod template (也就是 <code>.spec.template</code>) 變更了, 舉例來說, 像是 template 當中的 labels 或是容器鏡像更新了。<br>其他的更新, 例如 Deployment 的擴縮, 不會觸發 rollout</p>
+<p>遵循以下步驟來更新你的 Deployment:</p>
+<ul>
+<li><p>將 nginx Pods 從鏡像版本 <code>nginx:1.7.9</code> 更新成 <code>nginx:1.9.1</code></p>
+<ul>
+<li><p>執行以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl --record deployment.apps/nginx-deployment <span class="hljs-built_in">set</span> image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>或是簡化版本的</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> image deployment/nginx-deployment nginx=nginx:1.9.1 --record</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出應如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment image updated</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>又或者, 你也可以使用 <code>edit</code> 指令, 到編輯器中將 <code>.spac.template.spec.container[0].image</code> 的版本從 <code>nginx.1.7.9</code> 變更為 <code>nginx:1.9.1</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl edit deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出應如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment edited</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>檢視 rollout status    </p>
+<ul>
+<li><p>執行指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout status deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>或是簡化版</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectll rollout status deployment nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出應如下:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Waiting for rollout to finish: 2 out of 3 new replicas have been updated...</span><br></pre></td></tr></table></figure>
+<p>或</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment successfully rolled out</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>從更新後的 Deployment 取得更多細節：</p>
+<ul>
+<li><p>檢視 rollout 成功的 Deployment</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deployments</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx-deployment   3/3     3            3           36s</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>檢視 ReplicaSets</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                          DESIRED   CURRENT   READY   AGE</span><br><span class="line">nginx-deployment-1564180365   3         3         3       6s</span><br><span class="line">nginx-deployment-2035384211   0         0         0       36s</span><br></pre></td></tr></table></figure>
+<p>下一次你想要更新這些 Pod 的話, 你只需要再次更新 Deployment 的 Pod template 就行了<br>Deployment 確保更新過程中只會有一定數量的 Pods 是不可用的。<br>預設, 最少要有 75% 的 Pod 要處於運行中, 最多 25% 的 Pod 可容許不可用<br>Deployment 同時確保在升級過程中同時只有一定數量的 Pod 會被建立, 預設最多 Pod 的 125% 期望數量可被運行 (最多 25% 增加)<br>舉例來說, 如果你仔細的檢視 rollout 的過程, 你會發現, 首先 Deployment 會先建立一個新的 Pod, 然後殺掉某個舊的 Pod, 然後建立一個新的。 它不會等到新的 Pod 都已經足夠了才殺掉舊的 Pod, 也不會等到舊的 Pod 已經被砍到一個足夠的數量才去建立新的 Pod, 它確保至少有兩個 Pods 可用, 而最多四個 Pods 可用</p>
+</li>
+</ul>
+</li>
+<li><p>檢視 Deployment 的細節資訊:</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe deployments</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Name:                   nginx-deployment</span><br><span class="line">Namespace:              default</span><br><span class="line">CreationTimestamp:      Thu, 30 Nov 2017 10:56:25 +0000</span><br><span class="line">Labels:                 app=nginx</span><br><span class="line">Annotations:            deployment.kubernetes.io/revision=2</span><br><span class="line">Selector:               app=nginx</span><br><span class="line">Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable</span><br><span class="line">StrategyType:           RollingUpdate</span><br><span class="line">MinReadySeconds:        0</span><br><span class="line">RollingUpdateStrategy:  25% max unavailable, 25% max surge</span><br><span class="line">Pod Template:</span><br><span class="line">Labels:  app=nginx</span><br><span class="line"> Containers:</span><br><span class="line">  nginx:</span><br><span class="line">    Image:        nginx:1.9.1</span><br><span class="line">    Port:         80/TCP</span><br><span class="line">    Environment:  &lt;none&gt;</span><br><span class="line">    Mounts:       &lt;none&gt;</span><br><span class="line">  Volumes:        &lt;none&gt;</span><br><span class="line">Conditions:</span><br><span class="line">  Type           Status  Reason</span><br><span class="line">  ----           ------  ------</span><br><span class="line">  Available      True    MinimumReplicasAvailable</span><br><span class="line">  Progressing    True    NewReplicaSetAvailable</span><br><span class="line">OldReplicaSets:  &lt;none&gt;</span><br><span class="line">NewReplicaSet:   nginx-deployment-1564180365 (3/3 replicas created)</span><br><span class="line">Events:</span><br><span class="line">  Type    Reason             Age   From                   Message</span><br><span class="line">  ----    ------             ----  ----                   -------</span><br><span class="line">  Normal  ScalingReplicaSet  2m    deployment-controller  Scaled up replica set nginx-deployment-2035384211 to 3</span><br><span class="line">  Normal  ScalingReplicaSet  24s   deployment-controller  Scaled up replica set nginx-deployment-1564180365 to 1</span><br><span class="line">  Normal  ScalingReplicaSet  22s   deployment-controller  Scaled down replica set nginx-deployment-2035384211 to 2</span><br><span class="line">  Normal  ScalingReplicaSet  22s   deployment-controller  Scaled up replica set nginx-deployment-1564180365 to 2</span><br><span class="line">  Normal  ScalingReplicaSet  19s   deployment-controller  Scaled down replica set nginx-deployment-2035384211 to 1</span><br><span class="line">  Normal  ScalingReplicaSet  19s   deployment-controller  Scaled up replica set nginx-deployment-1564180365 to 3</span><br><span class="line">  Normal  ScalingReplicaSet  14s   deployment-controller  Scaled down replica set nginx-deployment-2035384211 to 0</span><br></pre></td></tr></table></figure>
+<p>這邊可以看到, 一開始當你建立了 Deployment, 它建立了一個 ReplicaSet (nginx-deployment-2035384211), 然後直接擴增到 3 個 replicas, 而當你更新 Deployment, 它建立了一個新的 ReplicaSet (nginx-deployment-1564180365) 並且擴增到 1 個然後將舊的 ReplicaSet 縮為 2, 所以最少有 2 個 Pods 是可用的, 最多可以有 4 個 Pods 是啟動的。 之後, 遵循著相同的滾動升級策略, 它持續的擴縮, 最後, 你會有三個新的 replicas, 然後 0 個舊的 Replicas</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Rollover-aka-multiple-updates-in-flight"><a href="#Rollover-aka-multiple-updates-in-flight" class="headerlink" title="Rollover (aka multiple updates in-flight)"></a>Rollover (aka multiple updates in-flight)</h3><p>每次 Deployment controller 觀察到有新的 Deployment 時, 一個新的 ReplicaSet 會被建立來提供期望數量的 Pods。 如果說 Deployment 被更新了, 那 label 有符合 <code>.spec.selector</code> 但 template 不符合 <code>.spec.replicas</code> 的已存在 ReplicaSet 會開始縮減數量。 最後, 新的 ReplicaSet 會擴增到符合 <code>.spec.replicas</code> 的數量, 然後所有舊的 ReplicaSets 都縮減為 0<br>如果你在滾動升級途中更新一個 Deployment, Deployment 會建立一個新的 ReplicaSet 並開始擴容, 同時縮減原本擴容到一半的 ReplicaSet, 它會被加到舊的 ReplicaSets 清單, 並且開始縮減<br>舉例來說, 假如你建立了一個 Deployment 來建立 5 個 <code>nginx:1.7.9</code> replicas, 但是當只有 3 個 replicas 的 <code>nginx:1.7.9</code> 被建立完成時, 你將這個 Deployment 更新成 5 個 <code>nginx:1.9.1</code> 的 replicas。 在這個範例中, Deployment 會立即的開始砍掉這三個 <code>nginx:1.7.9</code> 的 Pods, 並開始建立 <code>nginx:1.9.1</code> 的 Pods。 他不會等到 5 個 <code>nginx:1.7.9</code> 的 replicas 都建好之後, 再改變狀態</p>
+<p><br></p>
+<h3 id="Label-selector-更新"><a href="#Label-selector-更新" class="headerlink" title="Label selector 更新"></a>Label selector 更新</h3><p>通常不建議修改 label selector, 且 selector 建議在一開始就規劃好。 不管怎樣, 如果你需要更新 label selector, 那請一定要很小心, 並且確保你已經掌握任何它可能會造成的影響。<br><strong>注意</strong>: 在 API 版本 <code>apps/v1</code>, Deployment 的 label selector 在建立之後就無法變更了。</p>
+<ul>
+<li>Selector 的增加需要也更新 Deployment spec 中的 Pod template labels, 否則會回傳 validation error。 這個變更是不可覆蓋的, 這表示說, 新的 selector 不會去選擇舊的 selector 建立的 ReplicasSet 以及 Pods, 所以結果會是, 建立了新的 ReplicaSet, 然後所有舊的 ReplicaSets 都成了孤兒。</li>
+<li>Selector 的更新改變了 selector key 的現存 value - 造成的結果跟增加 selector 相同</li>
+<li>Selector 的刪除會從 Deployment selector 中移除已經存在的 key - 這不需要 Pod template labels 有任何改變。 已經存在的 ReplicaSets 也不會變成孤兒, 也不會有新的 ReplicaSets 會被建立。 但被移除的 label 還是存在於現存的 Pods 以及 ReplicaSets 之中。</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="回滾-Deployment"><a href="#回滾-Deployment" class="headerlink" title="回滾 Deployment"></a>回滾 Deployment</h2><p>有時, 你可能會想要回滾 Deployment; 例如說, 當一個 Deployment 並不穩定, 一直的 crash looping。 預設, 所有的 Deployment rollout 歷史都會被記錄下來, 所以任何時候你都可以回滾 (你可以修改版本歷史限制來改變這一個特性)<br><strong>Note</strong>: 當 Deployment 的 rollout 被觸發時, 會建立一個 Deployment revision。 這表示唯有當 Deployment 的 Pod template (<code>.spec.template</code>) 改變了, 例如你更新了 template 的 labels 或 container images, 這樣 revision 才會被建立。 其他更新, 像是擴容 Deployment 並不會建立 Deployment revision, 所以你可以無礙的手動或自動的擴縮 Deployment。 這表示說, 當你回滾到一個早些的版本, 只有 Deployment 的 Pod template 部分會被回滾。</p>
+<ul>
+<li><p>假如你在更新 Deployment 時打錯字, 把 <code>nginx:1.9.1</code> 打成 <code>nginx:1.91</code>:</p>
+<ul>
+<li><p>執行指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> image deployment.v1.apps/nginx-deployment nginx=nginx:1.91 --record=<span class="hljs-literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment image updated</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>這時 rollout 卡住了, 確認一下：</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout status deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Waiting for rollout to finish: 1 out of 3 new replicas have been updated...</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>按下 Ctrl-C 來停止 rollout status 輸出, 可以參考<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#deployment-status" target="_blank" rel="noopener">這裏</a>, 有更多 rollout 卡住的資訊</p>
+</li>
+<li><p>可以看到舊的 replicas <code>nginx-deployment-1564180365</code> 跟 <code>nginx-deployment-2035384211</code> 的數量是 2, 然後新的 replicas (nginx-deployment-3066724191) 是 1</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                          DESIRED   CURRENT   READY   AGE</span><br><span class="line">nginx-deployment-1564180365   3         3         3       25s</span><br><span class="line">nginx-deployment-2035384211   0         0         0       36s</span><br><span class="line">nginx-deployment-3066724191   1         1         0       6s</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>從建立的 Pods 可以看到這個由新的 ReplicaSet 建立的 Pod 卡在 image pull loop</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                                READY     STATUS             RESTARTS   AGE</span><br><span class="line">nginx-deployment-1564180365-70iae   1/1       Running            0          25s</span><br><span class="line">nginx-deployment-1564180365-jbqqo   1/1       Running            0          25s</span><br><span class="line">nginx-deployment-1564180365-hysrc   1/1       Running            0          25s</span><br><span class="line">nginx-deployment-3066724191-08mng   0/1       ImagePullBackOff   0          6s</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>: Deployment controller 自動停止了錯誤的 rollout, 並且停止擴容新的 ReplicaSet。 這取決於你定義的 rollingUpdate 的參數 (更準確的說, <code>maxUnavailable</code>), Kubernetes 的預設值為 25%</p>
+</li>
+</ul>
+</li>
+<li><p>取得 Deployment 描述</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Name:           nginx-deployment</span><br><span class="line">Namespace:      default</span><br><span class="line">CreationTimestamp:  Tue, 15 Mar 2016 14:48:04 -0700</span><br><span class="line">Labels:         app=nginx</span><br><span class="line">Selector:       app=nginx</span><br><span class="line">Replicas:       3 desired | 1 updated | 4 total | 3 available | 1 unavailable</span><br><span class="line">StrategyType:       RollingUpdate</span><br><span class="line">MinReadySeconds:    0</span><br><span class="line">RollingUpdateStrategy:  25% max unavailable, 25% max surge</span><br><span class="line">Pod Template:</span><br><span class="line">  Labels:  app=nginx</span><br><span class="line">  Containers:</span><br><span class="line">   nginx:</span><br><span class="line">    Image:        nginx:1.91</span><br><span class="line">    Port:         80/TCP</span><br><span class="line">    Host Port:    0/TCP</span><br><span class="line">    Environment:  &lt;none&gt;</span><br><span class="line">    Mounts:       &lt;none&gt;</span><br><span class="line">  Volumes:        &lt;none&gt;</span><br><span class="line">Conditions:</span><br><span class="line">  Type           Status  Reason</span><br><span class="line">  ----           ------  ------</span><br><span class="line">  Available      True    MinimumReplicasAvailable</span><br><span class="line">  Progressing    True    ReplicaSetUpdated</span><br><span class="line">OldReplicaSets:     nginx-deployment-1564180365 (3/3 replicas created)</span><br><span class="line">NewReplicaSet:      nginx-deployment-3066724191 (1/1 replicas created)</span><br><span class="line">Events:</span><br><span class="line">  FirstSeen LastSeen    Count   From                    SubObjectPath   Type        Reason              Message</span><br><span class="line">  --------- --------    -----   ----                    -------------   --------    ------              -------</span><br><span class="line">  1m        1m          1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled up replica set nginx-deployment-2035384211 to 3</span><br><span class="line">  22s       22s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled up replica set nginx-deployment-1564180365 to 1</span><br><span class="line">  22s       22s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled down replica set nginx-deployment-2035384211 to 2</span><br><span class="line">  22s       22s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled up replica set nginx-deployment-1564180365 to 2</span><br><span class="line">  21s       21s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled down replica set nginx-deployment-2035384211 to 1</span><br><span class="line">  21s       21s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled up replica set nginx-deployment-1564180365 to 3</span><br><span class="line">  13s       13s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled down replica set nginx-deployment-2035384211 to 0</span><br><span class="line">  13s       13s         1       &#123;deployment-controller &#125;                Normal      ScalingReplicaSet   Scaled up replica set nginx-deployment-3066724191 to 1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>要解決這個問題, 你需要回滾到前一個穩定的 Deployment reversion</p>
+<p><br></p>
+<h3 id="確認-Deployment-的-Rollout-歷史"><a href="#確認-Deployment-的-Rollout-歷史" class="headerlink" title="確認 Deployment 的 Rollout 歷史"></a>確認 Deployment 的 Rollout 歷史</h3><p>照著以下步驟來確認 rollout 歷史:</p>
+<ul>
+<li><p>確認 Deployment reversion</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout <span class="hljs-built_in">history</span> deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployments &quot;nginx-deployment&quot;</span><br><span class="line">REVISION    CHANGE-CAUSE</span><br><span class="line">1           kubectl apply --filename=https://k8s.io/examples/controllers/nginx-deployment.yaml --record=true</span><br><span class="line">2           kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1 --record=true</span><br><span class="line">3           kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.91 --record=true</span><br></pre></td></tr></table></figure>
+<p><code>CHANGE-CAUSE</code> </p>
+</li>
+</ul>
+</li>
 </ul>
 <p><br><br><br></p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, 當我回滾到之前的版本, 會否對 replica 的期望數量有影響？</strong><br>不會, rolling back 只會影響到 <code>spec.template</code> 中的內容</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, Deployment revision 唯有當什麼情況之下才會被建立？</strong><br>當 <code>spec.template</code> 中的內容有變更時</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 自 <code>apps/v1</code> 的版本後, Deployment 的 label selector 在建立後可以再變更嗎？</strong><br>不行</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 在滾動升級的過程中, 如果新的 Deployment 還沒完成擴容我就更新了這個 Deployment, 那 Deployment controller 會等到原本的擴容任務完成之後再開始新的任務嗎？</strong><br>不會, 會立即縮減舊的, 擴容新的</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當 Deployment 被更新了, 新的 ReplicaSet 會被建立來提供期望的 Pods 數量, 那 Kubernetes 是如何判斷舊的 ReplicaSet?</strong><br>label 符合 <code>.spec.selector</code> 但 <code>.spec.template</code> 不符合</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 在滾動升級的過程中, Deployment 建立新的 Pod 以及刪除舊的 Pod 的模式是？</strong><br>確保不可用以及可用的 Pod 都處於指定的範圍之內, 它不會等到新的 Pod 都建好才去砍舊的, 也不會等到舊的 Pod 都砍完才去建新的</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 預設最多幾 % 的期望 Pod 數量可以處於運行中？</strong><br>125%</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當實施滾動升級時, 預設最多可以有幾% 的 Pod 不可用？</strong><br>25%</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當實施滾動升級時, 預設至少會保持幾 % 的 Pods 運行？</strong><br>75%</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當 rollout 被觸發, Deployment 是透過建立一個新的什麼資源來建立新的 Pod?</strong><br>ReplicaSet</li>
+</ul>
+<ul>
+<li><p><strong>Kubernetes 中, 如果我要利用 kubectl CLI 來更新指定鏡像的版本, 我可以使用哪一個指令？</strong></p>
+  <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> image deployment/deploymentName containerName=imageName:tagName --record</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, Deployment 的 rollout 唯有在什麼情況下會被觸發？</strong><br>當 <code>.spec.template</code> 的內容變了</p>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>pod-template-hash</code> 是由 hash 哪一個 field 得來的？</strong><br><code>PodTemplate</code></li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>pod-template-hash</code> 的用途是？</strong><br>確保一個 Deployment 建立的 ReplicaSet 不會重疊</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>pod-template-hash</code> 是由誰加到 ReplicaSet 上的？</strong><br>Deployment Controller</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>pod-template-hash</code> 可以被變更嗎？</strong><br>不可</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當我們在定義 labels 以及 selectors 時, 務必要注意什麼？ 否則會造成衝突以及預期外的行為</strong><br>不可讓 labels 或 selectors 在多個 controller 之間互相重疊</li>
+</ul>
+<ul>
+<li><p><strong>Kubernetes 中, 如果要檢視每個 pod 自動產生的 labels, 可以使用哪一個 kubectl 指令？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods --show-labels</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, ReplicaSet 的命名格式為？</strong><br><code>[DEPLOYMENT-NAME]-[RANDOM-STRING]</code></p>
+</li>
+</ul>
+<ul>
+<li><p><strong>Kubernetes 中, 如果要透過 CLI 取得 ReplicaSet, 可以使用哪一個 kubectl command?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, <code>rs</code> 是哪一個資源的縮寫？</strong><br>ReplicaSet</p>
+</li>
+</ul>
+<ul>
+<li><p><strong>Kubernetes 中, 要如何查看 rollout status?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout status deployment deploymentName</span><br></pre></td></tr></table></figure>
+</li>
 <li><p><strong>Kubernetes 中, 當我在建立資源時加上了 <code>--record</code> flag, 我要怎樣才可以看到運行的 command 的紀錄？</strong></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe resource resourceName</span><br></pre></td></tr></table></figure>
 </li>
