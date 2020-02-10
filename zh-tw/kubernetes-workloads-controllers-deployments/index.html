@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-09T12:53:59.966Z">
+<meta property="og:updated_time" content="2020-02-10T13:39:51.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-09T12:53:59.966Z">
+<meta property="og:updated_time" content="2020-02-10T13:39:51.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -177,10 +177,20 @@
                     <a class="navbar-item" href="#確認-Deployment-的-Rollout-歷史">4.1&nbsp;&nbsp;確認 Deployment 的 Rollout 歷史</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#版本回滾">4.2&nbsp;&nbsp;版本回滾</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">5&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#擴縮-Deployment">5&nbsp;&nbsp;<b>擴縮 Deployment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">6&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -242,7 +252,7 @@
         <span class="column is-narrow">
             
             
-            26 分钟 讀完 (大概 3962 字)
+            33 分钟 讀完 (大概 4921 字)
         </span>
         
     </div>
@@ -493,13 +503,132 @@
 </li>
 <li><p>輸出</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployments &quot;nginx-deployment&quot;</span><br><span class="line">REVISION    CHANGE-CAUSE</span><br><span class="line">1           kubectl apply --filename=https://k8s.io/examples/controllers/nginx-deployment.yaml --record=true</span><br><span class="line">2           kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1 --record=true</span><br><span class="line">3           kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.91 --record=true</span><br></pre></td></tr></table></figure>
-<p><code>CHANGE-CAUSE</code> </p>
+<p><code>CHANGE-CAUSE</code> 是當 revisions 建立時, 從 Deployment 的 annotation <code>kubernetes.io/change-cause</code> 複製到你的 revisions, 你也可以藉由以下方法指定 <code>CHANGE-CAUSE</code> 的 message:</p>
+<ul>
+<li><p>輸入指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl annotate deployment.v1.apps/nginx-deployment kubernetes.io/change-cause=<span class="hljs-string">"image updated to 1.9.1"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>當我們在做資源變更時, 最後加入 <code>--record</code> 的 flag</p>
+</li>
+<li>手動編輯資源的 manifest 檔案, 就是 yaml 檔</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>若要檢視每個 revision 的細節資訊：</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout <span class="hljs-built_in">history</span> deployment.v1.apps/nginx-deployment --revision=2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployments &quot;nginx-deployment&quot; revision 2</span><br><span class="line">  Labels:       app=nginx</span><br><span class="line">          pod-template-hash=1159050644</span><br><span class="line">  Annotations:  kubernetes.io/change-cause=kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1 --record=true</span><br><span class="line">  Containers:</span><br><span class="line">   nginx:</span><br><span class="line">    Image:      nginx:1.9.1</span><br><span class="line">    Port:       80/TCP</span><br><span class="line">     QoS Tier:</span><br><span class="line">        cpu:      BestEffort</span><br><span class="line">        memory:   BestEffort</span><br><span class="line">    Environment Variables:      &lt;none&gt;</span><br><span class="line">  No volumes.</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="版本回滾"><a href="#版本回滾" class="headerlink" title="版本回滾"></a>版本回滾</h3><p>照著以下步驟將 Deployment 從目前的版本回滾到之前的版本, 之前的版本為版本2</p>
+<ul>
+<li><p>取消當前版本並回滾到之前版本</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout undo deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>或使用 <code>--to-revision</code> 指定要回滾至的版本</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout undo deployment.v1.apps/nginx-deployment --to-revision=2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+<p>更多關於 rollout 的指令可以參考<a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#rollout" target="_blank" rel="noopener">kubectl rollout</a><br>Deployment 目前已經回滾到之前的穩定版本, 所以你可以看到, Deployment 產生了一個 <code>DeploymentRollback</code> 的事件, 代表回滾到版本 2</p>
+</li>
+</ul>
+</li>
+<li><p>要確定 rollback 有成功並且 Deployment 如預期般的正常運行:</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deployment nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx-deployment   3/3     3            3           30m</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>取得 Deployment 的細節描述</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe deployment nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Name:                   nginx-deployment</span><br><span class="line">Namespace:              default</span><br><span class="line">CreationTimestamp:      Sun, 02 Sep 2018 18:17:55 -0500</span><br><span class="line">Labels:                 app=nginx</span><br><span class="line">Annotations:            deployment.kubernetes.io/revision=4</span><br><span class="line">                        kubernetes.io/change-cause=kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1 --record=true</span><br><span class="line">Selector:               app=nginx</span><br><span class="line">Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable</span><br><span class="line">StrategyType:           RollingUpdate</span><br><span class="line">MinReadySeconds:        0</span><br><span class="line">RollingUpdateStrategy:  25% max unavailable, 25% max surge</span><br><span class="line">Pod Template:</span><br><span class="line">  Labels:  app=nginx</span><br><span class="line">  Containers:</span><br><span class="line">   nginx:</span><br><span class="line">    Image:        nginx:1.9.1</span><br><span class="line">    Port:         80/TCP</span><br><span class="line">    Host Port:    0/TCP</span><br><span class="line">    Environment:  &lt;none&gt;</span><br><span class="line">    Mounts:       &lt;none&gt;</span><br><span class="line">  Volumes:        &lt;none&gt;</span><br><span class="line">Conditions:</span><br><span class="line">  Type           Status  Reason</span><br><span class="line">  ----           ------  ------</span><br><span class="line">  Available      True    MinimumReplicasAvailable</span><br><span class="line">  Progressing    True    NewReplicaSetAvailable</span><br><span class="line">OldReplicaSets:  &lt;none&gt;</span><br><span class="line">NewReplicaSet:   nginx-deployment-c4747d96c (3/3 replicas created)</span><br><span class="line">Events:</span><br><span class="line">  Type    Reason              Age   From                   Message</span><br><span class="line">  ----    ------              ----  ----                   -------</span><br><span class="line">  Normal  ScalingReplicaSet   12m   deployment-controller  Scaled up replica set nginx-deployment-75675f5897 to 3</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled up replica set nginx-deployment-c4747d96c to 1</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled down replica set nginx-deployment-75675f5897 to 2</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled up replica set nginx-deployment-c4747d96c to 2</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled down replica set nginx-deployment-75675f5897 to 1</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled up replica set nginx-deployment-c4747d96c to 3</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled down replica set nginx-deployment-75675f5897 to 0</span><br><span class="line">  Normal  ScalingReplicaSet   11m   deployment-controller  Scaled up replica set nginx-deployment-595696685f to 1</span><br><span class="line">  Normal  DeploymentRollback  15s   deployment-controller  Rolled back deployment &quot;nginx-deployment&quot; to revision 2</span><br><span class="line">  Normal  ScalingReplicaSet   15s   deployment-controller  Scaled down replica set nginx-deployment-595696685f to 0</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
 </ul>
 <p><br><br><br></p>
+<h2 id="擴縮-Deployment"><a href="#擴縮-Deployment" class="headerlink" title="擴縮 Deployment"></a>擴縮 Deployment</h2><p>使用以下指令擴縮 Deployment:</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl scale deployment.v1.apps/nginx-deployment --replicas=10</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment scaled</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>假設 <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/" target="_blank" rel="noopener">水平 Pod 自動擴縮</a> 在你的叢集中是有打開的, 可以設定擴縮你的 Deployment 依據給予的 Pods 最大及最小數量, 以及 CPU 的使用率</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl autoscale deployment.v1.apps/nginx-deployment --min=10 --max=15 --cpu-percent=80</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment scaled</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><p><strong>以下的 Kubernetes CLI 的意思是？</strong></p>
+<ul>
+<li><p><strong>CLI</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl autoscale deployment.v1.apps/nginx-deployment --min=10 --max=15 --cpu-percent=80</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>最少 10 個 pod</li>
+<li>最多 15 個 pod</li>
+<li>當 CPU 使用超過 80% 時, 多開一個 Pod</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Kubernetes 中, 假如我要指定自動擴縮 Deployment 的範圍以及 CPU 使用率, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl autoscale deployment/deploymentName --min=10 --max=15 --cpu-percent=80</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 假如我現在要擴縮指定 Deployment 到 10 個 replica, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl scale deployment/deploymentName --replicas=replicasNumber</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如果我要放棄目前的版本回滾到一個指定的版本, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout undo deployment/deploymentName --to-revision=revisionName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如果我要放棄目前的版本回滾到前一個版本, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout undo deployment/deploymentName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如果我要檢視指定 revision 的細節資訊, 我可以怎麼做？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout <span class="hljs-built_in">history</span> deployment/deploymentName --revision=revisionName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 有哪三種方法可以指定 <code>CHANGE-CAUSE</code> message?</strong></p>
+<ul>
+<li>藉由 <code>kubectl annotate</code> 指令</li>
+<li>變更資源時, 加入 <code>--record</code> flag</li>
+<li>手動變更</li>
+</ul>
+</li>
+</ul>
+<ul>
 <li><strong>Kubernetes 中, 當我回滾到之前的版本, 會否對 replica 的期望數量有影響？</strong><br>不會, rolling back 只會影響到 <code>spec.template</code> 中的內容</li>
 </ul>
 <ul>
