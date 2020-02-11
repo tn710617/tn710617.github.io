@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-10T13:39:51.512Z">
+<meta property="og:updated_time" content="2020-02-11T13:54:01.658Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-10T13:39:51.512Z">
+<meta property="og:updated_time" content="2020-02-11T13:54:01.658Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -187,10 +187,20 @@
                     <a class="navbar-item" href="#擴縮-Deployment">5&nbsp;&nbsp;<b>擴縮 Deployment</b></a>
                     
                     
+                    
+                    <a class="navbar-item" href="#比例擴縮">5.1&nbsp;&nbsp;比例擴縮</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">6&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#暫停以及恢復一個-Deployment">6&nbsp;&nbsp;<b>暫停以及恢復一個 Deployment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">7&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -252,7 +262,7 @@
         <span class="column is-narrow">
             
             
-            33 分钟 讀完 (大概 4921 字)
+            37 分钟 讀完 (大概 5605 字)
         </span>
         
     </div>
@@ -587,8 +597,80 @@
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment scaled</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p><br><br><br></p>
+<h3 id="比例擴縮"><a href="#比例擴縮" class="headerlink" title="比例擴縮"></a>比例擴縮</h3><p>滾動升級 Deployment 支援同時運行不同版本的應用。 當一個 Deployment 正處於 rollout 狀態 (在途中或暫停狀態), 此時你或者是自動調節器又發出一個擴縮請求, Deployment controller 會將額外增加的 replicas 成比例的分配到目前運作中的 ReplicaSets (有啟動 Pods 的 ReplicaSets) 以降低風險。 這樣的行為稱為比例擴縮 (proportional scaling), 例如說, 你正運行著有 10 個 replicas 的 Deployment, maxSurge=3, maxUnavailable=2</p>
+<ul>
+<li><p>確保 Deployment 下的 10 個 replicas 都有在運行</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                 DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx-deployment     10        10        10           10          50s</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>將鏡像版本更新成無法被解析的版本</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> image deployment.v1.apps/nginx-deployment nginx=nginx:sometag</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment image updated</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>這個鏡像的更新會啟動一個新的 rollout 以及 ReplicaSet nginx-deployment-1989198191, 但它會因為上面提到的 <code>maxUnavailable</code> 而被阻塞住</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                          DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-deployment-1989198191   5         5         0         9s</span><br><span class="line">nginx-deployment-618515232    8         8         8         1m</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>這時再將數量提升到 15 個</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl scale deployment nginx-deployment --replicas=15</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>此時, Deployment controller 需要決定要把這新的 5 個 replicas 使用哪一個 replicaSet 來啟動。 如果你沒有使用比例擴縮的話, 所有 5 個都會使用新的 ReplicaSet。 使用比例擴縮, 你將額外的 replicas 散佈到所有的 ReplicaSets, 比較多的 replicas 會被分配給擁有比較多 replica 的 replicaSet, 而比較少的 replicas 會被分配給擁有比較少 replica 的 replicaSet, 而擁有 0 個 replica 的 replicaSet 將不會被分配任何 replica</p>
+</li>
+<li><p>執行以下指令確認目前狀態</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                 DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx-deployment     15        18        7            8           7m</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>執行指令確認 rs 狀態</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                          DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-deployment-1989198191   7         7         0         7m</span><br><span class="line">nginx-deployment-618515232    11        11        11        7m</span><br></pre></td></tr></table></figure>
+<p>如果最後 rollout 恢復正常, replica 恢復健康的話, 所有的 replica 都會被移動到新的 ReplicaSet</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="暫停以及恢復一個-Deployment"><a href="#暫停以及恢復一個-Deployment" class="headerlink" title="暫停以及恢復一個 Deployment"></a>暫停以及恢復一個 Deployment</h2><p>你可以在觸發一個或多個更新之前先暫停 Deployment, 然後再恢復。 這讓你可以進行多個更新, 並避免掉不必要的 rollout</p>
+<ul>
+<li><p><br><br><br></p>
+</li>
+</ul>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, pause 跟 resume 可以帶來什麼好處？</strong><br>有時要進行多個修正時, 可以避免不必要的 rollout</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 當中, 假如現在正 rollout 到一半, 這時有新的擴容需求被呼叫, 那如果我有使用 proportional scaling 的話, 新的 replica 會被加到新的 replicaSet 還是舊的 replicaSet?</strong><br>會照比例分配, 擁有多個 replica 的 replicaSet 會被分配多組, 反之亦然</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 當中, 假如現在正 rollout 到一半, 這時有新的擴容需求被呼叫, 那如果我沒有使用 proportional scaling 的話, 新的 replica 會被加到新的 replicaSet 還是舊的 replicaSet?</strong><br>新的</li>
+</ul>
+<ul>
 <li><p><strong>以下的 Kubernetes CLI 的意思是？</strong></p>
 <ul>
 <li><p><strong>CLI</strong></p>
