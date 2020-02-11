@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-11T13:54:01.658Z">
+<meta property="og:updated_time" content="2020-02-11T14:16:13.365Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-11T13:54:01.658Z">
+<meta property="og:updated_time" content="2020-02-11T14:16:13.365Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -262,7 +262,7 @@
         <span class="column is-narrow">
             
             
-            37 分钟 讀完 (大概 5605 字)
+            41 分钟 讀完 (大概 6082 字)
         </span>
         
     </div>
@@ -658,10 +658,132 @@
 </ul>
 <h2 id="暫停以及恢復一個-Deployment"><a href="#暫停以及恢復一個-Deployment" class="headerlink" title="暫停以及恢復一個 Deployment"></a>暫停以及恢復一個 Deployment</h2><p>你可以在觸發一個或多個更新之前先暫停 Deployment, 然後再恢復。 這讓你可以進行多個更新, 並避免掉不必要的 rollout</p>
 <ul>
-<li><p><br><br><br></p>
+<li><p>比如說, 取得剛建立的 Deployment 資訊：</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get deploly</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx     3         3         3            3           1m</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取得 rollout 狀態</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-2142116321   3         3         3         1m</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+</li>
+<li><p>使用以下指令停止</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout pause deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment paused</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>更新鏡像</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> image deployment.v1.apps/nginx-deployment nginx=nginx:1.9.1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment image updated</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>可以看到 rollout 完全沒有開始</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout <span class="hljs-built_in">history</span> deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployments &quot;nginx&quot;</span><br><span class="line">REVISION  CHANGE-CAUSE</span><br><span class="line">1   &lt;none&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>取得 rollout status 確保 Deployment 已經有成功更新</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-2142116321   3         3         3         2m</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>你可以盡可能地建立你需要的更新, 例如說, 更新資源:</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> resources deployment.v1.apps/nginx-deployment -c=nginx --limits=cpu=200m,memory=512Mi</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment resource requirements updated</span><br></pre></td></tr></table></figure>
+<p>在暫停前的 Deployment 狀態將會保持運作, 只要 Deployment 是處於暫停的狀態, 那你所建立的更新都不會對目前狀態有任何影響。</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>最後, 恢復 Deployment 並且觀察新的 ReplicaSet 進行所有新的更新</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout resume deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps/nginx-deployment resumed</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>觀察 rollout 的狀態直到結束</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs -w</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-2142116321   2         2         2         2m</span><br><span class="line">nginx-3926361531   2         2         0         6s</span><br><span class="line">nginx-3926361531   2         2         1         18s</span><br><span class="line">nginx-2142116321   1         2         2         2m</span><br><span class="line">nginx-2142116321   1         2         2         2m</span><br><span class="line">nginx-3926361531   3         2         1         18s</span><br><span class="line">nginx-3926361531   3         2         1         18s</span><br><span class="line">nginx-2142116321   1         1         1         2m</span><br><span class="line">nginx-3926361531   3         3         1         18s</span><br><span class="line">nginx-3926361531   3         3         2         19s</span><br><span class="line">nginx-2142116321   0         1         1         2m</span><br><span class="line">nginx-2142116321   0         1         1         2m</span><br><span class="line">nginx-2142116321   0         0         0         2m</span><br><span class="line">nginx-3926361531   3         3         3         20s</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>取得最新 rollout 狀態</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get rs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME               DESIRED   CURRENT   READY     AGE</span><br><span class="line">nginx-2142116321   0         0         0         2m</span><br><span class="line">nginx-3926361531   3         3         3         28s</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br><br><br></p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><p><strong>Kubernetes 中, 如何使用 CLI 來設定資源限制</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">set</span> resources deployment/deploymentName -c=nginx --limits=cpu=200m,memory=512Mi</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如何 resume 一個 deployment?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout resume deployment/deploymentName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如何 pause 一個 deployment?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout pause deployment/deploymentName</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Kubernetes 中, 如果我 pause 一個 Deployment, 那它還會保持運作嗎？</strong><br>會哦, 只是會鎖住目前的版本而已</p>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當我暫停一個 Deployment 時, 我可以回滾它嗎？</strong><br>不行哦</li>
+</ul>
+<ul>
 <li><strong>Kubernetes 中, pause 跟 resume 可以帶來什麼好處？</strong><br>有時要進行多個修正時, 可以避免不必要的 rollout</li>
 </ul>
 <ul>
