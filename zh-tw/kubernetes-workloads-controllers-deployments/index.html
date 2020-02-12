@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-11T14:16:13.365Z">
+<meta property="og:updated_time" content="2020-02-12T08:38:13.318Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-11T14:16:13.365Z">
+<meta property="og:updated_time" content="2020-02-12T08:38:13.318Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -200,7 +200,25 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">7&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#Deployment-狀態">7&nbsp;&nbsp;<b>Deployment 狀態</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#進行中的-Deployment">7.1&nbsp;&nbsp;進行中的 Deployment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#完成-Deployment">7.2&nbsp;&nbsp;完成 Deployment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#失敗的-Deployment">7.3&nbsp;&nbsp;失敗的 Deployment</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">8&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -262,7 +280,7 @@
         <span class="column is-narrow">
             
             
-            41 分钟 讀完 (大概 6082 字)
+            43 分钟 讀完 (大概 6424 字)
         </span>
         
     </div>
@@ -765,6 +783,36 @@
 </li>
 </ul>
 </li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Deployment-狀態"><a href="#Deployment-狀態" class="headerlink" title="Deployment 狀態"></a>Deployment 狀態</h2><p>Deployment 的生命週期中有很多種狀態, <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#progressing-deployment" target="_blank" rel="noopener">progressing</a> 當建立一個新的 ReplicaSet, 又或者是 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#complete-deployment" target="_blank" rel="noopener">complete</a> 或 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#failed-deployment" target="_blank" rel="noopener">fail to progress</a></p>
+<p><br></p>
+<h3 id="進行中的-Deployment"><a href="#進行中的-Deployment" class="headerlink" title="進行中的 Deployment"></a>進行中的 Deployment</h3><p>當以下任務在進行中時, Kubernetes 會將 Deployment 標註為 <em>progressing</em></p>
+<ul>
+<li>當 Deployment 建立新的 ReplicaSet</li>
+<li>當 Deployment 正在擴容 ReplicaSet</li>
+<li>當 Deployment 正在縮減 ReplicaSet</li>
+<li>有新的 Pod 可用, 至少 (就緒時間打 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#min-ready-seconds" target="_blank" rel="noopener">MinReadySeconds</a> 定義)</li>
+</ul>
+<p>你可以使用 <code>kubectl rollout status</code> 來監控 Deployment 狀態</p>
+<p><br></p>
+<h3 id="完成-Deployment"><a href="#完成-Deployment" class="headerlink" title="完成 Deployment"></a>完成 Deployment</h3><p>有以下特點時, Kubernetes 會將 Deployment 標註為 complete</p>
+<ul>
+<li>所有此 Deployment 的 replicas 都已更新到指定的最新版本, 代表說任何要求的更新都已經完成。</li>
+<li>所有與此 Deployment 相關的 replicas 都可用</li>
+<li>此 Deployment 下沒有舊的 replicas 在運行中</li>
+</ul>
+<p>若要確認 Deployment 狀態是否為 completed, 可使用 <code>kubectl rollout status</code>。 如果 rollout 成功完成, <code>kubectl rollout status</code> 回應一個值為 0 的 exit code<br>執行<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl rollout status deployment.v1.apps/nginx-deployment</span><br></pre></td></tr></table></figure></p>
+<p>輸出<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Waiting for rollout to finish: 2 of 3 updated replicas are available...</span><br><span class="line">deployment.apps/nginx-deployment successfully rolled out</span><br><span class="line">$ echo $?</span><br><span class="line">0</span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="失敗的-Deployment"><a href="#失敗的-Deployment" class="headerlink" title="失敗的 Deployment"></a>失敗的 Deployment</h3><p>以下原因可能造成 rollout 卡住：</p>
+<ul>
+<li>資源配額不足</li>
+<li>Readiness 探測結果失敗</li>
+<li>拉取鏡像錯誤</li>
+<li>權限不足</li>
+<li>資源限制</li>
+<li>應用 runtime 配置錯誤</li>
 </ul>
 <p><br><br><br></p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
