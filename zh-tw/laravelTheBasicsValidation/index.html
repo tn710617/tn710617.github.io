@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-12T07:03:58.904Z">
+<meta property="og:updated_time" content="2020-02-13T02:50:35.854Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - The Basics - Validation">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-12T07:03:58.904Z">
+<meta property="og:updated_time" content="2020-02-13T02:50:35.854Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Laravel - The Basics - Validation">
 <meta name="twitter:description" content="Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -560,6 +560,10 @@
                     
                     
                     
+                    <a class="navbar-item" href="#Defining-The-Error-Message">9.3.1&nbsp;&nbsp;Defining The Error Message</a>
+                    
+                    
+                    
                     <a class="navbar-item" href="#Implicit-Extensions">9.4&nbsp;&nbsp;Implicit Extensions</a>
                     
                 </div>
@@ -622,7 +626,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 9193 字)
+            1 小时 讀完 (大概 9848 字)
         </span>
         
     </div>
@@ -1698,8 +1702,97 @@
 <ul>
 <li><strong>Laravel validation 中, 如果我要使用 closure 自定義一個 rule, 第幾個 closure 的 argument 代表 error message?</strong><br>第三個, $fail</li>
 </ul>
+<ul>
+<li><strong>請根據以下的 Laravel 使用情境, 使用 closure 來自訂一個 rule</strong><ul>
+<li><strong>Requirement</strong>:<ul>
+<li>input 名稱為 ‘title’</li>
+<li>如果 input 的 value 必須等於 ‘foo’</li>
+<li>如果不等於, 返回錯誤訊息 ‘title is invalid’</li>
+</ul>
+</li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$validator = Validator::make($request-&gt;all(), [</span><br><span class="line">    <span class="hljs-string">'title'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'required'</span>,</span><br><span class="line">        <span class="hljs-string">'max:255'</span>,</span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($attribute, $value, $fail)</span> </span>&#123;</span><br><span class="line">            <span class="hljs-keyword">if</span> ($value === <span class="hljs-string">'foo'</span>) &#123;</span><br><span class="line">                $fail($attribute.<span class="hljs-string">' is invalid.'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">    ],</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
 <p><br></p>
-<h3 id="Using-Extensions"><a href="#Using-Extensions" class="headerlink" title="Using Extensions"></a>Using Extensions</h3><p><br></p>
+<h3 id="Using-Extensions"><a href="#Using-Extensions" class="headerlink" title="Using Extensions"></a>Using Extensions</h3><ul>
+<li><p><strong>Laravel 中, 請解釋以下的 extension example</strong></p>
+<ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Validator</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Register any application services.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">     * Bootstrap any application services.</span></span><br><span class="line"><span class="hljs-comment">     *</span></span><br><span class="line"><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment">     */</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Validator::extend(<span class="hljs-string">'foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($attribute, $value, $parameters, $validator)</span> </span>&#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> $value == <span class="hljs-string">'foo'</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<ul>
+<li>在 AppServiceProvider 的 boot method 定義</li>
+<li>closure 的參數<ul>
+<li>$attribute 為 input 名稱</li>
+<li>$value 為 input value</li>
+<li>$parameters 為一個 array, 要帶入 rule 的參數</li>
+<li>$validator 為 Validator instance</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 是在哪一個檔案裡定義？</strong><br>AppServiceProvider</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 是在哪一個 AppServiceProvider 中的哪一個 method 裡定義？</strong><br>boot</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 是使用哪一個 class 的哪一個 method?</strong><ul>
+<li>validator</li>
+<li>extend</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, validator::extend() 的 extend method 有兩個重要 argument 依序分別是？</strong><ul>
+<li>ruleName</li>
+<li>closure</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, validator::extend() 中, 除了帶入 closure 外, 還可以帶入什麼？</strong><br>一個 class 的 method, 像是<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Validator::extend(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'FooValidator@validate'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="Defining-The-Error-Message"><a href="#Defining-The-Error-Message" class="headerlink" title="Defining The Error Message"></a>Defining The Error Message</h4><ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, Error Message 可以定義在哪？</strong><br>extend method 的第三個 argument 或 language validation file 中</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 我可以經 Error Message 定義在 language validation file 的哪一層中？</strong><br>第一層</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 我可以經 Error Message 定義在 language validation file 的第一層, 為什麼不是定義在 custom 層下？</strong><br>因為這是一個新的 rule 的 message, 不是 attribute-specific message</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 我們可能會需要設定一些佔位符, 例如 <em>:attribute</em>, <em>:value</em>, <em>:other</em> 這些, 那我可以使用哪一個 class 的哪一個 method 來定義這些佔位符呢？</strong><ul>
+<li>Validator</li>
+<li>replacer</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Laravel 中, 當我使用 extension 來自定義 validation rule 時, 我可以在哪個地方使用 Validator::replacer 來自定義佔位符？</strong><br>AppServiceProvider 的 boot method</li>
+</ul>
+<ul>
+<li><p><strong>在以下的 Validator::replacer 自定義佔位符範例中, 如果說我要使用 $parameters 來取代 <em>:value</em> 跟 <em>:other</em>, 那我可以怎麼修改？</strong></p>
+<ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Bootstrap any application services.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Validator::extend(...);</span><br><span class="line"></span><br><span class="line">    Validator::replacer(<span class="hljs-string">'foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($message, $attribute, $rule, $parameters)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> str_replace(...);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Bootstrap any application services.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> void</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Validator::extend(...);</span><br><span class="line"></span><br><span class="line">    Validator::replacer(<span class="hljs-string">'foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($message, $attribute, $rule, $parameters)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> str_replace(<span class="hljs-keyword">array</span>(<span class="hljs-string">':value'</span>, <span class="hljs-string">':other'</span>), $parameters, $message);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
 <h3 id="Implicit-Extensions"><a href="#Implicit-Extensions" class="headerlink" title="Implicit Extensions"></a>Implicit Extensions</h3>
     
     </div>
