@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-14T14:58:56.437Z">
+<meta property="og:updated_time" content="2020-02-16T09:12:28.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-14T14:58:56.437Z">
+<meta property="og:updated_time" content="2020-02-16T09:12:28.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -253,6 +253,18 @@
                     <a class="navbar-item" href="#Strategy">10.4&nbsp;&nbsp;Strategy</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Recreate-Deployment">10.4.1&nbsp;&nbsp;Recreate Deployment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Rolling-Update-Deployment">10.4.2&nbsp;&nbsp;Rolling Update Deployment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Progress-Deadline-Seconds">10.5&nbsp;&nbsp;Progress Deadline Seconds</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -318,7 +330,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8219 字)
+            1 小时 讀完 (大概 8977 字)
         </span>
         
     </div>
@@ -911,11 +923,41 @@
 <p><code>.spec.selector</code> 必須符合 <code>.spec.template.metadata.labels</code>, 否則將被 API 拒絕。</p>
 <p>在 API 版本 <code>apps/v1</code>, <code>.spec.selector</code> 以及 <code>.metadata.labels</code> 預設並非 <code>.spec.template.metadata.labels</code>, 所以他們必須被明確的設定。 再者, <code>.spec.selector</code> 在 <code>app/v1</code> 中, 建立後就不可再更改</p>
 <p>如果 Pods 的 template 跟 Deployment 的 <code>.spec.template</code> 不同, 又或者 Pods 的總數量超過了 <code>.spec.replicas</code> 定義的數量, Deployment 可能會將 label 符合該 Deployment selector 的 Pods 結束掉。 如果 Pods 的數量小於 Deployment 定義期望的數量, Deployment controller 會依照 <code>.spec.template</code> 開啟新的 Pods</p>
-<p><strong>注意</strong>: 不可直接建立 label 符合這個 selector 的 Pod, 或透過 Deployment 建立, 又或者透過其他的 controller, 像是 ReplicaSet 或 ReplicationController。 如果你這麼做了, 第一個 Deployment 依然會認為是她建立了這些其他的 Pods, 且 Kubernetes 也不會阻止你這麼做。</p>
+<p><strong>注意</strong>: 不可重複建立 label 符合這個 selector 的 Pod, 或透過 Deployment 建立, 又或者透過其他的 controller, 像是 ReplicaSet 或 ReplicationController。 如果你這麼做了, 第一個 Deployment 依然會認為是她建立了這些其他的 Pods, 且 Kubernetes 也不會阻止你這麼做。</p>
 <p>如果你有多個 controller, 彼此的 selector 都有重疊, 那這些 controller 將會互相打架而無法正確運作。</p>
 <p><br></p>
-<h3 id="Strategy"><a href="#Strategy" class="headerlink" title="Strategy"></a>Strategy</h3><p><br><br><br></p>
+<h3 id="Strategy"><a href="#Strategy" class="headerlink" title="Strategy"></a>Strategy</h3><p><code>.spec.strategy</code> 指定了更新 Pod 時採用的策略<br><code>.spec.strategy.type</code> 可以是 “Recreate” 或 “RollingUpdate”, 預設為 “RollingUpdate”</p>
+<p><br><br><br></p>
+<h4 id="Recreate-Deployment"><a href="#Recreate-Deployment" class="headerlink" title="Recreate Deployment"></a>Recreate Deployment</h4><p>當使用 <code>.spec.strategy.type==Recreate</code> 時, Kubernetes 會先將所有的 Pod 都殺掉, 在建立新的</p>
+<p><br></p>
+<h4 id="Rolling-Update-Deployment"><a href="#Rolling-Update-Deployment" class="headerlink" title="Rolling Update Deployment"></a>Rolling Update Deployment</h4><p>上面有介紹過 RollingUpdate 的方式, 可參考 <a href="https://kubernetes.io/docs/tasks/run-application/rolling-update-replication-controller/" target="_blank" rel="noopener">Rolling Date</a>。 當 <code>.spec.strategy.type==RollingUpdate</code> 時, 你可以指定 <code>maxUnavailable</code> 以及 <code>maxSurge</code> 來控制滾動升級的步驟</p>
+<h5 id="Max-Unavailable"><a href="#Max-Unavailable" class="headerlink" title="Max Unavailable"></a>Max Unavailable</h5><p><code>.spec.strategy.rollingUpdate.maxUnavailable</code> 是一個選擇性的選項, 它指定了在更新的過程中, Pod 不可用的容許最大數量。 值可以是確切的數字 (像是 5), 或是比例 (像是 10%)。  如果使用比例的話, 會計算出絕對數字, 然後無條件去位。 <code>spec.strategy.rollingUpdate.maxSurge</code> 以及 <code>.spec.strategy.rollingUpdate.maxUnavailable</code> 不可同時設為 0, 後者預設為 25%<br>比如說, 當我把值設為 30%, 那在滾動升級過程中舊的 ReplicaSet 最多可以縮容到期望可用 Pod 數量的 70%。 一旦新的 Pod 擴容了並且可用了, 舊的 ReplicaSet 才可以進一度的縮容, 確保在更新的過程中, Pods 的可用數量保持在 70% 的期望數量以上</p>
+<h5 id="Max-Surge"><a href="#Max-Surge" class="headerlink" title="Max Surge"></a>Max Surge</h5><p><code>.spec.strategy.rollingUpdate.maxSurge</code> 是一個選擇性的選項, 它指定了在更新的過程中, 可用 Pods 的容許最大數量。 值可以是確切的數字 (像是 5), 或是比例 (像是 10%)。  如果使用比例的話, 會計算出絕對數字, 然後在無條件進位。 <code>spec.strategy.rollingUpdate.maxSurge</code> 以及 <code>.spec.strategy.rollingUpdate.maxUnavailable</code> 不可同時設為 0, 後者預設為 25%<br>比如說, 當我把值設為 30%, 那在滾動升級過程中舊的 ReplicaSet 最多可以擴容到期望可用 Pod 數量的 130%。 一旦舊的 Pod 被殺掉了, 新的 ReplicaSet 才可以進一度的擴容, 確保在更新的過程中, Pods 的可用數量保持在最多 130% 的期望數量</p>
+<p><br></p>
+<h3 id="Progress-Deadline-Seconds"><a href="#Progress-Deadline-Seconds" class="headerlink" title="Progress Deadline Seconds"></a>Progress Deadline Seconds</h3><p><code>.spec.progressDeadlineSeconds</code> 是一個選擇性的欄位, 它指定了當 process 卡住的時候, Kubernetes 需要等待多久時間才回報<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#failed-deployment" target="_blank" rel="noopener">failed progressing</a>, 回報 <code>Type=Progressing</code>, <code>Status=False</code>, 以及 <code>Reason=ProgressDeadlineExceeded</code> 到 資源的 status.condition 中。 Deployment controller 會持續嘗試這個 Deployment。 在未來, 如果有實施自動回滾機制的話, Deployment controller 會自動地回滾 Deployment 當偵測到這樣的情況。<br>如果有指定的話, 那這個欄位必須要大於 <code>.spec.minReadySeconds</code> 欄位</p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, <code>spec.progressDeadlineSeconds</code> 務必要大於哪一個欄位？</strong><br><code>.spec.minReadySeconds</code></li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當 <code>spec.strategy.rollingUpdate.maxUnavailable</code> 的值為 70% 時, 假如算出來的數字非整數, Kubernetes 會怎麼做？</strong><br>無條件去掉小數點成整數</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>spec.strategy.rollingUpdate.maxUnavailable</code> 與 <code>spec.strategy.rollingUpdate.maxSurge</code> 的值可以同時設為 0 嗎？</strong><br>不可</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>spec.strategy.rollingUpdate.maxUnavailable</code> 的值可以是哪兩種方式？</strong><ul>
+<li>絕對數字</li>
+<li>比例</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes, 當我使用 <code>.spec.strategy.type==Recreate</code> 時, 會怎樣的更新 Pod?</strong><br>先把舊的全都殺掉, 再建立新的</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 時, 更新 Pod 預設的 strategy 是？</strong><br>RollingUpdate</li>
+</ul>
+<ul>
 <li><strong>Kubernetes Deployment 中, <code>.spec.replicas</code> 預設值為多少?</strong><br>1</li>
 </ul>
 <ul>
