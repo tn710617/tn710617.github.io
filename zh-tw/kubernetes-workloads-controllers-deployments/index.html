@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-16T09:12:28.595Z">
+<meta property="og:updated_time" content="2020-02-17T13:53:09.093Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-16T09:12:28.595Z">
+<meta property="og:updated_time" content="2020-02-17T13:53:09.093Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -265,6 +265,18 @@
                     <a class="navbar-item" href="#Progress-Deadline-Seconds">10.5&nbsp;&nbsp;Progress Deadline Seconds</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Min-Ready-Seconds">10.6&nbsp;&nbsp;Min Ready Seconds</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Rollback-To">10.7&nbsp;&nbsp;Rollback To</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Revision-History-Limit">10.8&nbsp;&nbsp;Revision History Limit</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -330,7 +342,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8977 字)
+            1 小时 讀完 (大概 9374 字)
         </span>
         
     </div>
@@ -935,7 +947,20 @@
 <h5 id="Max-Surge"><a href="#Max-Surge" class="headerlink" title="Max Surge"></a>Max Surge</h5><p><code>.spec.strategy.rollingUpdate.maxSurge</code> 是一個選擇性的選項, 它指定了在更新的過程中, 可用 Pods 的容許最大數量。 值可以是確切的數字 (像是 5), 或是比例 (像是 10%)。  如果使用比例的話, 會計算出絕對數字, 然後在無條件進位。 <code>spec.strategy.rollingUpdate.maxSurge</code> 以及 <code>.spec.strategy.rollingUpdate.maxUnavailable</code> 不可同時設為 0, 後者預設為 25%<br>比如說, 當我把值設為 30%, 那在滾動升級過程中舊的 ReplicaSet 最多可以擴容到期望可用 Pod 數量的 130%。 一旦舊的 Pod 被殺掉了, 新的 ReplicaSet 才可以進一度的擴容, 確保在更新的過程中, Pods 的可用數量保持在最多 130% 的期望數量</p>
 <p><br></p>
 <h3 id="Progress-Deadline-Seconds"><a href="#Progress-Deadline-Seconds" class="headerlink" title="Progress Deadline Seconds"></a>Progress Deadline Seconds</h3><p><code>.spec.progressDeadlineSeconds</code> 是一個選擇性的欄位, 它指定了當 process 卡住的時候, Kubernetes 需要等待多久時間才回報<a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#failed-deployment" target="_blank" rel="noopener">failed progressing</a>, 回報 <code>Type=Progressing</code>, <code>Status=False</code>, 以及 <code>Reason=ProgressDeadlineExceeded</code> 到 資源的 status.condition 中。 Deployment controller 會持續嘗試這個 Deployment。 在未來, 如果有實施自動回滾機制的話, Deployment controller 會自動地回滾 Deployment 當偵測到這樣的情況。<br>如果有指定的話, 那這個欄位必須要大於 <code>.spec.minReadySeconds</code> 欄位</p>
+<p><br></p>
+<h3 id="Min-Ready-Seconds"><a href="#Min-Ready-Seconds" class="headerlink" title="Min Ready Seconds"></a>Min Ready Seconds</h3><p><code>.spec.minReadySeconds</code> 是一個選擇性的配置欄位, 它指定了一個秒數, 一個新建立的 Pod, 被認定為可用, 並且沒有任何容器 crashing 的最低秒數。 默認為 0 (Pod 被建立就被認定是可用的), 更多關於 <em>Pod 何時會被認為是 ready</em> 的資訊, 可參考 <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes" target="_blank" rel="noopener">Container Probes</a></p>
+<p><br></p>
+<h3 id="Rollback-To"><a href="#Rollback-To" class="headerlink" title="Rollback To"></a>Rollback To</h3><p><code>.spec.rollbackTo</code> 這個欄位已經在 API 版本 <code>extensions/v1beta1</code> 以及 <code>apps/v1beta1</code> 就被廢棄了, 並且在 <code>apps/v1beta2</code> 已經不再被支援。 取而代之的, <code>kubectl rollout undo</code>, 可參考 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-to-a-previous-revision" target="_blank" rel="noopener">Rolling Back to a Previous Revision</a>, 將被使用。</p>
+<p><br></p>
+<h3 id="Revision-History-Limit"><a href="#Revision-History-Limit" class="headerlink" title="Revision History Limit"></a>Revision History Limit</h3><p>Deployment 的 revision history 被儲存在它所控制的 ReplicaSet 中。<br><code>.spec.revisionHistoryLimit</code> 是一個可選配置項, 它指定了舊的 ReplicaSets 的保留數量, 所以之後可以回滾。 這些舊的 ReplicaSets 會消耗 <code>etcd</code> 中的資源, 以及會塞滿 <code>kubectl get rs</code> 的輸出。 Deployment 的不同版本的配置都被儲存在 ReplicaSets, 因此, 一旦舊的 ReplicaSet 被刪除了, 你將無法再回滾到該版本的 Deployment。 預設會保留 10 個舊的 ReplicaSet, 然而最佳的數量取決於新版 Deployment 的頻率以及穩定性<br>更準確的說, 若將這個欄位設為 0, 代表所有舊的 ReplicaSets 都會被清理掉, 所以新版的 Deployment 將無法回退。</p>
+<p><br><br><br></p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, Old replicaSets 的數量會消耗哪個元件的資源？</strong><br>etcd</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 不同版本的 Deployment 實際上都儲存在哪裡？</strong><br>ReplicaSets</li>
+</ul>
+<ul>
 <li><strong>Kubernetes 中, <code>spec.progressDeadlineSeconds</code> 務必要大於哪一個欄位？</strong><br><code>.spec.minReadySeconds</code></li>
 </ul>
 <ul>
