@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-17T13:53:09.093Z">
+<meta property="og:updated_time" content="2020-02-18T04:27:23.508Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-17T13:53:09.093Z">
+<meta property="og:updated_time" content="2020-02-18T04:27:23.508Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Deployments">
 <meta name="twitter:description" content="概述Deployment 提供宣告式的方法來更新 Pods 以及 ReplicaSets透過 Deployment 描述希望的狀態, 然後 Deployment Controller 會將目前的狀態改變成希望的狀態, 你可以定義 Deployments 來建立一個新的 ReplicaSets, 或是移除已存在的 Deployments, 然後重新建一個。">
@@ -277,10 +277,24 @@
                     <a class="navbar-item" href="#Revision-History-Limit">10.8&nbsp;&nbsp;Revision History Limit</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Paused">10.9&nbsp;&nbsp;Paused</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">11&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#Alternative-to-Deployments">11&nbsp;&nbsp;<b>Alternative to Deployments</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#kubectl-rolling-update">11.1&nbsp;&nbsp;kubectl rolling-update</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">12&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
                     
                 </div>
             </div>
@@ -342,7 +356,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 9374 字)
+            1 小时 讀完 (大概 9593 字)
         </span>
         
     </div>
@@ -953,8 +967,22 @@
 <h3 id="Rollback-To"><a href="#Rollback-To" class="headerlink" title="Rollback To"></a>Rollback To</h3><p><code>.spec.rollbackTo</code> 這個欄位已經在 API 版本 <code>extensions/v1beta1</code> 以及 <code>apps/v1beta1</code> 就被廢棄了, 並且在 <code>apps/v1beta2</code> 已經不再被支援。 取而代之的, <code>kubectl rollout undo</code>, 可參考 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-to-a-previous-revision" target="_blank" rel="noopener">Rolling Back to a Previous Revision</a>, 將被使用。</p>
 <p><br></p>
 <h3 id="Revision-History-Limit"><a href="#Revision-History-Limit" class="headerlink" title="Revision History Limit"></a>Revision History Limit</h3><p>Deployment 的 revision history 被儲存在它所控制的 ReplicaSet 中。<br><code>.spec.revisionHistoryLimit</code> 是一個可選配置項, 它指定了舊的 ReplicaSets 的保留數量, 所以之後可以回滾。 這些舊的 ReplicaSets 會消耗 <code>etcd</code> 中的資源, 以及會塞滿 <code>kubectl get rs</code> 的輸出。 Deployment 的不同版本的配置都被儲存在 ReplicaSets, 因此, 一旦舊的 ReplicaSet 被刪除了, 你將無法再回滾到該版本的 Deployment。 預設會保留 10 個舊的 ReplicaSet, 然而最佳的數量取決於新版 Deployment 的頻率以及穩定性<br>更準確的說, 若將這個欄位設為 0, 代表所有舊的 ReplicaSets 都會被清理掉, 所以新版的 Deployment 將無法回退。</p>
+<p><br></p>
+<h3 id="Paused"><a href="#Paused" class="headerlink" title="Paused"></a>Paused</h3><p><code>.spec.paused</code> 是一個可選配置選項, 其值為 boolean, 它表示了該 Deployment 是否是 paused 的狀態。 狀態是否為 paused 的唯一不同之處在於, 如果我對 PodTemplateSpec 的內容作修改, 那當狀態是 paused 時, 將不會觸發新的 rollout。 Deployment 預設狀態是 not paused</p>
+<p><br><br><br></p>
+<h2 id="Alternative-to-Deployments"><a href="#Alternative-to-Deployments" class="headerlink" title="Alternative to Deployments"></a>Alternative to Deployments</h2><h3 id="kubectl-rolling-update"><a href="#kubectl-rolling-update" class="headerlink" title="kubectl rolling-update"></a>kubectl rolling-update</h3><p><a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#rolling-update" target="_blank" rel="noopener"><code>kubectl rolling-update</code></a> 可以使用類似的模式更新 Pods 以及 ReplicationControllers, 但還是建議使用 Deployment 的方式, 因為 Deployment 是宣告式的, 並且是 server side 的, 以及有額外的功能, 例如可以回滾到之前的版本。</p>
 <p><br><br><br></p>
 <h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, <code>kubectl rolling-update</code> 與 <code>Deployment</code> 的方式, 在官方文件中比較推薦使用哪一種？</strong><br>Deployment</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, <code>.spec.paused</code> true 或 false 的唯一不同之處在於？</strong><ul>
+<li>paused 時, 不會觸發 rollout</li>
+<li>not paused 時, 會觸發 rollout</li>
+</ul>
+</li>
+</ul>
+<ul>
 <li><strong>Kubernetes 中, Old replicaSets 的數量會消耗哪個元件的資源？</strong><br>etcd</li>
 </ul>
 <ul>
