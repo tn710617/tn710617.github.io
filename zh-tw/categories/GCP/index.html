@@ -169,6 +169,124 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh-tw/using-kubernetes-engine-to-deploy-apps-with-regional-persistent-disks/" itemprop="url">&lt;未完成&gt; 使用地區性的永久磁碟部署 Apps 到 Kubernetes Engine</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-02-24T04:02:56.000Z" itemprop="datePublished">2月 24 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            13 分钟 讀完 (大概 1973 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本章節中, 我們將學習如何藉由使用 regional persistent disks (地區性永久磁碟) 在 Kubernetes Engine 部署 WordPress, 配置一個高可用的應用。 Regional persistent disks 提供的兩個 zones 之間的同步, 這確保了你的應用可以正常運行, 就算其中一個區域發生了故障或停電事故。 使用 regional persistent disks 來部署 Kubernetes Engine 叢集將會讓你的應用更穩定, 安全, 可信賴。</p>
+<p><img src="https://lh3.googleusercontent.com/4jrpZIpUcJ52iBssNUJzIw3fvhSmdACufy8973gyH0TKYtKAgObpFlFyOxmJ9D53lInVdjqzHAYoThQcx2DtdASQs5agdNfykUhYKs0M9pTeVbwQR8_a0oDXXjBRvpmT_CrqDA88dfyB5MzaVZzp8WuV-vLeC7G4GNzlVPSpvbSZaF8lZ4dIFRBAhr6Lj79Mphx1W5pkZxOnkhc_wgWkQr68PNuTYGgMffs40RRRMqOndV9E8fI-vqKYtHwScUCVqfs5oPG0ySES0Mk0Fk3R1C-6gC_vNNrj7tZG2MDoxvW3RGaEWRkdyeB1Hmselx2-iPvoTXk6KgFoJs7PobcCtFt3IzLXQDfMnBylXGsOf41xEkqx3KVwz2FCslUabgSC1d8_Ml5nCQFxGOcahkBahxEX93ymjAk-7mR7fzRwwAKbVYBuQdmQAoDp4qF72rSr2t2mW6dxdJ7qjTFEFlkIVAYYBZXgfQaxEHkFOkWXoYHoETlrkrxO_8FVlDOqmKWKj_HJ3h94VoAX5zOTE7IhI5Yo-VCp1UKRRLP54IPmygjgh_9NVRbWx3lyrvR47tdtAcFdC847cFtLE-8kjbPAohSmlkMubdrXX-sVSQYDgq15UQyO1NQFgADludeNvRiJbdcTcj9QuKgCmDonmHWFOwAZgDknUNWBqaLkKwT-n-LchPtQ77ezGFFjoJ7SHviv4SYLSsI7DpW8OTUkFbUphUNz6Fbvn4ugLWmuvdDEkLNFs3Rz3Q=w912-h762-no" alt></p>
+<p><br></p>
+<h3 id="你將實作的內容"><a href="#你將實作的內容" class="headerlink" title="你將實作的內容"></a>你將實作的內容</h3><ul>
+<li>建立一個 regional Kubernetes Engine 叢集</li>
+<li>建立一個 Kubernetes StorageClass 資源, 這個資源是針對複製的 zone 所配置</li>
+<li>使用 StorageClass 的 regional disk 部署 WordPress</li>
+<li>藉由刪除 node 來模擬區域性的故障</li>
+<li>確認 WordPress app 以及資料成功的遷徙到另一個複製的 zone</li>
+</ul>
+<p><br></p>
+<h3 id="進行此章節的建議具備知識"><a href="#進行此章節的建議具備知識" class="headerlink" title="進行此章節的建議具備知識"></a>進行此章節的建議具備知識</h3><p>這是 <strong>進階</strong> 課程, 在開始前, 至少有熟悉 Kubernetes 以及 WordPress 的基礎。 這邊有列出一些 Qwiklabs 可以讓你跟上進度:</p>
+<ul>
+<li><a href="https://google.qwiklabs.com/catalog_lab/911" target="_blank" rel="noopener">Kubernetes Engine: Qwik Start</a></li>
+<li><a href="https://google.qwiklabs.com/catalog_lab/985" target="_blank" rel="noopener">Running WordPress on App Engine Flexible Environment</a></li>
+<li><a href="https://google.qwiklabs.com/catalog_lab/468" target="_blank" rel="noopener">Hello Node Kubernetes</a></li>
+</ul>
+<p>準備好了的話我們就往下吧！</p>
+<p><br><br><br></p>
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
+<p>詳讀所有的教學。 Labs 是有時間限制的, 而且你不可以停止時間倒數。 倒數計時器在你按下 Start Lab 按鈕後開始倒數, 上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Qwiklabs 的手把手環境, 讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程, 而不是在一個模擬或是展示的環境。 我們透過提供你一個全新的、暫時的帳號密碼, 在計時器歸零之前, 你可以用來登入並存取 Google Cloud Platform。</p>
+<p><strong>你需要什麼？</strong></p>
+<p>要完成這個 lab, 你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><strong>備註：</strong> 如果你已經有你自己的個人 GCP 帳號或專案,請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台, 然後開啟命令列工具</p>
+<p><strong>如何開始你的 lab, 然後登入 Console?</strong></p>
+<ul>
+<li>按下 <b>Start Lab</b> 按鈕。 如果你需要付費, 會有一個彈出視窗來讓你選擇付費的方式。 在左方你會看到一個面板, 上面有暫時的帳號密碼, 你必須使用這些帳號密碼在此次 lab</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<ul>
+<li>複製 <code>username</code>, 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗, 顯示<code>選擇帳號</code>的頁面</li>
+</ul>
+<p><strong>tip:</strong> 開啟一個全新的視窗,然後跟原本的頁面並排</p>
+<ul>
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<ul>
+<li>登入頁面開啟, 貼上之前複製的 <code>username</code> 以及 <code>password</code>, 然後貼上</li>
+</ul>
+<p><strong>重要：</strong> 必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼,不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號, 請不要用在這裡（避免產生費用）</p>
+<ul>
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受 <code>terms</code> 以及 <code>conditions</code></li>
+<li>不要增加 <code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ul>
+<p>稍待一些時候, GCP 控制台將會在這個視窗開啟。</p>
+<p><strong>注意：</strong> 按下左上方位於 <code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code>, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務<br><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
+<p><br></p>
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。 它提供了5GB的 home 資料夾, 並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ul>
+<li>在 <code>GCP 控制台</code>, 右上的工具列,點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<ul>
+<li>在打開的對話框裡, 按下 <code>START CLOUD SHELL</code>:</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。 當你連結成功, 這代表你已成功獲得授權, 且此專案已被設為你的專案ID, 例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><strong>gcloud</strong> 是 <code>Google Cloud Platform</code> 的 command-line 工具, 他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command, 你可以列出有效帳戶名稱:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure></p>
+<p>輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure></p>
+<p>範例輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure></p>
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+<p>輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure></p>
+<p>範例輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure></p>
+<p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
+<p><br><br><br></p>
+<h2 id="建立-Regional-Kubernetes-Engine-叢集"><a href="#建立-Regional-Kubernetes-Engine-叢集" class="headerlink" title="建立 Regional Kubernetes Engine 叢集"></a>建立 Regional Kubernetes Engine 叢集</h2><p>打開新的 Cloud Shell 視窗, 先建立 <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/multi-zone-and-regional-clusters" target="_blank" rel="noopener">regional Kubernetes Engine 叢集</a>, 它橫跨了位於 <code>us-west1</code> 的 3 個 zones</p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh-tw/multipleVPCNetworks/" itemprop="url">多個虛擬私人雲端</a>
         
     </h1>
@@ -518,51 +636,6 @@
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在本教程中, 你將會使用一個叫做 Deployment Manager 的基礎設施策劃工具來啟動一個服務, 並且使用 Stackdriver 來監控這個服務。 在 Stackdriver, 你將會使用 Stackdriver 主控台來設定基礎的黑盒子監控, 並且建立一個運行時間確認 (Uptime Check) 來觸發事件通知 (alert notification)</p>
         <p class="article-more-link">
             <a href="/zh-tw/deploymentManagerFullProduction/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/orchestratingTheCloudWithKubernetes/" itemprop="url">使用 Kubernetes 來編排你的雲端</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2019-10-19T02:46:40.000Z" itemprop="datePublished">10月 19 2019</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 小时 讀完 (大概 6934 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在這個教程中, 你將會學習到如何：</p>
-<ul>
-<li>使用 <a href="http://kubernetes.io/" target="_blank" rel="noopener">Kubernetes Engine</a> 來提供一個完整的 <a href="https://cloud.google.com/container-engine" target="_blank" rel="noopener">Kubernetes</a> 叢集</li>
-<li>使用 kubectl 部署以及管理 Docker 容器</li>
-<li>使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務</li>
-</ul>
-        <p class="article-more-link">
-            <a href="/zh-tw/orchestratingTheCloudWithKubernetes/#more">點擊閱讀</a>
         </p>
     
     </div>
