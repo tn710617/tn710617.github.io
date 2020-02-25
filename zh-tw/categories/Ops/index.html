@@ -346,7 +346,7 @@
         <span class="column is-narrow">
             
             
-            41 分钟 讀完 (大概 6141 字)
+            43 分钟 讀完 (大概 6497 字)
         </span>
         
     </div>
@@ -385,7 +385,14 @@
 <h2 id="有-resource-requests-的-Pod-是被如何調度的？"><a href="#有-resource-requests-的-Pod-是被如何調度的？" class="headerlink" title="有 resource requests 的 Pod 是被如何調度的？"></a>有 resource requests 的 Pod 是被如何調度的？</h2><p>當你建立 Pod, Kubernetes scheduler 會挑選一個 node 來運行該 Pod。 每個 node 針對每種資源類型都有最大容量: 也就是說, 有多少 CPU 以及 memory 可以分配給 Pods。 Scheduler 會確保被調度的容器的各類型資源總和會小於該 Node 的資源總量。 注意到, 就算 node 上的資源使用量非常低, 如果容量確認沒過的話, Scheduler 還是不會分配 Pod 到這個 node 上。 這確保在 node 上資源短缺, 比如說, 在每日的資源用量高峰。</p>
 <p><br><br><br></p>
 <h2 id="有-resource-limits-的-Pod-是如何被調度？"><a href="#有-resource-limits-的-Pod-是如何被調度？" class="headerlink" title="有 resource limits 的 Pod 是如何被調度？"></a>有 resource limits 的 Pod 是如何被調度？</h2><p>當 Kubelet 啟動 Pod 中的一個 Container, 它會將 CPU 以及 memory limits 帶入到該 container runtime。<br>當使用 Docker:</p>
-<h2 id="以下是幫助釐清觀念的-Q-amp-A"><a href="#以下是幫助釐清觀念的-Q-amp-A" class="headerlink" title="以下是幫助釐清觀念的 Q&amp;A"></a>以下是幫助釐清觀念的 Q&amp;A</h2><h6 id="Kubernetes-的可計算資源管理中-所指定的資源配額是絕對數字還是相對數字？"><a href="#Kubernetes-的可計算資源管理中-所指定的資源配額是絕對數字還是相對數字？" class="headerlink" title="Kubernetes 的可計算資源管理中, 所指定的資源配額是絕對數字還是相對數字？"></a><strong>Kubernetes 的可計算資源管理中, 所指定的資源配額是絕對數字還是相對數字？</strong></h6><p>絕對數字</p>
+<ul>
+<li><code>spec.containers[].resources.requests.cpu</code> 會被轉換成 core 值, 它可能會是有小數點的, 以及會被乘以 1024。 在 <code>docker run</code> 指令中使用 <a href="https://docs.docker.com/engine/reference/run/#cpu-share-constraint" target="_blank" rel="noopener"><code>--cpu-shares</code></a>, 可以設定比這更高的數字或 2 </li>
+<li><code>spec.containers[].resources.limits.cpu</code> 會被轉換成 millicore 值以及乘以 100。 結果值為容器在每 100ms (也就是十分之一秒)的 CPU time 中可使用的總量, 容器無法使用超過被分到的 CPU 配額, 這個部分如果看不是很懂, 有興趣的話最下面會有補充說明。<br><strong>注意</strong>: 預設的 quota period 為 100ms, 最小為 1ms</li>
+<li><code>spec.containers[].resources.limits.memory</code> 會被轉換成 integer, 如同 <code>docker run</code> 指令的 [<code>--memory</code>] flag 的效果</li>
+</ul>
+<p>如果容器超出了其 memory limits 限制, 它會被終止。 如果它設置為可重啟, 跟其他的 runtime failure 一樣, kubelet 將會重啟它。<br>如果容器超出了其 memory request 限制, 當 node memory 耗光了之後, 就會把該 Pod 砍了, Ray 看到這一段的時候也有點矇逼, 下面會再補充解釋！<br>容器可能會或者可能不會被允許超出其 CPU limit 限制, 然而, 超出了也不會被砍了。<br>要得知容器是否無法被分配, 或者因為資源限制被殺掉了, 可以參考 <a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#troubleshooting" target="_blank" rel="noopener">Troubleshooting</a> 區塊</p>
+<p><br><br><br></p>
+<h2 id="監控資源使用量"><a href="#監控資源使用量" class="headerlink" title="監控資源使用量"></a>監控資源使用量</h2><h2 id="以下是幫助釐清觀念的-Q-amp-A"><a href="#以下是幫助釐清觀念的-Q-amp-A" class="headerlink" title="以下是幫助釐清觀念的 Q&amp;A"></a>以下是幫助釐清觀念的 Q&amp;A</h2><h6 id="Kubernetes-的可計算資源管理中-所指定的資源配額是絕對數字還是相對數字？"><a href="#Kubernetes-的可計算資源管理中-所指定的資源配額是絕對數字還是相對數字？" class="headerlink" title="Kubernetes 的可計算資源管理中, 所指定的資源配額是絕對數字還是相對數字？"></a><strong>Kubernetes 的可計算資源管理中, 所指定的資源配額是絕對數字還是相對數字？</strong></h6><p>絕對數字</p>
 <h6 id="Kubernetes-compute-resource-management-中-如果我-CPU-設為-0-1-在單核-雙核-甚至-48核的機器中-代表的量會有所不同嗎？"><a href="#Kubernetes-compute-resource-management-中-如果我-CPU-設為-0-1-在單核-雙核-甚至-48核的機器中-代表的量會有所不同嗎？" class="headerlink" title="Kubernetes compute resource management 中, 如果我 CPU 設為 0.1, 在單核, 雙核, 甚至 48核的機器中, 代表的量會有所不同嗎？"></a><strong>Kubernetes compute resource management 中, 如果我 CPU 設為 <code>0.1</code>, 在單核, 雙核, 甚至 48核的機器中, 代表的量會有所不同嗎？</strong></h6><p>不會哦</p>
 <h6 id="什麼是-TLB"><a href="#什麼是-TLB" class="headerlink" title="什麼是 TLB?"></a><strong>什麼是 TLB?</strong></h6><p>Translation lookaside buffer, 緩存虛擬記憶體到實體記憶體的 mapping</p>
 <h6 id="在-Linux-系統中-虛擬記憶體管理系統中-最小的-memory-單位是什麼？"><a href="#在-Linux-系統中-虛擬記憶體管理系統中-最小的-memory-單位是什麼？" class="headerlink" title="在 Linux 系統中, 虛擬記憶體管理系統中, 最小的 memory 單位是什麼？"></a><strong>在 Linux 系統中, 虛擬記憶體管理系統中, 最小的 memory 單位是什麼？</strong></h6><p>page</p>
@@ -677,7 +684,7 @@
         <span class="column is-narrow">
             
             
-            2 小时 讀完 (大概 14207 字)
+            2 小时 讀完 (大概 14402 字)
         </span>
         
     </div>
