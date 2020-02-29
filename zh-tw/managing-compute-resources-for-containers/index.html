@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>Kubernetes - Resources Limit - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="概述當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 資源要求 (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 資源限制 (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limi">
+<meta name="description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta name="keywords" content="Kubernetes,Kubernetes Resources">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - Resources Limit">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/managing-compute-resources-for-containers/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 資源要求 (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 資源限制 (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limi">
+<meta property="og:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-27T05:42:59.820Z">
+<meta property="og:updated_time" content="2020-02-29T08:15:20.999Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Resources Limit">
-<meta name="twitter:description" content="概述當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 資源要求 (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 資源限制 (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limi">
+<meta name="twitter:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="概述當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 資源要求 (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 資源限制 (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limi">
+    <meta name="description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta name="keywords" content="Kubernetes,Kubernetes Resources">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - Resources Limit">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/managing-compute-resources-for-containers/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
-<meta property="og:description" content="概述當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 資源要求 (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 資源限制 (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limi">
+<meta property="og:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-27T05:42:59.820Z">
+<meta property="og:updated_time" content="2020-02-29T08:15:20.999Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Resources Limit">
-<meta name="twitter:description" content="概述當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 資源要求 (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 資源限制 (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limi">
+<meta name="twitter:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 
 
 
@@ -496,13 +496,16 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 6979 字)
+            1 小时 讀完 (大概 7084 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 <em>資源要求</em> (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 <em>資源限制</em> (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limits 的不同之處可以參考 <a href="https://git.k8s.io/community/contributors/design-proposals/node/resource-qos.md" target="_blank" rel="noopener">Resource QoS</a></p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。<br>簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。</p>
+<a id="more"></a>
+<p>當你指定一個 Pod, 你可以選擇性的指定每個容器需要多少 CPU 以及 memory (RAM), 當你有指定 <em>資源要求</em> (resource request) 給容器, scheduler 可以更加的分配 Pods 到 nodes 上。 而當你有指定容器的 <em>資源限制</em> (resource limits), 在 node 上的資源競爭將以指定的方式來處理。 更多 requests 以及 limits 的不同之處可以參考 <a href="https://git.k8s.io/community/contributors/design-proposals/node/resource-qos.md" target="_blank" rel="noopener">Resource QoS</a></p>
+<p><br><br><br></p>
 <h2 id="資源類型"><a href="#資源類型" class="headerlink" title="資源類型"></a>資源類型</h2><p>CPU 以及 memory 為 <em>資源類型</em> (resource type), 資源類型有其基本單位。 CPU 以 cores 為單位, 而 memory 以 bytes 為單位。 如果你使用的是 Kubernetes v1.14 或更新的版本, 你可以指定 <em>巨頁</em> (huge page) 資源。 Huge pages 是 Linux 上特定的功能, node 的 kernel 可以分配比預設 page 更大的 memory。<br>比如說, 在預設 page 大小為 4KiB 的系統, 你可以指定一個限制, <code>hugepages-2Mi: 80Mi</code>。 如果容器試圖分配超過 40 2MiB huge pages (總共 80MiB), 則分配將失敗。<br>Ray 第一次聽到 Huge Page 的概念時也是 <em>一臉矇逼</em>, 不過本著學習者的心態 Google 了幾下之後, 就不再那麼矇了。<br>簡單來說, memory 有過被管理的單位叫做 <strong>頁 (page)</strong>, 在很多系統中預設是 4Ki, 所以 1Mi 的 memory 就有 256 pages, 沒問題吧？ 而有個硬體叫做 TLB (Translation Lookaside Buffer), 它是個大小固定的緩存硬體, 而虛擬記憶體對應實體記憶體的 mapping 會緩存 TLB 上。簡單來說, 如果是使用 4Ki 為 page 為單位的話, 那就要有很多 page, 而越多 page 記憶體的位置就需要越大的緩存去管理, 偏偏 TLB 這東西又是固定大小, 所以能怎麼做？ 那自然就是加大 page 的大小, 讓總 page 的數量下降, 這樣緩存就不需要那麼大的空間來記住那麼多的記憶體位置了。 這便是 huge page 的簡單概念, 更詳細一點的資料可以參考 <a href="https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/20190129-hugepages.md" target="_blank" rel="noopener">這篇文章</a></p>
 <p><strong>注意</strong>: 跟 <code>memory</code> 以及 <code>cpu</code> 資源不同, 你無法過量使用 <code>hugepages-*</code> 資源</p>
 <p>CPU 以及 memory 都被歸類在 <em>compute resources</em>, 或 <em>resources</em>。 Compute resources 為可被要求, 分配, 以及消耗的可量測數量。 他們與 [API resources] 不同。 API resources, 像是 Pod 以及 Services 為可通過 Kubernetes API server 讀取以及修改的物件。</p>
@@ -665,7 +668,7 @@
 <li><a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/" target="_blank" rel="noopener">Kubernetes Documentation</a></li>
 <li><a href="https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/20190129-hugepages.md" target="_blank" rel="noopener">Kubernetes/enhancements</a></li>
 </ul>
-<h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 <code>requests</code> 以及 <code>limits</code> 的用途, 不然都傻傻分不清楚！<br><a id="more"></a></p>
+<h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 <code>requests</code> 以及 <code>limits</code> 的用途, 不然都傻傻分不清楚！<br><!--more--></p>
 <p>首先, 在概述會列出 Kubernetes 資源限制的一些規則, 如果你在這一節就找到你要的答案了, 那恭喜你, 慢走不送！</p>
 <p>接下來會有針對 Memory 以及 CPU 的剖析, 剖析什麼呢？ 會從 Kubernetes, 到 Docker, 最後到真正控制 Linux kernel 如何運行程序的 cgroup (Control Group), 一層層的抽絲剝繭！</p>
 <p>最後, 我們在學習的過程中, 尤其是資訊業, 一定會遇到排山倒海, 前仆後繼, 七上八下… 的疑惑, 這是無法避免的, 但也是 Ray 覺得資訊業的著迷之處。 所以啦, Ray 習慣每遇到一個問題就把它記下, 然後找出答案, 用 Q&amp;A 的方式記錄下來, 在下面 Q&amp;A 小節可以找到。 這樣方便 Ray 自己學習吸收, 也方便日後查找。 有興趣可以看看, 啥？你說你沒興趣？ 那你還在這幹嘛？ 還不快去找你有興趣的事！</p>
