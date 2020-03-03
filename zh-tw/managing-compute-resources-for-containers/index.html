@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-01T13:25:23.967Z">
+<meta property="og:updated_time" content="2020-03-02T14:00:21.276Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Resources Limit">
 <meta name="twitter:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-01T13:25:23.967Z">
+<meta property="og:updated_time" content="2020-03-02T14:00:21.276Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Resources Limit">
 <meta name="twitter:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
@@ -203,6 +203,10 @@
                     
                     
                     <a class="navbar-item" href="#Local-ephemeral-storage">10&nbsp;&nbsp;<b>Local ephemeral storage</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#本地臨時儲存區的-Requests-以及-Limits-資源限制設定">10.1&nbsp;&nbsp;本地臨時儲存區的 Requests 以及 Limits 資源限制設定</a>
                     
                     
                     <hr class="navbar-divider">
@@ -518,7 +522,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8031 字)
+            1 小时 讀完 (大概 8226 字)
         </span>
         
     </div>
@@ -619,7 +623,14 @@
 </ul>
 <p>可以看到, 容器因為 <code>reason:OOM killed</code> 而被殺掉, <code>OOM</code> 表示 Out Of Memory</p>
 <p><br><br><br></p>
-<h2 id="Local-ephemeral-storage"><a href="#Local-ephemeral-storage" class="headerlink" title="Local ephemeral storage"></a>Local ephemeral storage</h2><p><strong>FEATURE STATE: <code>kubernetes v1.17</code></strong><br>kubernetes 版本 1.8 介紹了一個新的資源, 用來管理本地臨時儲存空間的 <em>ephemeral-storage</em>。 在每一個</p>
+<h2 id="Local-ephemeral-storage"><a href="#Local-ephemeral-storage" class="headerlink" title="Local ephemeral storage"></a>Local ephemeral storage</h2><p><strong>FEATURE STATE: <code>kubernetes v1.17</code></strong><br>kubernetes 版本 1.8 介紹了一個新的資源, 用來管理本地臨時儲存空間的 <em>ephemeral-storage</em>。 在每一個 node 中, kubelet 的 root 資料夾 (預設 /var/lib/kubelet) 以及 log 資料夾 (預設 /var/log) 都被儲存在 root 分區。 這個分區同時也經由 emptyDir volumes, container logs, image layers 以及 container writable layers 被 Pods 共享</p>
+<h3 id="本地臨時儲存區的-Requests-以及-Limits-資源限制設定"><a href="#本地臨時儲存區的-Requests-以及-Limits-資源限制設定" class="headerlink" title="本地臨時儲存區的 Requests 以及 Limits 資源限制設定"></a>本地臨時儲存區的 Requests 以及 Limits 資源限制設定</h3><p>每個 Pod 中的容器都可以指定一個或多個以下的限制：</p>
+<ul>
+<li><code>spec.containers[].resources.limits.ephemeral-storage</code></li>
+<li><code>spec.containers[].resources.requests.ephemeral-storage</code></li>
+</ul>
+<p><code>ephemeral-storage</code> 的 limits 以及 requests 資源管理以 bytes 為單位。 儲存區可被表示為簡單的 integer, 或固定位數的 integer, 可使用以下後綴： E, P, T, G, M, K 。 你也可以使用: Ei, Pi, Ti, Gi, Mi, Ki, 舉例來說, 下面都代表大約相同的值：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">128974848, 129e6, 129M, 123Mi</span><br></pre></td></tr></table></figure></p>
+<p>舉例來說, </p>
 <p><br><br><br></p>
 <h2 id="以下是幫助釐清觀念的-Q-amp-A"><a href="#以下是幫助釐清觀念的-Q-amp-A" class="headerlink" title="以下是幫助釐清觀念的 Q&amp;A"></a>以下是幫助釐清觀念的 Q&amp;A</h2><h6 id="以下的-Kubernetes-範例輸出中-為什麼-node-的可用資源比-node-的-capacity-少？"><a href="#以下的-Kubernetes-範例輸出中-為什麼-node-的可用資源比-node-的-capacity-少？" class="headerlink" title="以下的 Kubernetes 範例輸出中, 為什麼 node 的可用資源比 node 的 capacity 少？"></a><strong>以下的 Kubernetes 範例輸出中, 為什麼 node 的可用資源比 node 的 capacity 少？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
