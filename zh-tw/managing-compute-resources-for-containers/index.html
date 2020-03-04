@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-02T14:00:21.276Z">
+<meta property="og:updated_time" content="2020-03-03T04:33:48.789Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Resources Limit">
 <meta name="twitter:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-02T14:00:21.276Z">
+<meta property="og:updated_time" content="2020-03-03T04:33:48.789Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Resources Limit">
 <meta name="twitter:description" content="概述哈囉！ 本篇來介紹 Kubernetes 中的 Compute Resource。 接下來要介紹的可不是一般的 Resource, 像是元件那些, 而是可計算資源。簡單來說, 我們在定義 Pod 的時候, 可以定義啟動這個 Pod 需要多少資源, 以及這個 Pod 最多可以使用多少資源, 這樣夠淺顯易懂吧！ 下面就是詳細介紹了。">
@@ -209,258 +209,364 @@
                     <a class="navbar-item" href="#本地臨時儲存區的-Requests-以及-Limits-資源限制設定">10.1&nbsp;&nbsp;本地臨時儲存區的 Requests 以及 Limits 資源限制設定</a>
                     
                     
-                    <hr class="navbar-divider">
                     
+                    <a class="navbar-item" href="#有-ephemeral-storage-request-限制的-Pod-是如何被分配的？">10.2&nbsp;&nbsp;有 ephemeral-storage request 限制的 Pod 是如何被分配的？</a>
                     
-                    <a class="navbar-item" href="#以下是幫助釐清觀念的-Q-amp-A">11&nbsp;&nbsp;<b>以下是幫助釐清觀念的 Q&amp;amp;amp;A</b></a>
                     
                     
-                    
-                    <a class="navbar-item" href="#以下的-Kubernetes-範例輸出中-為什麼-node-的可用資源比-node-的-capacity-少？">11.1.1&nbsp;&nbsp;以下的 Kubernetes 範例輸出中, 為什麼 node 的可用資源比 node 的 capacity 少？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#以下的-Kubernetes-範例輸出中-requests-CPU-限制還有多少-quota-可分配？">11.1.2&nbsp;&nbsp;以下的 Kubernetes 範例輸出中, requests CPU 限制還有多少 quota 可分配？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-每次當-Scheduler-無法在-node-上找到足夠的資源來置放-Pod-時-都會產生一個什麼事件？">11.1.3&nbsp;&nbsp;Kubernetes 中, 每次當 Scheduler 無法在 node 上找到足夠的資源來置放 Pod 時, 都會產生一個什麼事件？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-的可計算資源管理中-所指定的資源配額是絕對數字還是相對數字？">11.1.4&nbsp;&nbsp;Kubernetes 的可計算資源管理中, 所指定的資源配額是絕對數字還是相對數字？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-compute-resource-management-中-如果我-CPU-設為-0-1-在單核-雙核-甚至-48核的機器中-代表的量會有所不同嗎？">11.1.5&nbsp;&nbsp;Kubernetes compute resource management 中, 如果我 CPU 設為 0.1, 在單核, 雙核, 甚至 48核的機器中, 代表的量會有所不同嗎？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#什麼是-TLB">11.1.6&nbsp;&nbsp;什麼是 TLB?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#在-Linux-系統中-虛擬記憶體管理系統中-最小的-memory-單位是什麼？">11.1.7&nbsp;&nbsp;在 Linux 系統中, 虛擬記憶體管理系統中, 最小的 memory 單位是什麼？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-management-中-huge-page-是什麼">11.1.8&nbsp;&nbsp;Kubernetes resource limit management 中, huge page 是什麼?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-如果一個-Pod-卡在-pending-status-那很有可能是甚麼原因？">11.1.9&nbsp;&nbsp;Kubernetes 中, 如果一個 Pod 卡在 pending status, 那很有可能是甚麼原因？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-Resource-的限制可分為-CPU-以及-Memory-限制類型主要分成哪兩種？">11.1.10&nbsp;&nbsp;Kubernetes 中, Resource 的限制可分為 CPU 以及 Memory, 限制類型主要分成哪兩種？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-request-主要代表的是？">11.1.11&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, request 主要代表的是？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-在-Kubernetes-各元件當中-request-resource-對哪一個元件格外重要？">11.1.12&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, request resource 對哪一個元件格外重要？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-在-Kubernetes-各元件當中-limit-resource-對哪一個元件格外重要？">11.1.13&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, limit resource 對哪一個元件格外重要？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-當-Scheduler-在選擇要在哪一個-Node-上面運行-Pod-時-主要會考量哪一種類？">11.1.14&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 在選擇要在哪一個 Node 上面運行 Pod 時, 主要會考量哪一種類？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-當-Scheduler-跟-request-的關係是？">11.1.15&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 跟 request 的關係是？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#以下的-Kubernetes-yaml-檔所代表的意思是">11.1.16&nbsp;&nbsp;以下的 Kubernetes yaml 檔所代表的意思是?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-1-MiB-等於多少？">11.1.17&nbsp;&nbsp;Kubernetes 中, 1 MiB 等於多少？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-1-MB-等於多少？">11.1.18&nbsp;&nbsp;Kubernetes 中, 1 MB 等於多少？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-一個-Pod-的資源總限制是-什麼-的總和？">11.1.19&nbsp;&nbsp;Kubernetes 中, 一個 Pod 的資源總限制是 什麼 的總和？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Cgroup-的全寫是？">11.1.20&nbsp;&nbsp;Cgroup 的全寫是？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Cgroup-簡單解釋">11.1.21&nbsp;&nbsp;Cgroup 簡單解釋?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-當我們只設置-limits-但沒設置-requests-時-會發生什麼事？">11.1.22&nbsp;&nbsp;Kubernetes resource limit 中, 當我們只設置 limits, 但沒設置 requests 時, 會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#當宿主機面臨記憶體壓力時-會做什麼事？">11.1.23&nbsp;&nbsp;當宿主機面臨記憶體壓力時, 會做什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#當一個程序使用了超過在-cgroup-中規定的-memory-時-會發生什麼事？">11.1.24&nbsp;&nbsp;當一個程序使用了超過在 cgroup 中規定的 memory 時, 會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Server-中的-OOM-的全寫是">11.1.25&nbsp;&nbsp;Server 中的 OOM 的全寫是??</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-當中-當我設定了-requests-的限制-Kubernetes-會否要求-docker-去設定-memory-cgroup-中的-soft-limit">11.1.26&nbsp;&nbsp;Kubernetes resource limit 當中, 當我設定了 requests 的限制, Kubernetes 會否要求 docker 去設定 memory cgroup 中的 soft_limit?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-當中-requests-若設得太高會發生什麼事？">11.1.27&nbsp;&nbsp;Kubernetes resource limit 當中, requests 若設得太高會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-當中-requests-若設得太低會發生什麼事？">11.1.28&nbsp;&nbsp;Kubernetes resource limit 當中, requests 若設得太低會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-一個-core-為幾-m">11.1.29&nbsp;&nbsp;Kubernetes 中, 一個 core 為幾 m?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-將一個-core-分成幾份？">11.1.30&nbsp;&nbsp;Kubernetes 將一個 core 分成幾份？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Docker-將一個-core-分成幾份？">11.1.31&nbsp;&nbsp;Docker 將一個 core 分成幾份？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#CGroup-將一個-core-分成幾份？">11.1.32&nbsp;&nbsp;CGroup 將一個 core 分成幾份？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-當設定-memory-的-request-limit-後-會作用到-cgroup-嗎？">11.1.33&nbsp;&nbsp;Kubernetes 中, 當設定 memory 的 request limit 後, 會作用到 cgroup 嗎？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-當設定-CPU-的-request-limit-後-會作用到-cgroup-嗎？">11.1.34&nbsp;&nbsp;Kubernetes 中, 當設定 CPU 的 request limit 後, 會作用到 cgroup 嗎？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-request-resource-是由哪一個-cgroup-系統所管理的">11.1.35&nbsp;&nbsp;Kubernetes resource limit 中, request resource 是由哪一個 cgroup 系統所管理的?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#cgroup-cpu-cfs-period-us-中的-period-代表幾秒？">11.1.36&nbsp;&nbsp;cgroup cpu.cfs_period_us 中的 period 代表幾秒？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#cgroup-cpu-cfs-quota-us-中的-quota-代表什麼？">11.1.37&nbsp;&nbsp;cgroup cpu.cfs_quota_us 中的 quota 代表什麼？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#假如我的-CPU-request-limit-是-200m-那我的-cpu-cfs-period-us-以及-cpu-cfs-quota-us-分別是多少？">11.1.38&nbsp;&nbsp;假如我的 CPU request limit 是 200m, 那我的 cpu.cfs_period_us 以及 cpu.cfs_quota_us 分別是多少？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#cpu-cfs-period-us-跟-cpu-cfs-quota-us-是屬於哪一個-cgroup">11.1.39&nbsp;&nbsp;cpu.cfs_period_us 跟 cpu.cfs_quota_us 是屬於哪一個 cgroup?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#cpu-cfs-period-us-跟-cpu-cfs-quota-us-中的-cfs-的意思是">11.1.40&nbsp;&nbsp;cpu.cfs_period_us 跟 cpu.cfs_quota_us 中的 cfs 的意思是?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Linux-的預設-CPU-scheduler-是哪一個">11.1.41&nbsp;&nbsp;Linux 的預設 CPU scheduler 是哪一個?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-當設定-CPU-的-request-resource-限制-會作用到-cgroup-嗎？">11.1.42&nbsp;&nbsp;Kubernetes 中, 當設定 CPU 的 request resource 限制, 會作用到 cgroup 嗎？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-程序可以超出-CPU-request-resource-限制-規定的用量嗎？">11.1.43&nbsp;&nbsp;Kubernetes 中, 程序可以超出 CPU request resource 限制 規定的用量嗎？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-當程序使用了超過-CPU-request-resource-限制-規定的用量的話-會發生什麼事？">11.1.44&nbsp;&nbsp;Kubernetes 中, 當程序使用了超過 CPU request resource 限制 規定的用量的話, 會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-如果我只設定了-limits-但沒設定-requests-會發生什麼事？">11.1.45&nbsp;&nbsp;Kubernetes resource limit 中, 如果我只設定了 limits, 但沒設定 requests, 會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-如果我只設定了-requests-但沒設定-limits-會發生什麼事？">11.1.46&nbsp;&nbsp;Kubernetes resource limit 中, 如果我只設定了 requests, 但沒設定 limits, 會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#以下的-Kubernetes-yaml-設定檔的意思是">11.1.47&nbsp;&nbsp;以下的 Kubernetes yaml 設定檔的意思是?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-request-resource-限制中-1-core-1000-m-那允許的最小設定值是多少？">11.1.48&nbsp;&nbsp;Kubernetes request resource 限制中, 1 core = 1000 m, 那允許的最小設定值是多少？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-要如何查看-node-有多少可用資源？">11.1.49&nbsp;&nbsp;Kubernetes 中, 要如何查看 node 有多少可用資源？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-如何知道容器有沒有因為資源達到限制而被砍掉？">11.1.50&nbsp;&nbsp;Kubernetes 中, 如何知道容器有沒有因為資源達到限制而被砍掉？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-local-ephemeral-storage-指的是什麼地方？">11.1.51&nbsp;&nbsp;Kubernetes 中, local ephemeral storage 指的是什麼地方？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-中-emptyDir-volumes-container-logs-image-layers-container-writable-layers-這些都是使用哪一塊空間？">11.1.52&nbsp;&nbsp;Kubernetes 中, emptyDir volumes, container logs, image layers, container writable layers, 這些都是使用哪一塊空間？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#以下的-Kubernetes-yaml-檔是什麼意思呢？">11.1.53&nbsp;&nbsp;以下的 Kubernetes yaml 檔是什麼意思呢？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-哪一個元件依據-ephemeral-storage-資源分配-pod-到適當的-node">11.1.54&nbsp;&nbsp;Kubernetes, 哪一個元件依據 ephemeral-storage 資源分配 pod 到適當的 node?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-如果一個-pod-裡頭的某個容器的-writable-layer-以及-logs-使用量超過的-ephemeral-storage-的資源限制-會發生什麼事？">11.1.55&nbsp;&nbsp;Kubernetes, 如果一個 pod 裡頭的某個容器的 writable layer 以及 logs 使用量超過的 ephemeral-storage 的資源限制, 會發生什麼事？</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-如果一個-pod-裡頭的所有容器使用的-ephemeral-storage-用量以及-emptyDir-volumes-超過了資院限制-會發生什麼事？">11.1.56&nbsp;&nbsp;Kubernetes, 如果一個 pod 裡頭的所有容器使用的 ephemeral-storage 用量以及 emptyDir volumes 超過了資院限制, 會發生什麼事？</a>
+                    <a class="navbar-item" href="#有-ephemeral-storage-limit-限制的-Pod-是如何被分配的？">10.3&nbsp;&nbsp;有 ephemeral-storage limit 限制的 Pod 是如何被分配的？</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#參考資源">12&nbsp;&nbsp;<b>參考資源</b></a>
+                    <a class="navbar-item" href="#頗析-Memory">11&nbsp;&nbsp;<b>頗析 (Memory)</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立一個沒有資源限制的-pod">11.1&nbsp;&nbsp;建立一個沒有資源限制的 pod</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用-Kubectl-來驗證看看-Kubernetes-是否建立沒有資源限制的-pod">11.2&nbsp;&nbsp;使用 Kubectl 來驗證看看 Kubernetes 是否建立沒有資源限制的 pod</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#現在我們-ssh-到該-node-然後使用以下指令看看-docker-是如何運行這個容器">11.3&nbsp;&nbsp;現在我們 ssh 到該 node, 然後使用以下指令看看 docker 是如何運行這個容器</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#讓我們繼續往下追-追到最終的-cgroup">11.4&nbsp;&nbsp;讓我們繼續往下追, 追到最終的 cgroup</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#先來看-memory-limit-in-bytes-這是設定-memory-limit-的-cgroup-他等同於-docker-裡頭的-memory-以及-Kubernetes-限制的-memory-limit">11.5&nbsp;&nbsp;先來看 memory.limit_in_bytes, 這是設定 memory limit 的 cgroup, 他等同於 docker 裡頭的 --memory, 以及 Kubernetes 限制的 memory limit</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#現在讓我們來建立另外一個-pod-限制-memory-limit-為-100Mi">11.6&nbsp;&nbsp;現在讓我們來建立另外一個 pod, 限制 memory limit 為 100Mi</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#驗證這個-pod-有被設置特定的-limit">11.7&nbsp;&nbsp;驗證這個 pod 有被設置特定的 limit</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得容器-id">11.8&nbsp;&nbsp;取得容器 id</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得容器-pid">11.9&nbsp;&nbsp;取得容器 pid</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得該容器的-memory-cgroup">11.10&nbsp;&nbsp;取得該容器的 memory cgroup</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#印出-memory-cgroup-中的-memory-limit-in-bytes-數值">11.11&nbsp;&nbsp;印出 memory cgroup 中的 memory.limit_in_bytes 數值</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#最後-讓我們來看看前面跳過的-位於-memory-cgroup-當中的-momery-soft-limit-in-bytes">11.12&nbsp;&nbsp;最後, 讓我們來看看前面跳過的, 位於 memory cgroup 當中的 momery.soft_limit_in_bytes</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#概述-1">13&nbsp;&nbsp;<b>概述</b></a>
+                    <a class="navbar-item" href="#頗析-CPU">12&nbsp;&nbsp;<b>頗析 (CPU)</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立一個有-request-CPU-限制的-pod">12.1&nbsp;&nbsp;建立一個有 request CPU 限制的 pod</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用-kubectl-來檢視-pod-的資源限制資訊">12.2&nbsp;&nbsp;使用 kubectl 來檢視 pod 的資源限制資訊</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得容器-id-1">12.3&nbsp;&nbsp;取得容器 id</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查看-Docker-是否確實設定資源限制">12.4&nbsp;&nbsp;查看 Docker 是否確實設定資源限制</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得容器-pid-1">12.5&nbsp;&nbsp;取得容器 pid</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得容器的-CPU-cgroup">12.6&nbsp;&nbsp;取得容器的 CPU cgroup</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得-cgroup-屬性">12.7&nbsp;&nbsp;取得 cgroup 屬性</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得-cpu-shares-的值">12.8&nbsp;&nbsp;取得 cpu.shares 的值</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#接下來-建立一個有著-limit-resource-的-pod">12.9&nbsp;&nbsp;接下來, 建立一個有著 limit resource 的 pod</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用-kubectl-來檢視第二個-pod-的資源限制資訊">12.10&nbsp;&nbsp;使用 kubectl 來檢視第二個 pod 的資源限制資訊</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得第二個容器-id">12.11&nbsp;&nbsp;取得第二個容器 id</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查看-Docker-是否確實設定資源限制-1">12.12&nbsp;&nbsp;查看 Docker 是否確實設定資源限制</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得-cpu-cfs-period-us-跟-cpu-cfs-quota-us-的值">12.13&nbsp;&nbsp;取得 cpu.cfs_period_us 跟 cpu.cfs_quota_us 的值</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CPU-頗析的總結">12.14&nbsp;&nbsp;CPU 頗析的總結</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#頗析-Memory">14&nbsp;&nbsp;<b>頗析 (Memory)</b></a>
+                    <a class="navbar-item" href="#以下是幫助釐清觀念的-Q-amp-A">13&nbsp;&nbsp;<b>以下是幫助釐清觀念的 Q&amp;amp;amp;A</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-範例輸出中-為什麼-node-的可用資源比-node-的-capacity-少？">13.1.1&nbsp;&nbsp;以下的 Kubernetes 範例輸出中, 為什麼 node 的可用資源比 node 的 capacity 少？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-範例輸出中-requests-CPU-限制還有多少-quota-可分配？">13.1.2&nbsp;&nbsp;以下的 Kubernetes 範例輸出中, requests CPU 限制還有多少 quota 可分配？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-每次當-Scheduler-無法在-node-上找到足夠的資源來置放-Pod-時-都會產生一個什麼事件？">13.1.3&nbsp;&nbsp;Kubernetes 中, 每次當 Scheduler 無法在 node 上找到足夠的資源來置放 Pod 時, 都會產生一個什麼事件？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-的可計算資源管理中-所指定的資源配額是絕對數字還是相對數字？">13.1.4&nbsp;&nbsp;Kubernetes 的可計算資源管理中, 所指定的資源配額是絕對數字還是相對數字？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-compute-resource-management-中-如果我-CPU-設為-0-1-在單核-雙核-甚至-48核的機器中-代表的量會有所不同嗎？">13.1.5&nbsp;&nbsp;Kubernetes compute resource management 中, 如果我 CPU 設為 0.1, 在單核, 雙核, 甚至 48核的機器中, 代表的量會有所不同嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#什麼是-TLB">13.1.6&nbsp;&nbsp;什麼是 TLB?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#在-Linux-系統中-虛擬記憶體管理系統中-最小的-memory-單位是什麼？">13.1.7&nbsp;&nbsp;在 Linux 系統中, 虛擬記憶體管理系統中, 最小的 memory 單位是什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-management-中-huge-page-是什麼">13.1.8&nbsp;&nbsp;Kubernetes resource limit management 中, huge page 是什麼?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-如果一個-Pod-卡在-pending-status-那很有可能是甚麼原因？">13.1.9&nbsp;&nbsp;Kubernetes 中, 如果一個 Pod 卡在 pending status, 那很有可能是甚麼原因？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-Resource-的限制可分為-CPU-以及-Memory-限制類型主要分成哪兩種？">13.1.10&nbsp;&nbsp;Kubernetes 中, Resource 的限制可分為 CPU 以及 Memory, 限制類型主要分成哪兩種？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-request-主要代表的是？">13.1.11&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, request 主要代表的是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-在-Kubernetes-各元件當中-request-resource-對哪一個元件格外重要？">13.1.12&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, request resource 對哪一個元件格外重要？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-在-Kubernetes-各元件當中-limit-resource-對哪一個元件格外重要？">13.1.13&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 在 Kubernetes 各元件當中, limit resource 對哪一個元件格外重要？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-當-Scheduler-在選擇要在哪一個-Node-上面運行-Pod-時-主要會考量哪一種類？">13.1.14&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 在選擇要在哪一個 Node 上面運行 Pod 時, 主要會考量哪一種類？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-Resource-的限制又可分為-requests-以及-limits-兩大類-當-Scheduler-跟-request-的關係是？">13.1.15&nbsp;&nbsp;Kubernetes Resource 的限制又可分為 requests 以及 limits 兩大類, 當 Scheduler 跟 request 的關係是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-yaml-檔所代表的意思是">13.1.16&nbsp;&nbsp;以下的 Kubernetes yaml 檔所代表的意思是?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-1-MiB-等於多少？">13.1.17&nbsp;&nbsp;Kubernetes 中, 1 MiB 等於多少？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-1-MB-等於多少？">13.1.18&nbsp;&nbsp;Kubernetes 中, 1 MB 等於多少？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-一個-Pod-的資源總限制是-什麼-的總和？">13.1.19&nbsp;&nbsp;Kubernetes 中, 一個 Pod 的資源總限制是 什麼 的總和？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cgroup-的全寫是？">13.1.20&nbsp;&nbsp;Cgroup 的全寫是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cgroup-簡單解釋">13.1.21&nbsp;&nbsp;Cgroup 簡單解釋?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-當我們只設置-limits-但沒設置-requests-時-會發生什麼事？">13.1.22&nbsp;&nbsp;Kubernetes resource limit 中, 當我們只設置 limits, 但沒設置 requests 時, 會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#當宿主機面臨記憶體壓力時-會做什麼事？">13.1.23&nbsp;&nbsp;當宿主機面臨記憶體壓力時, 會做什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#當一個程序使用了超過在-cgroup-中規定的-memory-時-會發生什麼事？">13.1.24&nbsp;&nbsp;當一個程序使用了超過在 cgroup 中規定的 memory 時, 會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Server-中的-OOM-的全寫是">13.1.25&nbsp;&nbsp;Server 中的 OOM 的全寫是??</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-當中-當我設定了-requests-的限制-Kubernetes-會否要求-docker-去設定-memory-cgroup-中的-soft-limit">13.1.26&nbsp;&nbsp;Kubernetes resource limit 當中, 當我設定了 requests 的限制, Kubernetes 會否要求 docker 去設定 memory cgroup 中的 soft_limit?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-當中-requests-若設得太高會發生什麼事？">13.1.27&nbsp;&nbsp;Kubernetes resource limit 當中, requests 若設得太高會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-當中-requests-若設得太低會發生什麼事？">13.1.28&nbsp;&nbsp;Kubernetes resource limit 當中, requests 若設得太低會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-一個-core-為幾-m">13.1.29&nbsp;&nbsp;Kubernetes 中, 一個 core 為幾 m?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-將一個-core-分成幾份？">13.1.30&nbsp;&nbsp;Kubernetes 將一個 core 分成幾份？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Docker-將一個-core-分成幾份？">13.1.31&nbsp;&nbsp;Docker 將一個 core 分成幾份？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CGroup-將一個-core-分成幾份？">13.1.32&nbsp;&nbsp;CGroup 將一個 core 分成幾份？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-當設定-memory-的-request-limit-後-會作用到-cgroup-嗎？">13.1.33&nbsp;&nbsp;Kubernetes 中, 當設定 memory 的 request limit 後, 會作用到 cgroup 嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-當設定-CPU-的-request-limit-後-會作用到-cgroup-嗎？">13.1.34&nbsp;&nbsp;Kubernetes 中, 當設定 CPU 的 request limit 後, 會作用到 cgroup 嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-request-resource-是由哪一個-cgroup-系統所管理的">13.1.35&nbsp;&nbsp;Kubernetes resource limit 中, request resource 是由哪一個 cgroup 系統所管理的?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#cgroup-cpu-cfs-period-us-中的-period-代表幾秒？">13.1.36&nbsp;&nbsp;cgroup cpu.cfs_period_us 中的 period 代表幾秒？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#cgroup-cpu-cfs-quota-us-中的-quota-代表什麼？">13.1.37&nbsp;&nbsp;cgroup cpu.cfs_quota_us 中的 quota 代表什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#假如我的-CPU-request-limit-是-200m-那我的-cpu-cfs-period-us-以及-cpu-cfs-quota-us-分別是多少？">13.1.38&nbsp;&nbsp;假如我的 CPU request limit 是 200m, 那我的 cpu.cfs_period_us 以及 cpu.cfs_quota_us 分別是多少？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#cpu-cfs-period-us-跟-cpu-cfs-quota-us-是屬於哪一個-cgroup">13.1.39&nbsp;&nbsp;cpu.cfs_period_us 跟 cpu.cfs_quota_us 是屬於哪一個 cgroup?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#cpu-cfs-period-us-跟-cpu-cfs-quota-us-中的-cfs-的意思是">13.1.40&nbsp;&nbsp;cpu.cfs_period_us 跟 cpu.cfs_quota_us 中的 cfs 的意思是?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Linux-的預設-CPU-scheduler-是哪一個">13.1.41&nbsp;&nbsp;Linux 的預設 CPU scheduler 是哪一個?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-當設定-CPU-的-request-resource-限制-會作用到-cgroup-嗎？">13.1.42&nbsp;&nbsp;Kubernetes 中, 當設定 CPU 的 request resource 限制, 會作用到 cgroup 嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-程序可以超出-CPU-request-resource-限制-規定的用量嗎？">13.1.43&nbsp;&nbsp;Kubernetes 中, 程序可以超出 CPU request resource 限制 規定的用量嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-當程序使用了超過-CPU-request-resource-限制-規定的用量的話-會發生什麼事？">13.1.44&nbsp;&nbsp;Kubernetes 中, 當程序使用了超過 CPU request resource 限制 規定的用量的話, 會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-如果我只設定了-limits-但沒設定-requests-會發生什麼事？">13.1.45&nbsp;&nbsp;Kubernetes resource limit 中, 如果我只設定了 limits, 但沒設定 requests, 會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-resource-limit-中-如果我只設定了-requests-但沒設定-limits-會發生什麼事？">13.1.46&nbsp;&nbsp;Kubernetes resource limit 中, 如果我只設定了 requests, 但沒設定 limits, 會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-yaml-設定檔的意思是">13.1.47&nbsp;&nbsp;以下的 Kubernetes yaml 設定檔的意思是?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-request-resource-限制中-1-core-1000-m-那允許的最小設定值是多少？">13.1.48&nbsp;&nbsp;Kubernetes request resource 限制中, 1 core = 1000 m, 那允許的最小設定值是多少？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-要如何查看-node-有多少可用資源？">13.1.49&nbsp;&nbsp;Kubernetes 中, 要如何查看 node 有多少可用資源？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-如何知道容器有沒有因為資源達到限制而被砍掉？">13.1.50&nbsp;&nbsp;Kubernetes 中, 如何知道容器有沒有因為資源達到限制而被砍掉？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-local-ephemeral-storage-指的是什麼地方？">13.1.51&nbsp;&nbsp;Kubernetes 中, local ephemeral storage 指的是什麼地方？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-emptyDir-volumes-container-logs-image-layers-container-writable-layers-這些都是使用哪一塊空間？">13.1.52&nbsp;&nbsp;Kubernetes 中, emptyDir volumes, container logs, image layers, container writable layers, 這些都是使用哪一塊空間？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-yaml-檔是什麼意思呢？">13.1.53&nbsp;&nbsp;以下的 Kubernetes yaml 檔是什麼意思呢？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-哪一個元件依據-ephemeral-storage-資源分配-pod-到適當的-node">13.1.54&nbsp;&nbsp;Kubernetes, 哪一個元件依據 ephemeral-storage 資源分配 pod 到適當的 node?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-如果一個-pod-裡頭的某個容器的-writable-layer-以及-logs-使用量超過的-ephemeral-storage-的資源限制-會發生什麼事？">13.1.55&nbsp;&nbsp;Kubernetes, 如果一個 pod 裡頭的某個容器的 writable layer 以及 logs 使用量超過的 ephemeral-storage 的資源限制, 會發生什麼事？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-如果一個-pod-裡頭的所有容器使用的-ephemeral-storage-用量以及-emptyDir-volumes-超過了資院限制-會發生什麼事？">13.1.56&nbsp;&nbsp;Kubernetes, 如果一個 pod 裡頭的所有容器使用的 ephemeral-storage 用量以及 emptyDir volumes 超過了資院限制, 會發生什麼事？</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#頗析-CPU">15&nbsp;&nbsp;<b>頗析 (CPU)</b></a>
+                    <a class="navbar-item" href="#參考資源">14&nbsp;&nbsp;<b>參考資源</b></a>
                     
                 </div>
             </div>
@@ -522,7 +628,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8226 字)
+            1 小时 讀完 (大概 7666 字)
         </span>
         
     </div>
@@ -630,7 +736,262 @@
 <li><code>spec.containers[].resources.requests.ephemeral-storage</code></li>
 </ul>
 <p><code>ephemeral-storage</code> 的 limits 以及 requests 資源管理以 bytes 為單位。 儲存區可被表示為簡單的 integer, 或固定位數的 integer, 可使用以下後綴： E, P, T, G, M, K 。 你也可以使用: Ei, Pi, Ti, Gi, Mi, Ki, 舉例來說, 下面都代表大約相同的值：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">128974848, 129e6, 129M, 123Mi</span><br></pre></td></tr></table></figure></p>
-<p>舉例來說, </p>
+<p>舉例來說, 以下的 Pod 有兩個容器。 每個容器都有 2 GiB 的 本地臨時儲存區 request 限制, 而每個容器都有 4GiB 的本地臨時儲存區 limit 限制。 因此, 這個 Pod 有 4GiB 的本地臨時儲存 request 限制以及 8GiB 的 limit 限制<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">frontend</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">db</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">mysql</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line"><span class="hljs-attr">      value:</span> <span class="hljs-string">"password"</span></span><br><span class="line"><span class="hljs-attr">    resources:</span></span><br><span class="line"><span class="hljs-attr">      requests:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"2Gi"</span></span><br><span class="line"><span class="hljs-attr">      limits:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"4Gi"</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">wp</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">wordpress</span></span><br><span class="line"><span class="hljs-attr">    resources:</span></span><br><span class="line"><span class="hljs-attr">      requests:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"2Gi"</span></span><br><span class="line"><span class="hljs-attr">      limits:</span></span><br><span class="line"><span class="hljs-attr">        ephemeral-storage:</span> <span class="hljs-string">"4Gi"</span></span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="有-ephemeral-storage-request-限制的-Pod-是如何被分配的？"><a href="#有-ephemeral-storage-request-限制的-Pod-是如何被分配的？" class="headerlink" title="有 ephemeral-storage request 限制的 Pod 是如何被分配的？"></a>有 ephemeral-storage request 限制的 Pod 是如何被分配的？</h3><p>當建立一個 Pod 時, Kubernetes scheduler 會挑選 node 來運行該 Pod。 每個 node 都有 local ephemeral storage 可提供給 Pods 的最大值。 更多資訊可參考 <a href="https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/#node-allocatable" target="_blank" rel="noopener">Node Allocatable</a></p>
+<p>Scheduler 會確保被分配的容器的 request 限制小於 node 的容量</p>
+<p><br></p>
+<h3 id="有-ephemeral-storage-limit-限制的-Pod-是如何被分配的？"><a href="#有-ephemeral-storage-limit-限制的-Pod-是如何被分配的？" class="headerlink" title="有 ephemeral-storage limit 限制的 Pod 是如何被分配的？"></a>有 ephemeral-storage limit 限制的 Pod 是如何被分配的？</h3><p>從容器等級隔離層面來說, 如果容器的可寫層 (writable layer) 以及 logs 使用量超過了儲存限制, 那們 Pod 會被殺掉。 從 Pod 等級隔離層面來說, 如果該 Pod 內的容器 ephemeral storage 使用量超過了限制, 以及該 Pods 的 emptyDir volumes 超過了限制, 該 Pod 也會被殺掉。</p>
+<p>官方文件就先到這裡, 以下為針對 Memory 以及 CPU 的進一步分析</p>
+<p><br><br><br></p>
+<h2 id="頗析-Memory"><a href="#頗析-Memory" class="headerlink" title="頗析 (Memory)"></a>頗析 (Memory)</h2><p>首先, 先針對 memory 的部分來頗析 limits 跟 requests 的詳細運作</p>
+<h3 id="建立一個沒有資源限制的-pod"><a href="#建立一個沒有資源限制的-pod" class="headerlink" title="建立一個沒有資源限制的 pod"></a>建立一個沒有資源限制的 pod</h3><ul>
+<li><p>輸入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do     sleep 2; done"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="使用-Kubectl-來驗證看看-Kubernetes-是否建立沒有資源限制的-pod"><a href="#使用-Kubectl-來驗證看看-Kubernetes-是否建立沒有資源限制的-pod" class="headerlink" title="使用 Kubectl 來驗證看看 Kubernetes 是否建立沒有資源限制的 pod"></a>使用 Kubectl 來驗證看看 Kubernetes 是否建立沒有資源限制的 pod</h3><ul>
+<li><p>輸入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-7cff9996fc-zpjps -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0]    .resources&#125;'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="現在我們-ssh-到該-node-然後使用以下指令看看-docker-是如何運行這個容器"><a href="#現在我們-ssh-到該-node-然後使用以下指令看看-docker-是如何運行這個容器" class="headerlink" title="現在我們 ssh 到該 node, 然後使用以下指令看看 docker 是如何運行這個容器"></a>現在我們 ssh 到該 node, 然後使用以下指令看看 docker 是如何運行這個容器</h3><ul>
+<li><p>輸入以下指令取得容器名稱</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>得到容器名稱</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">5c3af3101afb</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸入指令取得容器限制的 memory value</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker inspect 5c3af3101afb -f <span class="hljs-string">"&#123;&#123;.HostConfig.Memory&#125;&#125;"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>得到輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>.HostConfig.Memory</code></strong> 代表的意思是？<br>對應到 <code>docker run</code> 的 <a href="https://docs.docker.com/engine/reference/run/#user-memory-constraints" target="_blank" rel="noopener">–memory 參數</a></p>
+</li>
+</ul>
+<h3 id="讓我們繼續往下追-追到最終的-cgroup"><a href="#讓我們繼續往下追-追到最終的-cgroup" class="headerlink" title="讓我們繼續往下追, 追到最終的 cgroup"></a>讓我們繼續往下追, 追到最終的 cgroup</h3><ul>
+<li><p>取得容器 pid</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps ax | grep /bin/sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">9513 ?        Ss     0:00 /bin/sh -c while true; do sleep 2; done</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取得該 pid cgroup</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /proc/9513/cgroup</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">6:memory:/kubepods/burstable/podfbc202d3-da21-11e8-ab5e-42010a80014b/0a1b22ec1361a97c3511db37a4bae932d41b22264e5b97611748f8b662312574</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1)<strong>kubepods</strong>: 程序將會繼承所有這個 group 中的屬性</li>
+<li>(2)<strong>burstable</strong>: 可參考<a href="https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#qos-classes" target="_blank" rel="noopener">burstable QOS class</a></li>
+</ul>
+</li>
+<li><p>取得細節, 將上面的路徑 append 到 <code>/sys/fs/cgroups/memory</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls -l /sys/fs/cgroup/memory/kubepods/burstable/podfbc202d3-da21-11e8-ab5e-42010a80014b/0a1b22ec1361a97c3511db37a4bae932d41b22264e5b97611748f8b662312574</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">-rw-r--r-- 1 root root 0 Oct 27 19:53 memory.limit_in_bytes</span><br><span class="line">-rw-r--r-- 1 root root 0 Oct 27 19:53 memory.soft_limit_in_bytes</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="先來看-memory-limit-in-bytes-這是設定-memory-limit-的-cgroup-他等同於-docker-裡頭的-memory-以及-Kubernetes-限制的-memory-limit"><a href="#先來看-memory-limit-in-bytes-這是設定-memory-limit-的-cgroup-他等同於-docker-裡頭的-memory-以及-Kubernetes-限制的-memory-limit" class="headerlink" title="先來看 memory.limit_in_bytes, 這是設定 memory limit 的 cgroup, 他等同於 docker 裡頭的 --memory, 以及 Kubernetes 限制的 memory limit"></a>先來看 <code>memory.limit_in_bytes</code>, 這是設定 memory limit 的 cgroup, 他等同於 docker 裡頭的 <code>--memory</code>, 以及 Kubernetes 限制的 memory limit</h3><ul>
+<li><p>輸入以下指令取得數值</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/memory/kubepods/burstable/podfbc202d3-da21-11e8-ab5e-42010a80014b/0a1b22ec1361a97c3511db37a4bae932d41b22264e5b97611748f8b662312574/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">9223372036854771712</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>這個數據代表沒有限制 memory, 可參考 <a href="https://unix.stackexchange.com/questions/420906/what-is-the-value-for-the-cgroups-limit-in-bytes-if-the-memory-is-not-restricte" target="_blank" rel="noopener">Stackoverflow</a><br>我們一開始在 Kubernetes 沒有設定 memory 限制, 導致 docker 建立一個 <code>HostConfig.Memory</code> 設定為 0 的容器, 最終導致這個容器的程序被放到 <code>memory.limit_in_bytes</code> 屬性設為 “no limit” 的 memory cgroup </p>
+<h3 id="現在讓我們來建立另外一個-pod-限制-memory-limit-為-100Mi"><a href="#現在讓我們來建立另外一個-pod-限制-memory-limit-為-100Mi" class="headerlink" title="現在讓我們來建立另外一個 pod, 限制 memory limit 為 100Mi"></a>現在讓我們來建立另外一個 pod, 限制 memory limit 為 100Mi</h3><ul>
+<li><p>執行以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --limits <span class="hljs-string">"memory=100Mi"</span> --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do sleep 2; done"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="驗證這個-pod-有被設置特定的-limit"><a href="#驗證這個-pod-有被設置特定的-limit" class="headerlink" title="驗證這個 pod 有被設置特定的 limit"></a>驗證這個 pod 有被設置特定的 limit</h3><ul>
+<li><p>執行以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-5f5c7dc87d-8qtdx -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0].resources&#125;'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[limits:map[memory:100Mi] requests:map[memory:100Mi]]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>這邊可以看到, 如果我們有設置 limits resource, 但是沒設置 requests resource 的時候, Kubernetes 預設將 requests 設為 limits</p>
+<h3 id="取得容器-id"><a href="#取得容器-id" class="headerlink" title="取得容器 id"></a>取得容器 id</h3><ul>
+<li><p>執行以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">8fec6c7b6119</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="取得容器-pid"><a href="#取得容器-pid" class="headerlink" title="取得容器 pid"></a>取得容器 pid</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps ax | grep /bin/sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">29532 ?      Ss     0:00 /bin/sh -c while true; do sleep 2; done</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="取得該容器的-memory-cgroup"><a href="#取得該容器的-memory-cgroup" class="headerlink" title="取得該容器的 memory cgroup"></a>取得該容器的 memory cgroup</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /proc/29532/cgroup</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">6:memory:/kubepods/burstable/pod88f89108-daf7-11e8-b1e1-42010a800070/8fec6c7b61190e74cd9f88286181dd5fa3bbf9cf33c947574eb61462bc254d11</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="印出-memory-cgroup-中的-memory-limit-in-bytes-數值"><a href="#印出-memory-cgroup-中的-memory-limit-in-bytes-數值" class="headerlink" title="印出 memory cgroup 中的 memory.limit_in_bytes 數值"></a>印出 memory cgroup 中的 <code>memory.limit_in_bytes</code> 數值</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/memory/kubepods/burstable/pod88f89108-daf7-11e8-b1e1-42010a800070/8fec6c7b61190e74cd9f88286181dd5fa3bbf9cf33c947574eb61462bc254d11/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">104857600</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="最後-讓我們來看看前面跳過的-位於-memory-cgroup-當中的-momery-soft-limit-in-bytes"><a href="#最後-讓我們來看看前面跳過的-位於-memory-cgroup-當中的-momery-soft-limit-in-bytes" class="headerlink" title="最後, 讓我們來看看前面跳過的, 位於 memory cgroup 當中的 momery.soft_limit_in_bytes"></a>最後, 讓我們來看看前面跳過的, 位於 memory cgroup 當中的 <code>momery.soft_limit_in_bytes</code></h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/memory/kubepods/burstable/pod88f89108-daf7-11e8-b1e1-42010a800070/8fec6c7b61190e74cd9f88286181dd5fa3bbf9cf33c947574eb61462bc254d11/memory.soft_limit_in_bytes</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">9223372036854771712</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>從上面的值可以得知, 就算我們有設定 requests 的限制, kubernetes 也不會命令 docker 去做這件事, 儘管 docker run 的參數 <code>--memory-reservation</code> 是可以做到這件事的</p>
+<p><br><br><br></p>
+<h2 id="頗析-CPU"><a href="#頗析-CPU" class="headerlink" title="頗析 (CPU)"></a>頗析 (CPU)</h2><p>CPU 的頗析模式大致上與 memory 相同, 但還是有不一樣的地方, 讓我們繼續看下去。</p>
+<h3 id="建立一個有-request-CPU-限制的-pod"><a href="#建立一個有-request-CPU-限制的-pod" class="headerlink" title="建立一個有 request CPU 限制的 pod"></a>建立一個有 <code>request CPU</code> 限制的 pod</h3><ul>
+<li><p>輸入以下指令建立 pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --requests <span class="hljs-string">"cpu=50m"</span> --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do sleep 2; done"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="使用-kubectl-來檢視-pod-的資源限制資訊"><a href="#使用-kubectl-來檢視-pod-的資源限制資訊" class="headerlink" title="使用 kubectl 來檢視 pod 的資源限制資訊"></a>使用 kubectl 來檢視 pod 的資源限制資訊</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-5b4c495556-p2xkr -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0].resources&#125;'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[requests:map[cpu:50m]]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>從輸出可看到 kubernetes 有確實的設定 request 資源限制</p>
+<h3 id="取得容器-id-1"><a href="#取得容器-id-1" class="headerlink" title="取得容器 id"></a>取得容器 id</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">f2321226620e</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="查看-Docker-是否確實設定資源限制"><a href="#查看-Docker-是否確實設定資源限制" class="headerlink" title="查看 Docker 是否確實設定資源限制"></a>查看 Docker 是否確實設定資源限制</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker inspect f2321226620e --format <span class="hljs-string">'&#123;&#123;.HostConfig.CpuShares&#125;&#125;'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">51</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>為什麼不是 50? 那是因為 Docker 以及 cgroup 都將 core 分成 1024 份, 而 Kubernetes 則是分成 1000 份</p>
+<h3 id="取得容器-pid-1"><a href="#取得容器-pid-1" class="headerlink" title="取得容器 pid"></a>取得容器 pid</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps ax | grep /bin/sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">60554 ?      Ss     0:00 /bin/sh -c while true; do sleep 2; done</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="取得容器的-CPU-cgroup"><a href="#取得容器的-CPU-cgroup" class="headerlink" title="取得容器的 CPU cgroup"></a>取得容器的 CPU cgroup</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /proc/60554/cgroup</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">4:cpu,cpuacct:/kubepods/burstable/pode12b33b1-db07-11e8-b1e1-42010a800070/3be263e7a8372b12d2f8f8f9b4251f110b79c2a3bb9e6857b2f1473e640e8e75</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="取得-cgroup-屬性"><a href="#取得-cgroup-屬性" class="headerlink" title="取得 cgroup 屬性"></a>取得 cgroup 屬性</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls -l /sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/pode12b33b1-db07-11e8-b1e1-42010a800070/3be263e7a8372b12d2f8f8f9b4251f110b79c2a3bb9e6857b2f1473e640e8e75</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">total 0</span><br><span class="line">drwxr-xr-x 2 root root 0 Oct 28 23:19 .</span><br><span class="line">drwxr-xr-x 4 root root 0 Oct 28 23:19 ..</span><br><span class="line">...</span><br><span class="line">-rw-r--r-- 1 root root 0 Oct 28 23:19 cpu.shares</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>以上輸出可知, Docker 的 <code>HostConfig.CpuShares</code> 屬性映射到 cgroup 的 <code>cpu.shares</code> 屬性</p>
+<h3 id="取得-cpu-shares-的值"><a href="#取得-cpu-shares-的值" class="headerlink" title="取得 cpu.shares 的值"></a>取得 <code>cpu.shares</code> 的值</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/podb5c03ddf-db10-11e8-b1e1-42010a800070/64b5f1b636dafe6635ddd321c5b36854a8add51931c7117025a694281fb11444/cpu.shares</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">51</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>咦, 以上的行為跟 memory 不太一樣對吧? 限制 memory 的 resource limit 是不會作用到 cgroup 的 soft limits 的</p>
+<h3 id="接下來-建立一個有著-limit-resource-的-pod"><a href="#接下來-建立一個有著-limit-resource-的-pod" class="headerlink" title="接下來, 建立一個有著 limit resource 的 pod"></a>接下來, 建立一個有著 <code>limit resource</code> 的 pod</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --requests <span class="hljs-string">"cpu=50m"</span> --limits <span class="hljs-string">"cpu=100m"</span> --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do</span></span><br><span class="line"><span class="hljs-string">sleep 2; done"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="使用-kubectl-來檢視第二個-pod-的資源限制資訊"><a href="#使用-kubectl-來檢視第二個-pod-的資源限制資訊" class="headerlink" title="使用 kubectl 來檢視第二個 pod 的資源限制資訊"></a>使用 kubectl 來檢視第二個 pod 的資源限制資訊</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-5b4fb64549-qpd4n -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0].resources&#125;'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[limits:map[cpu:100m] requests:map[cpu:50m]]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>從輸出可看到 kubernetes 有確實的設定 request 資源限制</p>
+<h3 id="取得第二個容器-id"><a href="#取得第二個容器-id" class="headerlink" title="取得第二個容器 id"></a>取得第二個容器 id</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">f2321226620e</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="查看-Docker-是否確實設定資源限制-1"><a href="#查看-Docker-是否確實設定資源限制-1" class="headerlink" title="查看 Docker 是否確實設定資源限制"></a>查看 Docker 是否確實設定資源限制</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker inspect 472abbce32a5 --format <span class="hljs-string">'&#123;&#123;.HostConfig.CpuShares&#125;&#125; &#123;&#123;.HostConfig.CpuQuota&#125;&#125; &#123;&#123;.HostConfig.CpuPeriod&#125;&#125;'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">51 10000 100000</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Dokcer 使用了兩個值來代表 memory resource limit, <code>HostConfig.CpuPeriod</code> 跟 <code>HostConfig.CpuQuota</code>, 而這兩個值又分別映射到 cgroup 的兩個屬性 <code>cpu.cfs_period_us</code> 跟 <code>cpu.cfs_quota_us</code></p>
+<h3 id="取得-cpu-cfs-period-us-跟-cpu-cfs-quota-us-的值"><a href="#取得-cpu-cfs-period-us-跟-cpu-cfs-quota-us-的值" class="headerlink" title="取得 cpu.cfs_period_us 跟 cpu.cfs_quota_us 的值"></a>取得 <code>cpu.cfs_period_us</code> 跟 <code>cpu.cfs_quota_us</code> 的值</h3><ul>
+<li><p>輸入以下指令</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/pod2f1b50b6-db13-11e8-b1e1-42010a800070/f0845c65c3073e0b7b0b95ce0c1eb27f69d12b1fe2382b50096c4b59e78cdf71/cpu.cfs_period_us</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">100000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸入以下指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/pod2f1b50b6-db13-11e8-b1e1-42010a800070/f0845c65c3073e0b7b0b95ce0c1eb27f69d12b1fe2382b50096c4b59e78cdf71/cpu.cfs_quota_us</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">10000</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="CPU-頗析的總結"><a href="#CPU-頗析的總結" class="headerlink" title="CPU 頗析的總結"></a>CPU 頗析的總結</h3><ul>
+<li>period 為百萬分之一秒</li>
+<li>quota 為程序容許在 period 中可調動的 CPU</li>
+<li>100 m 就剛好是 1/10 core, 也是 10000/100000 百萬分之一秒</li>
+<li>CPU 的資源限制中, request 是會作用到 cgroup 的, 該種類在 memory 是不會作用到 cgroup 的</li>
+</ul>
 <p><br><br><br></p>
 <h2 id="以下是幫助釐清觀念的-Q-amp-A"><a href="#以下是幫助釐清觀念的-Q-amp-A" class="headerlink" title="以下是幫助釐清觀念的 Q&amp;A"></a>以下是幫助釐清觀念的 Q&amp;A</h2><h6 id="以下的-Kubernetes-範例輸出中-為什麼-node-的可用資源比-node-的-capacity-少？"><a href="#以下的-Kubernetes-範例輸出中-為什麼-node-的可用資源比-node-的-capacity-少？" class="headerlink" title="以下的 Kubernetes 範例輸出中, 為什麼 node 的可用資源比 node 的 capacity 少？"></a><strong>以下的 Kubernetes 範例輸出中, 為什麼 node 的可用資源比 node 的 capacity 少？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -734,7 +1095,6 @@
 <h6 id="Kubernetes-哪一個元件依據-ephemeral-storage-資源分配-pod-到適當的-node"><a href="#Kubernetes-哪一個元件依據-ephemeral-storage-資源分配-pod-到適當的-node" class="headerlink" title="Kubernetes, 哪一個元件依據 ephemeral-storage 資源分配 pod 到適當的 node?"></a><strong>Kubernetes, 哪一個元件依據 ephemeral-storage 資源分配 pod 到適當的 node?</strong></h6><p>scheduler</p>
 <h6 id="Kubernetes-如果一個-pod-裡頭的某個容器的-writable-layer-以及-logs-使用量超過的-ephemeral-storage-的資源限制-會發生什麼事？"><a href="#Kubernetes-如果一個-pod-裡頭的某個容器的-writable-layer-以及-logs-使用量超過的-ephemeral-storage-的資源限制-會發生什麼事？" class="headerlink" title="Kubernetes, 如果一個 pod 裡頭的某個容器的 writable layer 以及 logs 使用量超過的 ephemeral-storage 的資源限制, 會發生什麼事？"></a><strong>Kubernetes, 如果一個 pod 裡頭的某個容器的 writable layer 以及 logs 使用量超過的 ephemeral-storage 的資源限制, 會發生什麼事？</strong></h6><p>該 pod 會被砍了</p>
 <h6 id="Kubernetes-如果一個-pod-裡頭的所有容器使用的-ephemeral-storage-用量以及-emptyDir-volumes-超過了資院限制-會發生什麼事？"><a href="#Kubernetes-如果一個-pod-裡頭的所有容器使用的-ephemeral-storage-用量以及-emptyDir-volumes-超過了資院限制-會發生什麼事？" class="headerlink" title="Kubernetes, 如果一個 pod 裡頭的所有容器使用的 ephemeral-storage 用量以及 emptyDir volumes 超過了資院限制, 會發生什麼事？"></a><strong>Kubernetes, 如果一個 pod 裡頭的所有容器使用的 ephemeral-storage 用量以及 emptyDir volumes 超過了資院限制, 會發生什麼事？</strong></h6><p>該 pod 會被砍了</p>
-<p><br><br><br></p>
 <h2 id="參考資源"><a href="#參考資源" class="headerlink" title="參考資源"></a>參考資源</h2><ul>
 <li><a href="https://link.medium.com/GJYhX4tlF3" target="_blank" rel="noopener">Understanding resource limits in Kubernetes: memory</a></li>
 <li><a href="https://medium.com/@betz.mark/understanding-resource-limits-in-kubernetes-cpu-time-9eff74d3161b" target="_blank" rel="noopener">Understanding resource limits in kubernetes: cpu time</a></li>
@@ -742,375 +1102,6 @@
 <li><a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/" target="_blank" rel="noopener">Kubernetes Documentation</a></li>
 <li><a href="https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/20190129-hugepages.md" target="_blank" rel="noopener">Kubernetes/enhancements</a></li>
 </ul>
-<h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Yo~ 這是針對 Kubernetes 的資源限制 (Resource Limits) 的一篇學習筆記, 探詢 <code>requests</code> 以及 <code>limits</code> 的用途, 不然都傻傻分不清楚！<br><!--more--></p>
-<p>首先, 在概述會列出 Kubernetes 資源限制的一些規則, 如果你在這一節就找到你要的答案了, 那恭喜你, 慢走不送！</p>
-<p>接下來會有針對 Memory 以及 CPU 的剖析, 剖析什麼呢？ 會從 Kubernetes, 到 Docker, 最後到真正控制 Linux kernel 如何運行程序的 cgroup (Control Group), 一層層的抽絲剝繭！</p>
-<p>最後, 我們在學習的過程中, 尤其是資訊業, 一定會遇到排山倒海, 前仆後繼, 七上八下… 的疑惑, 這是無法避免的, 但也是 Ray 覺得資訊業的著迷之處。 所以啦, Ray 習慣每遇到一個問題就把它記下, 然後找出答案, 用 Q&amp;A 的方式記錄下來, 在下面 Q&amp;A 小節可以找到。 這樣方便 Ray 自己學習吸收, 也方便日後查找。 有興趣可以看看, 啥？你說你沒興趣？ 那你還在這幹嘛？ 還不快去找你有興趣的事！</p>
-<p>廢話不多說, 以下列出規則:</p>
-<ul>
-<li>資源可限制的類型分為 requests 以及 limits 兩種, 每種都可以再指定各自限制的 memory 以及 CPU</li>
-<li>requests 為這個容器正常運行需要的資源, Scheduler 會根據該容器被指定的 requests 資源去挑選適合運行這個容器的 Node, Node 的可用資源需大於此容器被指定的 requests 資源, 這樣方可運行。</li>
-<li>當沒有任何一個 Node 有大於該容器的 requests 資源限制的足夠可用資源時, 該容器將無法被建立, 會處於 pending 狀態</li>
-<li>limits 為此容器最大可調用資源, 當該容器使用了超過被指定的資源限制後…<ul>
-<li>若該資源為 memory, 則該容器會被列在優先處決名單, 當 Node 的記憶體吃緊時, 會將這容器砍了, 此時 Kubelet 偵測到容器跟宣告的狀態不符, 就會再開一個新的。</li>
-<li>若該資源為 CPU, 因為 cgroup 限制的關係, CPU 不會超過指定的資源限制。 若要了解更細節, 請參考<strong>頗析</strong></li>
-</ul>
-</li>
-<li>Kubernetes 中, 1MB = 1000KB = 1000 * 1000 Bytes</li>
-<li>Kubernetes 中, 1MiB = 1024KiB = 1024 * 1024 Bytes</li>
-<li>Kubernetes 中, 1 core = 1000 m</li>
-<li>requests 資源若是設的太低, 則 Node 可輕易地啟動這個 pod, 可該 pod 實際的資源消耗量遠高於 requests 資源, 這樣一來, node 的資源耗費會比起它的預估高很多… 這就像是你交了一個普妹女朋友, 你看人家普妹妳就自以為是這個是低消耗的, 好維護！ 都叫你不要以貌取人了, 你不聽… 一餐吃掉你幾千塊, 一個禮拜刷你的卡買一個包包幾萬塊, 結果你在低估這件事的情況之下, 你就爆了, 嚷嚷要分手。 你看看你, 你這樣跟渣男有什麼分別？ 所以在設定 requests 資源時, 拒當渣男, 也不要製造渣 node, 好嗎？</li>
-<li>如果你只設了 limits, 沒設 requests, 那 Kubernetes 會將 requests 設的跟 limits 一樣, 如果你對你的 pod 資源耗費夠明瞭的話, 這樣倒也不是什麼大問題, 可通常我們會將 limits 設得稍微高一點, 你想想看, 你正常運行這個 pod 根本不需要這麼高的資源, 那是不是會變成每個 node 可運行該 pod 的數量變少了？ </li>
-</ul>
-<p><br><br><br></p>
-<h2 id="頗析-Memory"><a href="#頗析-Memory" class="headerlink" title="頗析 (Memory)"></a>頗析 (Memory)</h2><p>首先, 先針對 memory 的部分來頗析 limits 跟 requests 的詳細運作</p>
-<ul>
-<li><p>建立一個沒有資源限制的 pod</p>
-<ul>
-<li><p>輸入</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do     sleep 2; done"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>使用 Kubectl 來驗證看看 Kubernetes 是否建立沒有資源限制的 pod</p>
-<ul>
-<li><p>輸入</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-7cff9996fc-zpjps -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0]    .resources&#125;'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[]</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>現在我們 ssh 到該 node, 然後使用以下指令看看 docker 是如何運行這個容器</p>
-<ul>
-<li><p>輸入以下指令取得容器名稱</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>得到容器名稱</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">5c3af3101afb</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸入指令取得容器限制的 memory value</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker inspect 5c3af3101afb -f <span class="hljs-string">"&#123;&#123;.HostConfig.Memory&#125;&#125;"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>得到輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">0</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong><code>.HostConfig.Memory</code></strong> 代表的意思是？<br>對應到 <code>docker run</code> 的 <a href="https://docs.docker.com/engine/reference/run/#user-memory-constraints" target="_blank" rel="noopener">–memory 參數</a></p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>讓我們繼續往下追, 追到最終的 cgroup</p>
-<ul>
-<li><p>取得容器 pid</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps ax | grep /bin/sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">9513 ?        Ss     0:00 /bin/sh -c while true; do sleep 2; done</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>取得該 pid cgroup</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /proc/9513/cgroup</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">6:memory:/kubepods/burstable/podfbc202d3-da21-11e8-ab5e-42010a80014b/0a1b22ec1361a97c3511db37a4bae932d41b22264e5b97611748f8b662312574</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>kubepods</strong>: 程序將會繼承所有這個 group 中的屬性</li>
-<li><strong>burstable</strong>: 可參考<a href="https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#qos-classes" target="_blank" rel="noopener">burstable QOS class</a></li>
-</ul>
-</li>
-<li><p>取得細節, 將上面的路徑 append 到 <code>/sys/fs/cgroups/memory</code></p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls -l /sys/fs/cgroup/memory/kubepods/burstable/podfbc202d3-da21-11e8-ab5e-42010a80014b/0a1b22ec1361a97c3511db37a4bae932d41b22264e5b97611748f8b662312574</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">-rw-r--r-- 1 root root 0 Oct 27 19:53 memory.limit_in_bytes</span><br><span class="line">-rw-r--r-- 1 root root 0 Oct 27 19:53 memory.soft_limit_in_bytes</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>先來看 <code>memory.limit_in_bytes</code>, 這是設定 memory limit 的 cgroup, 他等同於 docker 裡頭的 <code>--memory</code>, 以及 Kubernetes 限制的 memory limit</p>
-<ul>
-<li><p>輸入以下指令取得數值</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/memory/kubepods/burstable/podfbc202d3-da21-11e8-ab5e-42010a80014b/0a1b22ec1361a97c3511db37a4bae932d41b22264e5b97611748f8b662312574/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">9223372036854771712</span><br></pre></td></tr></table></figure>
-<p>這個數據代表沒有限制 memory, 可參考 <a href="https://unix.stackexchange.com/questions/420906/what-is-the-value-for-the-cgroups-limit-in-bytes-if-the-memory-is-not-restricte" target="_blank" rel="noopener">Stackoverflow</a><br>我們一開始在 Kubernetes 沒有設定 memory 限制, 導致 docker 建立一個 <code>HostConfig.Memory</code> 設定為 0 的容器, 最終導致這個容器的程序被放到 <code>memory.limit_in_bytes</code> 屬性設為 “no limit” 的 memory cgroup </p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>現在讓我們來建立另外一個 pod, 限制 memory limit 為 100Mi</p>
-<ul>
-<li><p>執行以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --limits <span class="hljs-string">"memory=100Mi"</span> --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do sleep 2; done"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>驗證這個 pod 有被設置特定的 limit </p>
-<ul>
-<li><p>執行以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-5f5c7dc87d-8qtdx -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0].resources&#125;'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[limits:map[memory:100Mi] requests:map[memory:100Mi]]</span><br></pre></td></tr></table></figure>
-<p>這邊可以看到, 如果我們有設置 limits resource, 但是沒設置 requests resource 的時候, Kubernetes 預設將 requests 設為 limits</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得容器 id </p>
-<ul>
-<li><p>執行以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">8fec6c7b6119</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得容器 pid</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps ax | grep /bin/sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">29532 ?      Ss     0:00 /bin/sh -c while true; do sleep 2; done</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得該容器的 memory cgroup</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /proc/29532/cgroup</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">6:memory:/kubepods/burstable/pod88f89108-daf7-11e8-b1e1-42010a800070/8fec6c7b61190e74cd9f88286181dd5fa3bbf9cf33c947574eb61462bc254d11</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>印出 memory cgroup 中的 <code>memory.limit_in_bytes</code> 數值</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/memory/kubepods/burstable/pod88f89108-daf7-11e8-b1e1-42010a800070/8fec6c7b61190e74cd9f88286181dd5fa3bbf9cf33c947574eb61462bc254d11/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">104857600</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>最後, 讓我們來看看前面跳過的, 位於 memory cgroup 當中的 <code>momery.soft_limit_in_bytes</code></p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/memory/kubepods/burstable/pod88f89108-daf7-11e8-b1e1-42010a800070/8fec6c7b61190e74cd9f88286181dd5fa3bbf9cf33c947574eb61462bc254d11/memory.soft_limit_in_bytes</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">9223372036854771712</span><br></pre></td></tr></table></figure>
-<p>從上面的值可以得知, 就算我們有設定 requests 的限制, kubernetes 也不會命令 docker 去做這件事, 儘管 docker run 的參數 <code>--memory-reservation</code> 是可以做到這件事的</p>
-</li>
-</ul>
-</li>
-</ul>
-<p><br><br><br></p>
-<h2 id="頗析-CPU"><a href="#頗析-CPU" class="headerlink" title="頗析 (CPU)"></a>頗析 (CPU)</h2><p>CPU 的頗析模式大致上與 memory 相同, 但還是有不一樣的地方, 讓我們繼續看下去。</p>
-<ul>
-<li><p>建立一個有 <code>request CPU</code> 限制的 pod</p>
-<ul>
-<li><p>輸入以下指令建立 pod</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --requests <span class="hljs-string">"cpu=50m"</span> --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do sleep 2; done"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>使用 kubectl 來檢視 pod 的資源限制資訊</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-5b4c495556-p2xkr -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0].resources&#125;'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[requests:map[cpu:50m]]</span><br></pre></td></tr></table></figure>
-<p>從輸出可看到 kubernetes 有確實的設定 request 資源限制</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得容器 id</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">f2321226620e</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>查看 Docker 是否確實設定資源限制 </p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker inspect f2321226620e --format <span class="hljs-string">'&#123;&#123;.HostConfig.CpuShares&#125;&#125;'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">51</span><br></pre></td></tr></table></figure>
-<p>為什麼不是 50? 那是因為 Docker 以及 cgroup 都將 core 分成 1024 份, 而 Kubernetes 則是分成 1000 份</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得容器 pid</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps ax | grep /bin/sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">60554 ?      Ss     0:00 /bin/sh -c while true; do sleep 2; done</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得容器的 CPU cgroup</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /proc/60554/cgroup</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">4:cpu,cpuacct:/kubepods/burstable/pode12b33b1-db07-11e8-b1e1-42010a800070/3be263e7a8372b12d2f8f8f9b4251f110b79c2a3bb9e6857b2f1473e640e8e75</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得 cgroup 屬性</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls -l /sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/pode12b33b1-db07-11e8-b1e1-42010a800070/3be263e7a8372b12d2f8f8f9b4251f110b79c2a3bb9e6857b2f1473e640e8e75</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">total 0</span><br><span class="line">drwxr-xr-x 2 root root 0 Oct 28 23:19 .</span><br><span class="line">drwxr-xr-x 4 root root 0 Oct 28 23:19 ..</span><br><span class="line">...</span><br><span class="line">-rw-r--r-- 1 root root 0 Oct 28 23:19 cpu.shares</span><br></pre></td></tr></table></figure>
-<p>以上輸出可知, Docker 的 <code>HostConfig.CpuShares</code> 屬性映射到 cgroup 的 <code>cpu.shares</code> 屬性</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得 <code>cpu.shares</code> 的值</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/podb5c03ddf-db10-11e8-b1e1-42010a800070/64b5f1b636dafe6635ddd321c5b36854a8add51931c7117025a694281fb11444/cpu.shares</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">51</span><br></pre></td></tr></table></figure>
-<p>咦, 以上的行為跟 memory 不太一樣對吧? 限制 memory 的 resource limit 是不會作用到 cgroup 的 soft limits 的</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>接下來, 建立一個有著 <code>limit resource</code> 的 pod</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl run <span class="hljs-built_in">limit</span>-test --image=busybox --requests <span class="hljs-string">"cpu=50m"</span> --limits <span class="hljs-string">"cpu=100m"</span> --<span class="hljs-built_in">command</span> -- /bin/sh -c <span class="hljs-string">"while true; do</span></span><br><span class="line"><span class="hljs-string">sleep 2; done"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">deployment.apps &quot;limit-test&quot; created</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>使用 kubectl 來檢視第二個 pod 的資源限制資訊</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods <span class="hljs-built_in">limit</span>-test-5b4fb64549-qpd4n -o=jsonpath=<span class="hljs-string">'&#123;.spec.containers[0].resources&#125;'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">map[limits:map[cpu:100m] requests:map[cpu:50m]]</span><br></pre></td></tr></table></figure>
-<p>從輸出可看到 kubernetes 有確實的設定 request 資源限制</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得第二個容器 id</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker ps | grep busy | cut -d<span class="hljs-string">' '</span> -f1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">f2321226620e</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>查看 Docker 是否確實設定資源限制 </p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker inspect 472abbce32a5 --format <span class="hljs-string">'&#123;&#123;.HostConfig.CpuShares&#125;&#125; &#123;&#123;.HostConfig.CpuQuota&#125;&#125; &#123;&#123;.HostConfig.CpuPeriod&#125;&#125;'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">51 10000 100000</span><br></pre></td></tr></table></figure>
-<p>Dokcer 使用了兩個值來代表 memory resource limit, <code>HostConfig.CpuPeriod</code> 跟 <code>HostConfig.CpuQuota</code>, 而這兩個值又分別映射到 cgroup 的兩個屬性 <code>cpu.cfs_period_us</code> 跟 <code>cpu.cfs_quota_us</code></p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>取得 <code>cpu.cfs_period_us</code> 跟 <code>cpu.cfs_quota_us</code> 的值</p>
-<ul>
-<li><p>輸入以下指令</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/pod2f1b50b6-db13-11e8-b1e1-42010a800070/f0845c65c3073e0b7b0b95ce0c1eb27f69d12b1fe2382b50096c4b59e78cdf71/cpu.cfs_period_us</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">100000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸入以下指令</p>
-<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /sys/fs/cgroup/cpu,cpuacct/kubepods/burstable/pod2f1b50b6-db13-11e8-b1e1-42010a800070/f0845c65c3073e0b7b0b95ce0c1eb27f69d12b1fe2382b50096c4b59e78cdf71/cpu.cfs_quota_us</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>輸出</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">10000</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>CPU 頗析的總結<ul>
-<li>period 為百萬分之一秒</li>
-<li>quota 為程序容許在 period 中可調動的 CPU</li>
-<li>100 m 就剛好是 1/10 core, 也是 10000/100000 百萬分之一秒</li>
-<li>CPU 的資源限制中, request 是會作用到 cgroup 的, 該種類在 memory 是不會作用到 cgroup 的</li>
-</ul>
-</li>
-</ul>
-<p><br><br><br></p>
 
     
     </div>
