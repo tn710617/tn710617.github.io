@@ -2,21 +2,26 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Ray&#39;s Coding Journey</title>
+<title>kubernetes - Secrets - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Ray&#39;s Coding Journey">
-<meta property="og:url" content="https://tn710617.github.io/zh-tw/index.html">
+<meta name="description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document 概述Secret 是一個物件, 它含有小量的敏感資訊, 像是密碼, OAuth toke, 或是 ke">
+<meta name="keywords" content="Kubernetes,Kubernetes StorageClass">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes - Secrets">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-configuration-secrets/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document 概述Secret 是一個物件, 它含有小量的敏感資訊, 像是密碼, OAuth toke, 或是 ke">
 <meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-03-05T13:56:34.317Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ray&#39;s Coding Journey">
+<meta name="twitter:title" content="kubernetes - Secrets">
+<meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document 概述Secret 是一個物件, 它含有小量的敏感資訊, 像是密碼, OAuth toke, 或是 ke">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-    <link href="/index.html" rel="alternate" hreflang="en">
+    <link href="/kubernetes-configuration-secrets/" rel="alternate" hreflang="en">
 
 
 
@@ -25,13 +30,18 @@
 
 
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Ray&#39;s Coding Journey">
-<meta property="og:url" content="https://tn710617.github.io/zh-tw/index.html">
+    <meta name="description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document 概述Secret 是一個物件, 它含有小量的敏感資訊, 像是密碼, OAuth toke, 或是 ke">
+<meta name="keywords" content="Kubernetes,Kubernetes StorageClass">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes - Secrets">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-configuration-secrets/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document 概述Secret 是一個物件, 它含有小量的敏感資訊, 像是密碼, OAuth toke, 或是 ke">
 <meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-03-05T13:56:34.317Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ray&#39;s Coding Journey">
+<meta name="twitter:title" content="kubernetes - Secrets">
+<meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document 概述Secret 是一個物件, 它含有小量的敏感資訊, 像是密碼, OAuth toke, 或是 ke">
 
 
 
@@ -121,6 +131,42 @@
             </a>
             
             
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#內建的-Secretes">1.1&nbsp;&nbsp;內建的 Secretes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Service-account-自動建立並且將-API-機敏資訊加到-Secrets-當中">1.1.1&nbsp;&nbsp;Service account 自動建立並且將 API 機敏資訊加到 Secrets 當中</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立你自己的-Secrets">1.2&nbsp;&nbsp;建立你自己的 Secrets</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用-kubectl-建立-Secret">1.2.1&nbsp;&nbsp;使用 kubectl 建立 Secret</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">2&nbsp;&nbsp;<b>Questions and Answers</b></a>
+                    
+                </div>
+            </div>
+            
 
             
 <div class="column is-narrow has-text-centered">
@@ -139,11 +185,11 @@
         <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
             <div class="dropdown-content">
             
-                <a href="/index.html" class="dropdown-item">
+                <a href="/kubernetes-configuration-secrets/" class="dropdown-item">
                     English
                 </a>
             
-                <a href="/zh-tw/index.html" class="dropdown-item">
+                <a href="/zh-tw/kubernetes-configuration-secrets/" class="dropdown-item">
                     繁體中文
                 </a>
             
@@ -158,11 +204,10 @@
 
     <section class="section">
     <div class="container">
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
+    <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh-tw/kubernetes-configuration-secrets/" itemprop="url">kubernetes - Secrets</a>
+            kubernetes - Secrets
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -260,395 +305,63 @@
     
     </div>
     
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes-StorageClass/">#Kubernetes StorageClass</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-the-basics-responses/">&lt;未完成&gt; Laravel - The Basics - Responses</a>
+            
+        </span>
+    </div>
     
 </article>
 
 
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
 
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/laravel-the-basics-responses/" itemprop="url">&lt;未完成&gt; Laravel - The Basics - Responses</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-03-02T01:48:52.000Z" itemprop="datePublished">3月 2 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            12 分钟 讀完 (大概 1846 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/laravel-the-basics-responses/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
+</div>
 
 
 
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/kubernetes-configuration-secrets/';
+        this.page.identifier = 'zh-tw/kubernetes-configuration-secrets/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
 
+<div id="disqus_thread">
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/laravel-the-basics-requests/" itemprop="url">Laravel - The Basics - Requests</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-03-01T02:02:29.000Z" itemprop="datePublished">3月 1 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            29 分钟 讀完 (大概 4276 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/laravel-the-basics-requests/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
 
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/kubernetes-concepts-storage-storage-classes/" itemprop="url">&lt;未完成&gt; kubernetes - Storage Classes</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-26T02:32:38.000Z" itemprop="datePublished">2月 26 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            几秒 讀完 (大概 30 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>StorageClass</code> 提供給管理者一個方法, 一個管理者可用來描述儲存空間的 classes</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/kubernetes-concepts-storage-storage-classes/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/laravel-the-basics-controllers/" itemprop="url">Laravel - The Basics - Controllers</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-25T01:30:30.000Z" itemprop="datePublished">2月 25 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            16 分钟 讀完 (大概 2358 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/laravel-the-basics-controllers/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/using-kubernetes-engine-to-deploy-apps-with-regional-persistent-disks/" itemprop="url">&lt;未完成&gt; 使用地區性的永久磁碟部署 Apps 到 Kubernetes Engine</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-24T04:02:56.000Z" itemprop="datePublished">2月 24 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            20 分钟 讀完 (大概 2981 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本章節中, 我們將學習如何藉由使用 regional persistent disks (地區性永久磁碟) 在 Kubernetes Engine 部署 WordPress, 配置一個高可用的應用。 Regional persistent disks 提供的兩個 zones 之間的同步, 這確保了你的應用可以正常運行, 就算其中一個區域發生了故障或停電事故。 使用 regional persistent disks 來部署 Kubernetes Engine 叢集將會讓你的應用更穩定, 安全, 可信賴。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/using-kubernetes-engine-to-deploy-apps-with-regional-persistent-disks/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/laravel-the-basics-csrf-protection/" itemprop="url">Laravel - The Basics - CSRF Protection</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-20T02:25:56.000Z" itemprop="datePublished">2月 20 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            4 分钟 讀完 (大概 631 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/laravel-the-basics-csrf-protection/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/kubernetes-tasks-configure-pod-container-configure-pod-configmap/" itemprop="url">Configure a Pod to Use a ConfigMap</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-18T04:35:27.000Z" itemprop="datePublished">2月 18 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            42 分钟 讀完 (大概 6318 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇為 ConfigMap 的介紹與使用筆記, 參考來源為 <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/" target="_blank" rel="noopener">官方文件</a>, 除了文件內容翻譯外, 也會有 Questions and Answers 區塊來將重點摘出。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/kubernetes-tasks-configure-pod-container-configure-pod-configmap/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/multipleVPCNetworks/" itemprop="url">多個虛擬私人雲端</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-18T01:50:42.000Z" itemprop="datePublished">2月 18 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 小时 讀完 (大概 8815 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在本教程中, 你將建立幾個 VPC 網路 以及 VM instances, 並且測試這些網路間的連接。 更準確的說, 你將建立兩個客製化模式的網路 (<strong>management</strong> 以及 <strong>privatenet</strong>), 以及各自的防火牆規則跟 VM instances, 如下圖所示:<br></p>
-        <p class="article-more-link">
-            <a href="/zh-tw/multipleVPCNetworks/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/the-art-of-command-line/" itemprop="url">&lt;未完成&gt; 命令行的藝術</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-02-16T11:14:24.000Z" itemprop="datePublished">2月 16 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            几秒 讀完 (大概 54 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇為 <a href="https://github.com/jlevy/the-art-of-command-line" target="_blank" rel="noopener">The Art of Command Line</a> 的學習筆記, 內文會盡量精簡只記錄必要的, 主要會以 <em>Questions and Answers</em> 的方式來記錄。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/the-art-of-command-line/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-    
-        
-<nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
-    <div class="pagination-previous is-invisible is-hidden-mobile">
-        <a href="/zh-tw/page/0/">上一頁</a>
-    </div>
-    <div class="pagination-next">
-        <a href="/zh-tw/page/2/">下一頁</a>
-    </div>
-    <ul class="pagination-list is-hidden-mobile">
-        
-        <li><a class="pagination-link is-current" href="/zh-tw/">1</a></li>
-        
-        <li><a class="pagination-link" href="/zh-tw/page/2/">2</a></li>
-        
-        <li><span class="pagination-ellipsis">&hellip;</span></li>
-        
-        <li><a class="pagination-link" href="/zh-tw/page/12/">12</a></li>
-        
-    </ul>
-</nav>
-    
     </div>
 </section>
     <footer class="footer">
