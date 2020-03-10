@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-10T06:58:41.951Z">
+<meta property="og:updated_time" content="2020-03-10T07:33:27.648Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-10T06:58:41.951Z">
+<meta property="og:updated_time" content="2020-03-10T07:33:27.648Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -209,6 +209,22 @@
                     <a class="navbar-item" href="#以環境變數的方式使用-Secret">2.2&nbsp;&nbsp;以環境變數的方式使用 Secret</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#從環境變數來使用-Secret-值">2.2.1&nbsp;&nbsp;從環境變數來使用 Secret 值</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用-imagePullSecrets">2.3&nbsp;&nbsp;使用 imagePullSecrets</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#手動指定-imagePullSecret">2.3.1&nbsp;&nbsp;手動指定 imagePullSecret</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#自動附加-imagePullSecret">2.4&nbsp;&nbsp;自動附加 imagePullSecret</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -274,7 +290,7 @@
         <span class="column is-narrow">
             
             
-            35 分钟 讀完 (大概 5194 字)
+            38 分钟 讀完 (大概 5712 字)
         </span>
         
     </div>
@@ -472,13 +488,52 @@
 <li>修改鏡像 以及/或 命令行, 讓程式使用指定的環境變數</li>
 </ul>
 <p>以下為從環境變數中使用 secrets 的範例:<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-env-pod</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">mycontainer</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">redis</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_USERNAME</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">username</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_PASSWORD</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">password</span></span><br><span class="line"><span class="hljs-attr">  restartPolicy:</span> <span class="hljs-string">Never</span></span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h4 id="從環境變數來使用-Secret-值"><a href="#從環境變數來使用-Secret-值" class="headerlink" title="從環境變數來使用 Secret 值"></a>從環境變數來使用 Secret 值</h4><p>在把 secret 當成環境變數來使用的容器中, secret key 以一般的環境變數方式存在, 這些環境變數的值為 base64 解密後 secret 的值。 以下是一些在容器內指令執行後的結果：</p>
+<ul>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-variable">$SECRET_USERNAME</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>結果</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">admin</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-variable">$SECRET_PASSWORD</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>結果</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">1f2d1e2e67df</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="使用-imagePullSecrets"><a href="#使用-imagePullSecrets" class="headerlink" title="使用 imagePullSecrets"></a>使用 imagePullSecrets</h3><p><code>imagePullSecrets</code> 欄位唯一系列 Secret 的指向。 你可以使用 <code>imagePullSecrets</code> 來將含有 Docker (或其他類型) 鏡像 registry 密碼這些資料傳給 kubelet。 Kubelet 會使用這些資訊來代替 Pod 拉取私人鏡像。 更多有關 <code>imagePullSecrets</code> 欄位的資訊可以參考 <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#podspec-v1-core" target="_blank" rel="noopener">PodSpec API</a></p>
+<p><br></p>
+<h4 id="手動指定-imagePullSecret"><a href="#手動指定-imagePullSecret" class="headerlink" title="手動指定 imagePullSecret"></a>手動指定 imagePullSecret</h4><p>從 <a href="https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod" target="_blank" rel="noopener">容器鏡像文件</a> 可以學到如何指定 <code>ImagePullSecrets</code></p>
+<p><br></p>
+<h3 id="自動附加-imagePullSecret"><a href="#自動附加-imagePullSecret" class="headerlink" title="自動附加 imagePullSecret"></a>自動附加 imagePullSecret</h3><p>你可以手動建立 <code>imagePullSecrets</code>, 並且從 ServiceAccount 來參照。 任何由這個 ServiceAccount 所建立的 Pod, 或是預設由這個 ServiceAccount 建立的 Pod 都會將 <code>imagePullSecrets</code> 欄位設為此 ServiceAccount。 更多資訊可參考 <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account" target="_blank" rel="noopener">將 ImagePullSecrets 加到 ServiceAccount</a></p>
 <p><br><br><br></p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="解釋以下-Kubernetes-Secret-example"><a href="#解釋以下-Kubernetes-Secret-example" class="headerlink" title="解釋以下 Kubernetes Secret example"></a><strong>解釋以下 Kubernetes Secret example</strong></h6><ul>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="解釋以下-Kubernetes-example-code"><a href="#解釋以下-Kubernetes-example-code" class="headerlink" title="解釋以下 Kubernetes example code"></a><strong>解釋以下 Kubernetes example code</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">foo</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">awesomeapps</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">foo</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">janedoe/awesomeapp:v1</span></span><br><span class="line"><span class="hljs-attr">  imagePullSecrets:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">myregistrykey</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">foo</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">awesomeapps</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">foo</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">janedoe/awesomeapp:v1</span></span><br><span class="line">  <span class="hljs-comment"># 指定 pull 鏡像時要使用哪一個 Docker server, 包含帳號密碼等等資訊...</span></span><br><span class="line"><span class="hljs-attr">  imagePullSecrets:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">myregistrykey</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="解釋以下的-Kubernetes-CLI"><a href="#解釋以下的-Kubernetes-CLI" class="headerlink" title="解釋以下的 Kubernetes CLI"></a><strong>解釋以下的 Kubernetes CLI</strong></h6><ul>
+<li><p><strong>Example</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret docker-registry &lt;name&gt; \</span><br><span class="line">--docker-server=DOCKER_REGISTRY_SERVER \</span><br><span class="line">--docker-username=DOCKER_USER \</span><br><span class="line">--docker-password=DOCKER_PASSWORD \</span><br><span class="line">--docker-email=DOCKER_EMAIL</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 建立拉取私人鏡像會用到的 secret</span></span><br><span class="line">kubectl create secret docker-registry &lt;name&gt; \</span><br><span class="line"><span class="hljs-comment"># 指定 Docker registry server</span></span><br><span class="line">--docker-server=DOCKER_REGISTRY_SERVER \</span><br><span class="line"><span class="hljs-comment"># 指定 Docker username</span></span><br><span class="line">--docker-username=DOCKER_USER \</span><br><span class="line"><span class="hljs-comment"># 指定 Docker password</span></span><br><span class="line">--docker-password=DOCKER_PASSWORD \</span><br><span class="line"><span class="hljs-comment"># 指定 Docker email</span></span><br><span class="line">--docker-email=DOCKER_EMAIL</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="如何用指令的方式來建立-docker-registry-類型的-secret"><a href="#如何用指令的方式來建立-docker-registry-類型的-secret" class="headerlink" title="如何用指令的方式來建立 docker-registry 類型的 secret?"></a><strong>如何用指令的方式來建立 docker-registry 類型的 secret?</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret docker-registry &lt;name&gt; \</span><br><span class="line">--docker-server=DOCKER_REGISTRY_SERVER \</span><br><span class="line">--docker-username=DOCKER_USER \</span><br><span class="line">--docker-password=DOCKER_PASSWORD \</span><br><span class="line">--docker-email=DOCKER_EMAIL</span><br></pre></td></tr></table></figure>
+<h6 id="解釋以下-Kubernetes-Secret-example"><a href="#解釋以下-Kubernetes-Secret-example" class="headerlink" title="解釋以下 Kubernetes Secret example"></a><strong>解釋以下 Kubernetes Secret example</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-env-pod</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">mycontainer</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">redis</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_USERNAME</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">username</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_PASSWORD</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">password</span></span><br><span class="line"><span class="hljs-attr">  restartPolicy:</span> <span class="hljs-string">Never</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-env-pod</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">mycontainer</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">redis</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line">        <span class="hljs-comment"># 定義</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_USERNAME</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">username</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_PASSWORD</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">password</span></span><br><span class="line"><span class="hljs-attr">  restartPolicy:</span> <span class="hljs-string">Never</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-env-pod</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">mycontainer</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">redis</span></span><br><span class="line"><span class="hljs-attr">    env:</span></span><br><span class="line">        <span class="hljs-comment"># 定義 Env</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_USERNAME</span></span><br><span class="line">        <span class="hljs-comment"># env 的值來源</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line">          <span class="hljs-comment"># 來自 secret</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line">            <span class="hljs-comment"># secret name</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line">            <span class="hljs-comment"># secret key</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">username</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">SECRET_PASSWORD</span></span><br><span class="line"><span class="hljs-attr">        valueFrom:</span></span><br><span class="line"><span class="hljs-attr">          secretKeyRef:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">mysecret</span></span><br><span class="line"><span class="hljs-attr">            key:</span> <span class="hljs-string">password</span></span><br><span class="line"><span class="hljs-attr">  restartPolicy:</span> <span class="hljs-string">Never</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h6 id="Kubernetes-Secret-中-怎樣的容器是不會收到-Secret-更新的？"><a href="#Kubernetes-Secret-中-怎樣的容器是不會收到-Secret-更新的？" class="headerlink" title="Kubernetes Secret 中, 怎樣的容器是不會收到 Secret 更新的？"></a><strong>Kubernetes Secret 中, 怎樣的容器是不會收到 Secret 更新的？</strong></h6><p>使用 subPath volume 掛載的容器</p>
