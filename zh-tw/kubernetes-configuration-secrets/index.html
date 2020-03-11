@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-10T07:33:27.648Z">
+<meta property="og:updated_time" content="2020-03-11T05:08:28.672Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-10T07:33:27.648Z">
+<meta property="og:updated_time" content="2020-03-11T05:08:28.672Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -225,10 +225,42 @@
                     <a class="navbar-item" href="#自動附加-imagePullSecret">2.4&nbsp;&nbsp;自動附加 imagePullSecret</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#自動掛載手動建立的-Secret">2.5&nbsp;&nbsp;自動掛載手動建立的 Secret</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Questions-and-Answers">3&nbsp;&nbsp;<b>Questions and Answers</b></a>
+                    <a class="navbar-item" href="#Details">3&nbsp;&nbsp;<b>Details</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#限制">3.1&nbsp;&nbsp;限制</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Secret-以及-Pod-生命週期的互動">3.2&nbsp;&nbsp;Secret 以及 Pod 生命週期的互動</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用情境">4&nbsp;&nbsp;<b>使用情境</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用情境：Pod-及-ssh-keys">4.1&nbsp;&nbsp;使用情境：Pod 及 ssh keys</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用情境：-含有-prod-test-資訊的-Pods">4.2&nbsp;&nbsp;使用情境： 含有 prod / test 資訊的 Pods</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">5&nbsp;&nbsp;<b>Questions and Answers</b></a>
                     
                 </div>
             </div>
@@ -290,7 +322,7 @@
         <span class="column is-narrow">
             
             
-            38 分钟 讀完 (大概 5712 字)
+            1 小时 讀完 (大概 7454 字)
         </span>
         
     </div>
@@ -510,8 +542,97 @@
 <h4 id="手動指定-imagePullSecret"><a href="#手動指定-imagePullSecret" class="headerlink" title="手動指定 imagePullSecret"></a>手動指定 imagePullSecret</h4><p>從 <a href="https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod" target="_blank" rel="noopener">容器鏡像文件</a> 可以學到如何指定 <code>ImagePullSecrets</code></p>
 <p><br></p>
 <h3 id="自動附加-imagePullSecret"><a href="#自動附加-imagePullSecret" class="headerlink" title="自動附加 imagePullSecret"></a>自動附加 imagePullSecret</h3><p>你可以手動建立 <code>imagePullSecrets</code>, 並且從 ServiceAccount 來參照。 任何由這個 ServiceAccount 所建立的 Pod, 或是預設由這個 ServiceAccount 建立的 Pod 都會將 <code>imagePullSecrets</code> 欄位設為此 ServiceAccount。 更多資訊可參考 <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account" target="_blank" rel="noopener">將 ImagePullSecrets 加到 ServiceAccount</a></p>
+<p><br></p>
+<h3 id="自動掛載手動建立的-Secret"><a href="#自動掛載手動建立的-Secret" class="headerlink" title="自動掛載手動建立的 Secret"></a>自動掛載手動建立的 Secret</h3><p>手動建立的 secrets (比如說, 一個含有存取 GitHub 帳號 token 的 secret) 可以被自動附加到 Pods, 依據他們的 service account。 更多的資訊可以參考 <a href="https://kubernetes.io/docs/tasks/inject-data-application/podpreset/" target="_blank" rel="noopener">使用 PodPreset 來將資訊注入 Pods</a></p>
 <p><br><br><br></p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="解釋以下-Kubernetes-example-code"><a href="#解釋以下-Kubernetes-example-code" class="headerlink" title="解釋以下 Kubernetes example code"></a><strong>解釋以下 Kubernetes example code</strong></h6><ul>
+<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><h3 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h3><p>Secret volume 的來源會被驗證, 以確保指定的參照物件確實指向一個 Secret 物件。 因此, 在使用 Secret 到任何 Pods 之前, 需要先建立 Secret。</p>
+<p>Secret 資源隸屬於 <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces" target="_blank" rel="noopener">namespace</a>。 Secret 只可被在同一個 namespace 下的 Pod 參照</p>
+<p>每個 secret 最大可 1MiB。 這是為了避免建立一個很大的 Secret, 這很可能會耗盡 API server 以及 kubelet 的 memory。 然而, 如果建立很多小的 secret 一樣會吃光 memory</p>
+<p>kubelet 只支援在 Pods 中使用 secrets 當 secret 是從 API server 獲得。 這包含任何使用 <code>kubectl</code> 建立的 Pods, 或間接透過 replication controller。 這不包含使用 kubelet <code>--manifest-url</code> flag, <code>--config</code> flag, 或 REST API 所建立的 Pod</p>
+<p>除非有特別指定 optional, 否則在 Secret 位於 Pods 中被使用為環境變數之前, 需先建立。 如果參照的 secret 不存在, 那這個 Pod 將不會開始。</p>
+<p>參照的 keys (<code>secretKeyRef</code> 欄位) 如果不存在, 那 Pod 一樣不會開始</p>
+<p>如果 secret 被使用於環境變數載入 <code>envFrom</code> 欄位, 那被視為不合法的環境變數名稱將會被忽略, Pod 可以開始。 如果有不合法的 key 被忽略, 那麼對應的事件 <code>InvalidVariableNames</code> 以及訊息將會產生。 不合法的 key, 像是 :<code>1badkey</code> 以及 <code>2alsobad</code></p>
+<ul>
+<li><p>這時如果執行:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get events</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出類似:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">0s         0s          1         dapi-test-pod   Pod                                         Warning   InvalidEnvironmentVariableNames   kubelet, 127.0.0.1      Keys [1badkey, 2alsobad] from the EnvFrom secret default/mysecret were skipped since they are considered invalid environment variable names.</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Secret-以及-Pod-生命週期的互動"><a href="#Secret-以及-Pod-生命週期的互動" class="headerlink" title="Secret 以及 Pod 生命週期的互動"></a>Secret 以及 Pod 生命週期的互動</h3><p>當 Pod 經由呼叫 Kubernetes API 被建立, 這時並不會去確認參照的 secret 是否存在。 一旦 Pod 被分配了, kubelet 將會試圖取得 secret 值, 如果 secret 無法被取得, 因為它並不存在或者是暫時性的與 API server 失去連線, 那 kubelet 將會週期性的重試。 同時 kubelet 也會回報事件, 解釋 Pod 尚未開始的原因。 一旦 secret 被取得, kubelet 將會建立並掛載含有 secret 的 volume。 在 Pod 的 volume 成功掛載之前, 該 Pod 下的任何一個容器都不會開始。</p>
+<p><br><br><br></p>
+<h2 id="使用情境"><a href="#使用情境" class="headerlink" title="使用情境"></a>使用情境</h2><h3 id="使用情境：Pod-及-ssh-keys"><a href="#使用情境：Pod-及-ssh-keys" class="headerlink" title="使用情境：Pod 及 ssh keys"></a>使用情境：Pod 及 ssh keys</h3><ul>
+<li><p>建立包含一些 ssh key 的 secret:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret generic ssh-key-secret \</span><br><span class="line">--from-file=ssh-privatekey=/path/to/.ssh/id_rsa \</span><br><span class="line">--from-file=ssh-publickey=/path/to/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出類似：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">secret &quot;ssh-key-secret&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你也可以建立一個 <code>kustomization.yaml</code> 檔案, 在其 <code>secretGenerator</code> 欄位定義 ssh keys</p>
+</li>
+</ul>
+<p><strong>注意</strong>: 在送出你的 ssh keys 之前要三思而後行： 叢集中的其他使用者或許可以存取這個 secret。 使用一個你想要可以被叢集中的其他使用者存取的 service account, 這樣當有什麼狀況時, 你也方便取消這個 service account</p>
+<ul>
+<li><p>現在你可以建立一個 Pod, 這個 Pod 參照一個有 ssh key 的 secret 且以 volume 的方式使用這個 secret</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-test-pod</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">secret-test</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  volumes:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">    secret:</span></span><br><span class="line"><span class="hljs-attr">      secretName:</span> <span class="hljs-string">ssh-key-secret</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">ssh-test-container</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">mySshImage</span></span><br><span class="line"><span class="hljs-attr">    volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">      readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">      mountPath:</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>當容器的指令執行後, key 將會在以下的地方可用：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/etc/secret-volume/ssh-publickey</span><br><span class="line">/etc/secret-volume/ssh-privatekey</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>然後該容器將可使用 secret 資料來建立一個 ssh 連線</p>
+<p><br></p>
+<h3 id="使用情境：-含有-prod-test-資訊的-Pods"><a href="#使用情境：-含有-prod-test-資訊的-Pods" class="headerlink" title="使用情境： 含有 prod / test 資訊的 Pods"></a>使用情境： 含有 prod / test 資訊的 Pods</h3><p>這個範例演示了一個使用含有 production 敏感資訊的 secret 的 Pod, 以及另外一個使用含有 test 敏感資訊的 secret 的 Pod</p>
+<ul>
+<li><p>你可以使用 <code>kustomization.yaml</code> 檔案中的 <code>secretGenerator</code> 欄位來執行 <code>kubectl create secret</code> 指令</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret generic prod-db-secret \</span><br><span class="line">--from-literal=username=produser \</span><br><span class="line">--from-literal=password=Y4nys7f11</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出類似:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">secret &quot;prod-db-secret&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>執行:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret generic <span class="hljs-built_in">test</span>-db-secret \</span><br><span class="line">--from-literal=username=testuser \</span><br><span class="line">--from-literal=password=iluvtests</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>輸出類似：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">secret &quot;test-db-secret&quot; created</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>注意</strong>:<br>特殊符號像是 <code>$</code>, <code>\</code>, <code>*</code>, 以及 <code>!</code> 會被你的 <a href="https://en.wikipedia.org/wiki/Shell_(computing" target="_blank" rel="noopener">shell</a> 轉換, 所以會需要 escape。 在大部分的 shell 當中, escape password 最簡單的方法就是用 single quote (<code>&#39;</code>) 把 string 包住。 舉例來說, 如果你的密碼是 <code>S!B\*d$zDsb</code>, 你應執行指令如下：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret generic dev-db-secret \</span><br><span class="line">--from-literal=username=devuser \</span><br><span class="line">--from-literal=password=<span class="hljs-string">'S!B\*d$zDsb'</span></span><br></pre></td></tr></table></figure></p>
+<p>如果使用 <code>--from-file</code> 的話, 你不需要 escape 特殊符號</p>
+<ul>
+<li><p>建立該 pod.yaml</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; pod.yaml</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: List</span><br><span class="line">items:</span><br><span class="line">- kind: Pod</span><br><span class="line">  apiVersion: v1</span><br><span class="line">  metadata:</span><br><span class="line">    name: prod-db-client-pod</span><br><span class="line">    labels:</span><br><span class="line">      name: prod-db-client</span><br><span class="line">  spec:</span><br><span class="line">    volumes:</span><br><span class="line">    - name: secret-volume</span><br><span class="line">      secret:</span><br><span class="line">        secretName: prod-db-secret</span><br><span class="line">    containers:</span><br><span class="line">    - name: db-client-container</span><br><span class="line">      image: myClientImage</span><br><span class="line">      volumeMounts:</span><br><span class="line">      - name: secret-volume</span><br><span class="line">        readOnly: <span class="hljs-literal">true</span></span><br><span class="line">        mountPath: <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line">- kind: Pod</span><br><span class="line">  apiVersion: v1</span><br><span class="line">  metadata:</span><br><span class="line">    name: <span class="hljs-built_in">test</span>-db-client-pod</span><br><span class="line">    labels:</span><br><span class="line">      name: <span class="hljs-built_in">test</span>-db-client</span><br><span class="line">  spec:</span><br><span class="line">    volumes:</span><br><span class="line">    - name: secret-volume</span><br><span class="line">      secret:</span><br><span class="line">        secretName: <span class="hljs-built_in">test</span>-db-secret</span><br><span class="line">    containers:</span><br><span class="line">    - name: db-client-container</span><br><span class="line">      image: myClientImage</span><br><span class="line">      volumeMounts:</span><br><span class="line">      - name: secret-volume</span><br><span class="line">        readOnly: <span class="hljs-literal">true</span></span><br><span class="line">        mountPath: <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>將 pod.yaml 加到 kustimization.yaml file</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt;&gt; kustomization.yaml</span><br><span class="line">resources:</span><br><span class="line">- pod.yaml</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用以下指令來 apply 這些物件到 API server</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -k .</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>兩個容器在各自的檔案系統中都會有以下檔案, 檔案的值為各自容器的環境</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/etc/secret-volume/username</span><br><span class="line">/etc/secret-volume/password</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="以下的-Kubernetes-configuration-file-中的-Kind-List-是？"><a href="#以下的-Kubernetes-configuration-file-中的-Kind-List-是？" class="headerlink" title="以下的 Kubernetes configuration file 中的 Kind:List 是？:"></a><strong>以下的 Kubernetes configuration file 中的 Kind:List 是？</strong>:</h6><ul>
+<li><p><strong>Configuration file</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">cat</span> <span class="hljs-string">&lt;&lt;EOF</span> <span class="hljs-string">&gt; pod.yaml</span></span><br><span class="line"><span class="hljs-string"></span><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">List</span></span><br><span class="line"><span class="hljs-attr">items:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">  apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">  metadata:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">prod-db-client-pod</span></span><br><span class="line"><span class="hljs-attr">    labels:</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">prod-db-client</span></span><br><span class="line"><span class="hljs-attr">  spec:</span></span><br><span class="line"><span class="hljs-attr">    volumes:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">      secret:</span></span><br><span class="line"><span class="hljs-attr">        secretName:</span> <span class="hljs-string">prod-db-secret</span></span><br><span class="line"><span class="hljs-attr">    containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">db-client-container</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">myClientImage</span></span><br><span class="line"><span class="hljs-attr">      volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">        readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">        mountPath:</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">  apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">  metadata:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">test-db-client-pod</span></span><br><span class="line"><span class="hljs-attr">    labels:</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">test-db-client</span></span><br><span class="line"><span class="hljs-attr">  spec:</span></span><br><span class="line"><span class="hljs-attr">    volumes:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">      secret:</span></span><br><span class="line"><span class="hljs-attr">        secretName:</span> <span class="hljs-string">test-db-secret</span></span><br><span class="line"><span class="hljs-attr">    containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">db-client-container</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">myClientImage</span></span><br><span class="line"><span class="hljs-attr">      volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">        readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">        mountPath:</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line"><span class="hljs-string">EOF</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可定義多個 Pod</p>
+</li>
+</ul>
+<h6 id="Kubernetes-Secret-中-當我要建立含有敏感資訊-像是-ssh-keys-時-最好採用什麼樣的-service-account"><a href="#Kubernetes-Secret-中-當我要建立含有敏感資訊-像是-ssh-keys-時-最好採用什麼樣的-service-account" class="headerlink" title="Kubernetes Secret 中, 當我要建立含有敏感資訊, 像是 ssh keys 時, 最好採用什麼樣的 service account?"></a><strong>Kubernetes Secret 中, 當我要建立含有敏感資訊, 像是 ssh keys 時, 最好採用什麼樣的 service account?</strong></h6><p>可以建立一個 service account, 你可以跟叢集中的其他使用者分享, 萬一情況不對你可以取消這個 service account</p>
+<h6 id="Kubernetes-Secret-中-在-Pod-的-volume-被掛載之前-不相干的容器可以先開始嗎？"><a href="#Kubernetes-Secret-中-在-Pod-的-volume-被掛載之前-不相干的容器可以先開始嗎？" class="headerlink" title="Kubernetes Secret 中, 在 Pod 的 volume 被掛載之前, 不相干的容器可以先開始嗎？"></a><strong>Kubernetes Secret 中, 在 Pod 的 volume 被掛載之前, 不相干的容器可以先開始嗎？</strong></h6><p>不行</p>
+<h6 id="Kubernetes-Secret-中-哪個元件會去確認-secret-是否存在？"><a href="#Kubernetes-Secret-中-哪個元件會去確認-secret-是否存在？" class="headerlink" title="Kubernetes Secret 中, 哪個元件會去確認 secret 是否存在？"></a><strong>Kubernetes Secret 中, 哪個元件會去確認 secret 是否存在？</strong></h6><p>kubelet</p>
+<h6 id="Kubernetes-Secret-中-什麼時候會去確認-secret-是否存在？"><a href="#Kubernetes-Secret-中-什麼時候會去確認-secret-是否存在？" class="headerlink" title="Kubernetes Secret 中, 什麼時候會去確認 secret 是否存在？"></a><strong>Kubernetes Secret 中, 什麼時候會去確認 secret 是否存在？</strong></h6><p>當 Pod 已被建立, 並且被分配後</p>
+<h6 id="Kubernetes-Secret-中-當-Pod-經由呼叫-API-server-被建立時-此時會去確認參照的-secret-是否存在嗎？"><a href="#Kubernetes-Secret-中-當-Pod-經由呼叫-API-server-被建立時-此時會去確認參照的-secret-是否存在嗎？" class="headerlink" title="Kubernetes Secret 中, 當 Pod 經由呼叫 API server 被建立時, 此時會去確認參照的 secret 是否存在嗎？"></a><strong>Kubernetes Secret 中, 當 Pod 經由呼叫 API server 被建立時, 此時會去確認參照的 secret 是否存在嗎？</strong></h6><p>不會</p>
+<h6 id="Kubernetes-中-1badkey-以及-2alsobad-是合法的嗎？"><a href="#Kubernetes-中-1badkey-以及-2alsobad-是合法的嗎？" class="headerlink" title="Kubernetes 中, 1badkey 以及 2alsobad 是合法的嗎？"></a><strong>Kubernetes 中, <em>1badkey</em> 以及 <em>2alsobad</em> 是合法的嗎？</strong></h6><p>不合法的</p>
+<h6 id="Kubernetes-中-一個-secret-的-size-最大是多少？"><a href="#Kubernetes-中-一個-secret-的-size-最大是多少？" class="headerlink" title="Kubernetes 中, 一個 secret 的 size 最大是多少？"></a><strong>Kubernetes 中, 一個 secret 的 size 最大是多少？</strong></h6><p>1 MiB</p>
+<h6 id="Kubernetes-中-如果我要自動的附加-imagePullSecret-我可以把這個家-imagePullSecret-附加到哪一個元件上？"><a href="#Kubernetes-中-如果我要自動的附加-imagePullSecret-我可以把這個家-imagePullSecret-附加到哪一個元件上？" class="headerlink" title="Kubernetes 中, 如果我要自動的附加 imagePullSecret, 我可以把這個家 imagePullSecret 附加到哪一個元件上？"></a><strong>Kubernetes 中, 如果我要自動的附加 imagePullSecret, 我可以把這個家 imagePullSecret 附加到哪一個元件上？</strong></h6><p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account" target="_blank" rel="noopener">service account</a></p>
+<h6 id="Kubernetes-中-如果我要自動的掛載手動建立的-secret-到-Pods-上-我可以使用哪一個元件？"><a href="#Kubernetes-中-如果我要自動的掛載手動建立的-secret-到-Pods-上-我可以使用哪一個元件？" class="headerlink" title="Kubernetes 中, 如果我要自動的掛載手動建立的 secret 到 Pods 上, 我可以使用哪一個元件？"></a><strong>Kubernetes 中, 如果我要自動的掛載手動建立的 secret 到 Pods 上, 我可以使用哪一個元件？</strong></h6><p><a href="https://kubernetes.io/docs/tasks/inject-data-application/podpreset/" target="_blank" rel="noopener">PodPreset</a></p>
+<h6 id="解釋以下-Kubernetes-example-code"><a href="#解釋以下-Kubernetes-example-code" class="headerlink" title="解釋以下 Kubernetes example code"></a><strong>解釋以下 Kubernetes example code</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">foo</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">awesomeapps</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">foo</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">janedoe/awesomeapp:v1</span></span><br><span class="line"><span class="hljs-attr">  imagePullSecrets:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">myregistrykey</span></span><br></pre></td></tr></table></figure>
 </li>
