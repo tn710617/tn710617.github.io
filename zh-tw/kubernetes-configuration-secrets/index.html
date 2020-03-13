@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-11T05:08:28.672Z">
+<meta property="og:updated_time" content="2020-03-13T03:33:30.608Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-11T05:08:28.672Z">
+<meta property="og:updated_time" content="2020-03-13T03:33:30.608Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -257,10 +257,28 @@
                     <a class="navbar-item" href="#使用情境：-含有-prod-test-資訊的-Pods">4.2&nbsp;&nbsp;使用情境： 含有 prod / test 資訊的 Pods</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#使用情境-secret-volume-中的-dotfile">4.3&nbsp;&nbsp;使用情境: secret volume 中的 dotfile</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用情境：-Secret-只被-Pod-中的一個容器看見">4.4&nbsp;&nbsp;使用情境： Secret 只被 Pod 中的一個容器看見</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Questions-and-Answers">5&nbsp;&nbsp;<b>Questions and Answers</b></a>
+                    <a class="navbar-item" href="#最佳實踐">5&nbsp;&nbsp;<b>最佳實踐</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用-Secret-API-的-Clients">5.1&nbsp;&nbsp;使用 Secret API 的 Clients</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">6&nbsp;&nbsp;<b>Questions and Answers</b></a>
                     
                 </div>
             </div>
@@ -322,7 +340,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 7454 字)
+            1 小时 讀完 (大概 8152 字)
         </span>
         
     </div>
@@ -615,8 +633,33 @@
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/etc/secret-volume/username</span><br><span class="line">/etc/secret-volume/password</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+<p>注意到, 兩個 Pods 的 specs 只有一個欄位不同。 它從一個共同的 Pods template 當中使用不同資料來建立 Pods<br>你可以更進一步的簡化 Pod specification, 藉由使用兩個 service account</p>
+<ul>
+<li><code>prod-user</code> 含有 <code>prod-db-secret</code></li>
+<li><code>test-user</code> 含有 <code>test-db-secret</code></li>
+</ul>
+<p>簡化後的 Pod 規格像是：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">prod-db-client-pod</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">prod-db-client</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  serviceAccount:</span> <span class="hljs-string">prod-db-client</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">db-client-container</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">myClientImage</span></span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="使用情境-secret-volume-中的-dotfile"><a href="#使用情境-secret-volume-中的-dotfile" class="headerlink" title="使用情境: secret volume 中的 dotfile"></a>使用情境: secret volume 中的 dotfile</h3><p>你可以讓你的檔案變成隱藏檔, 藉由定義 key 時, 使用 (<code>.</code>) 開頭定義。<br>這個 key 代表一個 dotfile, 或隱藏檔。 舉例來說, 當以下的 secret 被掛載到 volume, <code>secret-volume</code><br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">dotfile-secret</span></span><br><span class="line"><span class="hljs-attr">data:</span></span><br><span class="line">  <span class="hljs-string">.secret-file:</span> <span class="hljs-string">dmFsdWUtMg0KDQo=</span></span><br><span class="line"><span class="hljs-meta">---</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-dotfiles-pod</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  volumes:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">    secret:</span></span><br><span class="line"><span class="hljs-attr">      secretName:</span> <span class="hljs-string">dotfile-secret</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">dotfile-test-container</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">k8s.gcr.io/busybox</span></span><br><span class="line"><span class="hljs-attr">    command:</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">ls</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">"-l"</span></span><br><span class="line"><span class="hljs-bullet">    -</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line"><span class="hljs-attr">    volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">      readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">      mountPath:</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br></pre></td></tr></table></figure></p>
+<p>這個 volume 將會只含有一個檔案, <code>.secret-file</code>, 然後 <code>dotfile-test-container</code> 將會印出 <code>/etc/secret-volume/.secret-file</code></p>
+<p><strong>注意</strong>: 檔案若為 dot 開頭的話, 用 <code>ls -l</code> 是印不出來的, 要使用 <code>ls -la</code></p>
+<p><br></p>
+<h3 id="使用情境：-Secret-只被-Pod-中的一個容器看見"><a href="#使用情境：-Secret-只被-Pod-中的一個容器看見" class="headerlink" title="使用情境： Secret 只被 Pod 中的一個容器看見"></a>使用情境： Secret 只被 Pod 中的一個容器看見</h3><p>試想, 當一個應用需要處理 HTTP requests, 一些複雜的商業邏輯, 然後使用 HMAC 來對一些訊息做簽名。<br>因為它具有複雜應用邏輯, 可能會讓一些軟體讀取 server 中的檔案, 這很可能會暴露 private key<br>所以這個應用可以分成兩個容器兩個程序: 一個前端容器, 負責處理使用者互動以及商業邏輯, 但不可看到 private key; 以及另外一個 signer 容器, 它可以看到 private key, 回應來自於前端容器的簡單簽名請求。 (舉例來說, 經由 localhost 網路)<br>經由這個分離的方法, 攻擊者必須要駭進 server 之後, 還要做更細微的控制, 跟單純的讀取檔案動作相比, 這明顯難多了。</p>
 <p><br><br><br></p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="以下的-Kubernetes-configuration-file-中的-Kind-List-是？"><a href="#以下的-Kubernetes-configuration-file-中的-Kind-List-是？" class="headerlink" title="以下的 Kubernetes configuration file 中的 Kind:List 是？:"></a><strong>以下的 Kubernetes configuration file 中的 Kind:List 是？</strong>:</h6><ul>
+<h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><h3 id="使用-Secret-API-的-Clients"><a href="#使用-Secret-API-的-Clients" class="headerlink" title="使用 Secret API 的 Clients"></a>使用 Secret API 的 Clients</h3><p>當部署一個與 Secret API 有互動的應用時, 應該要使用 <a href="https://kubernetes.io/docs/reference/access-authn-authz/authorization/" target="_blank" rel="noopener">authorization policies</a>, 像是 <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/" target="_blank" rel="noopener">RBAC</a>, 來限制存取權</p>
+<p>Secrets </p>
+<p><br><br><br></p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Kubernetes-中-什麼情況之下我可能會需要讓-Pod-中特定的容器才可看到-private-key"><a href="#Kubernetes-中-什麼情況之下我可能會需要讓-Pod-中特定的容器才可看到-private-key" class="headerlink" title="Kubernetes 中, 什麼情況之下我可能會需要讓 Pod 中特定的容器才可看到 private key?"></a><strong>Kubernetes 中, 什麼情況之下我可能會需要讓 Pod 中特定的容器才可看到 private key?</strong></h6><p>提高安全性</p>
+<h6 id="Kubernetes-中-如果我要讓-secret-檔案掛載後的檔案是隱藏檔-我可以怎麼做？"><a href="#Kubernetes-中-如果我要讓-secret-檔案掛載後的檔案是隱藏檔-我可以怎麼做？" class="headerlink" title="Kubernetes 中, 如果我要讓 secret 檔案掛載後的檔案是隱藏檔, 我可以怎麼做？"></a><strong>Kubernetes 中, 如果我要讓 secret 檔案掛載後的檔案是隱藏檔, 我可以怎麼做？</strong></h6><p>在定義 secret key 時, 以 (<code>.</code>) 開頭</p>
+<h6 id="解釋以下的-Kubernetes-example"><a href="#解釋以下的-Kubernetes-example" class="headerlink" title="解釋以下的 Kubernetes example"></a><strong>解釋以下的 Kubernetes example</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">dotfile-secret</span></span><br><span class="line"><span class="hljs-attr">data:</span></span><br><span class="line">  <span class="hljs-string">.secret-file:</span> <span class="hljs-string">dmFsdWUtMg0KDQo=</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">dotfile-secret</span></span><br><span class="line"><span class="hljs-attr">data:</span></span><br><span class="line">  <span class="hljs-string">//</span> <span class="hljs-string">指定該檔案為</span> <span class="hljs-string">dotfile,</span> <span class="hljs-string">代表該</span> <span class="hljs-string">data</span> <span class="hljs-string">掛載的檔案會是隱藏檔</span></span><br><span class="line">  <span class="hljs-string">.secret-file:</span> <span class="hljs-string">dmFsdWUtMg0KDQo=</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-configuration-file-中的-Kind-List-是？"><a href="#以下的-Kubernetes-configuration-file-中的-Kind-List-是？" class="headerlink" title="以下的 Kubernetes configuration file 中的 Kind:List 是？:"></a><strong>以下的 Kubernetes configuration file 中的 Kind:List 是？</strong>:</h6><ul>
 <li><p><strong>Configuration file</strong>:</p>
 <figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">cat</span> <span class="hljs-string">&lt;&lt;EOF</span> <span class="hljs-string">&gt; pod.yaml</span></span><br><span class="line"><span class="hljs-string"></span><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">List</span></span><br><span class="line"><span class="hljs-attr">items:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">  apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">  metadata:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">prod-db-client-pod</span></span><br><span class="line"><span class="hljs-attr">    labels:</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">prod-db-client</span></span><br><span class="line"><span class="hljs-attr">  spec:</span></span><br><span class="line"><span class="hljs-attr">    volumes:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">      secret:</span></span><br><span class="line"><span class="hljs-attr">        secretName:</span> <span class="hljs-string">prod-db-secret</span></span><br><span class="line"><span class="hljs-attr">    containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">db-client-container</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">myClientImage</span></span><br><span class="line"><span class="hljs-attr">      volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">        readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">        mountPath:</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">  apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">  metadata:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">test-db-client-pod</span></span><br><span class="line"><span class="hljs-attr">    labels:</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">test-db-client</span></span><br><span class="line"><span class="hljs-attr">  spec:</span></span><br><span class="line"><span class="hljs-attr">    volumes:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">      secret:</span></span><br><span class="line"><span class="hljs-attr">        secretName:</span> <span class="hljs-string">test-db-secret</span></span><br><span class="line"><span class="hljs-attr">    containers:</span></span><br><span class="line"><span class="hljs-attr">    - name:</span> <span class="hljs-string">db-client-container</span></span><br><span class="line"><span class="hljs-attr">      image:</span> <span class="hljs-string">myClientImage</span></span><br><span class="line"><span class="hljs-attr">      volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">secret-volume</span></span><br><span class="line"><span class="hljs-attr">        readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">        mountPath:</span> <span class="hljs-string">"/etc/secret-volume"</span></span><br><span class="line"><span class="hljs-string">EOF</span></span><br></pre></td></tr></table></figure>
 </li>
