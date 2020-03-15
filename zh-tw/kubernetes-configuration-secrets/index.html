@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-13T03:33:30.608Z">
+<meta property="og:updated_time" content="2020-03-15T13:22:43.381Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-13T03:33:30.608Z">
+<meta property="og:updated_time" content="2020-03-15T13:22:43.381Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; kubernetes - Secrets">
 <meta name="twitter:description" content="Kubernetes Secrets 讓你可以儲存敏感資訊, 像是密碼 OAuth tokens, 以及 ssh keys。 將機密資訊儲存在 Secret 比一字不差的存在 Pod 定義 yaml 檔或容器鏡像中安全也靈活的多。 更多資訊可以參考 Secrets design document">
@@ -278,7 +278,17 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Questions-and-Answers">6&nbsp;&nbsp;<b>Questions and Answers</b></a>
+                    <a class="navbar-item" href="#Security-properties">6&nbsp;&nbsp;<b>Security properties</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Risks">6.1&nbsp;&nbsp;Risks</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">7&nbsp;&nbsp;<b>Questions and Answers</b></a>
                     
                 </div>
             </div>
@@ -340,7 +350,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8152 字)
+            1 小时 讀完 (大概 9094 字)
         </span>
         
     </div>
@@ -647,9 +657,30 @@
 <h3 id="使用情境：-Secret-只被-Pod-中的一個容器看見"><a href="#使用情境：-Secret-只被-Pod-中的一個容器看見" class="headerlink" title="使用情境： Secret 只被 Pod 中的一個容器看見"></a>使用情境： Secret 只被 Pod 中的一個容器看見</h3><p>試想, 當一個應用需要處理 HTTP requests, 一些複雜的商業邏輯, 然後使用 HMAC 來對一些訊息做簽名。<br>因為它具有複雜應用邏輯, 可能會讓一些軟體讀取 server 中的檔案, 這很可能會暴露 private key<br>所以這個應用可以分成兩個容器兩個程序: 一個前端容器, 負責處理使用者互動以及商業邏輯, 但不可看到 private key; 以及另外一個 signer 容器, 它可以看到 private key, 回應來自於前端容器的簡單簽名請求。 (舉例來說, 經由 localhost 網路)<br>經由這個分離的方法, 攻擊者必須要駭進 server 之後, 還要做更細微的控制, 跟單純的讀取檔案動作相比, 這明顯難多了。</p>
 <p><br><br><br></p>
 <h2 id="最佳實踐"><a href="#最佳實踐" class="headerlink" title="最佳實踐"></a>最佳實踐</h2><h3 id="使用-Secret-API-的-Clients"><a href="#使用-Secret-API-的-Clients" class="headerlink" title="使用 Secret API 的 Clients"></a>使用 Secret API 的 Clients</h3><p>當部署一個與 Secret API 有互動的應用時, 應該要使用 <a href="https://kubernetes.io/docs/reference/access-authn-authz/authorization/" target="_blank" rel="noopener">authorization policies</a>, 像是 <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/" target="_blank" rel="noopener">RBAC</a>, 來限制存取權</p>
-<p>Secrets </p>
+<p>Secret 很常會含有重要資訊, 其中有很多都會在 Kubernetes 內到外部系統造成很大的影響。 儘管每個 App 都可聲明各自需要的 Secret, 但其他在同一個命名空間下的 App 依然可以非法的獲得該 Secret</p>
+<p>因為以上這些原因, 在一個 namespace 下, <code>watch</code> 以及 <code>list</code> 的請求具有極大的權限, 應該被避免, 因為 listing secret 將允許客戶端檢視所有位於該 namespace 下的 secret 值。 可以 <code>watch</code> 以及 <code>list</code> 叢集下所有 secrets 的能力, 應該要被限制, 唯有最高權限或系統等級的元件可以獲得。</p>
+<p>需要存取 Secret API 的應用應該要對其需要的 secrets 使用 <code>get</code> 請求。 這讓管理者可以限制所有 secrets 的存取權, 只開放白名單給應用程式需要的 instance 使用 <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/#referring-to-resources" target="_blank" rel="noopener">white-listing access to individual instances</a></p>
+<p>比 <code>get</code> 更好的方式, 客戶端可以設計參照 secret 的資源, 然後 <code>watch</code> 這個資源, 當參照有變更時, 重新對 secret 發請求。 另外, <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/bulk_watch.md" target="_blank" rel="noopener">bulk watch API</a> 讓客戶端可以 <code>watch</code> 每一個被提交的資源, 並且可能會在近期由 Kubernetes 發佈。</p>
 <p><br><br><br></p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Kubernetes-中-什麼情況之下我可能會需要讓-Pod-中特定的容器才可看到-private-key"><a href="#Kubernetes-中-什麼情況之下我可能會需要讓-Pod-中特定的容器才可看到-private-key" class="headerlink" title="Kubernetes 中, 什麼情況之下我可能會需要讓 Pod 中特定的容器才可看到 private key?"></a><strong>Kubernetes 中, 什麼情況之下我可能會需要讓 Pod 中特定的容器才可看到 private key?</strong></h6><p>提高安全性</p>
+<h2 id="Security-properties"><a href="#Security-properties" class="headerlink" title="Security properties"></a>Security properties</h2><p>因為 secretes 可以獨立的被建立, 不受限於使用他們的 Pods, 所以在建立, 檢視, 以及編輯 Pods 的過程中暴露 secrets 的風險算是比較低的。 系統也可以採取額外的防護措施, 例如避免將 secret 寫入 disk</p>
+<p>secret 唯有當 Pod 需要時才會被送往該 Pod 所在的 node。 kubelet 會將 secret 儲存在  <code>tmpfs</code>, 所以 secret 不會被寫入 disk 儲存區。 一旦有需要該 secret 的 Pod 被刪除了, kubelet 將會從本地複製區刪除該 secret</p>
+<p>在一個 node 當中可能會有許多 Pods 會用到的 secret, 然而, secret 只對那些有用到他們的 pod 來說是可見的, 換句話說, 一個 Pod 是無法存取另外一個 Pod 的 secret</p>
+<p>在一個 Pod 內可能會有很多容器, 然而, 每個容器都必須對各自 <code>volumeMounts</code> 中的 secret 發請求, 這樣 secret 對該容器來說才會是可見的。 這可被用來建立有用的 <a href="https://kubernetes.io/docs/concepts/configuration/secret/#use-case-secret-visible-to-one-container-in-a-pod" target="_blank" rel="noopener">security partitions at Pod level</a> (Pod 層級的安全分區)</p>
+<p>在多數的 Kubernetes distributions 當中, 使用者和 API server 之間, 以及 API server 到 kubelets 的通訊都由 SSL/TLS 所保護著。 Secret 經由這些通道傳輸時也被保護著。</p>
+<p><strong>FEATURE STATE</strong>: <code>kubernetes v1.13</code></p>
+<p>你可以針對 secret 資料開啟 <a href="https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/" target="_blank" rel="noopener">encryption at rest</a>, 所以 secret 不會被明碼存進 <a href="https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/" target="_blank" rel="noopener">etcd</a></p>
+<h3 id="Risks"><a href="#Risks" class="headerlink" title="Risks"></a>Risks</h3><h6 id="在-API-server-中-secret-資料被存在-etcd-因此："><a href="#在-API-server-中-secret-資料被存在-etcd-因此：" class="headerlink" title="在 API server 中, secret 資料被存在 etcd; 因此："></a>在 API server 中, secret 資料被存在 <a href="https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/" target="_blank" rel="noopener">etcd</a>; 因此：</h6><ul>
+<li>管理者須針對叢集資料啟動 encryption at rest (從 v1.13 開始以及之後的版本有要求)</li>
+<li>管理者須限制到 etcd 以及 admin users 的存取</li>
+<li>當原本由 etcd 使用的 disk 不再被使用後, 須將資料清理掉</li>
+<li>當叢集中運行 etcd, 管理者務必確保在 etcd 點對點傳輸時有使用 SSL/TLS<br>###### </li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Kubernetes-中-如果一個-secret-在一個-node-當中只被一個-pod-使用-現在該-pod-被刪除了-kubelet-會如何處置這個-secret"><a href="#Kubernetes-中-如果一個-secret-在一個-node-當中只被一個-pod-使用-現在該-pod-被刪除了-kubelet-會如何處置這個-secret" class="headerlink" title="Kubernetes 中, 如果一個 secret 在一個 node 當中只被一個 pod 使用, 現在該 pod 被刪除了, kubelet 會如何處置這個 secret?"></a><strong>Kubernetes 中, 如果一個 secret 在一個 node 當中只被一個 pod 使用, 現在該 pod 被刪除了, kubelet 會如何處置這個 secret?</strong></h6><p>刪除 local copy</p>
+<h6 id="Kubernetes-中-kubelet-不會將-secret-儲存到-disk-storage-反之-會存在哪？"><a href="#Kubernetes-中-kubelet-不會將-secret-儲存到-disk-storage-反之-會存在哪？" class="headerlink" title="Kubernetes 中, kubelet 不會將 secret 儲存到 disk storage, 反之, 會存在哪？"></a><strong>Kubernetes 中, kubelet 不會將 secret 儲存到 disk storage, 反之, 會存在哪？</strong></h6><p><code>tmpfs</code></p>
+<h6 id="Kubernetes-中-kubelet-會將-secret-儲存到-disk-storage-嗎？"><a href="#Kubernetes-中-kubelet-會將-secret-儲存到-disk-storage-嗎？" class="headerlink" title="Kubernetes 中, kubelet 會將 secret 儲存到 disk storage 嗎？"></a><strong>Kubernetes 中, kubelet 會將 secret 儲存到 disk storage 嗎？</strong></h6><p>不會</p>
+<h6 id="Kubernetes-中-secret-在什麼情況下會被送往一個-node"><a href="#Kubernetes-中-secret-在什麼情況下會被送往一個-node" class="headerlink" title="Kubernetes 中, secret 在什麼情況下會被送往一個 node?"></a><strong>Kubernetes 中, secret 在什麼情況下會被送往一個 node?</strong></h6><p>當該 node 被分配到一個需要該 secret 的 Pod</p>
+<h6 id="Kubernetes-中-什麼情況之下我可能會需要讓-Pod-中特定的容器才可看到-private-key"><a href="#Kubernetes-中-什麼情況之下我可能會需要讓-Pod-中特定的容器才可看到-private-key" class="headerlink" title="Kubernetes 中, 什麼情況之下我可能會需要讓 Pod 中特定的容器才可看到 private key?"></a><strong>Kubernetes 中, 什麼情況之下我可能會需要讓 Pod 中特定的容器才可看到 private key?</strong></h6><p>提高安全性</p>
 <h6 id="Kubernetes-中-如果我要讓-secret-檔案掛載後的檔案是隱藏檔-我可以怎麼做？"><a href="#Kubernetes-中-如果我要讓-secret-檔案掛載後的檔案是隱藏檔-我可以怎麼做？" class="headerlink" title="Kubernetes 中, 如果我要讓 secret 檔案掛載後的檔案是隱藏檔, 我可以怎麼做？"></a><strong>Kubernetes 中, 如果我要讓 secret 檔案掛載後的檔案是隱藏檔, 我可以怎麼做？</strong></h6><p>在定義 secret key 時, 以 (<code>.</code>) 開頭</p>
 <h6 id="解釋以下的-Kubernetes-example"><a href="#解釋以下的-Kubernetes-example" class="headerlink" title="解釋以下的 Kubernetes example"></a><strong>解釋以下的 Kubernetes example</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
