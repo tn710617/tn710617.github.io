@@ -4,15 +4,18 @@
     <meta charset="utf-8">
 <title>Kubernetes - Volumes - Ray&#39;s Coding Journey</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta name="keywords" content="Kubernetes,Kubernetes Volumes">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - Volumes">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-concepts-storage-volumes/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-22T10:41:04.109Z">
+<meta property="og:updated_time" content="2020-03-22T13:27:08.078Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Volumes">
+<meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -27,15 +30,18 @@
 
 
 
-    <meta name="keywords" content="Kubernetes,Kubernetes Volumes">
+    <meta name="description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
+<meta name="keywords" content="Kubernetes,Kubernetes Volumes">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubernetes - Volumes">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-concepts-storage-volumes/index.html">
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-22T10:41:04.109Z">
+<meta property="og:updated_time" content="2020-03-22T13:27:08.078Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Volumes">
+<meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 
 
 
@@ -132,6 +138,44 @@
                 <div class="navbar-dropdown is-right">
                     
                     
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Background">2&nbsp;&nbsp;<b>Background</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Types-of-Volumes">3&nbsp;&nbsp;<b>Types of Volumes</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#awsElasticBlockStore">3.1&nbsp;&nbsp;awsElasticBlockStore</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answer">4&nbsp;&nbsp;<b>Questions and Answer</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-volume-可以硬連結到另一個-volume-嗎？">4.1.1&nbsp;&nbsp;Kubernetes 中, volume 可以硬連結到另一個 volume 嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-volume-可以掛載到另外一個-volume-裡嗎？">4.1.2&nbsp;&nbsp;Kubernetes 中, volume 可以掛載到另外一個 volume 裡嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-中-一般來說-volume-的周命週期與什麼相同？">4.1.3&nbsp;&nbsp;Kubernetes 中, 一般來說, volume 的周命週期與什麼相同？</a>
+                    
                 </div>
             </div>
             
@@ -192,13 +236,29 @@
         <span class="column is-narrow">
             
             
-            几秒 讀完 (大概 0 字)
+            4 分钟 讀完 (大概 550 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來</p>
+<p>容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。<br>首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。<br>再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes <code>Volume</code> 抽象可以解決這兩個問題。<br>建議對 <a href="https://kubernetes.io/docs/user-guide/pods" target="_blank" rel="noopener">Pod</a> 熟悉。</p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>Kubernetes Volume 的生命週期與所屬的 Pod 一樣長, 所以說, volume 不受 Pod 內容器的重啓影響。<br>本質上來說, volume 只是個可被 Pod 內容器存取的資料夾。 而這個資料夾是怎麼來的, 什麼方式產生的, 有什麼樣的內容, 這些都取決於使用什麼樣的 volume 類型<br>Pod 的 <code>.spec.volume</code> 欄位指定了要使用什麼 volume, 而 <code>.spec.container[*].volumMounts</code> 欄位指定了要掛載這些 volume 到容器裡的位置<br>Volumes 無法掛載到其他 volumes 或硬連結到其他的 volumes, Pod 內的每一個容器都必須要獨立的指令要將 volume 掛載到哪個位置</p>
+<p><br><br><br></p>
+<h2 id="Types-of-Volumes"><a href="#Types-of-Volumes" class="headerlink" title="Types of Volumes"></a>Types of Volumes</h2><h3 id="awsElasticBlockStore"><a href="#awsElasticBlockStore" class="headerlink" title="awsElasticBlockStore"></a>awsElasticBlockStore</h3><p><code>awsElasticBlockStore</code> volume 掛載一個 Amazon Web Services (AWS) <a href="http://aws.amazon.com/ebs/" target="_blank" rel="noopener">EBS Volume</a> 到你的 Pod。 跟 <code>emptyDir</code> 不同, 當 Pod 被移除時, EBS volume 的內容不會被移除, 而是會被保留, 僅僅是不掛載而已。 這表示 EBS volume 可以被預先載入資料, 然後這個資料可以在 Pods 之間傳遞<br><strong>注意</strong>: 使用 EBS 之前, 需先使用 <code>aws ec2 create-volume</code> 來建立 EBS volume</p>
+<p>當使用 <code>awsElasticBolckStore</code> volume 時有幾個限制：</p>
+<ul>
+<li>Pods 所運行的 Nodes 必須要是 AWS EC2 instances</li>
+<li>這些 instances 必須要跟 EBS volume 同 region 以及 zone</li>
+<li>EBS 只支援</li>
+</ul>
+<h2 id="Questions-and-Answer"><a href="#Questions-and-Answer" class="headerlink" title="Questions and Answer"></a>Questions and Answer</h2><h6 id="Kubernetes-中-volume-可以硬連結到另一個-volume-嗎？"><a href="#Kubernetes-中-volume-可以硬連結到另一個-volume-嗎？" class="headerlink" title="Kubernetes 中, volume 可以硬連結到另一個 volume 嗎？"></a><strong>Kubernetes 中, volume 可以硬連結到另一個 volume 嗎？</strong></h6><p>不行</p>
+<h6 id="Kubernetes-中-volume-可以掛載到另外一個-volume-裡嗎？"><a href="#Kubernetes-中-volume-可以掛載到另外一個-volume-裡嗎？" class="headerlink" title="Kubernetes 中, volume 可以掛載到另外一個 volume 裡嗎？"></a><strong>Kubernetes 中, volume 可以掛載到另外一個 volume 裡嗎？</strong></h6><p>不行</p>
+<h6 id="Kubernetes-中-一般來說-volume-的周命週期與什麼相同？"><a href="#Kubernetes-中-一般來說-volume-的周命週期與什麼相同？" class="headerlink" title="Kubernetes 中, 一般來說, volume 的周命週期與什麼相同？"></a><strong>Kubernetes 中, 一般來說, volume 的周命週期與什麼相同？</strong></h6><p>Pod</p>
+
     
     </div>
     
