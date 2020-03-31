@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-29T14:01:10.106Z">
+<meta property="og:updated_time" content="2020-03-30T14:10:57.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - Volumes">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-29T14:01:10.106Z">
+<meta property="og:updated_time" content="2020-03-30T14:10:57.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - Volumes">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -175,6 +175,10 @@
                     <a class="navbar-item" href="#範例-Pod">3.2.1&nbsp;&nbsp;範例 Pod</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#gcePersistentDisk">3.3&nbsp;&nbsp;gcePersistentDisk</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -240,7 +244,7 @@
         <span class="column is-narrow">
             
             
-            8 分钟 讀完 (大概 1243 字)
+            11 分钟 讀完 (大概 1649 字)
         </span>
         
     </div>
@@ -279,7 +283,25 @@
 </ul>
 <p><br></p>
 <h4 id="範例-Pod"><a href="#範例-Pod" class="headerlink" title="範例 Pod"></a>範例 Pod</h4><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">test-pd</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - image:</span> <span class="hljs-string">k8s.gcr.io/test-webserver</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">test-container</span></span><br><span class="line"><span class="hljs-attr">    volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">    - mountPath:</span> <span class="hljs-string">/cache</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">cache-volume</span></span><br><span class="line"><span class="hljs-attr">  volumes:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">cache-volume</span></span><br><span class="line"><span class="hljs-attr">    emptyDir:</span> <span class="hljs-string">&#123;&#125;</span></span><br></pre></td></tr></table></figure>
-<h2 id="Questions-and-Answer"><a href="#Questions-and-Answer" class="headerlink" title="Questions and Answer"></a>Questions and Answer</h2><h6 id="Kubernetes-中-emptyDir-的存活時間為多久？"><a href="#Kubernetes-中-emptyDir-的存活時間為多久？" class="headerlink" title="Kubernetes 中, emptyDir 的存活時間為多久？"></a><strong>Kubernetes 中, <code>emptyDir</code> 的存活時間為多久？</strong></h6><p><code>emptyDir</code> 的存活時間跟該 Pod 在該 Node 的時間一樣長</p>
+<p><br></p>
+<h3 id="gcePersistentDisk"><a href="#gcePersistentDisk" class="headerlink" title="gcePersistentDisk"></a>gcePersistentDisk</h3><p><code>gcePersistentDisk</code> volume 掛載一個 Gogole Compute Engine (GCE) <a href="http://cloud.google.com/compute/docs/disks" target="_blank" rel="noopener">Persistent Disk</a> 到你的 Pod。 跟 <code>emptyDir</code> 不同, 當 Pod 被移除時, PD 的內容不會被移除, 而是會被保留, 僅僅是不掛載而已。 這表示 PD 可以被預先載入資料, 然後這個資料可以在 Pods 之間傳遞<br><strong>注意</strong>: 使用 PD 之前, 需先使用 <code>gcloud</code> 或 GCE API 或 UI 來建立 PD </p>
+<p>當使用 <code>gcePersistentDisk</code> volume 時有幾個限制：</p>
+<ul>
+<li>Pods 運行所在的 Nodes 必須要是 GCE VMs</li>
+<li>PD 跟 VMs 需位於同一個 GCE project 以及 zone</li>
+</ul>
+<p>PD 的一個特色是, 當被多方存取時, 只可使用 read-only 掛載。 這代表說, 你可以預載入資料, 然後讓多個 Pod 使用它。 不幸的是, PD 當掛載為 read-write 模式時, 並不支援多方存取。</p>
+<p>若在一個由 ReplicationController 控制的 Pod 上使用 PD 將會失敗, 除非這個 PD 是 read-only, 或是 replica 為 0 或 1</p>
+<h2 id="Questions-and-Answer"><a href="#Questions-and-Answer" class="headerlink" title="Questions and Answer"></a>Questions and Answer</h2><h6 id="Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-read-write-模式支援多方存取嗎？"><a href="#Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-read-write-模式支援多方存取嗎？" class="headerlink" title="Kubernetes volume 中, 當使用 GCE Persistent Disk 時, read-write 模式支援多方存取嗎？"></a><strong>Kubernetes volume 中, 當使用 GCE Persistent Disk 時, read-write 模式支援多方存取嗎？</strong></h6><p>不支援</p>
+<h6 id="Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-read-only-模式支援多方存取嗎？"><a href="#Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-read-only-模式支援多方存取嗎？" class="headerlink" title="Kubernetes volume 中, 當使用 GCE Persistent Disk 時, read-only 模式支援多方存取嗎？"></a><strong>Kubernetes volume 中, 當使用 GCE Persistent Disk 時, read-only 模式支援多方存取嗎？</strong></h6><p>支援</p>
+<h6 id="Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-Persistent-Disk-與-VMs-需位於怎麼樣的條件？"><a href="#Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-Persistent-Disk-與-VMs-需位於怎麼樣的條件？" class="headerlink" title="Kubernetes volume 中, 當使用 GCE Persistent Disk 時, Persistent Disk 與 VMs 需位於怎麼樣的條件？"></a><strong>Kubernetes volume 中, 當使用 GCE Persistent Disk 時, Persistent Disk 與 VMs 需位於怎麼樣的條件？</strong></h6><ul>
+<li>同一個 GCE project</li>
+<li>同一個 zone</li>
+</ul>
+<h6 id="Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-Pods-所運行的-Node-必須要是-GCE-VMs-是或不是？"><a href="#Kubernetes-volume-中-當使用-GCE-Persistent-Disk-時-Pods-所運行的-Node-必須要是-GCE-VMs-是或不是？" class="headerlink" title="Kubernetes volume 中, 當使用 GCE Persistent Disk 時, Pods 所運行的 Node 必須要是 GCE VMs, 是或不是？"></a><strong>Kubernetes volume 中, 當使用 GCE Persistent Disk 時, Pods 所運行的 Node 必須要是 GCE VMs, 是或不是？</strong></h6><p>是</p>
+<h6 id="Kubernetes-volume-中-Persistent-Disk-可以預先載入-被多個-Pod-使用嗎？"><a href="#Kubernetes-volume-中-Persistent-Disk-可以預先載入-被多個-Pod-使用嗎？" class="headerlink" title="Kubernetes volume 中, Persistent Disk 可以預先載入, 被多個 Pod 使用嗎？"></a><strong>Kubernetes volume 中, Persistent Disk 可以預先載入, 被多個 Pod 使用嗎？</strong></h6><p>可以</p>
+<h6 id="Kubernetes-volume-中-當我使用-Persistent-Disk-為-volume-時-當-Pod-被移除時-PD-的資料會被移除嗎？"><a href="#Kubernetes-volume-中-當我使用-Persistent-Disk-為-volume-時-當-Pod-被移除時-PD-的資料會被移除嗎？" class="headerlink" title="Kubernetes volume 中, 當我使用 Persistent Disk 為 volume 時, 當 Pod 被移除時, PD 的資料會被移除嗎？"></a><strong>Kubernetes volume 中, 當我使用 Persistent Disk 為 volume 時, 當 Pod 被移除時, PD 的資料會被移除嗎？</strong></h6><p>不會</p>
+<h6 id="Kubernetes-中-emptyDir-的存活時間為多久？"><a href="#Kubernetes-中-emptyDir-的存活時間為多久？" class="headerlink" title="Kubernetes 中, emptyDir 的存活時間為多久？"></a><strong>Kubernetes 中, <code>emptyDir</code> 的存活時間為多久？</strong></h6><p><code>emptyDir</code> 的存活時間跟該 Pod 在該 Node 的時間一樣長</p>
 <h6 id="Kubernetes-中-emptyDir-volume-剛建立時裡頭有什麼東西？"><a href="#Kubernetes-中-emptyDir-volume-剛建立時裡頭有什麼東西？" class="headerlink" title="Kubernetes 中, emptyDir volume 剛建立時裡頭有什麼東西？"></a><strong>Kubernetes 中, <em>emptyDir</em> volume 剛建立時裡頭有什麼東西？</strong></h6><p><code>emptyDir</code> 一開始是空的</p>
 <h6 id="Kubernetes-中-同個-Pod-內的不同容器可否讀寫同一個-emptyDir-volume-的檔案？"><a href="#Kubernetes-中-同個-Pod-內的不同容器可否讀寫同一個-emptyDir-volume-的檔案？" class="headerlink" title="Kubernetes 中, 同個 Pod 內的不同容器可否讀寫同一個 emptyDir volume 的檔案？"></a><strong>Kubernetes 中, 同個 Pod 內的不同容器可否讀寫同一個 <em>emptyDir</em> volume 的檔案？</strong></h6><p>可</p>
 <h6 id="Kubernetes-中-emptyDir-可否被掛載到不同容器中不同路徑？"><a href="#Kubernetes-中-emptyDir-可否被掛載到不同容器中不同路徑？" class="headerlink" title="Kubernetes 中, emptyDir 可否被掛載到不同容器中不同路徑？"></a><strong>Kubernetes 中, <em>emptyDir</em> 可否被掛載到不同容器中不同路徑？</strong></h6><p>可</p>
