@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-31T12:23:46.524Z">
+<meta property="og:updated_time" content="2020-04-01T12:46:26.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - Volumes">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-03-31T12:23:46.524Z">
+<meta property="og:updated_time" content="2020-04-01T12:46:26.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - Volumes">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -195,6 +195,10 @@
                     <a class="navbar-item" href="#手動提供-Regional-PD-PersistentVolume">3.3.4&nbsp;&nbsp;手動提供 Regional PD PersistentVolume</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#hostPath">3.4&nbsp;&nbsp;hostPath</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -260,7 +264,7 @@
         <span class="column is-narrow">
             
             
-            14 分钟 讀完 (大概 2122 字)
+            14 分钟 讀完 (大概 2141 字)
         </span>
         
     </div>
@@ -316,6 +320,10 @@
 <h4 id="Regional-Persistent-Disks"><a href="#Regional-Persistent-Disks" class="headerlink" title="Regional Persistent Disks"></a>Regional Persistent Disks</h4><p><a href="https://cloud.google.com/compute/docs/disks/#repds" target="_blank" rel="noopener">Regional Persistent Disk</a> 功能讓 Persistent Disks 可以在不同的 zone, 相同的 region 內可用。 要使用這個功能, volume 必須要以 PersistentVolume 的方式提供, 直接從 Pod 來參照 volume 的方式並不被支援</p>
 <h4 id="手動提供-Regional-PD-PersistentVolume"><a href="#手動提供-Regional-PD-PersistentVolume" class="headerlink" title="手動提供 Regional PD PersistentVolume"></a>手動提供 Regional PD PersistentVolume</h4><p>使用 <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/#gce" target="_blank" rel="noopener">StorageClass for GCE PD</a> 是可能的。 建立 PersistentVolume 之前, 先要建立 PD<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud beta compute disks create --size=500GB my-data-disk</span><br><span class="line">    --region us-central1</span><br><span class="line">    --replica-zones us-central1<span class="hljs-_">-a</span>,us-central1-b</span><br></pre></td></tr></table></figure></p>
 <p>範例 PersistentVolume 設定檔：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">PersistentVolume</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">test-volume</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line">    <span class="hljs-string">failure-domain.beta.kubernetes.io/zone:</span> <span class="hljs-string">us-central1-a__us-central1-b</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  capacity:</span></span><br><span class="line"><span class="hljs-attr">    storage:</span> <span class="hljs-number">400</span><span class="hljs-string">Gi</span></span><br><span class="line"><span class="hljs-attr">  accessModes:</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">ReadWriteOnce</span></span><br><span class="line"><span class="hljs-attr">  gcePersistentDisk:</span></span><br><span class="line"><span class="hljs-attr">    pdName:</span> <span class="hljs-string">my-data-disk</span></span><br><span class="line"><span class="hljs-attr">    fsType:</span> <span class="hljs-string">ext4</span></span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="hostPath"><a href="#hostPath" class="headerlink" title="hostPath"></a>hostPath</h3><ul>
+<li><code>hostPath</code> volume 從 host node 的 filesystem 中, 掛載檔案或資料夾到 Pod</li>
+</ul>
 <h2 id="Questions-and-Answer"><a href="#Questions-and-Answer" class="headerlink" title="Questions and Answer"></a>Questions and Answer</h2><h6 id="解釋以下-Kubernetes-example"><a href="#解釋以下-Kubernetes-example" class="headerlink" title="解釋以下 Kubernetes example"></a><strong>解釋以下 Kubernetes example</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">PersistentVolume</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">test-volume</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line">    <span class="hljs-string">failure-domain.beta.kubernetes.io/zone:</span> <span class="hljs-string">us-central1-a__us-central1-b</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  capacity:</span></span><br><span class="line"><span class="hljs-attr">    storage:</span> <span class="hljs-number">400</span><span class="hljs-string">Gi</span></span><br><span class="line"><span class="hljs-attr">  accessModes:</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">ReadWriteOnce</span></span><br><span class="line"><span class="hljs-attr">  gcePersistentDisk:</span></span><br><span class="line"><span class="hljs-attr">    pdName:</span> <span class="hljs-string">my-data-disk</span></span><br><span class="line"><span class="hljs-attr">    fsType:</span> <span class="hljs-string">ext4</span></span><br></pre></td></tr></table></figure>
