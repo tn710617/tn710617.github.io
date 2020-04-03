@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-04-03T03:08:56.210Z">
+<meta property="og:updated_time" content="2020-04-03T13:23:10.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - Volumes">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-04-03T03:08:56.210Z">
+<meta property="og:updated_time" content="2020-04-03T13:23:10.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="&lt;未完成&gt; Kubernetes - Volumes">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -207,6 +207,10 @@
                     <a class="navbar-item" href="#Pod-FileOrCreate-範例">3.4.2&nbsp;&nbsp;Pod FileOrCreate 範例</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#local">3.5&nbsp;&nbsp;local</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -272,7 +276,7 @@
         <span class="column is-narrow">
             
             
-            21 分钟 讀完 (大概 3086 字)
+            21 分钟 讀完 (大概 3087 字)
         </span>
         
     </div>
@@ -349,7 +353,7 @@
 <p><br></p>
 <h4 id="Pod-FileOrCreate-範例"><a href="#Pod-FileOrCreate-範例" class="headerlink" title="Pod FileOrCreate 範例"></a>Pod FileOrCreate 範例</h4><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">test-webserver</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  containers:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">test-webserver</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-string">k8s.gcr.io/test-webserver:latest</span></span><br><span class="line"><span class="hljs-attr">    volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">    - mountPath:</span> <span class="hljs-string">/var/local/aaa</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">mydir</span></span><br><span class="line"><span class="hljs-attr">    - mountPath:</span> <span class="hljs-string">/var/local/aaa/1.txt</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">myfile</span></span><br><span class="line"><span class="hljs-attr">  volumes:</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">mydir</span></span><br><span class="line"><span class="hljs-attr">    hostPath:</span></span><br><span class="line">      <span class="hljs-comment"># Ensure the file directory is created.</span></span><br><span class="line"><span class="hljs-attr">      path:</span> <span class="hljs-string">/var/local/aaa</span></span><br><span class="line"><span class="hljs-attr">      type:</span> <span class="hljs-string">DirectoryOrCreate</span></span><br><span class="line"><span class="hljs-attr">  - name:</span> <span class="hljs-string">myfile</span></span><br><span class="line"><span class="hljs-attr">    hostPath:</span></span><br><span class="line"><span class="hljs-attr">      path:</span> <span class="hljs-string">/var/local/aaa/1.txt</span></span><br><span class="line"><span class="hljs-attr">      type:</span> <span class="hljs-string">FileOrCreate</span></span><br></pre></td></tr></table></figure>
 <p><br><br><br></p>
-<h2 id="Questions-and-Answer"><a href="#Questions-and-Answer" class="headerlink" title="Questions and Answer"></a>Questions and Answer</h2><h6 id="Kubernetes-中-當使用-hostPath-時-host-下的檔案只有-root-可以寫-要怎麼解決這個問題呢？"><a href="#Kubernetes-中-當使用-hostPath-時-host-下的檔案只有-root-可以寫-要怎麼解決這個問題呢？" class="headerlink" title="Kubernetes 中, 當使用 hostPath 時, host 下的檔案只有 root 可以寫, 要怎麼解決這個問題呢？"></a><strong>Kubernetes 中, 當使用 hostPath 時, host 下的檔案只有 root 可以寫, 要怎麼解決這個問題呢？</strong></h6><ul>
+<h3 id="local"><a href="#local" class="headerlink" title="local"></a>local</h3><h2 id="Questions-and-Answer"><a href="#Questions-and-Answer" class="headerlink" title="Questions and Answer"></a>Questions and Answer</h2><h6 id="Kubernetes-中-當使用-hostPath-時-host-下的檔案只有-root-可以寫-要怎麼解決這個問題呢？"><a href="#Kubernetes-中-當使用-hostPath-時-host-下的檔案只有-root-可以寫-要怎麼解決這個問題呢？" class="headerlink" title="Kubernetes 中, 當使用 hostPath 時, host 下的檔案只有 root 可以寫, 要怎麼解決這個問題呢？"></a><strong>Kubernetes 中, 當使用 hostPath 時, host 下的檔案只有 root 可以寫, 要怎麼解決這個問題呢？</strong></h6><ul>
 <li>使用 <a href="https://kubernetes.io/docs/user-guide/security-context" target="_blank" rel="noopener">privileged container</a></li>
 <li>修改 host 下檔案權限</li>
 </ul>
@@ -435,7 +439,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/php-data-structure-and-algorithm/">PHP - Data Structure and Algorithm</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
