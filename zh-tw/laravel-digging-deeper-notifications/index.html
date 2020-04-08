@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Laravel - Digging Deeper - Notifications - Ray&#39;s Coding Journey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Documentation,Laravel Notifications">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Notifications">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-notifications/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-04-08T05:06:53.974Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Digging Deeper - Notifications">
+<meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-digging-deeper-notifications/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Documentation,Laravel Notifications">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Notifications">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-notifications/index.html">
+<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-04-08T05:06:53.974Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Digging Deeper - Notifications">
+<meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Creating-Notifications">2&nbsp;&nbsp;<b>Creating Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-如果我要使用-CLI-建立-notification-可以怎麼做？">2.1.1&nbsp;&nbsp;Laravel Notifications 中, 如果我要使用 CLI 建立 notification, 可以怎麼做？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Sending-Notifications">3&nbsp;&nbsp;<b>Sending Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-The-Notifiable-Trait">3.1&nbsp;&nbsp;Using The Notifiable Trait</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-要發送一個-notification-有哪兩種方式？">3.1.1&nbsp;&nbsp;Laravel Notifications 中, 要發送一個 notification 有哪兩種方式？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-哪個-model-預設就有使用-Notifiable-trait">3.1.2&nbsp;&nbsp;Laravel Notifications 中, 哪個 model 預設就有使用 Notifiable trait?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-Notifiable-trait-可以使用在哪些-model-上？">3.1.3&nbsp;&nbsp;Laravel Notifications 中, Notifiable trait 可以使用在哪些 model 上？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-假設我在-User-model-使用-Notifiable-trait-現在我要發送-notification-InvoicePaid-invoice-在以下的-example-中可以怎麼做？">3.1.4&nbsp;&nbsp;Laravel Notifications 中, 假設我在 User model 使用 Notifiable trait, 現在我要發送 notification InvoicePaid($invoice), 在以下的 example 中可以怎麼做？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-The-Notification-Facade">3.2&nbsp;&nbsp;Using The Notification Facade</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-什麼情境下比較適合使用-Notification-Facade">3.2.1&nbsp;&nbsp;Laravel Notifications 中, 什麼情境下比較適合使用 Notification Facade?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Notifications-中-在以下的-example-中-如果要使用-Notification-facade-來發送-notification-給多個-user-可以怎麼做？">3.2.2&nbsp;&nbsp;Laravel Notifications 中, 在以下的 example 中, 如果要使用 Notification facade 來發送 notification 給多個 user, 可以怎麼做？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Specifying-Delivery-Channels">3.3&nbsp;&nbsp;Specifying Delivery Channels</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Queueing-Notifications">3.4&nbsp;&nbsp;Queueing Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#On-Demand-Notifications">3.5&nbsp;&nbsp;On-Demand Notifications</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Mail-Notifications">4&nbsp;&nbsp;<b>Mail Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Formatting-Mail-Messages">4.1&nbsp;&nbsp;Formatting Mail Messages</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Sender">4.2&nbsp;&nbsp;Customizing The Sender</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Recipient">4.3&nbsp;&nbsp;Customizing The Recipient</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Subject">4.4&nbsp;&nbsp;Customizing The Subject</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Mailer">4.5&nbsp;&nbsp;Customizing The Mailer</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Templates">4.6&nbsp;&nbsp;Customizing The Templates</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Previewing-Mail-Notifications">4.7&nbsp;&nbsp;Previewing Mail Notifications</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Markdown-Mail-Notifications">5&nbsp;&nbsp;<b>Markdown Mail Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Generating-The-Message">5.1&nbsp;&nbsp;Generating The Message</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Writing-The-Message">5.2&nbsp;&nbsp;Writing The Message</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Components">5.3&nbsp;&nbsp;Customizing The Components</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Database-Notifications">6&nbsp;&nbsp;<b>Database Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Prerequisites">6.1&nbsp;&nbsp;Prerequisites</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Formatting-Database-Notifications">6.2&nbsp;&nbsp;Formatting Database Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Accessing-The-Notifications">6.3&nbsp;&nbsp;Accessing The Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Marking-Notifications-As-Read">6.4&nbsp;&nbsp;Marking Notifications As Read</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Broadcast-Notifications">7&nbsp;&nbsp;<b>Broadcast Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Prerequisites-1">7.1&nbsp;&nbsp;Prerequisites</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Formatting-Broadcast-Notifications">7.2&nbsp;&nbsp;Formatting Broadcast Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Listening-For-Notifications">7.3&nbsp;&nbsp;Listening For Notifications</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#SMS-Notifications">8&nbsp;&nbsp;<b>SMS Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Prerequisites-2">8.1&nbsp;&nbsp;Prerequisites</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Formatting-SMS-Notifications">8.2&nbsp;&nbsp;Formatting SMS Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Formatting-Shortcode-Notifications">8.3&nbsp;&nbsp;Formatting Shortcode Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Routing-SMS-Notifications">8.4&nbsp;&nbsp;Routing SMS Notifications</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Slack-Notifications">9&nbsp;&nbsp;<b>Slack Notifications</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Prerequisites-3">9.1&nbsp;&nbsp;Prerequisites</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Formatting-Slack-Notifications">9.2&nbsp;&nbsp;Formatting Slack Notifications</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Slack-Attachments">9.3&nbsp;&nbsp;Slack Attachments</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Routing-Slack-Notifications">9.4&nbsp;&nbsp;Routing Slack Notifications</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Localizing-Notifications">10&nbsp;&nbsp;<b>Localizing Notifications</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Notification-Events">11&nbsp;&nbsp;<b>Notification Events</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Custom-Channels">12&nbsp;&nbsp;<b>Custom Channels</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-digging-deeper-notifications/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-digging-deeper-notifications/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Digging Deeper - Notifications
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-04-08T02:15:12.000Z" itemprop="datePublished">4月 8 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 分钟 讀完 (大概 434 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h2 id="Creating-Notifications"><a href="#Creating-Notifications" class="headerlink" title="Creating Notifications"></a>Creating Notifications</h2><h6 id="Laravel-Notifications-中-如果我要使用-CLI-建立-notification-可以怎麼做？"><a href="#Laravel-Notifications-中-如果我要使用-CLI-建立-notification-可以怎麼做？" class="headerlink" title="Laravel Notifications 中, 如果我要使用 CLI 建立 notification, 可以怎麼做？"></a><strong>Laravel Notifications 中, 如果我要使用 CLI 建立 notification, 可以怎麼做？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:notification NotificationName</span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h2 id="Sending-Notifications"><a href="#Sending-Notifications" class="headerlink" title="Sending Notifications"></a>Sending Notifications</h2><h3 id="Using-The-Notifiable-Trait"><a href="#Using-The-Notifiable-Trait" class="headerlink" title="Using The Notifiable Trait"></a>Using The Notifiable Trait</h3><h6 id="Laravel-Notifications-中-要發送一個-notification-有哪兩種方式？"><a href="#Laravel-Notifications-中-要發送一個-notification-有哪兩種方式？" class="headerlink" title="Laravel Notifications 中, 要發送一個 notification 有哪兩種方式？"></a><strong>Laravel Notifications 中, 要發送一個 notification 有哪兩種方式？</strong></h6><ul>
+<li><em>Notifiable</em> trait</li>
+<li><em>Notification</em> facade</li>
+</ul>
+<h6 id="Laravel-Notifications-中-哪個-model-預設就有使用-Notifiable-trait"><a href="#Laravel-Notifications-中-哪個-model-預設就有使用-Notifiable-trait" class="headerlink" title="Laravel Notifications 中, 哪個 model 預設就有使用 Notifiable trait?"></a><strong>Laravel Notifications 中, 哪個 model 預設就有使用 Notifiable trait?</strong></h6><p>User model</p>
+<h6 id="Laravel-Notifications-中-Notifiable-trait-可以使用在哪些-model-上？"><a href="#Laravel-Notifications-中-Notifiable-trait-可以使用在哪些-model-上？" class="headerlink" title="Laravel Notifications 中, Notifiable trait 可以使用在哪些 model 上？"></a><strong>Laravel Notifications 中, Notifiable trait 可以使用在哪些 model 上？</strong></h6><p>每一個 model</p>
+<h6 id="Laravel-Notifications-中-假設我在-User-model-使用-Notifiable-trait-現在我要發送-notification-InvoicePaid-invoice-在以下的-example-中可以怎麼做？"><a href="#Laravel-Notifications-中-假設我在-User-model-使用-Notifiable-trait-現在我要發送-notification-InvoicePaid-invoice-在以下的-example-中可以怎麼做？" class="headerlink" title="Laravel Notifications 中, 假設我在 User model 使用 Notifiable trait, 現在我要發送 notification InvoicePaid($invoice), 在以下的 example 中可以怎麼做？"></a><strong>Laravel Notifications 中, 假設我在 User model 使用 Notifiable trait, 現在我要發送 notification <code>InvoicePaid($invoice)</code>, 在以下的 example 中可以怎麼做？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Notifications</span>\<span class="hljs-title">InvoicePaid</span>;</span><br><span class="line"></span><br><span class="line">$user-&gt;這裡是？;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Notifications</span>\<span class="hljs-title">InvoicePaid</span>;</span><br><span class="line"></span><br><span class="line">$user-&gt;notify(<span class="hljs-keyword">new</span> InvoicePaid($invoice));</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Using-The-Notification-Facade"><a href="#Using-The-Notification-Facade" class="headerlink" title="Using The Notification Facade"></a>Using The Notification Facade</h3><h6 id="Laravel-Notifications-中-什麼情境下比較適合使用-Notification-Facade"><a href="#Laravel-Notifications-中-什麼情境下比較適合使用-Notification-Facade" class="headerlink" title="Laravel Notifications 中, 什麼情境下比較適合使用 Notification Facade?"></a><strong>Laravel Notifications 中, 什麼情境下比較適合使用 Notification Facade?</strong></h6><p>當我要發送 notification 給多個對象時</p>
+<h6 id="Laravel-Notifications-中-在以下的-example-中-如果要使用-Notification-facade-來發送-notification-給多個-user-可以怎麼做？"><a href="#Laravel-Notifications-中-在以下的-example-中-如果要使用-Notification-facade-來發送-notification-給多個-user-可以怎麼做？" class="headerlink" title="Laravel Notifications 中, 在以下的 example 中, 如果要使用 Notification facade 來發送 notification 給多個 user, 可以怎麼做？"></a><strong>Laravel Notifications 中, 在以下的 example 中, 如果要使用 Notification facade 來發送 notification 給多個 user, 可以怎麼做？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Notification::這裡是？($users, <span class="hljs-keyword">new</span> InvoicePaid($invoice));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Notification::send($users, <span class="hljs-keyword">new</span> InvoicePaid($invoice));</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Specifying-Delivery-Channels"><a href="#Specifying-Delivery-Channels" class="headerlink" title="Specifying Delivery Channels"></a>Specifying Delivery Channels</h3><p><br></p>
+<h3 id="Queueing-Notifications"><a href="#Queueing-Notifications" class="headerlink" title="Queueing Notifications"></a>Queueing Notifications</h3><p><br></p>
+<h3 id="On-Demand-Notifications"><a href="#On-Demand-Notifications" class="headerlink" title="On-Demand Notifications"></a>On-Demand Notifications</h3><p><br><br><br></p>
+<h2 id="Mail-Notifications"><a href="#Mail-Notifications" class="headerlink" title="Mail Notifications"></a>Mail Notifications</h2><h3 id="Formatting-Mail-Messages"><a href="#Formatting-Mail-Messages" class="headerlink" title="Formatting Mail Messages"></a>Formatting Mail Messages</h3><p><br></p>
+<h3 id="Customizing-The-Sender"><a href="#Customizing-The-Sender" class="headerlink" title="Customizing The Sender"></a>Customizing The Sender</h3><p><br></p>
+<h3 id="Customizing-The-Recipient"><a href="#Customizing-The-Recipient" class="headerlink" title="Customizing The Recipient"></a>Customizing The Recipient</h3><p><br></p>
+<h3 id="Customizing-The-Subject"><a href="#Customizing-The-Subject" class="headerlink" title="Customizing The Subject"></a>Customizing The Subject</h3><p><br></p>
+<h3 id="Customizing-The-Mailer"><a href="#Customizing-The-Mailer" class="headerlink" title="Customizing The Mailer"></a>Customizing The Mailer</h3><p><br></p>
+<h3 id="Customizing-The-Templates"><a href="#Customizing-The-Templates" class="headerlink" title="Customizing The Templates"></a>Customizing The Templates</h3><p><br></p>
+<h3 id="Previewing-Mail-Notifications"><a href="#Previewing-Mail-Notifications" class="headerlink" title="Previewing Mail Notifications"></a>Previewing Mail Notifications</h3><p><br><br><br></p>
+<h2 id="Markdown-Mail-Notifications"><a href="#Markdown-Mail-Notifications" class="headerlink" title="Markdown Mail Notifications"></a>Markdown Mail Notifications</h2><h3 id="Generating-The-Message"><a href="#Generating-The-Message" class="headerlink" title="Generating The Message"></a>Generating The Message</h3><p><br></p>
+<h3 id="Writing-The-Message"><a href="#Writing-The-Message" class="headerlink" title="Writing The Message"></a>Writing The Message</h3><p><br></p>
+<h3 id="Customizing-The-Components"><a href="#Customizing-The-Components" class="headerlink" title="Customizing The Components"></a>Customizing The Components</h3><p><br><br><br></p>
+<h2 id="Database-Notifications"><a href="#Database-Notifications" class="headerlink" title="Database Notifications"></a>Database Notifications</h2><h3 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h3><p><br></p>
+<h3 id="Formatting-Database-Notifications"><a href="#Formatting-Database-Notifications" class="headerlink" title="Formatting Database Notifications"></a>Formatting Database Notifications</h3><p><br></p>
+<h3 id="Accessing-The-Notifications"><a href="#Accessing-The-Notifications" class="headerlink" title="Accessing The Notifications"></a>Accessing The Notifications</h3><p><br></p>
+<h3 id="Marking-Notifications-As-Read"><a href="#Marking-Notifications-As-Read" class="headerlink" title="Marking Notifications As Read"></a>Marking Notifications As Read</h3><p><br><br><br></p>
+<h2 id="Broadcast-Notifications"><a href="#Broadcast-Notifications" class="headerlink" title="Broadcast Notifications"></a>Broadcast Notifications</h2><h3 id="Prerequisites-1"><a href="#Prerequisites-1" class="headerlink" title="Prerequisites"></a>Prerequisites</h3><p><br></p>
+<h3 id="Formatting-Broadcast-Notifications"><a href="#Formatting-Broadcast-Notifications" class="headerlink" title="Formatting Broadcast Notifications"></a>Formatting Broadcast Notifications</h3><p><br></p>
+<h3 id="Listening-For-Notifications"><a href="#Listening-For-Notifications" class="headerlink" title="Listening For Notifications"></a>Listening For Notifications</h3><p><br><br><br></p>
+<h2 id="SMS-Notifications"><a href="#SMS-Notifications" class="headerlink" title="SMS Notifications"></a>SMS Notifications</h2><h3 id="Prerequisites-2"><a href="#Prerequisites-2" class="headerlink" title="Prerequisites"></a>Prerequisites</h3><p><br></p>
+<h3 id="Formatting-SMS-Notifications"><a href="#Formatting-SMS-Notifications" class="headerlink" title="Formatting SMS Notifications"></a>Formatting SMS Notifications</h3><p><br></p>
+<h3 id="Formatting-Shortcode-Notifications"><a href="#Formatting-Shortcode-Notifications" class="headerlink" title="Formatting Shortcode Notifications"></a>Formatting Shortcode Notifications</h3><p><br></p>
+<h3 id="Routing-SMS-Notifications"><a href="#Routing-SMS-Notifications" class="headerlink" title="Routing SMS Notifications"></a>Routing SMS Notifications</h3><p><br><br><br></p>
+<h2 id="Slack-Notifications"><a href="#Slack-Notifications" class="headerlink" title="Slack Notifications"></a>Slack Notifications</h2><h3 id="Prerequisites-3"><a href="#Prerequisites-3" class="headerlink" title="Prerequisites"></a>Prerequisites</h3><p><br></p>
+<h3 id="Formatting-Slack-Notifications"><a href="#Formatting-Slack-Notifications" class="headerlink" title="Formatting Slack Notifications"></a>Formatting Slack Notifications</h3><p><br></p>
+<h3 id="Slack-Attachments"><a href="#Slack-Attachments" class="headerlink" title="Slack Attachments"></a>Slack Attachments</h3><p><br></p>
+<h3 id="Routing-Slack-Notifications"><a href="#Routing-Slack-Notifications" class="headerlink" title="Routing Slack Notifications"></a>Routing Slack Notifications</h3><p><br><br><br></p>
+<h2 id="Localizing-Notifications"><a href="#Localizing-Notifications" class="headerlink" title="Localizing Notifications"></a>Localizing Notifications</h2><p><br><br><br></p>
+<h2 id="Notification-Events"><a href="#Notification-Events" class="headerlink" title="Notification Events"></a>Notification Events</h2><p><br><br><br></p>
+<h2 id="Custom-Channels"><a href="#Custom-Channels" class="headerlink" title="Custom Channels"></a>Custom Channels</h2>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Notifications/">#Laravel Notifications</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/php-data-structure-and-algorithm/">PHP - Data Structure and Algorithm</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-digging-deeper-notifications/';
+        this.page.identifier = 'zh-tw/laravel-digging-deeper-notifications/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                           
+                           <i class="fab fa-medium"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
