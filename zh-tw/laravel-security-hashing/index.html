@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-05-05T02:55:22.865Z">
+<meta property="og:updated_time" content="2020-05-06T06:19:07.936Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Security - Hashing">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-05-05T02:55:22.865Z">
+<meta property="og:updated_time" content="2020-05-06T06:19:07.936Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Security - Hashing">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -182,6 +182,22 @@
                     
                     <a class="navbar-item" href="#Laravel-Hashing-中-當-hash-password-並且-driver-為-Argon2-時-分別可以調整哪三項-work-factor">3.3.1&nbsp;&nbsp;Laravel Hashing 中, 當 hash password 並且 driver 為 Argon2 時, 分別可以調整哪三項 work factor?</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Verifying-A-Password-Against-A-Hash">3.4&nbsp;&nbsp;Verifying A Password Against A Hash</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Hashing-中-如果我要驗證-hash-前跟-hash-後的密碼是否一致-在以下的-example-中-該使用哪個-method">3.4.1&nbsp;&nbsp;Laravel Hashing 中, 如果我要驗證 hash 前跟 hash 後的密碼是否一致, 在以下的 example 中, 該使用哪個 method?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Checking-If-A-Password-Needs-To-Be-Rehashed">3.5&nbsp;&nbsp;Checking If A Password Needs To Be Rehashed</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Hashing-中-在使用者登入後-如果我要確認登入使用的密碼跟我目前使用的-hash-work-factor-是否相符-不符的話就再-hash-一次-並替代資料庫中的密碼-在以下的-example-中-可以使用哪個-method">3.5.1&nbsp;&nbsp;Laravel Hashing 中, 在使用者登入後, 如果我要確認登入使用的密碼跟我目前使用的 hash work factor 是否相符, 不符的話就再 hash 一次, 並替代資料庫中的密碼, 在以下的 example 中, 可以使用哪個 method?</a>
+                    
                 </div>
             </div>
             
@@ -242,7 +258,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 489 字)
+            4 分钟 讀完 (大概 656 字)
         </span>
         
     </div>
@@ -291,6 +307,24 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$hashed = Hash::make(<span class="hljs-string">'password'</span>, [</span><br><span class="line">    <span class="hljs-string">'memory'</span> =&gt; <span class="hljs-number">1024</span>,</span><br><span class="line">    <span class="hljs-string">'time'</span> =&gt; <span class="hljs-number">2</span>,</span><br><span class="line">    <span class="hljs-string">'threads'</span> =&gt; <span class="hljs-number">2</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+<p><br></p>
+<h4 id="Verifying-A-Password-Against-A-Hash"><a href="#Verifying-A-Password-Against-A-Hash" class="headerlink" title="Verifying A Password Against A Hash"></a>Verifying A Password Against A Hash</h4><h6 id="Laravel-Hashing-中-如果我要驗證-hash-前跟-hash-後的密碼是否一致-在以下的-example-中-該使用哪個-method"><a href="#Laravel-Hashing-中-如果我要驗證-hash-前跟-hash-後的密碼是否一致-在以下的-example-中-該使用哪個-method" class="headerlink" title="Laravel Hashing 中, 如果我要驗證 hash 前跟 hash 後的密碼是否一致, 在以下的 example 中, 該使用哪個 method?"></a><strong>Laravel Hashing 中, 如果我要驗證 hash 前跟 hash 後的密碼是否一致, 在以下的 example 中, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Hash::check(<span class="hljs-string">'plain-text'</span>, $hashedPassword)) &#123;</span><br><span class="line">    <span class="hljs-comment">// The passwords match...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Hash::check(<span class="hljs-string">'plain-text'</span>, $hashedPassword)) &#123;</span><br><span class="line">    <span class="hljs-comment">// The passwords match...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Checking-If-A-Password-Needs-To-Be-Rehashed"><a href="#Checking-If-A-Password-Needs-To-Be-Rehashed" class="headerlink" title="Checking If A Password Needs To Be Rehashed"></a>Checking If A Password Needs To Be Rehashed</h4><h6 id="Laravel-Hashing-中-在使用者登入後-如果我要確認登入使用的密碼跟我目前使用的-hash-work-factor-是否相符-不符的話就再-hash-一次-並替代資料庫中的密碼-在以下的-example-中-可以使用哪個-method"><a href="#Laravel-Hashing-中-在使用者登入後-如果我要確認登入使用的密碼跟我目前使用的-hash-work-factor-是否相符-不符的話就再-hash-一次-並替代資料庫中的密碼-在以下的-example-中-可以使用哪個-method" class="headerlink" title="Laravel Hashing 中, 在使用者登入後, 如果我要確認登入使用的密碼跟我目前使用的 hash work factor 是否相符, 不符的話就再 hash 一次, 並替代資料庫中的密碼, 在以下的 example 中, 可以使用哪個 method?"></a><strong>Laravel Hashing 中, 在使用者登入後, 如果我要確認登入使用的密碼跟我目前使用的 hash work factor 是否相符, 不符的話就再 hash 一次, 並替代資料庫中的密碼, 在以下的 example 中, 可以使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Hash::這裡是？($hashed))    $hashed = Hash::make(<span class="hljs-string">'plain-text'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Hash::needsRehash($hashed)) &#123;</span><br><span class="line">    $hashed = Hash::make(<span class="hljs-string">'plain-text'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 
     
     </div>
@@ -307,7 +341,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-security-password-reset/">Laravel - Security - Password Reset</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
