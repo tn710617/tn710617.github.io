@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-05-10T05:31:05.487Z">
+<meta property="og:updated_time" content="2020-05-11T05:51:07.056Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-05-10T05:31:05.487Z">
+<meta property="og:updated_time" content="2020-05-11T05:51:07.056Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言本篇為 Kubernetes 筆記, 內容主要參照官方文件, 考量到時間成本不會逐字翻譯, 但會將重要的資訊翻譯出來 容器中, 紀錄在硬碟上的檔案是暫時的, 對於運行在容器內的複雜應用來說, 這產生了一些問題。首先, 當容器掛了, kubelet 會重啟它, 但檔案會丟失, 因為容器會以一個乾淨的狀態重啓。再來, Pod 內的容器常常會需要共享一些檔案。 Kubernetes Volume 抽">
@@ -156,17 +156,21 @@
                     
                     
                     
-                    <a class="navbar-item" href="#RBAC-API-宣告了四種-kubernetes-物件">3.1&nbsp;&nbsp;RBAC API 宣告了四種 kubernetes 物件</a>
+                    <a class="navbar-item" href="#Role-and-ClusterRole">3.1&nbsp;&nbsp;Role and ClusterRole</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Role-example">3.1.1&nbsp;&nbsp;Role example</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CusterRole-example">3.1.2&nbsp;&nbsp;CusterRole example</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
                     <a class="navbar-item" href="#Questions-and-Answers">4&nbsp;&nbsp;<b>Questions and Answers</b></a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Kubernetes-RBAC-中-除了在檔案中修改之外-也可以在啟動-api-server-時使用哪個-flag">4.1&nbsp;&nbsp;Kubernetes RBAC 中, 除了在檔案中修改之外, 也可以在啟動 api server 時使用哪個 flag?</a>
                     
                 </div>
             </div>
@@ -228,7 +232,7 @@
         <span class="column is-narrow">
             
             
-            2 分钟 讀完 (大概 288 字)
+            6 分钟 讀完 (大概 935 字)
         </span>
         
     </div>
@@ -249,8 +253,54 @@
 <li>RoleBinding</li>
 <li>ClusterRoleBinding</li>
 </ul>
+<p><br></p>
+<h3 id="Role-and-ClusterRole"><a href="#Role-and-ClusterRole" class="headerlink" title="Role and ClusterRole"></a>Role and ClusterRole</h3><ul>
+<li>Role 適用於特定 namespace</li>
+<li>ClusterRole 可存取所有 namespaces<h6 id="ClusterRoles-有幾種使用方式"><a href="#ClusterRoles-有幾種使用方式" class="headerlink" title="ClusterRoles 有幾種使用方式:"></a>ClusterRoles 有幾種使用方式:</h6></li>
+</ul>
+<ol>
+<li>定義 ClusterRole 具有某些 namespaced resources 的特定權限, 並且只在特定 namespace 中有效, </li>
+<li>定義 ClusterRole 具有某些 namespaced resources 的特定權限, 並且在所有 namespace 都有效, </li>
+<li>定義 該 ClusterRole 具有 cluster 範圍內所有資源的特定權限</li>
+</ol>
+<ul>
+<li>如果這個角色要使用在特定的 namespace 中, 那就使用 Role, 如果範圍是整個 cluster, 那就使用 ClusterRole</li>
+</ul>
+<p><br></p>
+<h4 id="Role-example"><a href="#Role-example" class="headerlink" title="Role example"></a>Role example</h4><p>下面的 example, 可在 default namespace 中被使用來賦予 pods 的存取權</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">default</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">pod-reader</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span> <span class="hljs-comment"># "" indicates the core API group</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["pods"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h4 id="CusterRole-example"><a href="#CusterRole-example" class="headerlink" title="CusterRole example"></a>CusterRole example</h4><h6 id="ClusterRole-除了也可用來賦予跟-Role-相同的權限之外-還可以做到以下"><a href="#ClusterRole-除了也可用來賦予跟-Role-相同的權限之外-還可以做到以下" class="headerlink" title="ClusterRole 除了也可用來賦予跟 Role 相同的權限之外, 還可以做到以下:"></a>ClusterRole 除了也可用來賦予跟 Role 相同的權限之外, 還可以做到以下:</h6><ul>
+<li>cluster-scoped 資源, 像是 nodes</li>
+<li>non-resource endpoints, 像是 /healthz</li>
+<li>namespaced resources, 像是 Pods, 又或者在所有的 namespaces, 例如, 你可以使用 ClusterRole 來允許特定的使用者執行 <code>kubectl get pods --all-namespaces</code></li>
+</ul>
+<h6 id="以下範例-CusterRole-可被用來賦予-secrets-的-read-權限-在特定的-namespace-或是所有的-namespaces"><a href="#以下範例-CusterRole-可被用來賦予-secrets-的-read-權限-在特定的-namespace-或是所有的-namespaces" class="headerlink" title="以下範例, CusterRole 可被用來賦予 secrets 的 read 權限, 在特定的 namespace 或是所有的 namespaces"></a>以下範例, CusterRole 可被用來賦予 secrets 的 read 權限, 在特定的 namespace 或是所有的 namespaces</h6><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># "namespace" omitted since ClusterRoles are not namespaced</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-reader</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line">  <span class="hljs-comment">#</span></span><br><span class="line">  <span class="hljs-comment"># at the HTTP level, the name of the resource for accessing Secret</span></span><br><span class="line">  <span class="hljs-comment"># objects is "secrets"</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["secrets"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
 <p><br><br><br></p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Kubernetes-RBAC-中-除了在檔案中修改之外-也可以在啟動-api-server-時使用哪個-flag"><a href="#Kubernetes-RBAC-中-除了在檔案中修改之外-也可以在啟動-api-server-時使用哪個-flag" class="headerlink" title="Kubernetes RBAC 中, 除了在檔案中修改之外, 也可以在啟動 api server 時使用哪個 flag?"></a><strong>Kubernetes RBAC 中, 除了在檔案中修改之外, 也可以在啟動 api server 時使用哪個 flag?</strong></h6><ul>
+<ul>
+<li>cluster-scoped 資源, 像是 nodes</li>
+<li>non-resource endpoints, 像是 /healthz</li>
+<li>namespaced resources, 像是 Pods, 又或者在所有的 namespaces, 例如, 你可以使用 ClusterRole 來允許特定的使用者執行 <code>kubectl get pods --all-namespaces</code></li>
+</ul>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Kubernetes-RBAC-中-ClusterRole-也可用在-non-resource-endpoints-例如？"><a href="#Kubernetes-RBAC-中-ClusterRole-也可用在-non-resource-endpoints-例如？" class="headerlink" title="Kubernetes RBAC 中, ClusterRole 也可用在 non-resource endpoints, 例如？"></a><strong>Kubernetes RBAC 中, ClusterRole 也可用在 non-resource endpoints, 例如？</strong></h6><h6 id="Kubernetes-RBAC-中-ClusterRole-也可用在-non-resource-endpoints-例如？-1"><a href="#Kubernetes-RBAC-中-ClusterRole-也可用在-non-resource-endpoints-例如？-1" class="headerlink" title="Kubernetes RBAC 中, ClusterRole 也可用在 non-resource endpoints, 例如？"></a><strong>Kubernetes RBAC 中, ClusterRole 也可用在 non-resource endpoints, 例如？</strong></h6><p>/healthz</p>
+<h6 id="Kubernetes-RBAC-中-ClusterRole-也可用在-cluster-scoped-資源-例如？"><a href="#Kubernetes-RBAC-中-ClusterRole-也可用在-cluster-scoped-資源-例如？" class="headerlink" title="Kubernetes RBAC 中, ClusterRole 也可用在 cluster-scoped 資源, 例如？"></a><strong>Kubernetes RBAC 中, ClusterRole 也可用在 cluster-scoped 資源, 例如？</strong></h6><p>nodes</p>
+<h6 id="Kubernetes-RBAC-中-以下的-yaml-example-的意思是？"><a href="#Kubernetes-RBAC-中-以下的-yaml-example-的意思是？" class="headerlink" title="Kubernetes RBAC 中, 以下的 yaml example 的意思是？"></a><strong>Kubernetes RBAC 中, 以下的 yaml example 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># "namespace" omitted since ClusterRoles are not namespaced</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-reader</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line">  <span class="hljs-comment">#</span></span><br><span class="line">  <span class="hljs-comment"># at the HTTP level, the name of the resource for accessing Secret</span></span><br><span class="line">  <span class="hljs-comment"># objects is "secrets"</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["secrets"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># 因為是 ClusterRole, 所以這邊可以省略 namespace, 可用在所有 namespace</span></span><br><span class="line">  <span class="hljs-comment"># "namespace" omitted since ClusterRoles are not namespaced</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">secret-reader</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line">  <span class="hljs-comment">#</span></span><br><span class="line">  <span class="hljs-comment"># at the HTTP level, the name of the resource for accessing Secret</span></span><br><span class="line">  <span class="hljs-comment"># objects is "secrets"</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["secrets"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Kubernetes-RBAC-中-以下的-example-的意思是？"><a href="#Kubernetes-RBAC-中-以下的-example-的意思是？" class="headerlink" title="Kubernetes RBAC 中, 以下的 example 的意思是？"></a><strong>Kubernetes RBAC 中, 以下的 example 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">default</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">pod-reader</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span> <span class="hljs-comment"># "" indicates the core API group</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["pods"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">default</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">pod-reader</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span> <span class="hljs-comment"># "" indicates the core API group</span></span><br><span class="line">  <span class="hljs-comment"># 資源對象為 pods</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["pods"]</span></span><br><span class="line">  <span class="hljs-comment"># 賦予該 role 的權限為 get, watch, list</span></span><br><span class="line">  <span class="hljs-comment"># 簡單來說, 使用該 role 可具有 pods 的 get, watch, list 權限</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"list"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Kubernetes-RBAC-中-除了在檔案中修改之外-也可以在啟動-api-server-時使用哪個-flag"><a href="#Kubernetes-RBAC-中-除了在檔案中修改之外-也可以在啟動-api-server-時使用哪個-flag" class="headerlink" title="Kubernetes RBAC 中, 除了在檔案中修改之外, 也可以在啟動 api server 時使用哪個 flag?"></a><strong>Kubernetes RBAC 中, 除了在檔案中修改之外, 也可以在啟動 api server 時使用哪個 flag?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kube-apiserver 這裡是？=Example,RBAC --other-options --more-options</span><br></pre></td></tr></table></figure>
 </li>
