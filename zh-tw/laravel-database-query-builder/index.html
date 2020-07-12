@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-09T06:49:17.083Z">
+<meta property="og:updated_time" content="2020-07-11T08:05:11.939Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-09T06:49:17.083Z">
+<meta property="og:updated_time" content="2020-07-11T08:05:11.939Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -154,19 +154,7 @@
                     
                     
                     
-                    <a class="navbar-item" href="#Laravel-Query-Builder-當中-在以下-example-如果我要取得-table-中的所有資料-該使用哪個-method">2.1.1&nbsp;&nbsp;Laravel Query Builder 當中, 在以下 example, 如果我要取得 table 中的所有資料, 該使用哪個 method?</a>
-                    
-                    
-                    
                     <a class="navbar-item" href="#Retrieving-A-Single-Row-Column-From-A-Table">2.2&nbsp;&nbsp;Retrieving A Single Row / Column From A Table</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Laravel-Query-Builder-當中-在以下-example-如果我只要取得符合條件中的一筆資料-該使用哪個-method">2.2.1&nbsp;&nbsp;Laravel Query Builder 當中, 在以下 example, 如果我只要取得符合條件中的一筆資料, 該使用哪個 method?</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#Laravel-Query-Builder-當中-在以下-example-如果我只要取得符合條件中的一筆資料的其中一個-column-該使用哪個-method">2.2.2&nbsp;&nbsp;Laravel Query Builder 當中, 在以下 example, 如果我只要取得符合條件中的一筆資料的其中一個 column, 該使用哪個 method?</a>
                     
                     
                     <hr class="navbar-divider">
@@ -176,21 +164,25 @@
                     
                     
                     
-                    <a class="navbar-item" href="#Laravel-Query-Builder-當中-以下-example-中-如果我要取得所有資料的-title-column-collection-可以使用哪個-method">3.1.1&nbsp;&nbsp;Laravel Query Builder 當中, 以下 example 中, 如果我要取得所有資料的 title column collection, 可以使用哪個 method?</a>
+                    <a class="navbar-item" href="#Chunking-Results">3.1&nbsp;&nbsp;Chunking Results</a>
                     
                     
                     
-                    <a class="navbar-item" href="#Chunking-Results">3.2&nbsp;&nbsp;Chunking Results</a>
+                    <a class="navbar-item" href="#Aggregates">3.2&nbsp;&nbsp;Aggregates</a>
                     
                     
                     
-                    <a class="navbar-item" href="#Aggregates">3.3&nbsp;&nbsp;Aggregates</a>
+                    <a class="navbar-item" href="#Determining-If-Records-Exist">3.2.1&nbsp;&nbsp;Determining If Records Exist</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
                     <a class="navbar-item" href="#Selects">4&nbsp;&nbsp;<b>Selects</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Specifying-A-Select-Clause">4.1.1&nbsp;&nbsp;Specifying A Select Clause</a>
                     
                     
                     <hr class="navbar-divider">
@@ -336,7 +328,7 @@
         <span class="column is-narrow">
             
             
-            3 分钟 讀完 (大概 461 字)
+            6 分钟 讀完 (大概 956 字)
         </span>
         
     </div>
@@ -379,9 +371,68 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$titles = DB::table(<span class="hljs-string">'roles'</span>)-&gt;pluck(<span class="hljs-string">'title'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($titles <span class="hljs-keyword">as</span> $title) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h3 id="Chunking-Results"><a href="#Chunking-Results" class="headerlink" title="Chunking Results"></a>Chunking Results</h3><p><br></p>
-<h3 id="Aggregates"><a href="#Aggregates" class="headerlink" title="Aggregates"></a>Aggregates</h3><p><br><br><br></p>
-<h2 id="Selects"><a href="#Selects" class="headerlink" title="Selects"></a>Selects</h2><p><br><br><br></p>
+<p><br></p>
+<h3 id="Chunking-Results"><a href="#Chunking-Results" class="headerlink" title="Chunking Results"></a>Chunking Results</h3><h6 id="Laravel-Query-Builder-當中-在以下的-example-當中-該如何停止下一個-chunk"><a href="#Laravel-Query-Builder-當中-在以下的-example-當中-該如何停止下一個-chunk" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example 當中, 該如何停止下一個 chunk?"></a><strong>Laravel Query Builder 當中, 在以下的 example 當中, 該如何停止下一個 chunk?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;orderBy(<span class="hljs-string">'id'</span>)-&gt;chunk(<span class="hljs-number">100</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($users)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Process the records...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 這裡是？</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;orderBy(<span class="hljs-string">'id'</span>)-&gt;chunk(<span class="hljs-number">100</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($users)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Process the records...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-當我想要使用-chunk-模式來-update-時-在以下的-example-使用哪一個-method-才是比較好的？-為什麼？"><a href="#Laravel-Query-Builder-當中-當我想要使用-chunk-模式來-update-時-在以下的-example-使用哪一個-method-才是比較好的？-為什麼？" class="headerlink" title="Laravel Query Builder 當中, 當我想要使用 chunk 模式來 update 時, 在以下的 example 使用哪一個 method 才是比較好的？ 為什麼？"></a><strong>Laravel Query Builder 當中, 當我想要使用 chunk 模式來 update 時, 在以下的 example 使用哪一個 method 才是比較好的？ 為什麼？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'active'</span>, <span class="hljs-keyword">false</span>)</span><br><span class="line">    -&gt;這裡是？(<span class="hljs-number">100</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($users)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($users <span class="hljs-keyword">as</span> $user) &#123;</span><br><span class="line">            DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                -&gt;where(<span class="hljs-string">'id'</span>, $user-&gt;id)</span><br><span class="line">                -&gt;update([<span class="hljs-string">'active'</span> =&gt; <span class="hljs-keyword">true</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'active'</span>, <span class="hljs-keyword">false</span>)</span><br><span class="line">    -&gt;chunkById(<span class="hljs-number">100</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($users)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($users <span class="hljs-keyword">as</span> $user) &#123;</span><br><span class="line">            DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                -&gt;where(<span class="hljs-string">'id'</span>, $user-&gt;id)</span><br><span class="line">                -&gt;update([<span class="hljs-string">'active'</span> =&gt; <span class="hljs-keyword">true</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>因為 chunk 取得的 record 可能是隨機的</p>
+<p><br></p>
+<h3 id="Aggregates"><a href="#Aggregates" class="headerlink" title="Aggregates"></a>Aggregates</h3><h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要取得資料共有幾筆-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要取得資料共有幾筆-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example 如果我要取得資料共有幾筆, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example 如果我要取得資料共有幾筆, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;這裡是？();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;count();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要取-price-column-最大的那筆資料-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要取-price-column-最大的那筆資料-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example 如果我要取 price column 最大的那筆資料, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example 如果我要取 price column 最大的那筆資料, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$price = DB::table(<span class="hljs-string">'orders'</span>)-&gt;這裡是？(<span class="hljs-string">'price'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$price = DB::table(<span class="hljs-string">'orders'</span>)-&gt;max(<span class="hljs-string">'price'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Determining-If-Records-Exist"><a href="#Determining-If-Records-Exist" class="headerlink" title="Determining If Records Exist"></a>Determining If Records Exist</h4><h6 id="Laravel-Query-Builder-當中-在以下的-example-中-如果我要確定該資料存在或不存在-除了-count-之外-還可以使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-中-如果我要確定該資料存在或不存在-除了-count-之外-還可以使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example 中, 如果我要確定該資料存在或不存在, 除了 count() 之外, 還可以使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example 中, 如果我要確定該資料存在或不存在, 除了 count() 之外, 還可以使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 是否存在</span></span><br><span class="line"><span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'orders'</span>)-&gt;where(<span class="hljs-string">'finalized'</span>, <span class="hljs-number">1</span>)-&gt;這裡是？();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 是否不存在</span></span><br><span class="line"><span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'orders'</span>)-&gt;where(<span class="hljs-string">'finalized'</span>, <span class="hljs-number">1</span>)-&gt;這裡是？();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'orders'</span>)-&gt;where(<span class="hljs-string">'finalized'</span>, <span class="hljs-number">1</span>)-&gt;exists();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'orders'</span>)-&gt;where(<span class="hljs-string">'finalized'</span>, <span class="hljs-number">1</span>)-&gt;doesntExist();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Selects"><a href="#Selects" class="headerlink" title="Selects"></a>Selects</h2><h4 id="Specifying-A-Select-Clause"><a href="#Specifying-A-Select-Clause" class="headerlink" title="Specifying A Select Clause"></a>Specifying A Select Clause</h4><h6 id="Laravel-Query-Builder-當中-在以下的-example-中-如果我只想要取得指定的那幾個-column-可以使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-中-如果我只想要取得指定的那幾個-column-可以使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example 中, 如果我只想要取得指定的那幾個 column, 可以使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example 中, 如果我只想要取得指定的那幾個 column, 可以使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;這裡是？(<span class="hljs-string">'name'</span>, <span class="hljs-string">'email as user_email'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;select(<span class="hljs-string">'name'</span>, <span class="hljs-string">'email as user_email'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-在以下的-example-中-如果我已經有一個-query-builder-instance-而我想要在該-instance-當中增加一個欄位-可以使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-中-如果我已經有一個-query-builder-instance-而我想要在該-instance-當中增加一個欄位-可以使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example 中, 如果我已經有一個 query builder instance, 而我想要在該 instance 當中增加一個欄位, 可以使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example 中, 如果我已經有一個 query builder instance, 而我想要在該 instance 當中增加一個欄位, 可以使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$query = DB::table(<span class="hljs-string">'users'</span>)-&gt;select(<span class="hljs-string">'name'</span>);</span><br><span class="line"></span><br><span class="line">$users = $query-&gt;這裡是？(<span class="hljs-string">'age'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$query = DB::table(<span class="hljs-string">'users'</span>)-&gt;select(<span class="hljs-string">'name'</span>);</span><br><span class="line"></span><br><span class="line">$users = $query-&gt;addSelect(<span class="hljs-string">'age'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
 <h2 id="Raw-Expressions"><a href="#Raw-Expressions" class="headerlink" title="Raw Expressions"></a>Raw Expressions</h2><p><br><br><br></p>
 <h2 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h2><p><br><br><br></p>
 <h2 id="Unions"><a href="#Unions" class="headerlink" title="Unions"></a>Unions</h2><p><br><br><br></p>
