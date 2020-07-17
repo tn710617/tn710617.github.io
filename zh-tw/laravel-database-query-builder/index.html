@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-13T06:35:55.010Z">
+<meta property="og:updated_time" content="2020-07-17T09:37:38.669Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-13T06:35:55.010Z">
+<meta property="og:updated_time" content="2020-07-17T09:37:38.669Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -201,6 +201,18 @@
                     <a class="navbar-item" href="#Inner-Join-Clause">6.1.1&nbsp;&nbsp;Inner Join Clause</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Left-Join-Right-Join-Clause">6.1.2&nbsp;&nbsp;Left Join / Right Join Clause</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cross-Join-Clause">6.1.3&nbsp;&nbsp;Cross Join Clause</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Advanced-Join-Clauses">6.1.4&nbsp;&nbsp;Advanced Join Clauses</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -332,7 +344,7 @@
         <span class="column is-narrow">
             
             
-            9 分钟 讀完 (大概 1316 字)
+            11 分钟 讀完 (大概 1583 字)
         </span>
         
     </div>
@@ -486,7 +498,41 @@
 </li>
 </ul>
 <p><br><br><br></p>
-<h2 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h2><h4 id="Inner-Join-Clause"><a href="#Inner-Join-Clause" class="headerlink" title="Inner Join Clause"></a>Inner Join Clause</h4><p><br><br><br></p>
+<h2 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h2><h4 id="Inner-Join-Clause"><a href="#Inner-Join-Clause" class="headerlink" title="Inner Join Clause"></a>Inner Join Clause</h4><h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-join-contacts-跟-orders-兩張-table-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-join-contacts-跟-orders-兩張-table-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 join contacts 跟 orders 兩張 table, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 join contacts 跟 orders 兩張 table, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;這裡是？(<span class="hljs-string">'contacts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)</span><br><span class="line">            -&gt;這裡是？(<span class="hljs-string">'orders'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'orders.user_id'</span>)</span><br><span class="line">            -&gt;select(<span class="hljs-string">'users.*'</span>, <span class="hljs-string">'contacts.phone'</span>, <span class="hljs-string">'orders.price'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;join(<span class="hljs-string">'contacts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)</span><br><span class="line">            -&gt;join(<span class="hljs-string">'orders'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'orders.user_id'</span>)</span><br><span class="line">            -&gt;select(<span class="hljs-string">'users.*'</span>, <span class="hljs-string">'contacts.phone'</span>, <span class="hljs-string">'orders.price'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Left-Join-Right-Join-Clause"><a href="#Left-Join-Right-Join-Clause" class="headerlink" title="Left Join / Right Join Clause"></a>Left Join / Right Join Clause</h4><h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-left-join-posts-這張-table-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-left-join-posts-這張-table-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 left join posts 這張 table, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 left join posts 這張 table, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;這裡是？(<span class="hljs-string">'posts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'posts.user_id'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;leftJoin(<span class="hljs-string">'posts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'posts.user_id'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-right-join-posts-這張-table-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-right-join-posts-這張-table-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 right join posts 這張 table, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 right join posts 這張 table, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;這裡是？(<span class="hljs-string">'posts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'posts.user_id'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;rightJoin(<span class="hljs-string">'posts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'posts.user_id'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h4 id="Cross-Join-Clause"><a href="#Cross-Join-Clause" class="headerlink" title="Cross Join Clause"></a>Cross Join Clause</h4><h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-cross-join-colors-這張-table-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-cross-join-colors-這張-table-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 cross join colors 這張 table, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 cross join colors 這張 table, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sizes = DB::table(<span class="hljs-string">'sizes'</span>)</span><br><span class="line">            -&gt;這裡是？(<span class="hljs-string">'colors'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sizes = DB::table(<span class="hljs-string">'sizes'</span>)</span><br><span class="line">            -&gt;crossJoin(<span class="hljs-string">'colors'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="Advanced-Join-Clauses"><a href="#Advanced-Join-Clauses" class="headerlink" title="Advanced Join Clauses"></a>Advanced Join Clauses</h4><p><br></p>
 <h2 id="Unions"><a href="#Unions" class="headerlink" title="Unions"></a>Unions</h2><p><br><br><br></p>
 <h2 id="Where-Clauses"><a href="#Where-Clauses" class="headerlink" title="Where Clauses"></a>Where Clauses</h2><h3 id="Parameter-Grouping"><a href="#Parameter-Grouping" class="headerlink" title="Parameter Grouping"></a>Parameter Grouping</h3><p><br></p>
 <h3 id="Where-Exists-Clauses"><a href="#Where-Exists-Clauses" class="headerlink" title="Where Exists Clauses"></a>Where Exists Clauses</h3><p><br></p>
