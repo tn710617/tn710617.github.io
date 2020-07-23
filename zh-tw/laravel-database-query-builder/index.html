@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-17T09:37:38.669Z">
+<meta property="og:updated_time" content="2020-07-22T06:10:30.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-17T09:37:38.669Z">
+<meta property="og:updated_time" content="2020-07-22T06:10:30.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -213,6 +213,10 @@
                     <a class="navbar-item" href="#Advanced-Join-Clauses">6.1.4&nbsp;&nbsp;Advanced Join Clauses</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#Subquery-Joins">6.1.5&nbsp;&nbsp;Subquery Joins</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
@@ -344,7 +348,7 @@
         <span class="column is-narrow">
             
             
-            11 分钟 讀完 (大概 1583 字)
+            14 分钟 讀完 (大概 2033 字)
         </span>
         
     </div>
@@ -532,8 +536,49 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sizes = DB::table(<span class="hljs-string">'sizes'</span>)</span><br><span class="line">            -&gt;crossJoin(<span class="hljs-string">'colors'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h4 id="Advanced-Join-Clauses"><a href="#Advanced-Join-Clauses" class="headerlink" title="Advanced Join Clauses"></a>Advanced Join Clauses</h4><p><br></p>
-<h2 id="Unions"><a href="#Unions" class="headerlink" title="Unions"></a>Unions</h2><p><br><br><br></p>
+<h4 id="Advanced-Join-Clauses"><a href="#Advanced-Join-Clauses" class="headerlink" title="Advanced Join Clauses"></a>Advanced Join Clauses</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-的意思是？"><a href="#Laravel-Query-Builder-當中-以下的-example-的意思是？" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 的意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        -&gt;join(<span class="hljs-string">'contacts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)-&gt;orOn(...);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        <span class="hljs-comment">// join contacts table, 並且附加額外的條件</span></span><br><span class="line">        -&gt;join(<span class="hljs-string">'contacts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)-&gt;orOn(...);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-的意思是？-1"><a href="#Laravel-Query-Builder-當中-以下的-example-的意思是？-1" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 的意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        -&gt;join(<span class="hljs-string">'contacts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)</span><br><span class="line">                 -&gt;where(<span class="hljs-string">'contacts.user_id'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">5</span>);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        -&gt;join(<span class="hljs-string">'contacts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            <span class="hljs-comment">// join 並且附加額外的 where clause</span></span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)</span><br><span class="line">                 -&gt;where(<span class="hljs-string">'contacts.user_id'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">5</span>);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Subquery-Joins"><a href="#Subquery-Joins" class="headerlink" title="Subquery Joins"></a>Subquery Joins</h4><h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-join-latestPosts-這個-query-可以使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-join-latestPosts-這個-query-可以使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 join $latestPosts 這個 query, 可以使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 join $latestPosts 這個 query, 可以使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$latestPosts = DB::table(<span class="hljs-string">'posts'</span>)</span><br><span class="line">                   -&gt;select(<span class="hljs-string">'user_id'</span>, DB::raw(<span class="hljs-string">'MAX(created_at) as last_post_created_at'</span>))</span><br><span class="line">                   -&gt;where(<span class="hljs-string">'is_published'</span>, <span class="hljs-keyword">true</span>)</span><br><span class="line">                   -&gt;groupBy(<span class="hljs-string">'user_id'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        -&gt;這裡是？($latestPosts, <span class="hljs-string">'latest_posts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'latest_posts.user_id'</span>);</span><br><span class="line">        &#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$latestPosts = DB::table(<span class="hljs-string">'posts'</span>)</span><br><span class="line">                   -&gt;select(<span class="hljs-string">'user_id'</span>, DB::raw(<span class="hljs-string">'MAX(created_at) as last_post_created_at'</span>))</span><br><span class="line">                   -&gt;where(<span class="hljs-string">'is_published'</span>, <span class="hljs-keyword">true</span>)</span><br><span class="line">                   -&gt;groupBy(<span class="hljs-string">'user_id'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        -&gt;joinSub($latestPosts, <span class="hljs-string">'latest_posts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'latest_posts.user_id'</span>);</span><br><span class="line">        &#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-join-subquery-example-中-joinSub-method-的-第二個-argument-代表什麼？"><a href="#Laravel-Query-Builder-當中-以下的-join-subquery-example-中-joinSub-method-的-第二個-argument-代表什麼？" class="headerlink" title="Laravel Query Builder 當中, 以下的 join subquery example 中, joinSub method 的 第二個 argument 代表什麼？"></a><strong>Laravel Query Builder 當中, 以下的 join subquery example 中, joinSub method 的 第二個 argument 代表什麼？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$latestPosts = DB::table(<span class="hljs-string">'posts'</span>)</span><br><span class="line">                   -&gt;select(<span class="hljs-string">'user_id'</span>, DB::raw(<span class="hljs-string">'MAX(created_at) as last_post_created_at'</span>))</span><br><span class="line">                   -&gt;where(<span class="hljs-string">'is_published'</span>, <span class="hljs-keyword">true</span>)</span><br><span class="line">                   -&gt;groupBy(<span class="hljs-string">'user_id'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        <span class="hljs-comment">// 'latest_posts' 代表的意思是？</span></span><br><span class="line">        -&gt;joinSub($latestPosts, <span class="hljs-string">'latest_posts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'latest_posts.user_id'</span>);</span><br><span class="line">        &#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$latestPosts = DB::table(<span class="hljs-string">'posts'</span>)</span><br><span class="line">                   -&gt;select(<span class="hljs-string">'user_id'</span>, DB::raw(<span class="hljs-string">'MAX(created_at) as last_post_created_at'</span>))</span><br><span class="line">                   -&gt;where(<span class="hljs-string">'is_published'</span>, <span class="hljs-keyword">true</span>)</span><br><span class="line">                   -&gt;groupBy(<span class="hljs-string">'user_id'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        <span class="hljs-comment">// $latestPosts 的 table alias</span></span><br><span class="line">        -&gt;joinSub($latestPosts, <span class="hljs-string">'latest_posts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'latest_posts.user_id'</span>);</span><br><span class="line">        &#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Unions"><a href="#Unions" class="headerlink" title="Unions"></a>Unions</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-中-如果我要-union-first-query-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-以下的-example-中-如果我要-union-first-query-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 中, 如果我要 union $first query, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 以下的 example 中, 如果我要 union $first query, 該使用哪個 method?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$first = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;whereNull(<span class="hljs-string">'first_name'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;whereNull(<span class="hljs-string">'last_name'</span>)</span><br><span class="line">            -&gt;這裡是？($first)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$first = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;whereNull(<span class="hljs-string">'first_name'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;whereNull(<span class="hljs-string">'last_name'</span>)</span><br><span class="line">            -&gt;union($first)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
 <h2 id="Where-Clauses"><a href="#Where-Clauses" class="headerlink" title="Where Clauses"></a>Where Clauses</h2><h3 id="Parameter-Grouping"><a href="#Parameter-Grouping" class="headerlink" title="Parameter Grouping"></a>Parameter Grouping</h3><p><br></p>
 <h3 id="Where-Exists-Clauses"><a href="#Where-Exists-Clauses" class="headerlink" title="Where Exists Clauses"></a>Where Exists Clauses</h3><p><br></p>
 <h3 id="Subquery-Where-Clause"><a href="#Subquery-Where-Clause" class="headerlink" title="Subquery Where Clause"></a>Subquery Where Clause</h3><p><br></p>
