@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-25T11:54:19.443Z">
+<meta property="og:updated_time" content="2020-08-01T07:29:10.470Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-07-25T11:54:19.443Z">
+<meta property="og:updated_time" content="2020-08-01T07:29:10.470Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -364,7 +364,7 @@
         <span class="column is-narrow">
             
             
-            19 分钟 讀完 (大概 2835 字)
+            20 分钟 讀完 (大概 2968 字)
         </span>
         
     </div>
@@ -739,8 +739,23 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Where-Exists-Clauses"><a href="#Where-Exists-Clauses" class="headerlink" title="Where Exists Clauses"></a>Where Exists Clauses</h3><p><br></p>
-<h3 id="Subquery-Where-Clause"><a href="#Subquery-Where-Clause" class="headerlink" title="Subquery Where Clause"></a>Subquery Where Clause</h3><p><br></p>
+<h3 id="Where-Exists-Clauses"><a href="#Where-Exists-Clauses" class="headerlink" title="Where Exists Clauses"></a>Where Exists Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-20"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-20" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">           -&gt;whereExists(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">               $query-&gt;select(DB::raw(<span class="hljs-number">1</span>))</span><br><span class="line">                     -&gt;from(<span class="hljs-string">'orders'</span>)</span><br><span class="line">                     -&gt;whereRaw(<span class="hljs-string">'orders.user_id = users.id'</span>);</span><br><span class="line">           &#125;)</span><br><span class="line">           -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>select * from users<br>where exists (<br>  select 1 from orders where orders.user_id = users.id<br>)</p>
+</li>
+</ul>
+<p>如果 select 1 from orders … 有返回的話, 回傳 select * from users</p>
+<p><br></p>
+<h3 id="Subquery-Where-Clause"><a href="#Subquery-Where-Clause" class="headerlink" title="Subquery Where Clause"></a>Subquery Where Clause</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-21"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-21" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line">$users = User::where(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;select(<span class="hljs-string">'type'</span>)</span><br><span class="line">        -&gt;from(<span class="hljs-string">'membership'</span>)</span><br><span class="line">        -&gt;whereColumn(<span class="hljs-string">'user_id'</span>, <span class="hljs-string">'users.id'</span>)</span><br><span class="line">        -&gt;orderByDesc(<span class="hljs-string">'start_date'</span>)</span><br><span class="line">        -&gt;limit(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;, <span class="hljs-string">'Pro'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>如果 subquery 取得的 type === ‘Pro’ 的話, 取得 users, 也就是說, 會取得最新有 membership 的 user</p>
+</li>
+</ul>
+<p><br></p>
 <h3 id="JSON-Where-Clauses"><a href="#JSON-Where-Clauses" class="headerlink" title="JSON Where Clauses"></a>JSON Where Clauses</h3><p><br><br><br></p>
 <h2 id="Ordering-Grouping-Limit-amp-Offset"><a href="#Ordering-Grouping-Limit-amp-Offset" class="headerlink" title="Ordering, Grouping, Limit &amp; Offset"></a>Ordering, Grouping, Limit &amp; Offset</h2><p><br><br><br></p>
 <h2 id="Inserts"><a href="#Inserts" class="headerlink" title="Inserts"></a>Inserts</h2><p><br><br><br></p>
