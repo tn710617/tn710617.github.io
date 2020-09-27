@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-09-16T07:27:17.307Z">
+<meta property="og:updated_time" content="2020-09-26T09:09:58.838Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-09-16T07:27:17.307Z">
+<meta property="og:updated_time" content="2020-09-26T09:09:58.838Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
@@ -222,7 +222,7 @@
         <span class="column is-narrow">
             
             
-            24 分钟 讀完 (大概 3564 字)
+            25 分钟 讀完 (大概 3765 字)
         </span>
         
     </div>
@@ -232,7 +232,16 @@
 <a id="more"></a>
 <p><br><br><br></p>
 <h2 id="Production-優化"><a href="#Production-優化" class="headerlink" title="Production 優化"></a>Production 優化</h2><h3 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h3><h4 id="php-ini-文件"><a href="#php-ini-文件" class="headerlink" title="php.ini 文件"></a>php.ini 文件</h4><p>php.ini 中的 <code>memory_limit</code> 用於設定單個 PHP process 可以使用的系統內存最大值</p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Laravel-中-如果使用-composer-安裝套件時-超過容許的-memory-限制-可以使用哪個-flag-讓容許-memory-無上限？"><a href="#Laravel-中-如果使用-composer-安裝套件時-超過容許的-memory-限制-可以使用哪個-flag-讓容許-memory-無上限？" class="headerlink" title="Laravel 中, 如果使用 composer 安裝套件時, 超過容許的 memory 限制, 可以使用哪個 flag 讓容許 memory 無上限？"></a><strong>Laravel 中, 如果使用 composer 安裝套件時, 超過容許的 memory 限制, 可以使用哪個 flag 讓容許 memory 無上限？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">COMPOSER_MEMORY_LIMIT=-1</span><br></pre></td></tr></table></figure>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Laravel-中-動態-model-的技術概念是？"><a href="#Laravel-中-動態-model-的技術概念是？" class="headerlink" title="Laravel 中, 動態 model 的技術概念是？"></a><strong>Laravel 中, 動態 model 的技術概念是？</strong></h6><p>假設 User model 跟 Login model 的 relation 為 hasMany, 但我在取得 User model 時, 我只想要取得最近 login 的 Login model<br>所以先用 subquery 來取得一個虛擬的 column 為 login_id, 這時再用這個 login_id 透過 belongsTo 的 relation 取得單筆 model</p>
+<h6 id="Laravel-中-假設今天我想要取得-hasMany-relation-中的一筆-record-這時如果使用-with-的話會-load-所有的-model-不使用-with-的話又會執行很多次-query-有什麼好的解法？"><a href="#Laravel-中-假設今天我想要取得-hasMany-relation-中的一筆-record-這時如果使用-with-的話會-load-所有的-model-不使用-with-的話又會執行很多次-query-有什麼好的解法？" class="headerlink" title="Laravel 中, 假設今天我想要取得 hasMany relation 中的一筆 record, 這時如果使用 with() 的話會 load 所有的 model, 不使用 with() 的話又會執行很多次 query, 有什麼好的解法？"></a><strong>Laravel 中, 假設今天我想要取得 hasMany relation 中的一筆 record, 這時如果使用 with() 的話會 load 所有的 model, 不使用 with() 的話又會執行很多次 query, 有什麼好的解法？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = User::query()</span><br><span class="line">    -&gt;with(<span class="hljs-string">'login'</span>)</span><br><span class="line">    -&gt;orderBy(<span class="hljs-string">'name'</span>)</span><br><span class="line">    -&gt;paginate();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用 subquery, 從 hasMany relation 中只 query 出我們要的那筆資料, 再將這筆資料變成主 query 中的一個 column</span></span><br><span class="line">$users = User::query()</span><br><span class="line">    -&gt;addSelect([<span class="hljs-string">'last_login_at'</span> =&gt; Login::select(<span class="hljs-string">'created_at'</span>)</span><br><span class="line">        -&gt;whereColumn(<span class="hljs-string">'user_id'</span>, <span class="hljs-string">'users.id'</span>)</span><br><span class="line">        -&gt;latest()</span><br><span class="line">        -&gt;take(<span class="hljs-number">1</span>)</span><br><span class="line">    ])</span><br><span class="line">    -&gt;orderBy(<span class="hljs-string">'name'</span>)</span><br><span class="line">    -&gt;paginate();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-中-如果使用-composer-安裝套件時-超過容許的-memory-限制-可以使用哪個-flag-讓容許-memory-無上限？"><a href="#Laravel-中-如果使用-composer-安裝套件時-超過容許的-memory-限制-可以使用哪個-flag-讓容許-memory-無上限？" class="headerlink" title="Laravel 中, 如果使用 composer 安裝套件時, 超過容許的 memory 限制, 可以使用哪個 flag 讓容許 memory 無上限？"></a><strong>Laravel 中, 如果使用 composer 安裝套件時, 超過容許的 memory 限制, 可以使用哪個 flag 讓容許 memory 無上限？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">COMPOSER_MEMORY_LIMIT=-1</span><br></pre></td></tr></table></figure>
 <h6 id="以下的-Laravel-程式碼的意思是？"><a href="#以下的-Laravel-程式碼的意思是？" class="headerlink" title="以下的 Laravel 程式碼的意思是？"></a><strong>以下的 Laravel 程式碼的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$ip = data_get(<span class="hljs-keyword">$this</span>-&gt;pendingWalletSettlement-&gt;settleable, <span class="hljs-string">'depositDetail.client_ipv4'</span>)</span><br></pre></td></tr></table></figure>
