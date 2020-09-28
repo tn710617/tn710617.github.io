@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-09-26T09:09:58.838Z">
+<meta property="og:updated_time" content="2020-09-27T07:39:13.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Ray&#39;s Coding Journey">
 <meta property="og:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-09-26T09:09:58.838Z">
+<meta property="og:updated_time" content="2020-09-27T07:39:13.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel 學習筆記">
 <meta name="twitter:description" content="前言本篇為 Laravel 的學習筆記, 主要將看到的, 學到的技術轉換成 Q&amp;amp;A 的方式以加速學習">
@@ -222,7 +222,7 @@
         <span class="column is-narrow">
             
             
-            25 分钟 讀完 (大概 3765 字)
+            26 分钟 讀完 (大概 3961 字)
         </span>
         
     </div>
@@ -232,7 +232,15 @@
 <a id="more"></a>
 <p><br><br><br></p>
 <h2 id="Production-優化"><a href="#Production-優化" class="headerlink" title="Production 優化"></a>Production 優化</h2><h3 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h3><h4 id="php-ini-文件"><a href="#php-ini-文件" class="headerlink" title="php.ini 文件"></a>php.ini 文件</h4><p>php.ini 中的 <code>memory_limit</code> 用於設定單個 PHP process 可以使用的系統內存最大值</p>
-<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Laravel-中-動態-model-的技術概念是？"><a href="#Laravel-中-動態-model-的技術概念是？" class="headerlink" title="Laravel 中, 動態 model 的技術概念是？"></a><strong>Laravel 中, 動態 model 的技術概念是？</strong></h6><p>假設 User model 跟 Login model 的 relation 為 hasMany, 但我在取得 User model 時, 我只想要取得最近 login 的 Login model<br>所以先用 subquery 來取得一個虛擬的 column 為 login_id, 這時再用這個 login_id 透過 belongsTo 的 relation 取得單筆 model</p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="Laravel-中-以下的-example-code-的意思是？"><a href="#Laravel-中-以下的-example-code-的意思是？" class="headerlink" title="Laravel 中, 以下的 example code 的意思是？"></a><strong>Laravel 中, 以下的 example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">show</span><span class="hljs-params">(Feature $feature)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $feature-&gt;load(<span class="hljs-string">'comments.user'</span>);</span><br><span class="line">    $feature-&gt;comments-&gt;each-&gt;setRelation(<span class="hljs-string">'feature'</span>, $feature);</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">return</span> view(<span class="hljs-string">'feature'</span>, [<span class="hljs-string">'feature'</span> =&gt; $feature]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">show</span><span class="hljs-params">(Feature $feature)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $feature-&gt;load(<span class="hljs-string">'comments.user'</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// 這裡手動的為每個 comments 建立 relation 名為 feature, 代入當前已載入 memory 的 $feature</span></span><br><span class="line">    <span class="hljs-comment">// 如此一來, 在上一行 eager load comments 之後, 每一個 comments 都還會有在上一行已經完成</span></span><br><span class="line">    <span class="hljs-comment">// eager load 的 feature relation, 那當我們執行 $feature-&gt;comments-&gt;feature-&gt;comments </span></span><br><span class="line">    <span class="hljs-comment">// 時就不會重複 SQL 語法, 也不會重複的加載 model</span></span><br><span class="line">    <span class="hljs-comment">// 當執行 $feature-&gt;comments-&gt;feature-&gt;comments 時, 如果不使用 eager loading, 會有</span></span><br><span class="line">    <span class="hljs-comment">// n+1 issue, 但如果使用 with('comments.feature.comments') 的話, 則會 n*n 的加載不必要</span></span><br><span class="line">    <span class="hljs-comment">// 的 model</span></span><br><span class="line">    <span class="hljs-comment">// 這樣的 relation 又稱為 circular relation</span></span><br><span class="line">    $feature-&gt;comments-&gt;each-&gt;setRelation(<span class="hljs-string">'feature'</span>, $feature);</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">return</span> view(<span class="hljs-string">'feature'</span>, [<span class="hljs-string">'feature'</span> =&gt; $feature]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="Laravel-中-動態-model-的技術概念是？"><a href="#Laravel-中-動態-model-的技術概念是？" class="headerlink" title="Laravel 中, 動態 model 的技術概念是？"></a><strong>Laravel 中, 動態 model 的技術概念是？</strong></h6><p>假設 User model 跟 Login model 的 relation 為 hasMany, 但我在取得 User model 時, 我只想要取得最近 login 的 Login model<br>所以先用 subquery 來取得一個虛擬的 column 為 login_id, 這時再用這個 login_id 透過 belongsTo 的 relation 取得單筆 model</p>
 <h6 id="Laravel-中-假設今天我想要取得-hasMany-relation-中的一筆-record-這時如果使用-with-的話會-load-所有的-model-不使用-with-的話又會執行很多次-query-有什麼好的解法？"><a href="#Laravel-中-假設今天我想要取得-hasMany-relation-中的一筆-record-這時如果使用-with-的話會-load-所有的-model-不使用-with-的話又會執行很多次-query-有什麼好的解法？" class="headerlink" title="Laravel 中, 假設今天我想要取得 hasMany relation 中的一筆 record, 這時如果使用 with() 的話會 load 所有的 model, 不使用 with() 的話又會執行很多次 query, 有什麼好的解法？"></a><strong>Laravel 中, 假設今天我想要取得 hasMany relation 中的一筆 record, 這時如果使用 with() 的話會 load 所有的 model, 不使用 with() 的話又會執行很多次 query, 有什麼好的解法？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = User::query()</span><br><span class="line">    -&gt;with(<span class="hljs-string">'login'</span>)</span><br><span class="line">    -&gt;orderBy(<span class="hljs-string">'name'</span>)</span><br><span class="line">    -&gt;paginate();</span><br></pre></td></tr></table></figure>
