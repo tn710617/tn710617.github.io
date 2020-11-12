@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>使用 Stackdriver 在 Kubernetes Engine 上做紀錄 - Ray&#39;s Coding Journey</title>
+<title>使用 Stackdriver 在 Kubernetes Engine 上做紀錄 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,GCP Stackdriver,Stackdriver Logging">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">
@@ -49,7 +49,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Stackdriver 在 Kubernetes Engine 上做紀錄">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/loggingWithStackdriverOnKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Stackdriver Logging 可以讓你在所有的 GCP 資源，或是其他平台的資源做紀錄，然後針對紀錄以及指標做集中式的儲存。 紀錄被加總，並且可在提供的 Stackdriver Logging UI 內被檢視。 他們也可以被匯出到接收器來支援更多使用情境。 目前， Stackdriver Logging 支援匯出到下面的接收器:  Cloud Storage Pub/Sub BigQ">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/85WGSZ6dN1ONO4gBLrQUugl8sNDPgIzZ_WjOPT-KMyIhnS6xJTUd3MP7K8F5hKjkiu2YsGDXWze0CLYk6Dhv1CMFGwJ9XPC7REGc4efAEyR1KSAHYbxKS8ok4qhZXqQIIbzv8IrK_rxPGq6aUjpZh3P_u5sn7umVbCEUaJ1MS_3qbiLAE9SqkVWJSdEMU9u8CWg5mlUck-FQcnjlcuawsP1IkVcYD8RWZbLyRYvh44bnDmHtWilLDu21fSDIhPu8VIFFBHBpxNxCpEfl2pwHgeOB1enYIVW1W4-9TRP2qnrvwb7E9NjWPYlwp_Hd5xy2XZFsjZGfY3JmvfjFysQbZxao3PWoSFw0SEAb0CIuqS3NejliGfU_zJD5K82-Zc11BbO9MipA9YRsJJqmHhh4S5xgFX2iorv315Epas2Wiwj-Fu9DjuD-Ij6UKpbmt4lqloUd6fyx3S8VOIjo-YALrkY72B_xLtnidxFc6oBWeJ03TmhxmhCRP6fyNXiwrnlo8W1pM-tF6W182R7eJr2q1AFfYwk6KZRAfeHvfk4IkomsbawBAxF5zZD2HokJoRbyt_MofTUW_7yShcR5K_GMIg-PtxkdQYSrvVXnmmfN3SPcv2Pu6N45nHPcvwq2grzA1kEF3UY3o-K681ww7svYYpL-QFyWS94ztNx5Gum_Zz2_rBKl4RqkyiU=w1130-h452-no">

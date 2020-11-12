@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>使用 Kubernetes 來編排你的雲端 - Ray&#39;s Coding Journey</title>
+<title>使用 Kubernetes 來編排你的雲端 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Cloud Architecture,Kubernetes in the Google Cloud">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Kubernetes 來編排你的雲端">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/orchestratingTheCloudWithKubernetes/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no">
@@ -52,7 +52,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Kubernetes 來編排你的雲端">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/orchestratingTheCloudWithKubernetes/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no">

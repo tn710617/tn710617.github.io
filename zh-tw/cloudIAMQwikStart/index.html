@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Cloud IAM - 初探 - Ray&#39;s Coding Journey</title>
+<title>Cloud IAM - 初探 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta name="keywords" content="QWIKLABS,Baseline: Infrastructure,GCP IAM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cloud IAM - 初探">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudIAMQwikStart/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">
@@ -51,7 +51,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cloud IAM - 初探">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudIAMQwikStart/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Google Cloud 身份與存取權管理 (IAM)，提供了為 GCP 資源建立且管理權限。 Cloud IAM 統一 GCP 眾多服務的存取權限控制，且提供一致性的操作。 在本教程中，你將會學到如何賦予使用者角色權限，或是移除 IAM 相關角色權限。 更確切的說，在此教程中登入兩組帳密來體驗權限的允許與廢除在 GCP Owner 與 Viewer 上是如何運作的。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/hyKObazMa3st-dxPmZia49CULjFwxUdB108uH2i4zu6R9POCIFEc9FWQ6zeStDrWwnBGDq0taSExSpsj08K8KdYEIdkE5VMPbsH078GePG5LREJQTW293BiBg-AcwyMVUaKLiark20iSIAfTOLiTP1RfhxmDtf8g023k5bgHubMWLoykBQvuoyCSlfkckXhdR9VxIUi0g8AUQkQvKLg4EiJwD0zFlbYlMi2srbOINg_FKz9dJEUMKd54a4LdglWTjkeLc79gvOOzsyNn14Uwq6jxby97k5cfyW1OlH3jlqJDPIml9zIc8Ek0MlUpasmsUKm8c2qeV6yG3vhLxHuWrtX_xU61FFaRVUmCA0Ta53MRYqJryFADYw2p7NkW5VvWlk7SO3uJeTUl9cZwgs8HtX5MH1k-N-BnkI3zzU17yhUi5sFabCY3twZi-XEl5fikBByyZGM79y3652rg2mLcA45cQSwkXD_gin_EZ-0-WaZicborBE8amsmLdUsYJYn6hJGaAHGIEeZgVnuvJEQFNgbD2V9eNsN1XzhHYv0Pj4IYEmw7lO2-ThG2RNm6X-QOtAP6qepdYmuGwuhiNN8X8dq2HJ62L8C-A6wuMsrNIin1SILm4bBtbo3P7aVMUpLqYM80v5EpFC11V3K8_X7MC7IWWv6v3gfp9gg1b_sn2XI7AbUAHm61ByA=w299-h411-no">

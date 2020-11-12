@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>使用 Spinnaker 在 Kubernetes Engine 中實作持續交付管道 - Ray&#39;s Coding Journey</title>
+<title>使用 Spinnaker 在 Kubernetes Engine 中實作持續交付管道 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Cloud Architecture,GCP Spinnaker">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Spinnaker 在 Kubernetes Engine 中實作持續交付管道">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no">
@@ -69,7 +69,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Spinnaker 在 Kubernetes Engine 中實作持續交付管道">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/continuousDeliveryPipelinesWithSpinnakerAndKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在本教程中, 你將會學到如何使用 Google Kubernetes Engine, Google Cloud Source Repositories, Google Cloud Container Builder, 以及 Spinnaker 來建立持續交付管道。 在你建立範例應用之後, 你將設定這些服務, 使他們可以自動建立, 測試, 以及部署。當你修改了應用的程式碼, 這個變更會觸發持續交">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/MSL8mwLjw0WOv75owogPs3emLjUF_94PXPONWoLlsHnkTs5Y9eczzpyX9-2oF1ECtOnK8MK-kvPyTYNiZ7D9trknhtjtnESxSkxtXZrT3w2EttB1fIiW2heo3VlfbO7z3S0Rim1jYY8uYfrif5k5wJrxdHStlctYkAgpKndaO9AsN8V-bij3zoRiKxzpq78hbd7soU_fNZD3YgPZXMPr-CT0FE6s7feMLMJJ7S338AGezG_wDJodKo0gBvr-vBCXFPK3dHXwBLSSRkArCuQqRsri5YGxDh1jDwKXkzdYoXjvSQgfwKsVufPlvXpRzk6Ry1wSGn4LGzK3juxQudqdb9Mvog-0aBFEs7155GnWQ-u2WHbzw1bU9jFAAKFiHmjKpOW27M4ll3ekMUvdpDetC1rFkWrkZ61t-jgEthtdv3yrIsaPoX3GZGo8qwdK4ZacvwymG6QpkFx-2kDPC3zXeebN1F9lIXtBXqZ2CGeEL59hwnb44dYDoNC1l79Dh9wkmsUzpBpFiiGjJKqt0THHj4wDmLn8QhZ0OelqrebqmmGefgBmigulKpg5oOT1vwFt_b-Duh3XnS0kXKz8TCZpfRceDS08ZY7ttTHyy24iW7lP3_S5nbDC5tbmxmb5TNWET0y6Zu2_I_ZyY93GCC1mD2UMTP5zVSiYgnwdvQ8NNgdgINVDuhRkqlox6gcepafwwCVJOssER2CIkpNelLci2hPqZ5ahjTiuP-kumT9utR4OKdvL=w1472-h1000-no">

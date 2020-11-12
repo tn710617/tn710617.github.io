@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>GKE Migrating to Containers - Ray&#39;s Coding Journey</title>
+<title>GKE Migrating to Containers - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Google Kubernetes Engine Best Practices">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GKE Migrating to Containers">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/GKEMigratingToContainers/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no">
@@ -54,7 +54,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="GKE Migrating to Containers">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/GKEMigratingToContainers/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 Kubernetes Engine (GKE), 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 GKE">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no">

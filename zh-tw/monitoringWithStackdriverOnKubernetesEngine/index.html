@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>&lt;未完成&gt; 使用 Stackdriver 在 Kubernetes Engine 上實施監控 - Ray&#39;s Coding Journey</title>
+<title>&lt;未完成&gt; 使用 Stackdriver 在 Kubernetes Engine 上實施監控 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述Stackdriver Kubernetes Monitoring 是 Stackdriver 上個一個新功能, 它更緊密地與 GKE 整合, 可以更好的顯示你運行在 GKE 上的工作、服務的重要統計資訊。新功能也包含了匯入, 可以匯入我們用 Prometheus 在 pods 取得的 metrics(指標), 就像是原生 Stackdriver metrics 一樣。 這讓我們可以使用 Pr">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Google Kubernetes Engine Best Practices,GCP Stackdriver">
 <meta property="og:type" content="article">
 <meta property="og:title" content="&lt;未完成&gt; 使用 Stackdriver 在 Kubernetes Engine 上實施監控">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/monitoringWithStackdriverOnKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Stackdriver Kubernetes Monitoring 是 Stackdriver 上個一個新功能, 它更緊密地與 GKE 整合, 可以更好的顯示你運行在 GKE 上的工作、服務的重要統計資訊。新功能也包含了匯入, 可以匯入我們用 Prometheus 在 pods 取得的 metrics(指標), 就像是原生 Stackdriver metrics 一樣。 這讓我們可以使用 Pr">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/5WkGAzxqwj8lCQA1gvxpNUNLpXpfS-j6DZw5TO7NV6hbIgu7OTyb9xSrc30D9DQyqYXx4ePc7gTqXibY8pgCXzxkTK0DsVV6nihNp4p3MQySzJl5wD3GfBShHbwV2XNtioh9JIQ3FhmZe2W8tKC7p_cyoP9kPgFLZAi8Z3hZWc6zaP_k0CWyPnAaCuFJrIGhq6sy6RMUxpgoroCfFpK4bx07NUx1rJp47KTNlkTTnNC6euq2uTnXrEDKM1d_2jMCjTEDbfxHiq9fmOX2XO5HdwzVKU6-ErxGsSu9koKbPDbmFf0ovJiNK1Jlc-XmxzWZA_1v0l0FjtnfGnoSSXWEt2iDqq53jkQ1MeeODq5U9K6j-XOtj5ZLQ-I-slaQ5342S-B8yNM_yviaQT0Os8ATiX-SKQnfCQZWmQNITYAUJlWrum4KnmyIVCTyibHR5EyxU2ZXLcM-0Mlxh6t1FbO9kMhYeUqb9UAl8PXEEGXRTAL3CvILnspkn2xYXlCRRmPwZO_mZC995m-zsJwaP5zds8oKpI4TPsk25-uN-0LLhtSktPk5oH1WsUPdd4YXVhQdpZWHDItYxldLq6CX7osK-uRe5gZs1alp_bechvpj8Prwy0qQVzbtS3L4dXTmQE9qxYQ0sJvr-luWisu72CwoLvoTEwRo4i6IiNmrJibuCMMGWcyvdLKE_DLi9GcYNL-KFGq4Uc_KtQn5gztNSBfd4zZAKHtXYmr2x0Q2yv2dL1Sef93BRg=w667-h438-no">
@@ -44,7 +44,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="&lt;未完成&gt; 使用 Stackdriver 在 Kubernetes Engine 上實施監控">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/monitoringWithStackdriverOnKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Stackdriver Kubernetes Monitoring 是 Stackdriver 上個一個新功能, 它更緊密地與 GKE 整合, 可以更好的顯示你運行在 GKE 上的工作、服務的重要統計資訊。新功能也包含了匯入, 可以匯入我們用 Prometheus 在 pods 取得的 metrics(指標), 就像是原生 Stackdriver metrics 一樣。 這讓我們可以使用 Pr">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/5WkGAzxqwj8lCQA1gvxpNUNLpXpfS-j6DZw5TO7NV6hbIgu7OTyb9xSrc30D9DQyqYXx4ePc7gTqXibY8pgCXzxkTK0DsVV6nihNp4p3MQySzJl5wD3GfBShHbwV2XNtioh9JIQ3FhmZe2W8tKC7p_cyoP9kPgFLZAi8Z3hZWc6zaP_k0CWyPnAaCuFJrIGhq6sy6RMUxpgoroCfFpK4bx07NUx1rJp47KTNlkTTnNC6euq2uTnXrEDKM1d_2jMCjTEDbfxHiq9fmOX2XO5HdwzVKU6-ErxGsSu9koKbPDbmFf0ovJiNK1Jlc-XmxzWZA_1v0l0FjtnfGnoSSXWEt2iDqq53jkQ1MeeODq5U9K6j-XOtj5ZLQ-I-slaQ5342S-B8yNM_yviaQT0Os8ATiX-SKQnfCQZWmQNITYAUJlWrum4KnmyIVCTyibHR5EyxU2ZXLcM-0Mlxh6t1FbO9kMhYeUqb9UAl8PXEEGXRTAL3CvILnspkn2xYXlCRRmPwZO_mZC995m-zsJwaP5zds8oKpI4TPsk25-uN-0LLhtSktPk5oH1WsUPdd4YXVhQdpZWHDItYxldLq6CX7osK-uRe5gZs1alp_bechvpj8Prwy0qQVzbtS3L4dXTmQE9qxYQ0sJvr-luWisu72CwoLvoTEwRo4i6IiNmrJibuCMMGWcyvdLKE_DLi9GcYNL-KFGq4Uc_KtQn5gztNSBfd4zZAKHtXYmr2x0Q2yv2dL1Sef93BRg=w667-h438-no">

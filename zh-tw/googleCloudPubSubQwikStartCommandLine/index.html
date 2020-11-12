@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Google Cloud Pub/Sub 初探 - Command Line - Ray&#39;s Coding Journey</title>
+<title>Google Cloud Pub/Sub 初探 - Command Line - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述Google Cloud Pub/Sub 是一個可以讓你再不同的應用以及服務之間交換事件資料的訊息服務。 藉由分離發送者以及接收者, 它提供了一個在獨立、不同的應用之間的安全、高可用的訊息傳遞服務。 Google Cloud Pub/Sub 遞送低延遲/持久的訊息服務, 並且被開發者們廣泛地使用在實作異步工作流程, 分派事件通知, 以及不同的程序以及裝置的資料串流。 在本教程中, 你將會實作以">
 <meta name="keywords" content="QWIKLABS,GCP Pub&#x2F;Sub,GCP-Baseline: Infrastructure">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Google Cloud Pub&#x2F;Sub 初探 - Command Line">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/googleCloudPubSubQwikStartCommandLine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Google Cloud Pub/Sub 是一個可以讓你再不同的應用以及服務之間交換事件資料的訊息服務。 藉由分離發送者以及接收者, 它提供了一個在獨立、不同的應用之間的安全、高可用的訊息傳遞服務。 Google Cloud Pub/Sub 遞送低延遲/持久的訊息服務, 並且被開發者們廣泛地使用在實作異步工作流程, 分派事件通知, 以及不同的程序以及裝置的資料串流。 在本教程中, 你將會實作以">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
@@ -47,7 +47,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Google Cloud Pub&#x2F;Sub 初探 - Command Line">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/googleCloudPubSubQwikStartCommandLine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述Google Cloud Pub/Sub 是一個可以讓你再不同的應用以及服務之間交換事件資料的訊息服務。 藉由分離發送者以及接收者, 它提供了一個在獨立、不同的應用之間的安全、高可用的訊息傳遞服務。 Google Cloud Pub/Sub 遞送低延遲/持久的訊息服務, 並且被開發者們廣泛地使用在實作異步工作流程, 分派事件通知, 以及不同的程序以及裝置的資料串流。 在本教程中, 你將會實作以">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">

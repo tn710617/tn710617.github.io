@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>GCP - 多個虛擬私人網路 - Ray&#39;s Coding Journey</title>
+<title>GCP - 多個虛擬私人網路 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述在本教程中, 你將建立幾個 VPC 網路 以及 VM instances, 並且測試這些網路間的連接。 更準確的說, 你將建立兩個客製化模式的網路 (management 以及 privatenet), 以及各自的防火牆規則跟 VM instances, 如下圖所示:">
 <meta name="keywords" content="QWIKLABS,GCP Compute Engine,Cloud Architecture,GCP VPC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GCP - 多個虛擬私人網路">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/multipleVPCNetworks/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在本教程中, 你將建立幾個 VPC 網路 以及 VM instances, 並且測試這些網路間的連接。 更準確的說, 你將建立兩個客製化模式的網路 (management 以及 privatenet), 以及各自的防火牆規則跟 VM instances, 如下圖所示:">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/fLTDPrAxPL3kq-NwQQZ11ZcQcinA80WVYBcgtWG_VuDKx5XwrxpccyJvVSAXLHf_kbqdapXLyIZHabQ_TVec5szYi0qfCJV9FMYKe2BaVDg5XwrS8pWKvyJIiteZTKEMjvlDPUfuRLXnYskhxhEbw25LzBI0Nj9HdO6mL4amyiBmcXoFOJRp1_CJ3GXiswme9m-nWXpXRYXvKJdL37KN_tfq6A-cccJS6ZYEJUD0DlVrz03Ay_PaL6GhxwcgW9JpIBIwOGyhecYfgEkpPkBIdeKyBPiQj6EOnUn5PSU-AmHiYHcAUoPFyW77pvcnanBAC2WwsH_raxdqo9Bp3FWINptWkq8BmeLcxa40jTWGICL_FlXKAX-qDW6DnLBYiJ1IaOfbAda7Cp5v_Q1gOS-b6OjNjjNnrynt6m4eB0GXIzYLKqeS1-zDck1j211l8jt2YDNhyLSmX34RCtYnhvjPhgHDkNYCP43saTaukAmwJ-i1GrKWNo7Gn05MKwxDVydMFGNFmJf0ICDUkaPEW7GAxjUUpLHaEj31ZXFKZ7-tlsvVPSh090CaFy47Y1dGmN-Q3LBAUT7VgWFeyq4pipa2lxeQYaVCGRb0MGrMTbv1Dd4iBJwLq6xCt6S00S5OJq4CWmGW_w_rqCVG4CFIlzVo_QzF7BxzH1sabq6shssCb5W6UXTPW-7anCzQD6aEt9xiZBFiVZipX-oWpjkVwnGyCpNRyEw5ebMXw0KsoHPjxEPCj20B=w1920-h1929-no">
@@ -61,7 +61,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="GCP - 多個虛擬私人網路">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/multipleVPCNetworks/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在本教程中, 你將建立幾個 VPC 網路 以及 VM instances, 並且測試這些網路間的連接。 更準確的說, 你將建立兩個客製化模式的網路 (management 以及 privatenet), 以及各自的防火牆規則跟 VM instances, 如下圖所示:">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/fLTDPrAxPL3kq-NwQQZ11ZcQcinA80WVYBcgtWG_VuDKx5XwrxpccyJvVSAXLHf_kbqdapXLyIZHabQ_TVec5szYi0qfCJV9FMYKe2BaVDg5XwrS8pWKvyJIiteZTKEMjvlDPUfuRLXnYskhxhEbw25LzBI0Nj9HdO6mL4amyiBmcXoFOJRp1_CJ3GXiswme9m-nWXpXRYXvKJdL37KN_tfq6A-cccJS6ZYEJUD0DlVrz03Ay_PaL6GhxwcgW9JpIBIwOGyhecYfgEkpPkBIdeKyBPiQj6EOnUn5PSU-AmHiYHcAUoPFyW77pvcnanBAC2WwsH_raxdqo9Bp3FWINptWkq8BmeLcxa40jTWGICL_FlXKAX-qDW6DnLBYiJ1IaOfbAda7Cp5v_Q1gOS-b6OjNjjNnrynt6m4eB0GXIzYLKqeS1-zDck1j211l8jt2YDNhyLSmX34RCtYnhvjPhgHDkNYCP43saTaukAmwJ-i1GrKWNo7Gn05MKwxDVydMFGNFmJf0ICDUkaPEW7GAxjUUpLHaEj31ZXFKZ7-tlsvVPSh090CaFy47Y1dGmN-Q3LBAUT7VgWFeyq4pipa2lxeQYaVCGRb0MGrMTbv1Dd4iBJwLq6xCt6S00S5OJq4CWmGW_w_rqCVG4CFIlzVo_QzF7BxzH1sabq6shssCb5W6UXTPW-7anCzQD6aEt9xiZBFiVZipX-oWpjkVwnGyCpNRyEw5ebMXw0KsoHPjxEPCj20B=w1920-h1929-no">

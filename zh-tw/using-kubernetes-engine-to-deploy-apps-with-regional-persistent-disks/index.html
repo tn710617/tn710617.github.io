@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>&lt;未完成&gt; 使用地區性的永久磁碟部署 Apps 到 Kubernetes Engine - Ray&#39;s Coding Journey</title>
+<title>&lt;未完成&gt; 使用地區性的永久磁碟部署 Apps 到 Kubernetes Engine - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述本章節中, 我們將學習如何藉由使用 regional persistent disks (地區性永久磁碟) 在 Kubernetes Engine 部署 WordPress, 配置一個高可用的應用。 Regional persistent disks 提供的兩個 zones 之間的同步, 這確保了你的應用可以正常運行, 就算其中一個區域發生了故障或停電事故。 使用 regional persi">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Kubernetes Solutions">
 <meta property="og:type" content="article">
 <meta property="og:title" content="&lt;未完成&gt; 使用地區性的永久磁碟部署 Apps 到 Kubernetes Engine">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/using-kubernetes-engine-to-deploy-apps-with-regional-persistent-disks/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述本章節中, 我們將學習如何藉由使用 regional persistent disks (地區性永久磁碟) 在 Kubernetes Engine 部署 WordPress, 配置一個高可用的應用。 Regional persistent disks 提供的兩個 zones 之間的同步, 這確保了你的應用可以正常運行, 就算其中一個區域發生了故障或停電事故。 使用 regional persi">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/4jrpZIpUcJ52iBssNUJzIw3fvhSmdACufy8973gyH0TKYtKAgObpFlFyOxmJ9D53lInVdjqzHAYoThQcx2DtdASQs5agdNfykUhYKs0M9pTeVbwQR8_a0oDXXjBRvpmT_CrqDA88dfyB5MzaVZzp8WuV-vLeC7G4GNzlVPSpvbSZaF8lZ4dIFRBAhr6Lj79Mphx1W5pkZxOnkhc_wgWkQr68PNuTYGgMffs40RRRMqOndV9E8fI-vqKYtHwScUCVqfs5oPG0ySES0Mk0Fk3R1C-6gC_vNNrj7tZG2MDoxvW3RGaEWRkdyeB1Hmselx2-iPvoTXk6KgFoJs7PobcCtFt3IzLXQDfMnBylXGsOf41xEkqx3KVwz2FCslUabgSC1d8_Ml5nCQFxGOcahkBahxEX93ymjAk-7mR7fzRwwAKbVYBuQdmQAoDp4qF72rSr2t2mW6dxdJ7qjTFEFlkIVAYYBZXgfQaxEHkFOkWXoYHoETlrkrxO_8FVlDOqmKWKj_HJ3h94VoAX5zOTE7IhI5Yo-VCp1UKRRLP54IPmygjgh_9NVRbWx3lyrvR47tdtAcFdC847cFtLE-8kjbPAohSmlkMubdrXX-sVSQYDgq15UQyO1NQFgADludeNvRiJbdcTcj9QuKgCmDonmHWFOwAZgDknUNWBqaLkKwT-n-LchPtQ77ezGFFjoJ7SHviv4SYLSsI7DpW8OTUkFbUphUNz6Fbvn4ugLWmuvdDEkLNFs3Rz3Q=w912-h762-no">
@@ -44,7 +44,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="&lt;未完成&gt; 使用地區性的永久磁碟部署 Apps 到 Kubernetes Engine">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/using-kubernetes-engine-to-deploy-apps-with-regional-persistent-disks/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述本章節中, 我們將學習如何藉由使用 regional persistent disks (地區性永久磁碟) 在 Kubernetes Engine 部署 WordPress, 配置一個高可用的應用。 Regional persistent disks 提供的兩個 zones 之間的同步, 這確保了你的應用可以正常運行, 就算其中一個區域發生了故障或停電事故。 使用 regional persi">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/4jrpZIpUcJ52iBssNUJzIw3fvhSmdACufy8973gyH0TKYtKAgObpFlFyOxmJ9D53lInVdjqzHAYoThQcx2DtdASQs5agdNfykUhYKs0M9pTeVbwQR8_a0oDXXjBRvpmT_CrqDA88dfyB5MzaVZzp8WuV-vLeC7G4GNzlVPSpvbSZaF8lZ4dIFRBAhr6Lj79Mphx1W5pkZxOnkhc_wgWkQr68PNuTYGgMffs40RRRMqOndV9E8fI-vqKYtHwScUCVqfs5oPG0ySES0Mk0Fk3R1C-6gC_vNNrj7tZG2MDoxvW3RGaEWRkdyeB1Hmselx2-iPvoTXk6KgFoJs7PobcCtFt3IzLXQDfMnBylXGsOf41xEkqx3KVwz2FCslUabgSC1d8_Ml5nCQFxGOcahkBahxEX93ymjAk-7mR7fzRwwAKbVYBuQdmQAoDp4qF72rSr2t2mW6dxdJ7qjTFEFlkIVAYYBZXgfQaxEHkFOkWXoYHoETlrkrxO_8FVlDOqmKWKj_HJ3h94VoAX5zOTE7IhI5Yo-VCp1UKRRLP54IPmygjgh_9NVRbWx3lyrvR47tdtAcFdC847cFtLE-8kjbPAohSmlkMubdrXX-sVSQYDgq15UQyO1NQFgADludeNvRiJbdcTcj9QuKgCmDonmHWFOwAZgDknUNWBqaLkKwT-n-LchPtQ77ezGFFjoJ7SHviv4SYLSsI7DpW8OTUkFbUphUNz6Fbvn4ugLWmuvdDEkLNFs3Rz3Q=w912-h762-no">

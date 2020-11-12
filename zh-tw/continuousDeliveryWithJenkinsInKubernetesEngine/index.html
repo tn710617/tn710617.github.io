@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>使用 Jenkins 在 Kubernetes Engine 中實作持續交付 - Ray&#39;s Coding Journey</title>
+<title>使用 Jenkins 在 Kubernetes Engine 中實作持續交付 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述在本教程中, 你將學習到如何在 Kubernetes engine 中, 使用 Jenkins 來設定持續交付管道。 Jenkins 是一個開發者們經常會使用到的自動化 server, 這些開發者們會經常的需要將他們的程式碼整合到一個共同分享的倉庫中…">
 <meta name="keywords" content="QWIKLABS,GCP Kubernetes Engine,Kubernetes,Cloud Architecture,Jenkins,Kubernetes in the Google Cloud">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Jenkins 在 Kubernetes Engine 中實作持續交付">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/continuousDeliveryWithJenkinsInKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在本教程中, 你將學習到如何在 Kubernetes engine 中, 使用 Jenkins 來設定持續交付管道。 Jenkins 是一個開發者們經常會使用到的自動化 server, 這些開發者們會經常的需要將他們的程式碼整合到一個共同分享的倉庫中…">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/mNtbsc3YldY0wRX7L8aLlDVHd7PFFsen_MizSJQtc3kqJeucp8YKOmU7fRsHlqHU0O5Cy5ZLWwMOrLfGU0N8zilk7Dfi_5yQZOLuRHHZrz3nHR0sbMZUsKltAZQOB9KV-WEt3QH0RDo1_ZqcXkAmOOagyh2W-HKY2aU7sSTTUfC-FEAt6LuuOlpxEyLKMRlzovXr_LpPfUlT3TB7EMthWQZntoTvZy4efdjHLzotIv3g_vFLKsjB4cPtg2B5WKJ1Yze8j8a9dSEQLs0wQsxIbBMFGxv-hn1azvLc1qvooCtOdTyJFcliMKv58_La9QnwVx-zGK2N4IzlItWGvFAr-iwtvGzlpZA2zwQ3_EgXf33qspTZrbApZRKRXxxMOZAsJFVcDDcDEU32XygAUNZtNnVqU5LCISGNO5reYTyocpv-yK49SQ8F7Q4ctYIvf9AHmQL9r1BwOzt1OugJKHqEi6Noc25SKtM8C2YYGLzZomFTLR19-6nsQM_iVtKdao91fWkPUVuMorci3qNTW1PEBOPh61R4F4x26B4HhTzwO9x6PezrBt8bUrXx7IaecdFD40OZux2SQwBgucKKfyT7bWUce0EsVxaeoVKc9ijQG-Dq0OLFV15dVVDh0Dd0Ac2AHVFIEqDynptiVh1h5lL2RVp9semePlm_YmljSOpPH8mXGxDNdOKuoLdwtEnxdKJaUWMAofIsfC1t1jkcl--Kc6XAz-HA-EvIwlmhKdjGSK5GM4RD=w1440-h1007-no">
@@ -64,7 +64,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Jenkins 在 Kubernetes Engine 中實作持續交付">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/continuousDeliveryWithJenkinsInKubernetesEngine/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述在本教程中, 你將學習到如何在 Kubernetes engine 中, 使用 Jenkins 來設定持續交付管道。 Jenkins 是一個開發者們經常會使用到的自動化 server, 這些開發者們會經常的需要將他們的程式碼整合到一個共同分享的倉庫中…">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/mNtbsc3YldY0wRX7L8aLlDVHd7PFFsen_MizSJQtc3kqJeucp8YKOmU7fRsHlqHU0O5Cy5ZLWwMOrLfGU0N8zilk7Dfi_5yQZOLuRHHZrz3nHR0sbMZUsKltAZQOB9KV-WEt3QH0RDo1_ZqcXkAmOOagyh2W-HKY2aU7sSTTUfC-FEAt6LuuOlpxEyLKMRlzovXr_LpPfUlT3TB7EMthWQZntoTvZy4efdjHLzotIv3g_vFLKsjB4cPtg2B5WKJ1Yze8j8a9dSEQLs0wQsxIbBMFGxv-hn1azvLc1qvooCtOdTyJFcliMKv58_La9QnwVx-zGK2N4IzlItWGvFAr-iwtvGzlpZA2zwQ3_EgXf33qspTZrbApZRKRXxxMOZAsJFVcDDcDEU32XygAUNZtNnVqU5LCISGNO5reYTyocpv-yK49SQ8F7Q4ctYIvf9AHmQL9r1BwOzt1OugJKHqEi6Noc25SKtM8C2YYGLzZomFTLR19-6nsQM_iVtKdao91fWkPUVuMorci3qNTW1PEBOPh61R4F4x26B4HhTzwO9x6PezrBt8bUrXx7IaecdFD40OZux2SQwBgucKKfyT7bWUce0EsVxaeoVKc9ijQG-Dq0OLFV15dVVDh0Dd0Ac2AHVFIEqDynptiVh1h5lL2RVp9semePlm_YmljSOpPH8mXGxDNdOKuoLdwtEnxdKJaUWMAofIsfC1t1jkcl--Kc6XAz-HA-EvIwlmhKdjGSK5GM4RD=w1440-h1007-no">

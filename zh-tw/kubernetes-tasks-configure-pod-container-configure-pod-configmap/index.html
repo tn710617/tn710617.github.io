@@ -2,14 +2,14 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Configure a Pod to Use a ConfigMap - Ray&#39;s Coding Journey</title>
+<title>Configure a Pod to Use a ConfigMap - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="概述本篇為 ConfigMap 的介紹與使用筆記, 參考來源為 官方文件, 除了文件內容翻譯外, 也會有 Questions and Answers 區塊來將重點摘出。">
 <meta name="keywords" content="Kubernetes,Kubernetes configMap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Configure a Pod to Use a ConfigMap">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-tasks-configure-pod-container-configure-pod-configmap/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述本篇為 ConfigMap 的介紹與使用筆記, 參考來源為 官方文件, 除了文件內容翻譯外, 也會有 Questions and Answers 區塊來將重點摘出。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/NNOdN4AExN2Fl8LookXjbiQf5IBtXD5STcwdnrDJEjBCVTLNuew7CZ5wYLTEE0nuY4eyA2U-83A_HrXUJHfKaxNLc8ZBqjc10vGrnmZ4xrvTU4gO9QiPK8Plw6m2kdYmXkBAgbz4WkRd4wf02vfBJ_hBRp-F1zlRyeGWM0VBhwwTePzN4GyjaARzRzheRK3Ypjo11sfhlqEVv9U-N-c13mkxI64gPWjIMrMYHDwwFkeAR6THXvrHcKBCcVVbVQgLqrJy_kozCZhRN_W7fsxBNkePzthh2MFWMc0d1m777TdVGN8QDV1LL5JQQjzR1CPaOuQcPdFejlyoigKD9OVI8cukHylrZsDXkY2Cwthr5rsCUAbf2y4F1ukoPLs7wtcUU-Q9vIUg9hO240qQlE1XSLElG-vYQscofz6plL1ESvO7q08rjs2Z1FzYjQCgn0kFUs4TjKmXa5cZhjMhqxOFZcV2U1Qwn2iiaJXdMY4uF2hLcqgVEz4cNGhpZG6NExs7NaqlT_KE0Z8XxenIdULVvoznTdDCHVGT9kfZW2ANborDgbkN56Uq1lNsNfbFkUOrW_2unSw_oMjYhgMkzlw0zoME8HB9csZkf1DES64YDVAI95q5TYMspGm4n7xdhegquCOYGKcwDG9RKiqEovwhhLXP3KRU14_MU4qvT12V8XoyykOOPfGxm-KNYvY9EMIZ7hmQHyulbDcxgwU2wU8WxqaAM63R1w2CN6OjFgtEEVib4tmG4A=w488-h55-no">
@@ -38,7 +38,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Configure a Pod to Use a ConfigMap">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-tasks-configure-pod-container-configure-pod-configmap/index.html">
-<meta property="og:site_name" content="Ray&#39;s Coding Journey">
+<meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="概述本篇為 ConfigMap 的介紹與使用筆記, 參考來源為 官方文件, 除了文件內容翻譯外, 也會有 Questions and Answers 區塊來將重點摘出。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://lh3.googleusercontent.com/NNOdN4AExN2Fl8LookXjbiQf5IBtXD5STcwdnrDJEjBCVTLNuew7CZ5wYLTEE0nuY4eyA2U-83A_HrXUJHfKaxNLc8ZBqjc10vGrnmZ4xrvTU4gO9QiPK8Plw6m2kdYmXkBAgbz4WkRd4wf02vfBJ_hBRp-F1zlRyeGWM0VBhwwTePzN4GyjaARzRzheRK3Ypjo11sfhlqEVv9U-N-c13mkxI64gPWjIMrMYHDwwFkeAR6THXvrHcKBCcVVbVQgLqrJy_kozCZhRN_W7fsxBNkePzthh2MFWMc0d1m777TdVGN8QDV1LL5JQQjzR1CPaOuQcPdFejlyoigKD9OVI8cukHylrZsDXkY2Cwthr5rsCUAbf2y4F1ukoPLs7wtcUU-Q9vIUg9hO240qQlE1XSLElG-vYQscofz6plL1ESvO7q08rjs2Z1FzYjQCgn0kFUs4TjKmXa5cZhjMhqxOFZcV2U1Qwn2iiaJXdMY4uF2hLcqgVEz4cNGhpZG6NExs7NaqlT_KE0Z8XxenIdULVvoznTdDCHVGT9kfZW2ANborDgbkN56Uq1lNsNfbFkUOrW_2unSw_oMjYhgMkzlw0zoME8HB9csZkf1DES64YDVAI95q5TYMspGm4n7xdhegquCOYGKcwDG9RKiqEovwhhLXP3KRU14_MU4qvT12V8XoyykOOPfGxm-KNYvY9EMIZ7hmQHyulbDcxgwU2wU8WxqaAM63R1w2CN6OjFgtEEVib4tmG4A=w488-h55-no">
