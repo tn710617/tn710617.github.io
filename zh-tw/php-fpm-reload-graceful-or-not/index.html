@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>PHP-FPM reload 真的有優雅嗎？ - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！  # OPcacheOPcache 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。然而 clear cache 有以下幾種方法:  特別製作一支 API, 在裡面執行 opcache_reset()">
+<meta name="description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
 <meta name="keywords" content="PHP-FPM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP-FPM reload 真的有優雅嗎？">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/php-fpm-reload-graceful-or-not/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！  # OPcacheOPcache 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。然而 clear cache 有以下幾種方法:  特別製作一支 API, 在裡面執行 opcache_reset()">
+<meta property="og:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-16T10:13:07.276Z">
+<meta property="og:updated_time" content="2020-11-17T07:51:40.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP-FPM reload 真的有優雅嗎？">
-<meta name="twitter:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！  # OPcacheOPcache 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。然而 clear cache 有以下幾種方法:  特別製作一支 API, 在裡面執行 opcache_reset()">
+<meta name="twitter:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！  # OPcacheOPcache 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。然而 clear cache 有以下幾種方法:  特別製作一支 API, 在裡面執行 opcache_reset()">
+    <meta name="description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
 <meta name="keywords" content="PHP-FPM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP-FPM reload 真的有優雅嗎？">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/php-fpm-reload-graceful-or-not/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！  # OPcacheOPcache 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。然而 clear cache 有以下幾種方法:  特別製作一支 API, 在裡面執行 opcache_reset()">
+<meta property="og:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-16T10:13:07.276Z">
+<meta property="og:updated_time" content="2020-11-17T07:51:40.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP-FPM reload 真的有優雅嗎？">
-<meta name="twitter:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！  # OPcacheOPcache 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。然而 clear cache 有以下幾種方法:  特別製作一支 API, 在裡面執行 opcache_reset()">
+<meta name="twitter:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
 
 
 
@@ -244,13 +244,14 @@
         <span class="column is-narrow">
             
             
-            12 分钟 讀完 (大概 1764 字)
+            12 分钟 讀完 (大概 1765 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>其實這篇文章跟 <code>OPcache</code> 沒什麼太大的關係, 但卻是做這個實驗的根本原因！</p>
+<a id="more"></a>
 <p><br><br><br></p>
 <h2 id="OPcache"><a href="#OPcache" class="headerlink" title="# OPcache"></a># OPcache</h2><p><code>OPcache</code> 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。<br><strong>然而 clear cache 有以下幾種方法:</strong></p>
 <ul>
