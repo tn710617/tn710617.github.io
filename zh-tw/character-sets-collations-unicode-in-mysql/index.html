@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Character Sets, Collations, and Unicode in MySQL - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
+<meta name="keywords" content="MySQL,Character Sets,Collations,Unicode">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Character Sets, Collations, and Unicode in MySQL">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/character-sets-collations-unicode-in-mysql/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-11-25T12:43:05.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Character Sets, Collations, and Unicode in MySQL">
+<meta name="twitter:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/character-sets-collations-unicode-in-mysql/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
+<meta name="keywords" content="MySQL,Character Sets,Collations,Unicode">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Character Sets, Collations, and Unicode in MySQL">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/character-sets-collations-unicode-in-mysql/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-11-25T12:43:05.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Character Sets, Collations, and Unicode in MySQL">
+<meta name="twitter:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Character-Sets-and-Collations-in-General">2&nbsp;&nbsp;<b># Character Sets and Collations in General</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Character-Sets-and-Collations-in-MySQL">3&nbsp;&nbsp;<b># Character Sets and Collations in MySQL</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Character-Set-Repertoire">3.1&nbsp;&nbsp;# Character Set Repertoire</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/character-sets-collations-unicode-in-mysql/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/character-sets-collations-unicode-in-mysql/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Character Sets, Collations, and Unicode in MySQL
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-11-25T07:45:15.000Z" itemprop="datePublished">11月 25 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Database/">Database</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            4 分钟 讀完 (大概 645 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>MySQL 預設使用 character sets <code>utf8mb4</code> 以及 collations <code>utf8mb4_0900_ai_ci</code></p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h2 id="Character-Sets-and-Collations-in-General"><a href="#Character-Sets-and-Collations-in-General" class="headerlink" title="# Character Sets and Collations in General"></a># Character Sets and Collations in General</h2><p>character set 是一組 symbols 以及 encodings, 而 collation 是一套規則, 用來比較 character set 中的 character 的規則<br>舉例來說, 我們有四個字母 A, B, a, b, 而我們給予每個字母一個數字 A = 0, B = 1, a = 2, b = 3, 在此範例下, 字母 A 就是 symbol, 而數字 0 就是 A 的 encoding, 而 character set 就是四個字母以及數字</p>
+<p>如果我們想要比較 2 個 string, A 以及 B, 最簡單的方法就是看他們的 encoding: A = 0, B = 1<br>因為 0 比 1 小, 所以我們說 A 比 B 小。 上面我們剛剛做的就是套用了一套 collation 到 character set<br>collation 是一套規則 (在此例中, 只有一種規則): 比較 encodings<br>這種最簡單的 collation 又名為 binary collation</p>
+<p>現實世界中, character sets 有很多 character, 不是只有 A 以及 B, 而是有全部的英文字母, 有時更是有多種英文字母或東方體系有幾千個 character, 以及很多特殊符號跟標點符號。 現實世界中, 大部分的 collations 都有很多規則, 不只是分辨大小寫, 更是有重音符號 (一字多音)</p>
+<p>MySQL 可以做到以下幾點：</p>
+<ul>
+<li>以多種 character sets 儲存字串</li>
+<li>使用多種 collations 比較字串</li>
+<li>在同 server, 或同 database, 甚至同 table, 上使用不同的 character set</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Character-Sets-and-Collations-in-MySQL"><a href="#Character-Sets-and-Collations-in-MySQL" class="headerlink" title="# Character Sets and Collations in MySQL"></a># Character Sets and Collations in MySQL</h2><p>可使用 MySQL 語法列出可用的 character set <code>SHOW CHARACTER SET LIKE &#39;utf%&#39;;</code>, 加 LIKE 可以篩選, 若不加 LIKE 則取出全部</p>
+<p>一種 character set 通常至少會有一種 collation, 而大部分的 character set 都有多種 collation, 可使用 MySQL 語法 <code>SHOW COLLATION</code>, 跟列出 character set 一樣, 也可以使用 LIKE 篩選</p>
+<p>每種 character set 都有其 default collation, <code>SHOW CHARACTER SET</code> 可得出</p>
+<p><br></p>
+<h3 id="Character-Set-Repertoire"><a href="#Character-Set-Repertoire" class="headerlink" title="# Character Set Repertoire"></a># Character Set Repertoire</h3><ul>
+<li>一個 character set 的 repertoire 是這個 character set 中 character 的集合</li>
+<li><p>string 有著 repertoire 屬性, 有兩種值</p>
+<ul>
+<li>ASCII: U+0000 to U+007F</li>
+<li>UNICODE: U+0000 to u+10FFFF, 含所有 character</li>
+</ul>
+</li>
+<li><p>ASCII 範圍是 UNICODE 範圍的子集, 所以 string 有著 ASCII repertoire 可以安全地被 UNICODE repertoire 涵蓋, 也可安全的轉換成任何 ASCII 的 superset (除了 swe7, 任何 MySQL 的 character set 都是 ASCII 的 superset)</p>
+</li>
+<li><p>正是因為 repertoire 的使用, string 才得以在多種不同的 character set 之間轉換</p>
+</li>
+<li><p>repertoire 會隨著 string 的內容變換, 且可能會跟 character set 的 repertoire 有所不同</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SET NAMES utf8mb4; SELECT &apos;abc&apos;;</span><br><span class="line">SELECT _utf8mb4&apos;def&apos;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如上 example, 雖說 character set 設定 utfmb4, 但因為 string ‘abc’, 以及 ‘def’ 並未超出 ASCII 的範圍, 因此其 repertoire 還是在 ASCII</p>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/MySQL/">#MySQL</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Character-Sets/">#Character Sets</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Collations/">#Collations</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Unicode/">#Unicode</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-digging-deeper-artisan-console/">Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/character-sets-collations-unicode-in-mysql/';
+        this.page.identifier = 'zh-tw/character-sets-collations-unicode-in-mysql/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                           
+                           <i class="fab fa-medium"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
