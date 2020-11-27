@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-25T12:43:05.850Z">
+<meta property="og:updated_time" content="2020-11-27T08:07:39.420Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Character Sets, Collations, and Unicode in MySQL">
 <meta name="twitter:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-25T12:43:05.850Z">
+<meta property="og:updated_time" content="2020-11-27T08:07:39.420Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Character Sets, Collations, and Unicode in MySQL">
 <meta name="twitter:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
@@ -218,7 +218,7 @@
         <span class="column is-narrow">
             
             
-            4 分钟 讀完 (大概 645 字)
+            6 分钟 讀完 (大概 950 字)
         </span>
         
     </div>
@@ -257,6 +257,22 @@
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SET NAMES utf8mb4; SELECT &apos;abc&apos;;</span><br><span class="line">SELECT _utf8mb4&apos;def&apos;;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>如上 example, 雖說 character set 設定 utfmb4, 但因為 string ‘abc’, 以及 ‘def’ 並未超出 ASCII 的範圍, 因此其 repertoire 還是在 ASCII</p>
+</li>
+<li><p>再來看一下 example 如下, column c1 以及 c2 雖然有不同的 character set, 但因為 value ‘a’, ‘b’ 的 repertoire 都屬於 ASCII, 所以 CONCAT 不會有錯誤</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE t1 (</span><br><span class="line">  c1 CHAR(1) CHARACTER SET latin1,</span><br><span class="line">  c2 CHAR(1) CHARACTER SET ascii</span><br><span class="line">);</span><br><span class="line">INSERT INTO t1 VALUES (&apos;a&apos;,&apos;b&apos;);</span><br><span class="line">SELECT CONCAT(c1,c2) FROM t1;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>而當一個 function 有一個 string argument, 則 repertoire 繼承自該 string, for example, <strong>UPPER(_utf8mb4’abc’)</strong> 的 repertoire 為 ASCII, 因為 ‘abc’ 有著 ASCII repertoire (儘管有著 “_utf8mb4”, 但 ‘abc’ 的 character 範圍並沒有超出 ASCII)</p>
+</li>
+<li>那如果是 return string 的 function, 但卻沒有 argument 輸入呢？ 那 function 會使用 <strong>character_set_connection</strong> 的設定</li>
+<li><p>如果 function 有多個 args, 那會使用多個 args 中範圍最廣的 repertoire, 如下 example</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CONCAT(_ucs2 X&apos;0041&apos;, _ucs2 X&apos;0042&apos;)</span><br><span class="line">CONCAT(_ucs2 X&apos;0041&apos;, _ucs2 X&apos;00C2&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上面的 example 中, 第一個 function call 的 result 為 ASCII 因為兩個 args 都在 ASCII 範圍內, 而第二個 function call 為 UNICODE, 因為第二個 args 超出了 ASCII 範圍</p>
+</li>
+<li><p>function 的 repertoire 只會被對其結果有影響的 args 所決定, 如下 example</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">IF(column1 &lt; column2, &apos;smaller&apos;, &apos;greater&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上面 example 中可以看到, 雖然有三個 args, 但實際有影響力的是 2 跟 3, arg1 雖然也是 string value, 但因為對結果輸出的 repertoire 沒有影響, 因為不會參與決策</p>
 </li>
 </ul>
 
