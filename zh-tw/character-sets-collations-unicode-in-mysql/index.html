@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-27T08:07:39.420Z">
+<meta property="og:updated_time" content="2020-11-28T11:27:06.569Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Character Sets, Collations, and Unicode in MySQL">
 <meta name="twitter:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-27T08:07:39.420Z">
+<meta property="og:updated_time" content="2020-11-28T11:27:06.569Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Character Sets, Collations, and Unicode in MySQL">
 <meta name="twitter:description" content="# 前言MySQL 預設使用 character sets utf8mb4 以及 collations utf8mb4_0900_ai_ci">
@@ -154,10 +154,6 @@
                     
                     <a class="navbar-item" href="#Character-Sets-and-Collations-in-MySQL">3&nbsp;&nbsp;<b># Character Sets and Collations in MySQL</b></a>
                     
-                    
-                    
-                    <a class="navbar-item" href="#Character-Set-Repertoire">3.1&nbsp;&nbsp;# Character Set Repertoire</a>
-                    
                 </div>
             </div>
             
@@ -218,7 +214,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 讀完 (大概 950 字)
+            3 分钟 讀完 (大概 457 字)
         </span>
         
     </div>
@@ -241,40 +237,6 @@
 <p>一種 character set 通常至少會有一種 collation, 而大部分的 character set 都有多種 collation, 可使用 MySQL 語法 <code>SHOW COLLATION</code>, 跟列出 character set 一樣, 也可以使用 LIKE 篩選</p>
 <p>每種 character set 都有其 default collation, <code>SHOW CHARACTER SET</code> 可得出</p>
 <p><br></p>
-<h3 id="Character-Set-Repertoire"><a href="#Character-Set-Repertoire" class="headerlink" title="# Character Set Repertoire"></a># Character Set Repertoire</h3><ul>
-<li>一個 character set 的 repertoire 是這個 character set 中 character 的集合</li>
-<li><p>string 有著 repertoire 屬性, 有兩種值</p>
-<ul>
-<li>ASCII: U+0000 to U+007F</li>
-<li>UNICODE: U+0000 to u+10FFFF, 含所有 character</li>
-</ul>
-</li>
-<li><p>ASCII 範圍是 UNICODE 範圍的子集, 所以 string 有著 ASCII repertoire 可以安全地被 UNICODE repertoire 涵蓋, 也可安全的轉換成任何 ASCII 的 superset (除了 swe7, 任何 MySQL 的 character set 都是 ASCII 的 superset)</p>
-</li>
-<li><p>正是因為 repertoire 的使用, string 才得以在多種不同的 character set 之間轉換</p>
-</li>
-<li><p>repertoire 會隨著 string 的內容變換, 且可能會跟 character set 的 repertoire 有所不同</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SET NAMES utf8mb4; SELECT &apos;abc&apos;;</span><br><span class="line">SELECT _utf8mb4&apos;def&apos;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如上 example, 雖說 character set 設定 utfmb4, 但因為 string ‘abc’, 以及 ‘def’ 並未超出 ASCII 的範圍, 因此其 repertoire 還是在 ASCII</p>
-</li>
-<li><p>再來看一下 example 如下, column c1 以及 c2 雖然有不同的 character set, 但因為 value ‘a’, ‘b’ 的 repertoire 都屬於 ASCII, 所以 CONCAT 不會有錯誤</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE t1 (</span><br><span class="line">  c1 CHAR(1) CHARACTER SET latin1,</span><br><span class="line">  c2 CHAR(1) CHARACTER SET ascii</span><br><span class="line">);</span><br><span class="line">INSERT INTO t1 VALUES (&apos;a&apos;,&apos;b&apos;);</span><br><span class="line">SELECT CONCAT(c1,c2) FROM t1;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>而當一個 function 有一個 string argument, 則 repertoire 繼承自該 string, for example, <strong>UPPER(_utf8mb4’abc’)</strong> 的 repertoire 為 ASCII, 因為 ‘abc’ 有著 ASCII repertoire (儘管有著 “_utf8mb4”, 但 ‘abc’ 的 character 範圍並沒有超出 ASCII)</p>
-</li>
-<li>那如果是 return string 的 function, 但卻沒有 argument 輸入呢？ 那 function 會使用 <strong>character_set_connection</strong> 的設定</li>
-<li><p>如果 function 有多個 args, 那會使用多個 args 中範圍最廣的 repertoire, 如下 example</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CONCAT(_ucs2 X&apos;0041&apos;, _ucs2 X&apos;0042&apos;)</span><br><span class="line">CONCAT(_ucs2 X&apos;0041&apos;, _ucs2 X&apos;00C2&apos;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>上面的 example 中, 第一個 function call 的 result 為 ASCII 因為兩個 args 都在 ASCII 範圍內, 而第二個 function call 為 UNICODE, 因為第二個 args 超出了 ASCII 範圍</p>
-</li>
-<li><p>function 的 repertoire 只會被對其結果有影響的 args 所決定, 如下 example</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">IF(column1 &lt; column2, &apos;smaller&apos;, &apos;greater&apos;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>上面 example 中可以看到, 雖然有三個 args, 但實際有影響力的是 2 跟 3, arg1 雖然也是 string value, 但因為對結果輸出的 repertoire 沒有影響, 因為不會參與決策</p>
-</li>
-</ul>
 
     
     </div>
@@ -293,7 +255,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/Character-Set-Repertoire/">Character Set Repertoire</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">

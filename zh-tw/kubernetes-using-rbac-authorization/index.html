@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-27T03:02:48.434Z">
+<meta property="og:updated_time" content="2020-11-28T06:42:34.433Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-27T03:02:48.434Z">
+<meta property="og:updated_time" content="2020-11-28T06:42:34.433Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
@@ -168,6 +168,10 @@
                     
                     <a class="navbar-item" href="#Aggregated-ClusterRoles">2.1.4&nbsp;&nbsp;# Aggregated ClusterRoles</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Referring-to-subjects">2.1.5&nbsp;&nbsp;# Referring to subjects</a>
+                    
                 </div>
             </div>
             
@@ -228,7 +232,7 @@
         <span class="column is-narrow">
             
             
-            8 分钟 讀完 (大概 1204 字)
+            13 分钟 讀完 (大概 1916 字)
         </span>
         
     </div>
@@ -332,7 +336,80 @@
 </li>
 </ul>
 <p><br></p>
-<h3 id="Aggregated-ClusterRoles"><a href="#Aggregated-ClusterRoles" class="headerlink" title="# Aggregated ClusterRoles"></a># Aggregated ClusterRoles</h3>
+<h3 id="Aggregated-ClusterRoles"><a href="#Aggregated-ClusterRoles" class="headerlink" title="# Aggregated ClusterRoles"></a># Aggregated ClusterRoles</h3><h6 id="以下的-Kubernetes-example-code-代表什麼意思？-5"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-5" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">monitoring</span></span><br><span class="line"><span class="hljs-attr">aggregationRule:</span></span><br><span class="line"><span class="hljs-attr">  clusterRoleSelectors:</span></span><br><span class="line"><span class="hljs-attr">  - matchLabels:</span></span><br><span class="line">      <span class="hljs-string">rbac.example.com/aggregate-to-monitoring:</span> <span class="hljs-string">"true"</span></span><br><span class="line"><span class="hljs-attr">rules:</span> <span class="hljs-string">[]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>aggregated ClusterRole, 所有 label 符合 selector 的 ClusterRole 都會被附加到 aggregated ClusterRole</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-6"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-6" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">monitoring-endpoints</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line">    <span class="hljs-string">rbac.example.com/aggregate-to-monitoring:</span> <span class="hljs-string">"true"</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["services",</span> <span class="hljs-string">"endpoints"</span><span class="hljs-string">,</span> <span class="hljs-string">"pods"</span><span class="hljs-string">]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>該 ClusterRole 會被附加到符合其 selector 的 aggregated ClusterRole, 如下：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">aggregationRule:</span></span><br><span class="line"><span class="hljs-attr">  clusterRoleSelectors:</span></span><br><span class="line"><span class="hljs-attr">  - matchLabels:</span></span><br><span class="line">      <span class="hljs-string">rbac.example.com/aggregate-to-monitoring:</span> <span class="hljs-string">"true"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-7"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-7" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">aggregate-cron-tabs-edit</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line">    <span class="hljs-comment"># Add these permissions to the "admin" and "edit" default roles.</span></span><br><span class="line">    <span class="hljs-string">rbac.authorization.k8s.io/aggregate-to-admin:</span> <span class="hljs-string">"true"</span></span><br><span class="line">    <span class="hljs-string">rbac.authorization.k8s.io/aggregate-to-edit:</span> <span class="hljs-string">"true"</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["stable.example.com"]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["crontabs"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"create"</span><span class="hljs-string">,</span> <span class="hljs-string">"update"</span><span class="hljs-string">,</span> <span class="hljs-string">"patch"</span><span class="hljs-string">,</span> <span class="hljs-string">"delete"</span><span class="hljs-string">]</span></span><br><span class="line"><span class="hljs-meta">---</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">aggregate-cron-tabs-view</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line">    <span class="hljs-comment"># Add these permissions to the "view" default role.</span></span><br><span class="line">    <span class="hljs-string">rbac.authorization.k8s.io/aggregate-to-view:</span> <span class="hljs-string">"true"</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["stable.example.com"]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["crontabs"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>只需要在預設的管理等級的 ClusterRole, 例如 admin, edit, 或 view 加上 selector, 那之後有新的 custom resource 時, 只需加上在 labels 加上 aggregated-to-對象, 這樣預設的管理等級 ClusterRole 就也擁有這個權限</p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Role-examples"><a href="#Role-examples" class="headerlink" title="# Role examples"></a># Role examples</h4><h6 id="以下的-Kubernetes-example-code-代表什麼意思？-8"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-8" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["pods"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>允許 read pods 的權限</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-9"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-9" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["extensions",</span> <span class="hljs-string">"apps"</span><span class="hljs-string">]</span></span><br><span class="line">  <span class="hljs-comment">#</span></span><br><span class="line">  <span class="hljs-comment"># at the HTTP level, the name of the resource for accessing Deployment</span></span><br><span class="line">  <span class="hljs-comment"># objects is "deployments"</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["deployments"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"create"</span><span class="hljs-string">,</span> <span class="hljs-string">"update"</span><span class="hljs-string">,</span> <span class="hljs-string">"patch"</span><span class="hljs-string">,</span> <span class="hljs-string">"delete"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>允許讀/寫 Deployment 資源, 範圍為 “extension” 以及 “apps” groups</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-10"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-10" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line">  <span class="hljs-comment">#</span></span><br><span class="line">  <span class="hljs-comment"># at the HTTP level, the name of the resource for accessing Pod</span></span><br><span class="line">  <span class="hljs-comment"># objects is "pods"</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["pods"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">]</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["batch",</span> <span class="hljs-string">"extensions"</span><span class="hljs-string">]</span></span><br><span class="line">  <span class="hljs-comment">#</span></span><br><span class="line">  <span class="hljs-comment"># at the HTTP level, the name of the resource for accessing Job</span></span><br><span class="line">  <span class="hljs-comment"># objects is "jobs"</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["jobs"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">,</span> <span class="hljs-string">"create"</span><span class="hljs-string">,</span> <span class="hljs-string">"update"</span><span class="hljs-string">,</span> <span class="hljs-string">"patch"</span><span class="hljs-string">,</span> <span class="hljs-string">"delete"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>允許 read pods, 範圍為 API group, 允許 read/write jobs, 範圍為 batch, extensions</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-11"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-11" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["configmaps"]</span></span><br><span class="line"><span class="hljs-attr">  resourceNames:</span> <span class="hljs-string">["my-config"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get"]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>允許 read 名為 ‘my-config’ 的 ConfigMap 資源, 範圍 API group, 必須使用 RoleBinding 來限制單一 ConfigMap 單一 namespace</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-12"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-12" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">[""]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["nodes"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"list"</span><span class="hljs-string">,</span> <span class="hljs-string">"watch"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>允許 read nodes 資源的權限, 範圍為 core group, 因為 nodes 屬於 cluster-scoped 的資源, 因此必須使用 ClusterRole 以及 ClusterRoleBinding</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-13"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-13" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- nonResourceURLs:</span> <span class="hljs-string">["/healthz",</span> <span class="hljs-string">"/healthz/*"</span><span class="hljs-string">]</span> <span class="hljs-comment"># '*' in a nonResourceURL is a suffix glob match</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["get",</span> <span class="hljs-string">"post"</span><span class="hljs-string">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>允許對非資源類別的 endpoint <code>/healthz</code> 以及其所有子路徑發 GET 以及 POST 請求的權限, 需使用 ClusterROle 以及 ClusterRoleBinding</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Referring-to-subjects"><a href="#Referring-to-subjects" class="headerlink" title="# Referring to subjects"></a># Referring to subjects</h3><h6 id="以下的-Kubernetes-example-code-代表什麼意思？-14"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-14" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">User</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">"alice@example.com"</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>對象為名為 “<a href="mailto:alice@example.com" target="_blank" rel="noopener">alice@example.com</a>“ 的 user</p>
+</li>
+</ul>
+
     
     </div>
     
