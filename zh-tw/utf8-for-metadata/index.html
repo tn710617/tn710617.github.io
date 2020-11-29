@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言本篇主要介紹 MySQL 資料庫中, metadata 的 character set 設定以及預設行為, 內容會原子化翻譯成 Q&amp;amp;A, 沒辦法人的年紀大了, 句子太長記不住">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-28T11:58:57.555Z">
+<meta property="og:updated_time" content="2020-11-29T06:25:20.606Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UTF8 for metadata (MySQL 官方文件原子化翻譯)">
 <meta name="twitter:description" content="# 前言本篇主要介紹 MySQL 資料庫中, metadata 的 character set 設定以及預設行為, 內容會原子化翻譯成 Q&amp;amp;A, 沒辦法人的年紀大了, 句子太長記不住">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言本篇主要介紹 MySQL 資料庫中, metadata 的 character set 設定以及預設行為, 內容會原子化翻譯成 Q&amp;amp;A, 沒辦法人的年紀大了, 句子太長記不住">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-28T11:58:57.555Z">
+<meta property="og:updated_time" content="2020-11-29T06:25:20.606Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UTF8 for metadata (MySQL 官方文件原子化翻譯)">
 <meta name="twitter:description" content="# 前言本篇主要介紹 MySQL 資料庫中, metadata 的 character set 設定以及預設行為, 內容會原子化翻譯成 Q&amp;amp;A, 沒辦法人的年紀大了, 句子太長記不住">
@@ -150,15 +150,39 @@
                     
                     
                     
-                    <a class="navbar-item" href="#MySQL-中-什麼是-metadata">2.1&nbsp;&nbsp;MySQL 中, 什麼是 metadata?</a>
+                    <a class="navbar-item" href="#MySQL-中-什麼是-metadata">2.1.1&nbsp;&nbsp;MySQL 中, 什麼是 metadata?</a>
                     
                     
                     
-                    <a class="navbar-item" href="#MySQL-中-metadata-以哪種-character-set-儲存">2.2&nbsp;&nbsp;MySQL 中, metadata 以哪種 character set 儲存?</a>
+                    <a class="navbar-item" href="#MySQL-中-metadata-以哪種-character-set-儲存">2.1.2&nbsp;&nbsp;MySQL 中, metadata 以哪種 character set 儲存?</a>
                     
                     
                     
-                    <a class="navbar-item" href="#以下的-MySQL-example-command-的意思是？">2.3&nbsp;&nbsp;以下的 MySQL example command 的意思是？</a>
+                    <a class="navbar-item" href="#以下的-MySQL-example-command-的意思是？">2.1.3&nbsp;&nbsp;以下的 MySQL example command 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-MySQL-example-中-column1-的-column-name-的-character-set-取決於？">2.1.4&nbsp;&nbsp;以下的 MySQL example 中, column1 的 column name 的 character set 取決於？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MySQL-中-預設回傳的-column-name-character-set-為-utf8mb4-如果我想變更-可以使用哪一個-command">2.1.5&nbsp;&nbsp;MySQL 中, 預設回傳的 column name character set 為 utf8mb4, 如果我想變更, 可以使用哪一個 command?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MySQL-中-預設回傳的-column-name-character-set-為-utf8mb4-如果想要變更-最佳的解決方案是在-server-端轉換還是在-client-端轉換？">2.1.6&nbsp;&nbsp;MySQL 中, 預設回傳的 column name character set 為 utf8mb4, 如果想要變更, 最佳的解決方案是在 server 端轉換還是在 client 端轉換？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MySQL-中-如果-character-set-results-設為-NULL-那-return-metadata-的-character-set-會參照？">2.1.7&nbsp;&nbsp;MySQL 中, 如果 character_set_results 設為 NULL, 那 return metadata 的 character set 會參照？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-MySQL-example-中-character-set-是如何轉換的？">2.2&nbsp;&nbsp;以下的 MySQL example 中, character set 是如何轉換的？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-MySQL-example-中-character-set-是如何轉換的？-1">2.3&nbsp;&nbsp;以下的 MySQL example 中, character set 是如何轉換的？</a>
                     
                     
                     <hr class="navbar-divider">
@@ -226,7 +250,7 @@
         <span class="column is-narrow">
             
             
-            1 分钟 讀完 (大概 156 字)
+            3 分钟 讀完 (大概 391 字)
         </span>
         
     </div>
@@ -242,6 +266,30 @@
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &apos;character_set_system&apos;;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:<br>顯示 character_system_set system variable, 為 metadata 的 character set</p>
+</li>
+</ul>
+<h6 id="以下的-MySQL-example-中-column1-的-column-name-的-character-set-取決於？"><a href="#以下的-MySQL-example-中-column1-的-column-name-的-character-set-取決於？" class="headerlink" title="以下的 MySQL example 中, column1 的 column name 的 character set 取決於？"></a><strong>以下的 MySQL example 中, column1 的 column name 的 character set 取決於？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SELECT column1 FROM t</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>character_set_results, 預設為 utf8mb4</p>
+</li>
+</ul>
+<h6 id="MySQL-中-預設回傳的-column-name-character-set-為-utf8mb4-如果我想變更-可以使用哪一個-command"><a href="#MySQL-中-預設回傳的-column-name-character-set-為-utf8mb4-如果我想變更-可以使用哪一個-command" class="headerlink" title="MySQL 中, 預設回傳的 column name character set 為 utf8mb4, 如果我想變更, 可以使用哪一個 command?"></a><strong>MySQL 中, 預設回傳的 column name character set 為 utf8mb4, 如果我想變更, 可以使用哪一個 command?</strong></h6><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SET NAMES</span><br></pre></td></tr></table></figure>
+<h6 id="MySQL-中-預設回傳的-column-name-character-set-為-utf8mb4-如果想要變更-最佳的解決方案是在-server-端轉換還是在-client-端轉換？"><a href="#MySQL-中-預設回傳的-column-name-character-set-為-utf8mb4-如果想要變更-最佳的解決方案是在-server-端轉換還是在-client-端轉換？" class="headerlink" title="MySQL 中, 預設回傳的 column name character set 為 utf8mb4, 如果想要變更, 最佳的解決方案是在 server 端轉換還是在 client 端轉換？"></a><strong>MySQL 中, 預設回傳的 column name character set 為 utf8mb4, 如果想要變更, 最佳的解決方案是在 server 端轉換還是在 client 端轉換？</strong></h6><p>client</p>
+<h6 id="MySQL-中-如果-character-set-results-設為-NULL-那-return-metadata-的-character-set-會參照？"><a href="#MySQL-中-如果-character-set-results-設為-NULL-那-return-metadata-的-character-set-會參照？" class="headerlink" title="MySQL 中, 如果 character_set_results 設為 NULL, 那 return metadata 的 character set 會參照？"></a><strong>MySQL 中, 如果 character_set_results 設為 NULL, 那 return metadata 的 character set 會參照？</strong></h6><p>character_set_system</p>
+<h5 id="以下的-MySQL-example-中-character-set-是如何轉換的？"><a href="#以下的-MySQL-example-中-character-set-是如何轉換的？" class="headerlink" title="以下的 MySQL example 中, character set 是如何轉換的？"></a><strong>以下的 MySQL example 中, character set 是如何轉換的？</strong></h5><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SELECT * FROM t1 WHERE USER() = latin1_column;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>USER() return 的值為 metadata, 預設為 utf8mb4, 所以 MySQL 會自動將 latin1_column 轉成 utf8mb4</p>
+</li>
+</ul>
+<h5 id="以下的-MySQL-example-中-character-set-是如何轉換的？-1"><a href="#以下的-MySQL-example-中-character-set-是如何轉換的？-1" class="headerlink" title="以下的 MySQL example 中, character set 是如何轉換的？"></a><strong>以下的 MySQL example 中, character set 是如何轉換的？</strong></h5><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">INSERT INTO t1 (latin1_column) SELECT USER();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>USER() return 的值為 metadata, 預設為 utf8mb4, 但因為要存入的 column ‘latin1_column’ 的 character set 為 latin, 所以 USER() 會自動被轉換為 ‘latin1’</p>
 </li>
 </ul>
 <p><br><br><br></p>
@@ -260,7 +308,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/mysql-documentation-table-of-contents/">MySQL - 官方文件原子化翻譯 - 目錄</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">

@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-28T06:42:34.433Z">
+<meta property="og:updated_time" content="2020-11-29T04:29:22.396Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-28T06:42:34.433Z">
+<meta property="og:updated_time" content="2020-11-29T04:29:22.396Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
@@ -172,6 +172,18 @@
                     
                     <a class="navbar-item" href="#Referring-to-subjects">2.1.5&nbsp;&nbsp;# Referring to subjects</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Default-roles-and-role-bindings">2.2&nbsp;&nbsp;# Default roles and role bindings</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Auto-reconciliation">2.2.1&nbsp;&nbsp;# Auto-reconciliation</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#API-discovery-roles">2.2.2&nbsp;&nbsp;# API discovery roles</a>
+                    
                 </div>
             </div>
             
@@ -232,7 +244,7 @@
         <span class="column is-narrow">
             
             
-            13 分钟 讀完 (大概 1916 字)
+            16 分钟 讀完 (大概 2432 字)
         </span>
         
     </div>
@@ -409,6 +421,61 @@
 <li><p><strong>Answer</strong>:<br>對象為名為 “<a href="mailto:alice@example.com" target="_blank" rel="noopener">alice@example.com</a>“ 的 user</p>
 </li>
 </ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-15"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-15" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">"frontend-admins"</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為 Group “frontend-admins” 內的所有對象</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-16"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-16" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">ServiceAccount</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">default</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">kube-system</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為 ‘kube-system’ namespace 內的 ‘default’ service account</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-17"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-17" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-attr">system:serviceaccounts:qa</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為 ‘qa’ namespace 中的所有 service accounts</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-18"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-18" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-attr">system:serviceaccounts</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為任何 namespace 中的所有 service accounts</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-19"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-19" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-attr">system:authenticated</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為所有的 authenticated user</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-20"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-20" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-attr">system:unauthenticated</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為所有的 unauthenticated user</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-21"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-21" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-attr">system:authenticated</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">Group</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-attr">system:unauthenticated</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>RoleBinding 的 subjects, 對象為所有 user</p>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Default-roles-and-role-bindings"><a href="#Default-roles-and-role-bindings" class="headerlink" title="# Default roles and role bindings"></a># Default roles and role bindings</h2><h6 id="Kubernetes-RBAC-中-修改有著-system-前綴的-ClusterRole-以及-ClusterRoleBinding-object-要特別小心-為什麼？"><a href="#Kubernetes-RBAC-中-修改有著-system-前綴的-ClusterRole-以及-ClusterRoleBinding-object-要特別小心-為什麼？" class="headerlink" title="Kubernetes RBAC 中, 修改有著 system: 前綴的 ClusterRole 以及 ClusterRoleBinding object 要特別小心, 為什麼？"></a><strong>Kubernetes RBAC 中, 修改有著 system: 前綴的 ClusterRole 以及 ClusterRoleBinding object 要特別小心, 為什麼？</strong></h6><p>可能會造成整個 cluster 功能失常</p>
+<p><br></p>
+<h3 id="Auto-reconciliation"><a href="#Auto-reconciliation" class="headerlink" title="# Auto-reconciliation"></a># Auto-reconciliation</h3><h6 id="Kubernetes-RBAC-中-default-ClusterRole-中的-rbac-authorization-kubernetes-io-autoupdate-代表的意思是？"><a href="#Kubernetes-RBAC-中-default-ClusterRole-中的-rbac-authorization-kubernetes-io-autoupdate-代表的意思是？" class="headerlink" title="Kubernetes RBAC 中, default ClusterRole 中的 rbac.authorization.kubernetes.io/autoupdate 代表的意思是？"></a><strong>Kubernetes RBAC 中, default ClusterRole 中的 rbac.authorization.kubernetes.io/autoupdate 代表的意思是？</strong></h6><p>又稱為 auto-reconciliation<br>預設 Kubernetes 會在每次啟動都更新 default cluster role 可能缺少的 permissions, 以及 default cluster role binding 可能缺少的 subjects, 如果設為 false, 則會停止這個動作, 可能會造成 cluster 失常</p>
+<p><br></p>
+<h3 id="API-discovery-roles"><a href="#API-discovery-roles" class="headerlink" title="# API discovery roles"></a># API discovery roles</h3><h6 id="Kubernetes-RBAC-中-如果在-API-server-加入-–anonymous-auth-false-意思是？"><a href="#Kubernetes-RBAC-中-如果在-API-server-加入-–anonymous-auth-false-意思是？" class="headerlink" title="Kubernetes RBAC 中, 如果在 API server 加入 –anonymous-auth=false, 意思是？"></a><strong>Kubernetes RBAC 中, 如果在 API server 加入 –anonymous-auth=false, 意思是？</strong></h6><p>預設的 role binding 會授權給 unauthenticated 以及 authenticated user 一些被認為可被公開存取的安全資訊, 若要完全拒絕 anonymous unauthenticated 存取, 便可設為 false<br>需注意, 每次 API server restart, auth-reconciliation 會覆寫設定, 因此要嘛就不要手動更改預設值, 要嘛就停用 auto-reconciliation</p>
 
     
     </div>
