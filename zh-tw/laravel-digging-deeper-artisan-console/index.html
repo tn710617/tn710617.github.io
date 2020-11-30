@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-29T03:06:28.211Z">
+<meta property="og:updated_time" content="2020-11-30T04:20:07.237Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯)">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-29T03:06:28.211Z">
+<meta property="og:updated_time" content="2020-11-30T04:20:07.237Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯)">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -276,7 +276,15 @@
                     
                     
                     
-                    <a class="navbar-item" href="#Calling-Commands-From-Other-Commands">7.1&nbsp;&nbsp;Calling Commands From Other Commands</a>
+                    <a class="navbar-item" href="#Passing-Array-Values">7.1.1&nbsp;&nbsp;# Passing Array Values</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Passing-Boolean-Values">7.1.2&nbsp;&nbsp;# Passing Boolean Values</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Calling-Commands-From-Other-Commands">7.2&nbsp;&nbsp;Calling Commands From Other Commands</a>
                     
                     
                     <hr class="navbar-divider">
@@ -350,7 +358,7 @@
         <span class="column is-narrow">
             
             
-            18 分钟 讀完 (大概 2676 字)
+            21 分钟 讀完 (大概 3217 字)
         </span>
         
     </div>
@@ -648,9 +656,76 @@
 </li>
 </ul>
 <p><br><br><br></p>
-<h2 id="Programmatically-Executing-Commands"><a href="#Programmatically-Executing-Commands" class="headerlink" title="# Programmatically Executing Commands"></a># Programmatically Executing Commands</h2><h3 id="Calling-Commands-From-Other-Commands"><a href="#Calling-Commands-From-Other-Commands" class="headerlink" title="Calling Commands From Other Commands"></a>Calling Commands From Other Commands</h3><p><br><br><br></p>
-<h2 id="Stub-Customization"><a href="#Stub-Customization" class="headerlink" title="# Stub Customization"></a># Stub Customization</h2><p><br><br><br></p>
-<h2 id="Events"><a href="#Events" class="headerlink" title="# Events"></a># Events</h2>
+<h2 id="Programmatically-Executing-Commands"><a href="#Programmatically-Executing-Commands" class="headerlink" title="# Programmatically Executing Commands"></a># Programmatically Executing Commands</h2><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'/foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    $exitCode = Artisan::call(<span class="hljs-string">'email:send'</span>, [</span><br><span class="line">        <span class="hljs-string">'user'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'--queue'</span> =&gt; <span class="hljs-string">'default'</span></span><br><span class="line">    ]);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可以從 CLI 之外的地方執行 artisan command, 使用 Artisan facade 的 call method, arg1 為 command name 或 class name 都可, arg2 為帶入該 command 的 parameters</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'/foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    $exitCode = Artisan::call(<span class="hljs-string">'email:send 1 --queue=default'</span>);</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可以從 CLI 之外的地方執行 artisan command, 使用 Artisan facade 的 call method, 可使用 arg2 來帶入該 command 的 parameters, 也可直接在 arg1 輸入全部 command, 就像在 CLI 輸入一樣</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'/foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    Artisan::queue(<span class="hljs-string">'email:send'</span>, [</span><br><span class="line">        <span class="hljs-string">'user'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'--queue'</span> =&gt; <span class="hljs-string">'default'</span></span><br><span class="line">    ])-&gt;onConnection(<span class="hljs-string">'redis'</span>)-&gt;onQueue(<span class="hljs-string">'commands'</span>);</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將 Artisan command 排入 queue, 由 queue worker 去執行, 並指定 connection 以及 queue name</p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Passing-Array-Values"><a href="#Passing-Array-Values" class="headerlink" title="# Passing Array Values"></a># Passing Array Values</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'/foo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    $exitCode = Artisan::call(<span class="hljs-string">'email:send'</span>, [</span><br><span class="line">        <span class="hljs-string">'user'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'--id'</span> =&gt; [<span class="hljs-number">5</span>, <span class="hljs-number">13</span>]</span><br><span class="line">    ]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Artisan facade 在 CLI 之外的地方執行 command<br>如果該 command 定義了 array options 或 array arguments, 可使用 array 的方式帶入</p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Passing-Boolean-Values"><a href="#Passing-Boolean-Values" class="headerlink" title="# Passing Boolean Values"></a># Passing Boolean Values</h4><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$exitCode = Artisan::call(<span class="hljs-string">'migrate:refresh'</span>, [</span><br><span class="line">    <span class="hljs-string">'--force'</span> =&gt; <span class="hljs-keyword">true</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>如果 command 的 options 為 boolean 類型, 可透過 ‘options’ =&gt; ‘boolean’ 的方式帶入</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Calling-Commands-From-Other-Commands"><a href="#Calling-Commands-From-Other-Commands" class="headerlink" title="Calling Commands From Other Commands"></a>Calling Commands From Other Commands</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-21"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;call(<span class="hljs-string">'email:send'</span>, [</span><br><span class="line">        <span class="hljs-string">'user'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'--queue'</span> =&gt; <span class="hljs-string">'default'</span></span><br><span class="line">    ]);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 custom command 中, 利用 call() 執行另外一個 command</p>
+</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-22"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;callSilent(<span class="hljs-string">'email:send'</span>, [</span><br><span class="line">        <span class="hljs-string">'user'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'--queue'</span> =&gt; <span class="hljs-string">'default'</span></span><br><span class="line">    ]);</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 custom command 中, 利用 call() 執行另外一個 command, 並且不顯示其輸出</p>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Stub-Customization"><a href="#Stub-Customization" class="headerlink" title="# Stub Customization"></a># Stub Customization</h2><h6 id="以下的-Laravel-example-command-的意思是？-6"><a href="#以下的-Laravel-example-command-的意思是？-6" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan stub:publish</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>Artisan console <strong>make</strong> command 被用來建立不同的 class, 像是 controllers, jobs, migrations, 以及 tests, Laravel 會根據你所輸入的 input, 使用 “stub” file 來產生這些 class<br>如果你希望可以對 stub 檔案做更動的話, 可使用 <strong>stub:publish</strong></p>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Events"><a href="#Events" class="headerlink" title="# Events"></a># Events</h2><h6 id="Laravel-Artisan-中-會產生哪三個-event"><a href="#Laravel-Artisan-中-會產生哪三個-event" class="headerlink" title="Laravel Artisan 中, 會產生哪三個 event?"></a><strong>Laravel Artisan 中, 會產生哪三個 event?</strong></h6><ul>
+<li>ArtisanStarting</li>
+<li>CommandStarting</li>
+<li>CommandFinished</li>
+</ul>
+<h6 id="Laravel-Artisan-event-中-ArtisanStarting-什麼時候觸發"><a href="#Laravel-Artisan-event-中-ArtisanStarting-什麼時候觸發" class="headerlink" title="Laravel Artisan event 中, ArtisanStarting 什麼時候觸發?"></a><strong>Laravel Artisan event 中, ArtisanStarting 什麼時候觸發?</strong></h6><p>當 Artisan 開始執行時</p>
+<h6 id="Laravel-Artisan-event-中-CommandStarting-什麼時候觸發"><a href="#Laravel-Artisan-event-中-CommandStarting-什麼時候觸發" class="headerlink" title="Laravel Artisan event 中, CommandStarting 什麼時候觸發?"></a><strong>Laravel Artisan event 中, CommandStarting 什麼時候觸發?</strong></h6><p>在 command 執行之前</p>
+<h6 id="Laravel-Artisan-event-中-CommandFinished-什麼時候觸發"><a href="#Laravel-Artisan-event-中-CommandFinished-什麼時候觸發" class="headerlink" title="Laravel Artisan event 中, CommandFinished 什麼時候觸發?"></a><strong>Laravel Artisan event 中, CommandFinished 什麼時候觸發?</strong></h6><p>當 command 結束執行時</p>
+
     
     </div>
     
