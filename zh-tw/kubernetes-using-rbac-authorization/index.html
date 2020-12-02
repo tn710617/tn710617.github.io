@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-29T04:29:22.396Z">
+<meta property="og:updated_time" content="2020-12-02T03:21:20.702Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-11-29T04:29:22.396Z">
+<meta property="og:updated_time" content="2020-12-02T03:21:20.702Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes - Using RBAC Authorization">
 <meta name="twitter:description" content="前言主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;amp;A 的方式將文件中的資訊記錄下來">
@@ -184,6 +184,26 @@
                     
                     <a class="navbar-item" href="#API-discovery-roles">2.2.2&nbsp;&nbsp;# API discovery roles</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#User-facing-roles">2.2.3&nbsp;&nbsp;# User-facing roles</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Privilege-escalation-prevention-and-bootstrapping">2.3&nbsp;&nbsp;# Privilege escalation prevention and bootstrapping</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Command-line-utilities">2.4&nbsp;&nbsp;# Command-line utilities</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#kubectl-create-role">2.4.1&nbsp;&nbsp;# kubectl create role</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#kubectl-create-clusterrole">2.4.2&nbsp;&nbsp;# kubectl create clusterrole</a>
+                    
                 </div>
             </div>
             
@@ -244,7 +264,7 @@
         <span class="column is-narrow">
             
             
-            16 分钟 讀完 (大概 2432 字)
+            22 分钟 讀完 (大概 3347 字)
         </span>
         
     </div>
@@ -476,6 +496,79 @@
 <h3 id="Auto-reconciliation"><a href="#Auto-reconciliation" class="headerlink" title="# Auto-reconciliation"></a># Auto-reconciliation</h3><h6 id="Kubernetes-RBAC-中-default-ClusterRole-中的-rbac-authorization-kubernetes-io-autoupdate-代表的意思是？"><a href="#Kubernetes-RBAC-中-default-ClusterRole-中的-rbac-authorization-kubernetes-io-autoupdate-代表的意思是？" class="headerlink" title="Kubernetes RBAC 中, default ClusterRole 中的 rbac.authorization.kubernetes.io/autoupdate 代表的意思是？"></a><strong>Kubernetes RBAC 中, default ClusterRole 中的 rbac.authorization.kubernetes.io/autoupdate 代表的意思是？</strong></h6><p>又稱為 auto-reconciliation<br>預設 Kubernetes 會在每次啟動都更新 default cluster role 可能缺少的 permissions, 以及 default cluster role binding 可能缺少的 subjects, 如果設為 false, 則會停止這個動作, 可能會造成 cluster 失常</p>
 <p><br></p>
 <h3 id="API-discovery-roles"><a href="#API-discovery-roles" class="headerlink" title="# API discovery roles"></a># API discovery roles</h3><h6 id="Kubernetes-RBAC-中-如果在-API-server-加入-–anonymous-auth-false-意思是？"><a href="#Kubernetes-RBAC-中-如果在-API-server-加入-–anonymous-auth-false-意思是？" class="headerlink" title="Kubernetes RBAC 中, 如果在 API server 加入 –anonymous-auth=false, 意思是？"></a><strong>Kubernetes RBAC 中, 如果在 API server 加入 –anonymous-auth=false, 意思是？</strong></h6><p>預設的 role binding 會授權給 unauthenticated 以及 authenticated user 一些被認為可被公開存取的安全資訊, 若要完全拒絕 anonymous unauthenticated 存取, 便可設為 false<br>需注意, 每次 API server restart, auth-reconciliation 會覆寫設定, 因此要嘛就不要手動更改預設值, 要嘛就停用 auto-reconciliation</p>
+<p><br></p>
+<h3 id="User-facing-roles"><a href="#User-facing-roles" class="headerlink" title="# User-facing roles"></a># User-facing roles</h3><h6 id="Kubernetes-RBAC-中-有著-system-前綴的-default-role-跟沒有-system-前綴的-default-role-差別在於"><a href="#Kubernetes-RBAC-中-有著-system-前綴的-default-role-跟沒有-system-前綴的-default-role-差別在於" class="headerlink" title="Kubernetes RBAC 中, 有著 system 前綴的 default role 跟沒有 system 前綴的 default role 差別在於?"></a><strong>Kubernetes RBAC 中, 有著 system 前綴的 default role 跟沒有 system 前綴的 default role 差別在於?</strong></h6><p>前者為 cluster control plane 管理, 後者為使用者面向的 default role</p>
+<p><br><br><br></p>
+<h2 id="Privilege-escalation-prevention-and-bootstrapping"><a href="#Privilege-escalation-prevention-and-bootstrapping" class="headerlink" title="# Privilege escalation prevention and bootstrapping"></a># Privilege escalation prevention and bootstrapping</h2><h6 id="Kubernetes-RBAC-中-必須符合哪兩種條件-該-user-才可以-create-update-一個-role-或-role-binding-object"><a href="#Kubernetes-RBAC-中-必須符合哪兩種條件-該-user-才可以-create-update-一個-role-或-role-binding-object" class="headerlink" title="Kubernetes RBAC 中, 必須符合哪兩種條件, 該 user 才可以 create/update 一個 role 或 role binding object?"></a><strong>Kubernetes RBAC 中, 必須符合哪兩種條件, 該 user 才可以 create/update 一個 role 或 role binding object?</strong></h6><ol>
+<li>該 user 本身已經擁有 <code>要賦予該 role 的權限</code>, 即如果想建立一個 role 有 ‘watch’ 的權限, 該 user 要先擁有</li>
+<li>特別指定 <code>rbac.authorization.k8s.io</code> 的資源建立權限給該 user</li>
+</ol>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-22"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-22" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">role-grantor</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["rbac.authorization.k8s.io"]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["rolebindings"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["create"]</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["rbac.authorization.k8s.io"]</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["clusterroles"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["bind"]</span></span><br><span class="line">  <span class="hljs-comment"># omit resourceNames to allow binding any ClusterRole</span></span><br><span class="line"><span class="hljs-attr">  resourceNames:</span> <span class="hljs-string">["admin","edit","view"]</span></span><br><span class="line"><span class="hljs-meta">---</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">RoleBinding</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">role-grantor-binding</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">user-1-namespace</span></span><br><span class="line"><span class="hljs-attr">roleRef:</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">  kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">role-grantor</span></span><br><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">  kind:</span> <span class="hljs-string">User</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">user-1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-comment">## 定義 cluster role, 擁有此 cluster role 權限的 user 將具有 建立 role binding 以及 bind role 的權限, 但沒有建立 role 的權限</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">role-grantor</span></span><br><span class="line"><span class="hljs-attr">rules:</span></span><br><span class="line">  <span class="hljs-comment">## 此 apiGroup 代表賦予該 role "RBAC" 相關權限</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["rbac.authorization.k8s.io"]</span></span><br><span class="line">  <span class="hljs-comment">## 資源為 "rolebindings", 所以該 role 具有建立 role binding 的權限</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["rolebindings"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["create"]</span></span><br><span class="line"><span class="hljs-attr">- apiGroups:</span> <span class="hljs-string">["rbac.authorization.k8s.io"]</span></span><br><span class="line">  <span class="hljs-comment">## 資源為 "rolebindings", 所以該 role 具有建立 bind role 的權限</span></span><br><span class="line"><span class="hljs-attr">  resources:</span> <span class="hljs-string">["clusterroles"]</span></span><br><span class="line"><span class="hljs-attr">  verbs:</span> <span class="hljs-string">["bind"]</span></span><br><span class="line">  <span class="hljs-comment">## 若不指定 resourceNames, 則該 role 可 bind 任何 clusterRole</span></span><br><span class="line">  <span class="hljs-comment"># omit resourceNames to allow binding any ClusterRole</span></span><br><span class="line"><span class="hljs-attr">  resourceNames:</span> <span class="hljs-string">["admin","edit","view"]</span></span><br><span class="line"><span class="hljs-meta">---</span></span><br><span class="line"><span class="hljs-comment"># 將上面定義的 role bind 到 user-1, 所以之後 user-1 就具有上述的權限</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">RoleBinding</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">role-grantor-binding</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">user-1-namespace</span></span><br><span class="line"><span class="hljs-attr">roleRef:</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">  kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">role-grantor</span></span><br><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">  kind:</span> <span class="hljs-string">User</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">user-1</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Command-line-utilities"><a href="#Command-line-utilities" class="headerlink" title="# Command-line utilities"></a># Command-line utilities</h2><h3 id="kubectl-create-role"><a href="#kubectl-create-role" class="headerlink" title="# kubectl create role"></a># kubectl create role</h3><h6 id="以下的-Kubernetes-example-command-代表什麼意思？"><a href="#以下的-Kubernetes-example-command-代表什麼意思？" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create role pod-reader --verb=get --verb=list --verb=watch --resource=pods</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>pod-reader</strong> 的 role, 該 role 允許 users 對 <strong>pod</strong> 執行 <strong>get</strong>, <strong>watch</strong>, <strong>list</strong> 動作</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-command-代表什麼意思？-1"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-1" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create role pod-reader --verb=get --resource=pods --resource-name=readablepod --resource-name=anotherpod</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>pod-reader</strong> 的 role, 該 role 允許 users 對 <strong>pod</strong> 執行 <strong>get</strong> 動作, 並指定了 resource name</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-command-代表什麼意思？-2"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-2" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create role foo --verb=get,list,watch --resource=replicasets.apps</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>foo</strong> 的 role, 該 role 允許 users 對 <strong>replicasets</strong> 執行 <strong>get</strong>, <strong>watch</strong>, <strong>list</strong> 動作, 並指定 resource 的 api groups</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-command-代表什麼意思？-3"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-3" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create role foo --verb=get,list,watch --resource=pods,pods/status</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>foo</strong> 的 role, 該 role 允許 users 對 <strong>pods</strong> 以及 pod 的 subsource <strong>pods/status</strong> 執行 <strong>get</strong>, <strong>watch</strong>, <strong>list</strong> 動作</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-command-代表什麼意思？-4"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-4" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create role my-component-lease-holder --verb=get,list,watch,update --resource=lease --resource-name=my-component</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>my-component-lease-holder</strong> 的 role, 該 role 允許 users 對名為 <strong>my-component</strong> 的 <strong>lease</strong> 資源執行 <strong>get</strong>, <strong>watch</strong>, <strong>list</strong>, <strong>update</strong> 動作</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="kubectl-create-clusterrole"><a href="#kubectl-create-clusterrole" class="headerlink" title="# kubectl create clusterrole"></a># kubectl create clusterrole</h3><h6 id="以下的-Kubernetes-example-command-代表什麼意思？-5"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-5" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrole pod-reader --verb=get,list,watch --resource=pods</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>pod-reader</strong> 的 cluster role, 該 cluster role 允許 user 對 <strong>pods</strong> 資源執行 <strong>get</strong>, <strong>watch</strong>, <strong>list</strong> 動作</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-command-代表什麼意思？-6"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-6" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrole pod-reader --verb=get --resource=pods --resource-name=readablepod --resource-name=anotherpod</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>pod-reader</strong> 的 cluster role, 該 cluster role 允許 users 對 <strong>pods</strong> 執行 <strong>get</strong> 動作, 並指定了 resource name</p>
+</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-command-代表什麼意思？-7"><a href="#以下的-Kubernetes-example-command-代表什麼意思？-7" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create clusterrole foo --verb=get,list,watch --resource=replicasets.apps</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個名為 <strong>pod-reader</strong> 的 cluster role, 該 cluster role 允許 users 對 <strong>pods</strong> 執行 <strong>get</strong> 動作, 並指定了 resource name</p>
+</li>
+</ul>
 
     
     </div>
