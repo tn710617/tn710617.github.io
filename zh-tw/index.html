@@ -162,6 +162,301 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh-tw/data-structure-binary-tree-php-implementation/" itemprop="url">資料結構 - Binary Tree (二元樹) - PHP 實作</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-07T08:20:46.000Z" itemprop="datePublished">12月 7 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Data-Structure-and-Algorithm/">Data Structure and Algorithm</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 分钟 讀完 (大概 451 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>強者朋友說: 演算法不熟情有可原, 但是資料結構不懂就是你的錯了。<br>如果對 Tree 資料結構不是很了解, 建議可以先參考<a href="https://tn710617.github.io/zh-tw/introduction-on-tree">Tree 的簡介</a></p>
+<p><br><br><br></p>
+<h2 id="Binary-Node"><a href="#Binary-Node" class="headerlink" title="# Binary Node"></a># Binary Node</h2><p>首先, 在 Binary Tree 當中, 每個 node 都需具有容納以下三個元素</p>
+<ul>
+<li>left node</li>
+<li>right node</li>
+<li>data</li>
+</ul>
+<p>如下 <strong>Example</strong>:<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BinaryNode</span> </span>&#123; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> $data; </span><br><span class="line">    <span class="hljs-keyword">public</span> $left; </span><br><span class="line">    <span class="hljs-keyword">public</span> $right; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(string $data = NULL)</span> </span>&#123; </span><br><span class="line">      <span class="hljs-keyword">$this</span>-&gt;data = $data; </span><br><span class="line">      <span class="hljs-keyword">$this</span>-&gt;left = <span class="hljs-keyword">NULL</span>; </span><br><span class="line">      <span class="hljs-keyword">$this</span>-&gt;right = <span class="hljs-keyword">NULL</span>; </span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addChildren</span><span class="hljs-params">(BinaryNode $left, BinaryNode $right)</span> </span>&#123; </span><br><span class="line">      <span class="hljs-keyword">$this</span>-&gt;left = $left;</span><br><span class="line">      <span class="hljs-keyword">$this</span>-&gt;right = $right;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的 Example 可以看到, $data 用來儲存該 node 的資料的, 而 $left 跟 $right 為紀錄 left child node 以及 right child node 的地方, 可透過 addChildren method 定義</p>
+<p><br><br><br></p>
+<h2 id="Binary-Tree"><a href="#Binary-Tree" class="headerlink" title="# Binary Tree"></a># Binary Tree</h2><p>廢話不多說, 直接看以下範例：<br><strong>Example</strong>:<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BinaryTree</span> </span>&#123; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> $root = <span class="hljs-keyword">NULL</span>; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 帶入的那個 node 會被定義為 root, 可自此往下 traverse </span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(BinaryNode $node)</span> </span>&#123; </span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;root = $node; </span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// $level 一開始為 0, 用意為區別不同的階層</span></span><br><span class="line">    <span class="hljs-comment">// 此為遞迴函數, 會一直往下直到最底層</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">traverse</span><span class="hljs-params">(BinaryNode $node, int $level    </span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">      = <span class="hljs-number">0</span>)</span> </span>&#123; </span><br><span class="line"></span><br><span class="line">      <span class="hljs-comment">// 如果 $node 非為 null 的話, 先印出 $node 的 data, 再繼續往下</span></span><br><span class="line">      <span class="hljs-keyword">if</span> ($node) &#123; </span><br><span class="line">          <span class="hljs-keyword">echo</span> str_repeat(<span class="hljs-string">"-"</span>, $level); </span><br><span class="line">          <span class="hljs-keyword">echo</span> $node-&gt;data . <span class="hljs-string">"\n"</span>; </span><br><span class="line"></span><br><span class="line">          <span class="hljs-comment">// 若有 left child node, 將 $level + 1, 遞迴往下</span></span><br><span class="line">          <span class="hljs-keyword">if</span> ($node-&gt;left) </span><br><span class="line">            <span class="hljs-keyword">$this</span>-&gt;traverse($node-&gt;left, $level + <span class="hljs-number">1</span>); </span><br><span class="line"></span><br><span class="line">          <span class="hljs-comment">// 若有 right child node, 將 $level + 1, 遞迴往下</span></span><br><span class="line">          <span class="hljs-keyword">if</span> ($node-&gt;right) </span><br><span class="line">            <span class="hljs-keyword">$this</span>-&gt;traverse($node-&gt;right, $level + <span class="hljs-number">1</span>); </span><br><span class="line">         &#125; </span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br><br><br></p>
+<h2 id="實際運行"><a href="#實際運行" class="headerlink" title="# 實際運行"></a># 實際運行</h2><h3 id="Example"><a href="#Example" class="headerlink" title="# Example"></a># Example</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$root = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"root"</span>); </span><br><span class="line"></span><br><span class="line">$tree = <span class="hljs-keyword">new</span> BinaryTree($root); </span><br><span class="line"></span><br><span class="line">$level_one_left = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"level-one-left"</span>); </span><br><span class="line">$level_one_right = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"level-one-right"</span>); </span><br><span class="line">$level_two_1 = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"level-two-1"</span>); </span><br><span class="line">$level_two_2 = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"level-two-2"</span>); </span><br><span class="line">$level_two_3 = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"level-two-3"</span>); </span><br><span class="line">$level_two_4 = <span class="hljs-keyword">new</span> BinaryNode(<span class="hljs-string">"level-two-4"</span>); </span><br><span class="line"></span><br><span class="line">$level_one_left-&gt;addChildren($level_two_1, $level_two_2); </span><br><span class="line">$level_one_right-&gt;addChildren($level_two_3, $level_two_4); </span><br><span class="line"></span><br><span class="line">$root-&gt;addChildren($level_one_left, $level_one_right); </span><br><span class="line"></span><br><span class="line">$tree-&gt;traverse($tree-&gt;root);</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="結果"><a href="#結果" class="headerlink" title="# 結果"></a># 結果</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">root</span><br><span class="line">-level-one-left</span><br><span class="line">--level-two-1</span><br><span class="line">--level-two-2</span><br><span class="line">-level-one-right</span><br><span class="line">--level-two-3</span><br><span class="line">--level-two-4</span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="# 結論"></a># 結論</h2><p>以上就是 PHP 簡單實作 Binary Tree<br>好像有點空虛…</p>
+
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh-tw/character-string-literal-character-set-and-collation/" itemprop="url">Character String Literal Character Set and Collation (MySQL 官方文件原子化翻譯筆記)</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-07T07:09:43.000Z" itemprop="datePublished">12月 7 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            几秒 讀完 (大概 30 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/character-string-literal-character-set-and-collation/#more">點擊閱讀</a>
+        </p>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh-tw/column-character-set-and-collation/" itemprop="url">Column Character Set and Collation (MySQL 官方文件原子化翻譯筆記)</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-07T06:53:33.000Z" itemprop="datePublished">12月 7 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            2 分钟 讀完 (大概 329 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/column-character-set-and-collation/#more">點擊閱讀</a>
+        </p>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh-tw/table-character-set-and-collation/" itemprop="url">Table Character Set and Collation (MySQL 官方文件原子化翻譯筆記)</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-06T12:40:56.000Z" itemprop="datePublished">12月 6 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            1 分钟 讀完 (大概 201 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/table-character-set-and-collation/#more">點擊閱讀</a>
+        </p>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh-tw/database-character-set-and-collation/" itemprop="url">Database Character Set and Collation (MySQL 官方文件原子化翻譯筆記)</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-06T11:49:33.000Z" itemprop="datePublished">12月 6 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            2 分钟 讀完 (大概 308 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/database-character-set-and-collation/#more">點擊閱讀</a>
+        </p>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh-tw/server-character-set-and-collation/" itemprop="url">Server Character Set and Collation (MySQL 官方文件原子化翻譯)</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-06T10:12:46.000Z" itemprop="datePublished">12月 6 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            1 分钟 讀完 (大概 139 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/server-character-set-and-collation/#more">點擊閱讀</a>
+        </p>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh-tw/kubernetes-using-rbac-authorization/" itemprop="url">Kubernetes - Using RBAC Authorization (官方文件原子化筆記)</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-06T05:17:54.000Z" itemprop="datePublished">12月 6 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            28 分钟 讀完 (大概 4135 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>主要會針對官方文件進行翻譯, 並以原子化的概念, 即 Q&amp;A 的方式將文件中的資訊記錄下來</p>
+        <p class="article-more-link">
+            <a href="/zh-tw/kubernetes-using-rbac-authorization/#more">點擊閱讀</a>
+        </p>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh-tw/laravel-frontend-blade-templates/" itemprop="url">Laravel - Frontend - Blade Templates (官方文件原子化翻譯)</a>
         
     </h1>
@@ -179,7 +474,7 @@
         <span class="column is-narrow">
             
             
-            7 分钟 讀完 (大概 1086 字)
+            13 分钟 讀完 (大概 2008 字)
         </span>
         
     </div>
@@ -268,286 +563,6 @@
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>內容為 MySQL 官方文件原子化翻譯, 人老了太長的句子吸收不了</p>
         <p class="article-more-link">
             <a href="/zh-tw/collation-naming-conventions/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/specifying-character-sets-and-collations/" itemprop="url">Specifying Character Sets and Collations (MySQL 官方文件原子化翻譯)</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-12-02T03:44:17.000Z" itemprop="datePublished">12月 2 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            2 分钟 讀完 (大概 230 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>雖然會使用 MySQL, 使用上也沒啥太大問題, 但好像跟這個資料庫之間總是隔著一層說不清道不明的朦朧膜, 身為一個程式開發者, 自然要秉持著科學家的精神！ 在科學精神面前, 1 就是 1, 2 就是 2, 絕對不容許似是而非, 模糊不清, 曖昧不明, 友達以上而戀人未滿的奇怪關係！ 所以我決定好好的, 一頁頁的將文件看過並記錄下來, 務求破開朦朧, 群邪僻易, 光耀大地！<br>好了我先去吃藥了, 我們下次見</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/specifying-character-sets-and-collations/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/laravel-testing-http-tests/" itemprop="url">Laravel - Testing - HTTP Tests (官方文件原子化翻譯)</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-12-01T09:26:56.000Z" itemprop="datePublished">12月 1 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            9 分钟 讀完 (大概 1292 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/laravel-testing-http-tests/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/laravel-testing-getting-started/" itemprop="url">Laravel - Testing - Getting Started (官方文件原子化翻譯)</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-11-30T04:23:31.000Z" itemprop="datePublished">11月 30 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            2 分钟 讀完 (大概 356 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/laravel-testing-getting-started/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/character-sets-collations-unicode/" itemprop="url">Character Sets, Collations, Unicode (MySQL 官方文件原子化翻譯)</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-11-29T08:32:15.000Z" itemprop="datePublished">11月 29 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Database/">Database</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 分钟 讀完 (大概 201 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>雖然會使用 MySQL, 使用上也沒啥太大問題, 但好像跟這個資料庫之間總是隔著一層說不清道不明的朦朧膜, 身為一個程式開發者, 自然要秉持著科學家的精神！ 在科學精神面前, 1 就是 1, 2 就是 2, 絕對不容許似是而非, 模糊不清, 曖昧不明, 友達以上而戀人未滿的奇怪關係！ 所以我決定好好的, 一頁頁的將文件看過並記錄下來, 務求破開朦朧, 群邪僻易, 光耀大地！<br>好了我先去吃藥了, 我們下次見</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/character-sets-collations-unicode/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/character-set-and-collations-in-general/" itemprop="url">Character Sets and Collations in General (MySQL 官方文件原子化翻譯)</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-11-29T08:09:18.000Z" itemprop="datePublished">11月 29 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/資料庫/">資料庫</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            2 分钟 讀完 (大概 276 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>雖然會使用 MySQL, 使用上也沒啥太大問題, 但好像跟這個資料庫之間總是隔著一層說不清道不明的朦朧膜, 身為一個程式開發者, 自然要秉持著科學家的精神！ 在科學精神面前, 1 就是 1, 2 就是 2, 絕對不容許似是而非, 模糊不清, 曖昧不明, 友達以上而戀人未滿的奇怪關係！ 所以我決定好好的, 一頁頁的將文件看過並記錄下來, 務求破開朦朧, 群邪僻易, 光耀大地！<br>好了我先去吃藥了, 我們下次見</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/character-set-and-collations-in-general/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/mysql-documentation-table-of-contents/" itemprop="url">MySQL - 官方文件原子化翻譯 - 目錄</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-11-29T07:57:16.000Z" itemprop="datePublished">11月 29 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Database/">Database</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            2 分钟 讀完 (大概 248 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>雖然會使用 MySQL, 使用上也沒啥太大問題, 但好像跟這個資料庫之間總是隔著一層說不清道不明的朦朧膜, 身為一個程式開發者, 自然要秉持著科學家的精神！ 在科學精神面前, 1 就是 1, 2 就是 2, 絕對不容許似是而非, 模糊不清, 曖昧不明, 友達以上而戀人未滿的奇怪關係！ 所以我決定好好的, 一頁頁的將文件看過並記錄下來, 務求破開朦朧, 群邪僻易, 光耀大地！<br>好了我先去吃藥了, 我們下次見</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/mysql-documentation-table-of-contents/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/utf8-for-metadata/" itemprop="url">UTF8 for metadata (MySQL 官方文件原子化翻譯)</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-11-28T11:40:05.000Z" itemprop="datePublished">11月 28 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Database/">Database</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            3 分钟 讀完 (大概 391 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要介紹 MySQL 資料庫中, metadata 的 character set 設定以及預設行為, 內容會原子化翻譯成 Q&amp;A, 沒辦法人的年紀大了, 句子太長記不住</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/utf8-for-metadata/#more">點擊閱讀</a>
         </p>
     
     </div>
