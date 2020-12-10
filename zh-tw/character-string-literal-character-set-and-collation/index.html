@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言本篇主要為細讀官方文件後, 整理為 Q&amp;amp;A 的原子化翻譯筆記">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-07T07:11:26.178Z">
+<meta property="og:updated_time" content="2020-12-09T08:48:31.589Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Character String Literal Character Set and Collation (MySQL 官方文件原子化翻譯筆記)">
 <meta name="twitter:description" content="# 前言本篇主要為細讀官方文件後, 整理為 Q&amp;amp;A 的原子化翻譯筆記">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言本篇主要為細讀官方文件後, 整理為 Q&amp;amp;A 的原子化翻譯筆記">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-07T07:11:26.178Z">
+<meta property="og:updated_time" content="2020-12-09T08:48:31.589Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Character String Literal Character Set and Collation (MySQL 官方文件原子化翻譯筆記)">
 <meta name="twitter:description" content="# 前言本篇主要為細讀官方文件後, 整理為 Q&amp;amp;A 的原子化翻譯筆記">
@@ -148,6 +148,14 @@
                     
                     <a class="navbar-item" href="#正文">2&nbsp;&nbsp;<b># 正文</b></a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#以下的-MySQL-example-code-分別使用哪個-character-set-及-collation">2.1&nbsp;&nbsp;以下的 MySQL example code 分別使用哪個 character set 及 collation?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-MySQL-example-code-中-escaping-都會由哪個-character-set-解析？">2.2&nbsp;&nbsp;以下的 MySQL example code 中, escaping 都會由哪個 character set 解析？</a>
+                    
                 </div>
             </div>
             
@@ -208,7 +216,7 @@
         <span class="column is-narrow">
             
             
-            几秒 讀完 (大概 30 字)
+            1 分钟 讀完 (大概 185 字)
         </span>
         
     </div>
@@ -217,7 +225,22 @@
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
 <a id="more"></a>
 <p><br><br><br></p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="# 正文"></a># 正文</h2>
+<h2 id="正文"><a href="#正文" class="headerlink" title="# 正文"></a># 正文</h2><h6 id="以下的-MySQL-example-code-分別使用哪個-character-set-及-collation"><a href="#以下的-MySQL-example-code-分別使用哪個-character-set-及-collation" class="headerlink" title="以下的 MySQL example code 分別使用哪個 character set 及 collation?"></a><strong>以下的 MySQL example code 分別使用哪個 character set 及 collation?</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SELECT &apos;abc&apos;;</span><br><span class="line">SELECT _latin1&apos;abc&apos;;</span><br><span class="line">SELECT _binary&apos;abc&apos;;</span><br><span class="line">SELECT _utf8mb4&apos;abc&apos; COLLATE utf8mb4_danish_ci;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"># 使用 character_set_connection system variable</span><br><span class="line">SELECT &apos;abc&apos;;</span><br><span class="line"># 使用 latin1 character set, 以及其 default 的 collation</span><br><span class="line">SELECT _latin1&apos;abc&apos;;</span><br><span class="line"># 使用 binary character set, 以及其 default 的 collation</span><br><span class="line">SELECT _binary&apos;abc&apos;;</span><br><span class="line"># 使用 utf8mb4 character set, 以及 utf8mb4_danish_ci collation</span><br><span class="line">SELECT _utf8mb4&apos;abc&apos; COLLATE utf8mb4_danish_ci;</span><br><span class="line"># 使用 character_set_connection system variable, 如果與指定的 collation 不相容, 則報錯</span><br><span class="line">SELECT &apos;Müller&apos; COLLATE utf8mb4_general_ci;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="以下的-MySQL-example-code-中-escaping-都會由哪個-character-set-解析？"><a href="#以下的-MySQL-example-code-中-escaping-都會由哪個-character-set-解析？" class="headerlink" title="以下的 MySQL example code 中, escaping 都會由哪個 character set 解析？"></a><strong>以下的 MySQL example code 中, escaping 都會由哪個 character set 解析？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SELECT HEX(&apos;à\n&apos;), HEX(_sjis&apos;à\n&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>會由 character_set_connection 解析</p>
+</li>
+</ul>
+
     
     </div>
     
