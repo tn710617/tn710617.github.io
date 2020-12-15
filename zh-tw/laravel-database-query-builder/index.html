@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-06T04:26:07.541Z">
+<meta property="og:updated_time" content="2020-12-12T02:04:13.088Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-06T04:26:07.541Z">
+<meta property="og:updated_time" content="2020-12-12T02:04:13.088Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Database - Query Builder">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -370,7 +370,7 @@
         <span class="column is-narrow">
             
             
-            28 分钟 讀完 (大概 4133 字)
+            27 分钟 讀完 (大概 4122 字)
         </span>
         
     </div>
@@ -487,12 +487,11 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$orders = DB::table(<span class="hljs-string">'orders'</span>)</span><br><span class="line">                -&gt;selectRaw(<span class="hljs-string">'price * ? as price_with_tax'</span>, [<span class="hljs-number">1.0825</span>])</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-add-raw-where-constraint-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-add-raw-where-constraint-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 add raw where constraint, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 add raw where constraint, 該使用哪個 method?</strong></h6><ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
-<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$orders = DB::table(<span class="hljs-string">'orders'</span>)</span><br><span class="line">                -&gt;這裡是？(<span class="hljs-string">'price &gt; IF(state = "TX", ?, 100)'</span>, [<span class="hljs-number">200</span>])</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$orders = DB::table(<span class="hljs-string">'orders'</span>)</span><br><span class="line">                -&gt;whereRaw(<span class="hljs-string">'price &gt; IF(state = "TX", ?, 100)'</span>, [<span class="hljs-number">200</span>])</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 MySQL whereRaw expression, <code>price &gt; (如果 state = &quot;TX&quot;, 那就是 200, 否則就是 100)</code></p>
 </li>
 </ul>
 <h6 id="Laravel-Query-Builder-當中-在以下的-example-如果我要-add-raw-having-constraint-該使用哪個-method"><a href="#Laravel-Query-Builder-當中-在以下的-example-如果我要-add-raw-having-constraint-該使用哪個-method" class="headerlink" title="Laravel Query Builder 當中, 在以下的 example, 如果我要 add raw having constraint, 該使用哪個 method?"></a><strong>Laravel Query Builder 當中, 在以下的 example, 如果我要 add raw having constraint, 該使用哪個 method?</strong></h6><ul>
@@ -545,7 +544,7 @@
 </li>
 </ul>
 <p><br><br><br></p>
-<h4 id="Cross-Join-Clause"><a href="#Cross-Join-Clause" class="headerlink" title="# Cross Join Clause"></a># Cross Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<h4 id="Cross-Join-Clause"><a href="#Cross-Join-Clause" class="headerlink" title="# Cross Join Clause"></a># Cross Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sizes = DB::table(<span class="hljs-string">'sizes'</span>)</span><br><span class="line">            -&gt;crossJoin(<span class="hljs-string">'colors'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
 </li>
