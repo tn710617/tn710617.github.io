@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>使用 Kubernetes 部署 WordPress 應用 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言本文為部署 WordPress 應用到 Kubernetes cluster內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進">
+<meta name="keywords" content="Kubernetes,WordPress">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Kubernetes 部署 WordPress 應用">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/deploy-wordpress-on-kubernetes/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言本文為部署 WordPress 應用到 Kubernetes cluster內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-12-19T07:23:53.411Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Kubernetes 部署 WordPress 應用">
+<meta name="twitter:description" content="# 前言本文為部署 WordPress 應用到 Kubernetes cluster內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/deploy-wordpress-on-kubernetes/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言本文為部署 WordPress 應用到 Kubernetes cluster內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進">
+<meta name="keywords" content="Kubernetes,WordPress">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Kubernetes 部署 WordPress 應用">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/deploy-wordpress-on-kubernetes/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言本文為部署 WordPress 應用到 Kubernetes cluster內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2020-12-19T07:23:53.411Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Kubernetes 部署 WordPress 應用">
+<meta name="twitter:description" content="# 前言本文為部署 WordPress 應用到 Kubernetes cluster內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#目標">2&nbsp;&nbsp;<b># 目標</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#實作步驟">3&nbsp;&nbsp;<b># 實作步驟</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立-Namespace">4&nbsp;&nbsp;<b># 建立 Namespace</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#WordPress-Deployment">5&nbsp;&nbsp;<b># WordPress Deployment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#WordPress-Service">6&nbsp;&nbsp;<b># WordPress Service</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#MySQL-Deployment">7&nbsp;&nbsp;<b># MySQL Deployment</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#MySQL-Service">8&nbsp;&nbsp;<b># MySQL Service</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#HPA">9&nbsp;&nbsp;<b># HPA</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署">10&nbsp;&nbsp;<b># 部署</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#功能測試">11&nbsp;&nbsp;<b># 功能測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#HPA-測試">12&nbsp;&nbsp;<b># HPA 測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結論">13&nbsp;&nbsp;<b># 結論</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">14&nbsp;&nbsp;<b># Questions and Answers</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/deploy-wordpress-on-kubernetes/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/deploy-wordpress-on-kubernetes/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            使用 Kubernetes 部署 WordPress 應用
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-19T06:26:51.000Z" itemprop="datePublished">12月 19 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            2 分钟 讀完 (大概 312 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本文為部署 WordPress 應用到 Kubernetes cluster<br>內容非 Production 標準, 若要使用在 Production 環境尚有許多地方要改進</p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h2 id="目標"><a href="#目標" class="headerlink" title="# 目標"></a># 目標</h2><ul>
+<li>部署 WordPress 應用到 Kubernetes Cluster</li>
+<li>部署 MySQL 資料庫到 Kubernetes Cluster</li>
+<li>WordPress 應用跟 MySQL 資料庫需可相通  </li>
+<li>對 WordPress 應用做狀態檢查</li>
+<li>對 WordPress 應用建立 HPA 控管, 若負載高於定義, 需自動擴展</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="實作步驟"><a href="#實作步驟" class="headerlink" title="# 實作步驟"></a># 實作步驟</h2><ul>
+<li><a href="#建立-Namespace">建立特定 Namespace</a></li>
+<li><a href="#WordPress-Deployment">編寫 WordPress Deployment yaml file</a></li>
+<li><a href="#WordPress-Service">編寫 WordPress Service yaml file</a></li>
+<li><a href="#MySQL-Deployment">編寫 MySQL Deployment yaml file</a></li>
+<li><a href="#MySQL-Service">編寫 MySQL Service yaml file</a></li>
+<li><a href="#HPA">編寫 HPA yaml file</a></li>
+<li><a href="#部署">部署</a></li>
+<li><a href="#功能測試">功能測試</a></li>
+<li><a href="#HPA-測試">HPA 測試</a></li>
+</ul>
+<p><br><br><br></p>
+<h2 id="建立-Namespace"><a href="#建立-Namespace" class="headerlink" title="# 建立 Namespace"></a># 建立 Namespace</h2><p>首先, 我們先建立一個 namespace, 本次練習中建立的物件都會部署到該 namespace<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl create namespace wordpress</span><br></pre></td></tr></table></figure></p>
+<p><br><br><br></p>
+<h2 id="WordPress-Deployment"><a href="#WordPress-Deployment" class="headerlink" title="# WordPress Deployment"></a># WordPress Deployment</h2><p>接著, 要來撰寫 WordPress 的 Deployment yaml<br>為什麼不用 Pod 呢？ 因為如果我們要具有水平擴展的能力的話, 那當流量大時, 1 個 Pod 可能並不足以應付, 所以我們使用 Deployment 來管理 Pod, 可視情況擴縮<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">apiVersion</span></span><br></pre></td></tr></table></figure></p>
+<p>Yaml 檔當中的 env 部分可參考 <a href="https://hub.docker.com/_/wordpress" target="_blank" rel="noopener">DockerHub WordPress</a></p>
+<p><br><br><br></p>
+<h2 id="WordPress-Service"><a href="#WordPress-Service" class="headerlink" title="# WordPress Service"></a># WordPress Service</h2><p><br><br><br></p>
+<h2 id="MySQL-Deployment"><a href="#MySQL-Deployment" class="headerlink" title="# MySQL Deployment"></a># MySQL Deployment</h2><p><br><br><br></p>
+<h2 id="MySQL-Service"><a href="#MySQL-Service" class="headerlink" title="# MySQL Service"></a># MySQL Service</h2><p><br><br><br></p>
+<h2 id="HPA"><a href="#HPA" class="headerlink" title="# HPA"></a># HPA</h2><p><br><br><br></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="# 部署"></a># 部署</h2><p><br><br><br></p>
+<h2 id="功能測試"><a href="#功能測試" class="headerlink" title="# 功能測試"></a># 功能測試</h2><p><br><br><br></p>
+<h2 id="HPA-測試"><a href="#HPA-測試" class="headerlink" title="# HPA 測試"></a># HPA 測試</h2><p><br><br><br></p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="# 結論"></a># 結論</h2><p><br><br><br></p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="# Questions and Answers"></a># Questions and Answers</h2>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/WordPress/">#WordPress</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/install-dashboard-on-kubernetes/">Kubernetes - Dashboard - 使用自定義 Service Account 登入</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/deploy-wordpress-on-kubernetes/';
+        this.page.identifier = 'zh-tw/deploy-wordpress-on-kubernetes/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                           
+                           <i class="fab fa-medium"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
