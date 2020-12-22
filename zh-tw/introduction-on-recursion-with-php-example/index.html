@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Recursion (遞迴) 簡介 - PHP 範例 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言還記得某強者朋友 Chris 曾說…  遞迴只應天上有, 凡人還請用迴圈  嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？">
+<meta name="keywords" content="Recursion">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Recursion (遞迴) 簡介 - PHP 範例">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/introduction-on-recursion-with-php-example/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言還記得某強者朋友 Chris 曾說…  遞迴只應天上有, 凡人還請用迴圈  嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fjmKmDjEirD-RDPtcEOu_IVvqfcaOpc_S7ALbOqXF5cwTwVo5oodzozpLZSi74A_Dbo7soYZ2-2rMqoAYb6etFshQDhSuh3LhzUqt6s-UmwOXNFfdNRSgW0_Euvvf3ssjlFsa1K4DdEEuROUzCeO4haw=w999-h165-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eEC2-3Or4HrIPMQxOczYeqdn7rVcjYqw0ezgYbIQ9V6yPGtecAyw-u-4EagWzBstHd87vpddNXCdfFADhKapEMA-BTEIf8WOnjpOFWIMIriqy6yZfsa8yB1KV4Pzu3sewd1-HwoT5E-mHB2chjRXNMaQ=w357-h85-no?authuser=2">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3etK0OeJQBHlHGSE2f1Vf5mY_m-psxylVaGx2JA2EyZS4C2iuZCQkthgTWSEMJUx3IXzQq_dT755HSTwllOcMW83NL518qe9hlmYtEWWu-f3DkE9V2LoUtB7h39L2_ZU8IZQ8pxzyH671vUQ-QcrST_YQ=w838-h153-no?authuser=2">
+<meta property="og:updated_time" content="2020-12-22T13:00:10.472Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Recursion (遞迴) 簡介 - PHP 範例">
+<meta name="twitter:description" content="前言還記得某強者朋友 Chris 曾說…  遞迴只應天上有, 凡人還請用迴圈  嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fjmKmDjEirD-RDPtcEOu_IVvqfcaOpc_S7ALbOqXF5cwTwVo5oodzozpLZSi74A_Dbo7soYZ2-2rMqoAYb6etFshQDhSuh3LhzUqt6s-UmwOXNFfdNRSgW0_Euvvf3ssjlFsa1K4DdEEuROUzCeO4haw=w999-h165-no?authuser=0">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/introduction-on-recursion-with-php-example/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言還記得某強者朋友 Chris 曾說…  遞迴只應天上有, 凡人還請用迴圈  嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？">
+<meta name="keywords" content="Recursion">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Recursion (遞迴) 簡介 - PHP 範例">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/introduction-on-recursion-with-php-example/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言還記得某強者朋友 Chris 曾說…  遞迴只應天上有, 凡人還請用迴圈  嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fjmKmDjEirD-RDPtcEOu_IVvqfcaOpc_S7ALbOqXF5cwTwVo5oodzozpLZSi74A_Dbo7soYZ2-2rMqoAYb6etFshQDhSuh3LhzUqt6s-UmwOXNFfdNRSgW0_Euvvf3ssjlFsa1K4DdEEuROUzCeO4haw=w999-h165-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eEC2-3Or4HrIPMQxOczYeqdn7rVcjYqw0ezgYbIQ9V6yPGtecAyw-u-4EagWzBstHd87vpddNXCdfFADhKapEMA-BTEIf8WOnjpOFWIMIriqy6yZfsa8yB1KV4Pzu3sewd1-HwoT5E-mHB2chjRXNMaQ=w357-h85-no?authuser=2">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3etK0OeJQBHlHGSE2f1Vf5mY_m-psxylVaGx2JA2EyZS4C2iuZCQkthgTWSEMJUx3IXzQq_dT755HSTwllOcMW83NL518qe9hlmYtEWWu-f3DkE9V2LoUtB7h39L2_ZU8IZQ8pxzyH671vUQ-QcrST_YQ=w838-h153-no?authuser=2">
+<meta property="og:updated_time" content="2020-12-22T13:00:10.472Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Recursion (遞迴) 簡介 - PHP 範例">
+<meta name="twitter:description" content="前言還記得某強者朋友 Chris 曾說…  遞迴只應天上有, 凡人還請用迴圈  嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fjmKmDjEirD-RDPtcEOu_IVvqfcaOpc_S7ALbOqXF5cwTwVo5oodzozpLZSi74A_Dbo7soYZ2-2rMqoAYb6etFshQDhSuh3LhzUqt6s-UmwOXNFfdNRSgW0_Euvvf3ssjlFsa1K4DdEEuROUzCeO4haw=w999-h165-no?authuser=0">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#簡介">2&nbsp;&nbsp;<b># 簡介</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#實例">3&nbsp;&nbsp;<b># 實例</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#factorial">3.1&nbsp;&nbsp;# factorial</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Fibonacci">3.2&nbsp;&nbsp;# Fibonacci</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#GCD">3.3&nbsp;&nbsp;# GCD</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結論">4&nbsp;&nbsp;<b># 結論</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#參考來源">5&nbsp;&nbsp;<b># 參考來源</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">6&nbsp;&nbsp;<b># Questions and Answers</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#何謂質數">6.1.1&nbsp;&nbsp;何謂質數?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#何謂-Fibonacci-Sequence">6.1.2&nbsp;&nbsp;何謂 Fibonacci Sequence?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#何謂-GCD-Greatest-Common-Division">6.1.3&nbsp;&nbsp;何謂 GCD (Greatest Common Division)?</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/introduction-on-recursion-with-php-example/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/introduction-on-recursion-with-php-example/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Recursion (遞迴) 簡介 - PHP 範例
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-22T12:45:05.000Z" itemprop="datePublished">12月 22 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Data-Structure-and-Algorithm/">Data Structure and Algorithm</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            10 分钟 讀完 (大概 1508 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>還記得某強者朋友 Chris 曾說…</p>
+<blockquote>
+<p>遞迴只應天上有, 凡人還請用迴圈</p>
+</blockquote>
+<p>嗯… 用不用我們再慢慢研究, 但了解一下總是可以的吧？</p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h2 id="簡介"><a href="#簡介" class="headerlink" title="# 簡介"></a># 簡介</h2><p>Recursion (遞迴) 是一種透過將大問題分成小問題, 在逐一突破解決的方法, 就跟我們面對人生的困難一樣, 總是要先尋找小確幸, 再從小確幸中找到前進的勇氣, 然後再一點一點的逐一突破困難… 就跟追女朋友一樣, 總是要先… 咦, 不是要講 recursion 嗎？ 哦! 不好意思離題了。<br>通常, recursion 又被稱為 <code>呼叫自己的 function</code>, 沒錯, 我也覺得很怪！</p>
+<p>那你可能會問, 阿不停的呼叫自己, 有完沒完？</p>
+<p>沒錯！ 所以當我們在寫一個 recursion function 時, 必須具有以下要點：</p>
+<ul>
+<li>每一次的 recursion 呼叫, 都必須要把問題變得更小, 聽不懂? 那下面看範例會比較清楚。</li>
+<li>必須要為 recursion function 設定一個終點, 且這個終點是不需要任何的 recursion 呼叫就可以解決自己的問題, 不然就沒完沒了了</li>
+<li>不可以有循環出現, 這也是上一個要點所要避免的事情, 不然就跟無限 loop 一樣, 死機了</li>
+</ul>
+<p>接下來我們來舉幾個範例, 如果看不懂可以跳過去, 挑看得懂的看, 因為我一開始看也是一臉矇逼, 比你還矇</p>
+<p><br></p>
+<h2 id="實例"><a href="#實例" class="headerlink" title="# 實例"></a># 實例</h2><h3 id="factorial"><a href="#factorial" class="headerlink" title="# factorial"></a># factorial</h3><p>“factorial” (階乘) 在數學中相當熱門, <code>factorial of 5</code>, 在數學中又寫成 <code>5!</code>, 等於 <code>5 * 4 * 3 * 2 * 1</code></p>
+<p>以此類推:<br><code>4!</code> 會等於 <code>4 * 3 * 2 * 1</code><br><code>3!</code> 會等於 <code>3 * 2 * 1</code><br><code>2!</code> 會等於 <code>2 * 1</code><br><code>1!</code> 會等於 <code>1</code></p>
+<p>眼尖的你是否發現了什麼？ 沒發現嗎？ 好, 我當初也沒發現, 沒事沒事…<br>這樣你都能發現？ 哇靠, 你真是有 programmer 的 DNA 啊！ 不, 簡直是 <strong>圖靈</strong> 在世！ 馬的我就是一個廢物, 我都沒發現。<br>那就是 <code>5!</code> = <code>5 * 4!</code></p>
+<p>以此類推:<br><code>4!</code> = <code>4 * 3!</code><br><code>3!</code> = <code>3 * 2!</code><br><code>2!</code> = <code>2 * 1!</code><br><code>1!</code> = <code>1 * 0!</code><br><code>0!</code> = <code>1</code></p>
+<p>等等… 為啥 <code>0!</code> = <code>1</code> ? 這不太合理吧？ 馬的沒錯我當初也是這樣想… 不過研究了一下才知道人家數學家定義這個叫做 <code>empty product</code>, 值就是 1 沒得說, 不要問原因無可奉告, 可以參考一下 <a href="https://zh.wikipedia.org/wiki/空积" target="_blank" rel="noopener">Wiki</a></p>
+<p>好這不是重點, 重點是你又發現了嗎？ 那就是從上面的規則中, 可以歸納出<br><code>n!</code> = <code>n * (n-1)!</code></p>
+<p>好, 規則出現了！ 現在我們來寫一個 PHP 的 recursion function 來求得 factorial</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">factorial</span><span class="hljs-params">(int $n)</span>: <span class="hljs-title">int</span> </span>&#123;</span><br><span class="line">   <span class="hljs-keyword">if</span> ($n == <span class="hljs-number">0</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;</span><br><span class="line"></span><br><span class="line">   <span class="hljs-keyword">return</span> $n * factorial($n - <span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>還記得上面提到的 recursion 要點 (1) 嗎？ 在每一次的 recursion, 問題都會變小, 上面的 example 就可以呈現這一點</p>
+<p>在每一次的 recursion, $n 都會減 1</p>
+<p>而 <code>$n == 0</code> 的 if 判斷正是要點 (2), 設定一個終點, 以避免無限循環</p>
+<p>假設我們使用 <code>factorial(3)</code>, 那大概會依序拆成以下步驟</p>
+<ul>
+<li>3! = 3 X 2! (將問題 break 並往下 pass, <code>return 3 * factorial(3 - 1)</code>)</li>
+<li>2! = 2 X 1! (將問題 break 並往下 pass, <code>return 2 * factorial(2 - 1)</code>)</li>
+<li>1! = 1 X 0! (將問題 break 並往下 pass, <code>return 1 * factorial(1 - 1)</code>)</li>
+<li>0! = 1 (到達終點, 回傳 1)</li>
+<li>1! = 1 X 1 = 1 (回傳結果 1 給上一個 recursion)</li>
+<li>2! = 2 X 1 = 2 (回傳結果 2 給上一個 recursion)</li>
+<li>3! = 3 X 2 = 6 (執行 3 * 2 = 6, 最終結果)</li>
+</ul>
+<p>如下示意圖:</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3fjmKmDjEirD-RDPtcEOu_IVvqfcaOpc_S7ALbOqXF5cwTwVo5oodzozpLZSi74A_Dbo7soYZ2-2rMqoAYb6etFshQDhSuh3LhzUqt6s-UmwOXNFfdNRSgW0_Euvvf3ssjlFsa1K4DdEEuROUzCeO4haw=w999-h165-no?authuser=0" alt></p>
+<p>好啦, 那你問, 我用 loop 行不行? 非得要 recursion?</p>
+<p>的確, 使用 loop 也是可以求得 factorial 的<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">factorial</span><span class="hljs-params">(int $n)</span>: <span class="hljs-title">int</span> </span>&#123; </span><br><span class="line">    $result = <span class="hljs-number">1</span>; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> ($i = $n; $i &gt; <span class="hljs-number">0</span>; $i--) &#123;</span><br><span class="line">      $result *= $i; </span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> $result; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>那, 為什麼要使用 recursion 呢？</p>
+<p>recursion 是用來解決更複雜的問題, 比如說, 你想要列出某個資料夾底下的所有資料夾, 包含子資料夾, 但是你並不知道共有幾層, 這就是一個非常適合用 recursion 來解決的問題。</p>
+<p>然而, recursion 是使用 call stack 來管理 function call, 也就是像 Stack 資料結構一樣, LIFO (last in first out), 這使得 recursion 會比 loop 使用更多的 memory 以及時間</p>
+<p>並且, loop 的每一個 step 都會有其結果, 但 recursion 會需要跑到最後一次的 recursion, 再依序往前推 (first in last out)</p>
+<p><br></p>
+<h3 id="Fibonacci"><a href="#Fibonacci" class="headerlink" title="# Fibonacci"></a># Fibonacci</h3><p>Fibonacci 數列是一組特別的整數順序, 每一個數都可由前兩個數計算得來, 數列中全部都是質數, 例如 1, 2, 3, 5, 7, 11 …<br>而 Fibonacci 有個公式, 如下：<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eEC2-3Or4HrIPMQxOczYeqdn7rVcjYqw0ezgYbIQ9V6yPGtecAyw-u-4EagWzBstHd87vpddNXCdfFADhKapEMA-BTEIf8WOnjpOFWIMIriqy6yZfsa8yB1KV4Pzu3sewd1-HwoT5E-mHB2chjRXNMaQ=w357-h85-no?authuser=2" alt></p>
+<p>可以寫成一個 PHP function<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fibonacci</span><span class="hljs-params">(int $n)</span>: <span class="hljs-title">int</span> </span>&#123; </span><br><span class="line">    <span class="hljs-keyword">if</span> ($n == <span class="hljs-number">0</span>) &#123; </span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; </span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ($n == <span class="hljs-number">1</span>) &#123; </span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; </span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> &#123; </span><br><span class="line">    <span class="hljs-keyword">return</span> fibonacci($n - <span class="hljs-number">1</span>) + fibonacci($n - <span class="hljs-number">2</span>); </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>沒錯, 我們在一個 function 裡頭呼叫了兩個 recursion function</p>
+<p>之後我們再來討論不同類型的 recursion</p>
+<p><br></p>
+<h3 id="GCD"><a href="#GCD" class="headerlink" title="# GCD"></a># GCD</h3><p>GCD (Greatest Common Division), 最大公因數, 比如 12 的因數有 1, 2, 3, 4, 6, 而 8 的因數有 1, 2, 4, 那 12 跟 8 的最大公因數就是 4</p>
+<p>抱歉, 我知道這節不是數學課, 其實我是講給我自己聽的, 哈哈哈哈哈哈！</p>
+<p>所以在數學中若要求得兩數的最大公因數, 有個公式如下：<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3etK0OeJQBHlHGSE2f1Vf5mY_m-psxylVaGx2JA2EyZS4C2iuZCQkthgTWSEMJUx3IXzQq_dT755HSTwllOcMW83NL518qe9hlmYtEWWu-f3DkE9V2LoUtB7h39L2_ZU8IZQ8pxzyH671vUQ-QcrST_YQ=w838-h153-no?authuser=2" alt></p>
+<p>那如果用 PHP 來寫的話, 如下：<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">gcd</span><span class="hljs-params">(int $a, int $b)</span>: <span class="hljs-title">int</span> </span>&#123; </span><br><span class="line">    <span class="hljs-keyword">if</span> ($b == <span class="hljs-number">0</span>) &#123; </span><br><span class="line">     <span class="hljs-keyword">return</span> $a; </span><br><span class="line">    &#125; <span class="hljs-keyword">else</span> &#123; </span><br><span class="line">     <span class="hljs-keyword">return</span> gcd($b, $a % $b); </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>這又是另外一種類型的 recursion, 我們不從終點一路 return 回起點, 反之, 直接在終點 return 了 value<br>這也是比較理想的 recursion 方式</p>
+<p><br><br><br></p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="# 結論"></a># 結論</h2><p>本篇 recursion 的簡介就到此結束, 接下來我們會講不同類型的 recursion</p>
+<p><br><br><br></p>
+<h2 id="參考來源"><a href="#參考來源" class="headerlink" title="# 參考來源"></a># 參考來源</h2><ul>
+<li><a href="https://www.tenlong.com.tw/products/9781786463890" target="_blank" rel="noopener">PHP 7 Data Structures and Algorithms: Implement linked lists, stacks, and queues using PHP</a></li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="# Questions and Answers"></a># Questions and Answers</h2><h6 id="何謂質數"><a href="#何謂質數" class="headerlink" title="何謂質數?"></a><strong>何謂質數?</strong></h6><p>大於 1 的自然數中, 無法被除了 1 和自身之外的數整除, 稱為質數</p>
+<h6 id="何謂-Fibonacci-Sequence"><a href="#何謂-Fibonacci-Sequence" class="headerlink" title="何謂 Fibonacci Sequence?"></a><strong>何謂 Fibonacci Sequence?</strong></h6><p>一組由質數所組成的數列</p>
+<h6 id="何謂-GCD-Greatest-Common-Division"><a href="#何謂-GCD-Greatest-Common-Division" class="headerlink" title="何謂 GCD (Greatest Common Division)?"></a><strong>何謂 GCD (Greatest Common Division)?</strong></h6><p>最大公因數, 比如 12 的因數有 1, 2, 3, 4, 6, 而 8 的因數有 1, 2, 4, 那 12 跟 8 的最大公因數就是 4</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Recursion/">#Recursion</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/kubernetes-create-a-daemonset/">Kubernetes - 建立一個 DaemonSet</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/introduction-on-recursion-with-php-example/';
+        this.page.identifier = 'zh-tw/introduction-on-recursion-with-php-example/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                           
+                           <i class="fab fa-medium"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
