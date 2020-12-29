@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-28T02:24:59.792Z">
+<meta property="og:updated_time" content="2020-12-29T05:14:36.563Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Digging Deeper - Cache (官方文件原子化翻譯文件)">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-28T02:24:59.792Z">
+<meta property="og:updated_time" content="2020-12-29T05:14:36.563Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Digging Deeper - Cache (官方文件原子化翻譯文件)">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -202,6 +202,58 @@
                     
                     <a class="navbar-item" href="#Storing-Items-In-The-Cache">3.3&nbsp;&nbsp;# Storing Items In The Cache</a>
                     
+                    
+                    
+                    <a class="navbar-item" href="#Store-If-Not-Present">3.3.1&nbsp;&nbsp;# Store If Not Present</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Storing-Items-Forever">3.3.2&nbsp;&nbsp;# Storing Items Forever</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Removing-Items-From-The-Cache">3.4&nbsp;&nbsp;# Removing Items From The Cache</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-Cache-Helper">3.5&nbsp;&nbsp;# The Cache Helper</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Cache-Tags">4&nbsp;&nbsp;<b># Cache Tags</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Storing-Tagged-Cache-Items">4.1&nbsp;&nbsp;# Storing Tagged Cache Items</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Accessing-Tagged-Cache-Items">4.2&nbsp;&nbsp;# Accessing Tagged Cache Items</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Removing-Tagged-Cache-Items">4.3&nbsp;&nbsp;# Removing Tagged Cache Items</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Atomic-Locks">5&nbsp;&nbsp;<b># Atomic Locks</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Driver-Prerequisites-1">5.1&nbsp;&nbsp;# Driver Prerequisites</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Database-1">5.1.1&nbsp;&nbsp;# Database</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Managing-Locks">5.2&nbsp;&nbsp;# Managing Locks</a>
+                    
                 </div>
             </div>
             
@@ -262,7 +314,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 讀完 (大概 965 字)
+            11 分钟 讀完 (大概 1723 字)
         </span>
         
     </div>
@@ -382,6 +434,115 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::put(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>, now()-&gt;addMinutes(<span class="hljs-number">10</span>));</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:<br>在 default cache 中存入 <code>key / value</code>, 有效期限為從現在往後算起的十分鐘後, 若 arg3 未指定, 將會無限期儲存</p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Store-If-Not-Present"><a href="#Store-If-Not-Present" class="headerlink" title="# Store If Not Present"></a># Store If Not Present</h4><h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::add(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>, $seconds);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>如果 key 在 default cache 中不存在, 則新增 <code>key / value / 有效時間</code>, 如果真的有新增, 會回傳 true, 否則 false</p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Storing-Items-Forever"><a href="#Storing-Items-Forever" class="headerlink" title="# Storing Items Forever"></a># Storing Items Forever</h4><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::forever(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 default cache 內新增一筆 key / value, 有效時間為永久, 但如果 Memcached driver, 當達到 size limit, 可能會刪除 forever 檔案</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Removing-Items-From-The-Cache"><a href="#Removing-Items-From-The-Cache" class="headerlink" title="# Removing Items From The Cache"></a># Removing Items From The Cache</h3><h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::forget(<span class="hljs-string">'key'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>從 default cache 內移除 key 為 <code>&#39;key&#39;</code> 這筆資料</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::put(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>, <span class="hljs-number">0</span>);</span><br><span class="line"></span><br><span class="line">Cache::put(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>, <span class="hljs-number">-5</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當指定有效期限為 <code>負數</code> 時, 也有刪除的效果</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::flush();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>刪除整個 default cache 的資料, 不會因為 prefix 而有所區隔, 會刪除整個 cache 內的資料</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="The-Cache-Helper"><a href="#The-Cache-Helper" class="headerlink" title="# The Cache Helper"></a># The Cache Helper</h3><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = cache(<span class="hljs-string">'key'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 cache function 取得 default cache 中指定的 key 的 value</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">cache([<span class="hljs-string">'key'</span> =&gt; <span class="hljs-string">'value'</span>], $seconds);</span><br><span class="line"></span><br><span class="line">cache([<span class="hljs-string">'key'</span> =&gt; <span class="hljs-string">'value'</span>], now()-&gt;addMinutes(<span class="hljs-number">10</span>));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 cache function, 當提供完整的參數: <code>key / value / 有效時間</code>, 會將此參數儲存到 default cache</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">cache()-&gt;remember(<span class="hljs-string">'users'</span>, $seconds, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'users'</span>)-&gt;get();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 cache function, 當沒有帶入 args 時, 會回傳一個 <code>Illuminate\Contracts\Cache\Factory</code> instance<br>試圖取出 key 為 <code>users</code> 的 value, 若不存在, 執行 closure, 並將 closure 回傳值存到 default cache 當中, 有效期限為 $seconds</p>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="Cache-Tags"><a href="#Cache-Tags" class="headerlink" title="# Cache Tags"></a># Cache Tags</h2><h6 id="Laravel-Cache-中-Cache-Tags-不支援哪幾種-driver"><a href="#Laravel-Cache-中-Cache-Tags-不支援哪幾種-driver" class="headerlink" title="Laravel Cache 中, Cache Tags 不支援哪幾種 driver?"></a><strong>Laravel Cache 中, Cache Tags 不支援哪幾種 driver?</strong></h6><p>file, dynamodb, database</p>
+<p><br></p>
+<h3 id="Storing-Tagged-Cache-Items"><a href="#Storing-Tagged-Cache-Items" class="headerlink" title="# Storing Tagged Cache Items"></a># Storing Tagged Cache Items</h3><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;put(<span class="hljs-string">'John'</span>, $john, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;put(<span class="hljs-string">'Anne'</span>, $anne, $seconds);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 default cache 中存入 key <code>John</code>, value <code>$john</code>, 有效期限 <code>seconds</code>, 並 tag 這筆資料 <code>[&#39;people&#39;, &#39;artists&#39;]</code></p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Accessing-Tagged-Cache-Items"><a href="#Accessing-Tagged-Cache-Items" class="headerlink" title="# Accessing Tagged Cache Items"></a># Accessing Tagged Cache Items</h3><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$john = Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;get(<span class="hljs-string">'John'</span>);</span><br><span class="line"></span><br><span class="line">$anne = Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;get(<span class="hljs-string">'Anne'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>從 default cache 中取得 key <code>John</code>, tags `[‘people’, ‘artists’] 的資料</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Removing-Tagged-Cache-Items"><a href="#Removing-Tagged-Cache-Items" class="headerlink" title="# Removing Tagged Cache Items"></a># Removing Tagged Cache Items</h3><h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;put(<span class="hljs-string">'John'</span>, $john, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;put(<span class="hljs-string">'Anne'</span>, $anne, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;flush();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>移除有著 tags <code>people, authors</code> 的 cache items, 所以 John 跟 Anne 都會被移除</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-24"><a href="#以下的-Laravel-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;put(<span class="hljs-string">'John'</span>, $john, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;put(<span class="hljs-string">'Anne'</span>, $anne, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags(<span class="hljs-string">'authors'</span>)-&gt;flush();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>移除有著 tags <code>authors</code> 的 cache items, 所以 Anne 會被移除, John 不會</p>
+</li>
+</ul>
+<p><br></p>
+<h2 id="Atomic-Locks"><a href="#Atomic-Locks" class="headerlink" title="# Atomic Locks"></a># Atomic Locks</h2><h3 id="Driver-Prerequisites-1"><a href="#Driver-Prerequisites-1" class="headerlink" title="# Driver Prerequisites"></a># Driver Prerequisites</h3><h4 id="Database-1"><a href="#Database-1" class="headerlink" title="# Database"></a># Database</h4><h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::create(<span class="hljs-string">'cache_locks'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;string(<span class="hljs-string">'key'</span>)-&gt;primary();</span><br><span class="line">    $table-&gt;string(<span class="hljs-string">'owner'</span>);</span><br><span class="line">    $table-&gt;integer(<span class="hljs-string">'expiration'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當欲使用 Cache Lock, 且 driver 為 database 時, 需要新增 cache lock 用的 table</p>
+</li>
+</ul>
+<p><br></p>
+<h3 id="Managing-Locks"><a href="#Managing-Locks" class="headerlink" title="# Managing Locks"></a># Managing Locks</h3><h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$lock = Cache::lock(<span class="hljs-string">'foo'</span>, <span class="hljs-number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> ($lock-&gt;get()) &#123;</span><br><span class="line">    <span class="hljs-comment">// Lock acquired for 10 seconds...</span></span><br><span class="line"></span><br><span class="line">    $lock-&gt;release();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Cache Lock, 將 key <code>foo</code> lock 10 秒後釋放, 這 10 秒內可以執行一些邏輯, 比如 transaction, 以避免 race condition</p>
 </li>
 </ul>
 
