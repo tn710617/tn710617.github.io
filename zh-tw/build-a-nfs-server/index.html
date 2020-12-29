@@ -4,18 +4,18 @@
     <meta charset="utf-8">
 <title>Build a NFS server - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案  # 環境VERSION=”19.10 (Eoan Ermine)”ID=ubuntuID_LIKE=debianPRETTY_NAME=”Ubuntu 19.10”VERSION_ID=”19.10”  # 安裝假如你的 apt 無法更新, 執行sed -i -e &apos;s/archive.ubuntu.com\">
+<meta name="description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta name="keywords" content="NFS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Build a NFS server">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/build-a-nfs-server/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案  # 環境VERSION=”19.10 (Eoan Ermine)”ID=ubuntuID_LIKE=debianPRETTY_NAME=”Ubuntu 19.10”VERSION_ID=”19.10”  # 安裝假如你的 apt 無法更新, 執行sed -i -e &apos;s/archive.ubuntu.com\">
+<meta property="og:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-26T13:38:57.625Z">
+<meta property="og:updated_time" content="2020-12-28T12:36:58.423Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Build a NFS server">
-<meta name="twitter:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案  # 環境VERSION=”19.10 (Eoan Ermine)”ID=ubuntuID_LIKE=debianPRETTY_NAME=”Ubuntu 19.10”VERSION_ID=”19.10”  # 安裝假如你的 apt 無法更新, 執行sed -i -e &apos;s/archive.ubuntu.com\">
+<meta name="twitter:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -30,18 +30,18 @@
 
 
 
-    <meta name="description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案  # 環境VERSION=”19.10 (Eoan Ermine)”ID=ubuntuID_LIKE=debianPRETTY_NAME=”Ubuntu 19.10”VERSION_ID=”19.10”  # 安裝假如你的 apt 無法更新, 執行sed -i -e &apos;s/archive.ubuntu.com\">
+    <meta name="description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta name="keywords" content="NFS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Build a NFS server">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/build-a-nfs-server/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案  # 環境VERSION=”19.10 (Eoan Ermine)”ID=ubuntuID_LIKE=debianPRETTY_NAME=”Ubuntu 19.10”VERSION_ID=”19.10”  # 安裝假如你的 apt 無法更新, 執行sed -i -e &apos;s/archive.ubuntu.com\">
+<meta property="og:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-26T13:38:57.625Z">
+<meta property="og:updated_time" content="2020-12-28T12:36:58.423Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Build a NFS server">
-<meta name="twitter:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案  # 環境VERSION=”19.10 (Eoan Ermine)”ID=ubuntuID_LIKE=debianPRETTY_NAME=”Ubuntu 19.10”VERSION_ID=”19.10”  # 安裝假如你的 apt 無法更新, 執行sed -i -e &apos;s/archive.ubuntu.com\">
+<meta name="twitter:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 
 
 
@@ -168,6 +168,32 @@
                     
                     <a class="navbar-item" href="#建立分享資料夾">4&nbsp;&nbsp;<b># 建立分享資料夾</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#exports-設定檔">5&nbsp;&nbsp;<b># exports 設定檔</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#防火牆設定">6&nbsp;&nbsp;<b># 防火牆設定</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查看防火牆狀態">6.1&nbsp;&nbsp;# 查看防火牆狀態</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開啟防火牆">6.2&nbsp;&nbsp;# 開啟防火牆</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#參考資源">7&nbsp;&nbsp;<b># 參考資源</b></a>
+                    
                 </div>
             </div>
             
@@ -228,13 +254,14 @@
         <span class="column is-narrow">
             
             
-            1 分钟 讀完 (大概 116 字)
+            4 分钟 讀完 (大概 588 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案</p>
+<a id="more"></a>
 <p><br><br><br></p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="# 環境"></a># 環境</h2><p>VERSION=”19.10 (Eoan Ermine)”<br>ID=ubuntu<br>ID_LIKE=debian<br>PRETTY_NAME=”Ubuntu 19.10”<br>VERSION_ID=”19.10”</p>
 <p><br><br><br></p>
@@ -244,8 +271,71 @@
 <p><br></p>
 <h3 id="Client"><a href="#Client" class="headerlink" title="# Client"></a># Client</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install nfs-common</span><br></pre></td></tr></table></figure>
 <p><br><br><br></p>
-<h2 id="建立分享資料夾"><a href="#建立分享資料夾" class="headerlink" title="# 建立分享資料夾"></a># 建立分享資料夾</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p yourPreferredDirectoryLocation</span><br></pre></td></tr></table></figure>
-<p>NFS server 預設會將 root 登入者</p>
+<h2 id="建立分享資料夾"><a href="#建立分享資料夾" class="headerlink" title="# 建立分享資料夾"></a># 建立分享資料夾</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p /yourPreferred/directoryLocation</span><br></pre></td></tr></table></figure>
+<p>NFS server 預設會將 root 登入者轉為 nobody:nogroup, 因此修改資料夾權限<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chown nobody:nogroup /yourPreferred/directoryLocation</span><br></pre></td></tr></table></figure></p>
+<p><br><br><br></p>
+<h2 id="exports-設定檔"><a href="#exports-設定檔" class="headerlink" title="# exports 設定檔"></a># exports 設定檔</h2><ul>
+<li><p>設定 exports 檔案, 定義要 export 的資料夾以及細項設定</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/exports</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設定檔</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">/yourPrederred/directoryLocation *(rw,sync,no_root_squash)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一些設定參數定義</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>參數</th>
+<th style="text-align:left">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rw &amp; ro</td>
+<td style="text-align:left">該目錄分享的權限是可讀寫 (read-write) 但最終能不能讀寫，還是與檔案系統的 rwx 及身份有關。</td>
+</tr>
+<tr>
+<td>sync &amp; async</td>
+<td style="text-align:left">sync 代表資料會同步寫入到記憶體與硬碟中，async 則代表資料會先暫存於記憶體當中，而非直接寫入硬碟。 sync 會增加穩定性以及一致性, 因為返回的結果就代表遠端 disk 的狀態, 而非 cache, 但同時速度也會比較慢</td>
+</tr>
+<tr>
+<td>no_root_squash</td>
+<td style="text-align:left">預設 NFS 會將來自於 root user 的 request 轉換成 nobody, 以避免 client root 擁有 host root 的權限, 若要取消預設行為, 可使用此選項</td>
+</tr>
+<tr>
+<td>root_squash</td>
+<td style="text-align:left">如上, 預設行為</td>
+</tr>
+<tr>
+<td>all_squash</td>
+<td style="text-align:left">不管訪問者是誰, 全部都轉換成 nobody</td>
+</tr>
+<tr>
+<td>anonuid &amp; anongid</td>
+<td style="text-align:left">可以自定義上面提到的 nobody, nogroup 的 uid 以及 gid, 前提是此 uid &amp; gid 必須要存在於 /etc/passwd</td>
+</tr>
+<tr>
+<td>fsid</td>
+<td style="text-align:left">在 NFS4, 若設為 0, 則代表 root, 表示分享的資料夾為該 host 的 root, 即 client 端掛載時需為 <code>mount -t nfs hostIp:/ /clientTargetMountingDirectory</code>, 若分享多個資料夾, fsid 不可相同, 每個 fsid 都代表一個獨立的分享區塊</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>完成設定後, 重啟 server<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl restart nfs-kernel-server</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br><br><br></p>
+<h2 id="防火牆設定"><a href="#防火牆設定" class="headerlink" title="# 防火牆設定"></a># 防火牆設定</h2><h3 id="查看防火牆狀態"><a href="#查看防火牆狀態" class="headerlink" title="# 查看防火牆狀態"></a># 查看防火牆狀態</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+<p>一般來說, 防火牆越嚴謹越好, 但我們需要開啟特定的 port 讓外部可以存取 NFS server</p>
+<p><br></p>
+<h3 id="開啟防火牆"><a href="#開啟防火牆" class="headerlink" title="# 開啟防火牆"></a># 開啟防火牆</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from client_ip to any port nfs</span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h2 id="參考資源"><a href="#參考資源" class="headerlink" title="# 參考資源"></a># 參考資源</h2><ul>
+<li><a href="http://linux.vbird.org/linux_server/0330nfs.php" target="_blank" rel="noopener">鳥哥</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04" target="_blank" rel="noopener">DigitalOcean</a></li>
+</ul>
 
     
     </div>
@@ -258,7 +348,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-digging-deeper-cache/">Laravel - Digging Deeper - Cache (官方文件原子化翻譯文件)</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
