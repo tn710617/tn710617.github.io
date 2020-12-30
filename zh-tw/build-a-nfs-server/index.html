@@ -2,19 +2,19 @@
 <html class="has-navbar-fixed-top">
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
-<title>Build a NFS server - Learn or Die</title>
+<title>架設一個 NFS Server - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta name="keywords" content="NFS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Build a NFS server">
+<meta property="og:title" content="架設一個 NFS Server">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/build-a-nfs-server/index.html">
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-28T12:36:58.423Z">
+<meta property="og:updated_time" content="2020-12-29T13:14:06.180Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Build a NFS server">
+<meta name="twitter:title" content="架設一個 NFS Server">
 <meta name="twitter:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 
 
@@ -33,14 +33,14 @@
     <meta name="description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta name="keywords" content="NFS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Build a NFS server">
+<meta property="og:title" content="架設一個 NFS Server">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/build-a-nfs-server/index.html">
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-12-28T12:36:58.423Z">
+<meta property="og:updated_time" content="2020-12-29T13:14:06.180Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Build a NFS server">
+<meta name="twitter:title" content="架設一個 NFS Server">
 <meta name="twitter:description" content="# 前言本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案">
 
 
@@ -189,10 +189,38 @@
                     <a class="navbar-item" href="#開啟防火牆">6.2&nbsp;&nbsp;# 開啟防火牆</a>
                     
                     
+                    
+                    <a class="navbar-item" href="#掛載到-client-端">6.3&nbsp;&nbsp;# 掛載到 client 端</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認-nfs-common-有啟動">6.3.1&nbsp;&nbsp;# 確認 nfs-common 有啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立空資料夾">6.3.2&nbsp;&nbsp;# 建立空資料夾</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#掛載">6.3.3&nbsp;&nbsp;# 掛載</a>
+                    
+                    
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#參考資源">7&nbsp;&nbsp;<b># 參考資源</b></a>
+                    <a class="navbar-item" href="#卸載">7&nbsp;&nbsp;<b># 卸載</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結語">8&nbsp;&nbsp;<b># 結語</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#參考資源">9&nbsp;&nbsp;<b># 參考資源</b></a>
                     
                 </div>
             </div>
@@ -237,7 +265,7 @@
     <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            Build a NFS server
+            架設一個 NFS Server
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -254,7 +282,7 @@
         <span class="column is-narrow">
             
             
-            4 分钟 讀完 (大概 588 字)
+            6 分钟 讀完 (大概 852 字)
         </span>
         
     </div>
@@ -330,11 +358,44 @@
 <h2 id="防火牆設定"><a href="#防火牆設定" class="headerlink" title="# 防火牆設定"></a># 防火牆設定</h2><h3 id="查看防火牆狀態"><a href="#查看防火牆狀態" class="headerlink" title="# 查看防火牆狀態"></a># 查看防火牆狀態</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
 <p>一般來說, 防火牆越嚴謹越好, 但我們需要開啟特定的 port 讓外部可以存取 NFS server</p>
 <p><br></p>
-<h3 id="開啟防火牆"><a href="#開啟防火牆" class="headerlink" title="# 開啟防火牆"></a># 開啟防火牆</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from client_ip to any port nfs</span><br></pre></td></tr></table></figure>
+<h3 id="開啟防火牆"><a href="#開啟防火牆" class="headerlink" title="# 開啟防火牆"></a># 開啟防火牆</h3><ul>
+<li><p>請將 client_ip 替換成實際的 client ip</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from client_ip to any port nfs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看結果</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h3 id="掛載到-client-端"><a href="#掛載到-client-端" class="headerlink" title="# 掛載到 client 端"></a># 掛載到 client 端</h3><h4 id="確認-nfs-common-有啟動"><a href="#確認-nfs-common-有啟動" class="headerlink" title="# 確認 nfs-common 有啟動"></a># 確認 nfs-common 有啟動</h4><ul>
+<li><p>如果 nfs-common 服務沒啟動的話, 啟動它</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start nfs-common</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果顯示 masked, 使用 unmask 又無效的話, 先刪除 service</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo rm /lib/systemd/system/nfs-config.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>刪除後在 reload daemon</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>然後再 start nfs-common 一次</p>
+<p><br></p>
+<h4 id="建立空資料夾"><a href="#建立空資料夾" class="headerlink" title="# 建立空資料夾"></a># 建立空資料夾</h4><ul>
+<li>建立一個空的資料夾<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p /yourPrefered/emptyDirectoryLocation</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="掛載"><a href="#掛載" class="headerlink" title="# 掛載"></a># 掛載</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mount -t nfs4 yourHostIp:/ /yourPrefered/emptyDirectoryLocation</span><br></pre></td></tr></table></figure>
+<p>這邊要注意一下, 如果使用的是 nfs4, 那 fsid = 0 實際上就代表 root, 即根目錄實際上就是 host exports 出來的資料夾, 所以要使用 <code>yourHostIp:/</code>, 而實際上是掛載到上面在 Host 端建立的資料夾</p>
+<p><br><br><br></p>
+<h2 id="卸載"><a href="#卸載" class="headerlink" title="# 卸載"></a># 卸載</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">umount /yourClientMountedDirectory</span><br></pre></td></tr></table></figure>
+<p>需注意, 如果你當前位置正在掛載的資料夾, 那會顯示 <strong>target is busy</strong>, 所以要先離開啦！</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="# 結語"></a># 結語</h2><p>至此簡易的 NFS 就完成掛載囉, 更多的設定可以參考文末的參考來源。</p>
 <p><br><br><br></p>
 <h2 id="參考資源"><a href="#參考資源" class="headerlink" title="# 參考資源"></a># 參考資源</h2><ul>
 <li><a href="http://linux.vbird.org/linux_server/0330nfs.php" target="_blank" rel="noopener">鳥哥</a></li>
 <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04" target="_blank" rel="noopener">DigitalOcean</a></li>
+<li>Internet</li>
 </ul>
 
     
