@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-07T12:08:01.475Z">
+<meta property="og:updated_time" content="2020-12-30T11:42:15.289Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2020-02-07T12:08:01.475Z">
+<meta property="og:updated_time" content="2020-12-30T11:42:15.289Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NGINX 學習筆記">
 <meta name="twitter:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
@@ -246,7 +246,11 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Q-amp-A">10&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    <a class="navbar-item" href="#Questions-and-Answers">10&nbsp;&nbsp;<b>Questions and Answers</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Nginx-設定的意思是？">10.1.1&nbsp;&nbsp;以下的 Nginx 設定的意思是？</a>
                     
                     
                     <hr class="navbar-divider">
@@ -314,7 +318,7 @@
         <span class="column is-narrow">
             
             
-            29 分钟 讀完 (大概 4391 字)
+            30 分钟 讀完 (大概 4486 字)
         </span>
         
     </div>
@@ -413,7 +417,12 @@
 </li>
 </ul>
 <p><br><br><br><br><br></p>
-<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="以下的-Nginx-設定的意思是？"><a href="#以下的-Nginx-設定的意思是？" class="headerlink" title="以下的 Nginx 設定的意思是？"></a><strong>以下的 Nginx 設定的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line">    <span class="hljs-attribute">underscores_in_headers</span> <span class="hljs-literal">on</span>;</span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">if</span> (<span class="hljs-variable">$http_custom_header</span> = ray) &#123;</span><br><span class="line">            <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:3000;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 custom variable, 會自動 assign request header name <code>custom_header</code>title column collection 的 value 到 $http_custom_header 這個變數中, 所以如果我在 request header 使用 <code>custom_header</code>: <code>ray</code> 的話, 就會 pass 到 <strong><a href="http://127.0.0.1:3000" target="_blank" rel="noopener">http://127.0.0.1:3000</a>;</strong><br>參考 <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers" target="_blank" rel="noopener">Nginx document</a></p>
+</li>
 <li><p><strong>以下的設定中, <code>location ~ \.php$</code> 中, 最終帶過去的 fastcgi_param 是什麼？</strong> $query_string, 原本的 $request_method 跟 $document_root, $fastcgi_script_name 會處於未設定</p>
 <figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># server context</span></span><br><span class="line"><span class="hljs-attribute">root</span> /var/www/html;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">fastcgi_param</span> REQUEST_METHOD <span class="hljs-variable">$request_method</span>;</span><br><span class="line"><span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$document_root</span><span class="hljs-variable">$fastcgi_script_name</span>;</span><br><span class="line"><span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> /scripts &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> QUERY_STRING <span class="hljs-variable">$query_string</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> <span class="hljs-number">127.0.0.1:9000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
