@@ -169,6 +169,63 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh-tw/recursion-build-a-n-level-category-tree/" itemprop="url">Recursion - 建立一個 N-level category tree</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-01-03T12:12:12.000Z" itemprop="datePublished">1月 3 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Data-Structure-and-Algorithm/">Data Structure and Algorithm</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 分钟 讀完 (大概 407 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇將會使用 recursion 來呈現 N-level category tree</p>
+<p><br><br><br></p>
+<h2 id="步驟"><a href="#步驟" class="headerlink" title="# 步驟"></a># 步驟</h2><ol>
+<li>將 category tree 的階層關係定義在資料庫</li>
+<li>從資料庫取出所有的 category 資料</li>
+<li>使用 recursion 來呈現不同的 category 之間的 level 關係</li>
+</ol>
+<p><br><br><br></p>
+<h2 id="定義階層關係到資料庫"><a href="#定義階層關係到資料庫" class="headerlink" title="# 定義階層關係到資料庫"></a># 定義階層關係到資料庫</h2><h3 id="建立資料表"><a href="#建立資料表" class="headerlink" title="# 建立資料表"></a># 建立資料表</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `categories` ( </span><br><span class="line">  `id` int(11) NOT NULL, </span><br><span class="line">  `categoryName` varchar(100) NOT NULL, </span><br><span class="line">  `parentCategory` int(11) DEFAULT 0, </span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="INSERT-階層關係"><a href="#INSERT-階層關係" class="headerlink" title="# INSERT 階層關係"></a># INSERT 階層關係</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">INSERT INTO categories VALUES</span><br><span class="line">    (0,&apos;First&apos;, 0),</span><br><span class="line">    (0,&apos;Second&apos;, 1),</span><br><span class="line">    (0,&apos;Third&apos;, 1),</span><br><span class="line">    (0,&apos;Fourth&apos;, 3),</span><br><span class="line">    (0,&apos;Fifth&apos;, 4),</span><br><span class="line">    (0,&apos;Sixth&apos;, 5),</span><br><span class="line">    (0,&apos;Seventh&apos;, 6),</span><br><span class="line">    (0,&apos;Eighth&apos;, 7),</span><br><span class="line">    (0,&apos;Ninth&apos;, 1),</span><br><span class="line">    (0,&apos;Tenth&apos;, 2);</span><br></pre></td></tr></table></figure>
+<p>此時階層關係像是:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3da2EqqwW9OypthkLwZtfjyWAWNxL7kmSujbgvgm_Ks-BqImvVVRBe2sWiz79tIPyrfR7KU9eT2kynWLkjBXyBmkz6FBRpt20c1C1_KI_R1HgI_PRHPpWKYpR0NWm9m0Nq2F4kHiH_s24M6eXSRqTIdFA=w700-h760-no?authuser=0" alt></p>
+<p><br><br><br></p>
+<h2 id="取出資料"><a href="#取出資料" class="headerlink" title="# 取出資料"></a># 取出資料</h2><p>使用 PHP 來取出資料<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$dsn = <span class="hljs-string">"mysql:host=127.0.0.1;port=3306;dbname=test;"</span>;</span><br><span class="line">$username = <span class="hljs-string">"root"</span>;</span><br><span class="line">$password = <span class="hljs-string">""</span>;</span><br><span class="line">$dbh = <span class="hljs-keyword">new</span> PDO($dsn, $username, $password);</span><br><span class="line"></span><br><span class="line">$result = $dbh-&gt;query(<span class="hljs-string">"Select * from categories order by parentCategory asc"</span>, PDO::FETCH_OBJ);</span><br><span class="line"></span><br><span class="line">$categories = [];</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span>($result <span class="hljs-keyword">as</span> $row) &#123;</span><br><span class="line">    $categories[$row-&gt;parentCategory][] = $row;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br><br><br></p>
+<h2 id="使用-recursion-呈現階層關係"><a href="#使用-recursion-呈現階層關係" class="headerlink" title="# 使用 recursion 呈現階層關係"></a># 使用 recursion 呈現階層關係</h2><p>使用 recursion, 我們只需帶入 root category, 便會把下面的所有 category 都顯示出來<br>loop 會 echo 每一個 parentCategory 底下的 category, 而隨後的 recursion 會檢查這些 category 是否底下還有 child categories<br><code>if(isset($categories[$n]))</code> 是此 recursion 的終點判斷, 我們通過上面取得的 $categories 為 array with parentCategoryId as index, 所以要是 <code>isset($categories[$n])</code> 為 false, 表示該 category 底下沒有 child category<br>此 recursion 屬於之前介紹過的 <a href>tail recursion</a><br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">showCategoryTree</span><span class="hljs-params">(Array $categories, int $n)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($categories[$n])) &#123; </span><br><span class="line"></span><br><span class="line">      <span class="hljs-keyword">foreach</span>($categories[$n] <span class="hljs-keyword">as</span> $category) &#123;        </span><br><span class="line">          <span class="hljs-keyword">echo</span> str_repeat(<span class="hljs-string">"-"</span>, $n).<span class="hljs-string">""</span>.$category-&gt;categoryName.<span class="hljs-string">"\n"</span>; </span><br><span class="line">          showCategoryTree($categories, $category-&gt;id);          </span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">showCategoryTree($categories, <span class="hljs-number">0</span>);</span><br></pre></td></tr></table></figure></p>
+<p>輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">First</span><br><span class="line">-Second</span><br><span class="line">--Tenth</span><br><span class="line">-Third</span><br><span class="line">---Fourth</span><br><span class="line">----Fifth</span><br><span class="line">-----Sixth</span><br><span class="line">------Seventh</span><br><span class="line">-------Eighth</span><br><span class="line">-Ninth</span><br></pre></td></tr></table></figure></p>
+<p><code>-</code> 的數量表示其 parent category, 例如 <code>---Fourth</code> 位於 <code>Third</code> category 之下</p>
+<p><br><br><br></p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="# 結語"></a># 結語</h2><p>本篇到此結束啦, 我們下次見！</p>
+
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh-tw/different-types-of-recursions/" itemprop="url">Recursion (遞迴) - 不同類型的遞迴</a>
         
     </h1>
@@ -523,46 +580,6 @@
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>出來混總是要還的! 身為一個非本科的工程師, 就是自己找時間把自己缺的的都補上！<br>實作沒什麼好交代的, 直接看範例看註解吧！</p>
         <p class="article-more-link">
             <a href="/zh-tw/php-selection-sort-implementation/#more">點擊閱讀</a>
-        </p>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh-tw/php-insertion-sort-implementation/" itemprop="url">Insertion Sort (插入排序法) In PHP</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2020-11-17T12:19:41.000Z" itemprop="datePublished">11月 17 2020</time>
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/zh-tw/categories/Data-Structure-and-Algorithm/">Data Structure and Algorithm</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            5 分钟 讀完 (大概 748 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>出來混總是要還的! 身為一個非本科的工程師, 就是自己找時間把自己缺的的都補上！<br>實作沒什麼好交代的, 直接看範例看註解吧！</p>
-        <p class="article-more-link">
-            <a href="/zh-tw/php-insertion-sort-implementation/#more">點擊閱讀</a>
         </p>
     
     </div>
