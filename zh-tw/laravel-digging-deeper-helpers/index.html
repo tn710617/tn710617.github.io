@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>Laravel - Digging Deeper - Helpers - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Documentation,Laravel Helpers">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Helpers">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-helpers/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2021-01-10T03:27:05.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Digging Deeper - Helpers">
+<meta name="twitter:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-digging-deeper-helpers/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Documentation,Laravel Helpers">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Helpers">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-helpers/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2021-01-10T03:27:05.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Digging Deeper - Helpers">
+<meta name="twitter:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Method-Listing">2&nbsp;&nbsp;<b># Method Listing</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arrays-amp-Objects">2.1&nbsp;&nbsp;# Arrays &amp;amp;amp; Objects</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-accessible">2.1.1&nbsp;&nbsp;# Arr::accessible()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-add">2.1.2&nbsp;&nbsp;# Arr::add()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-collapse">2.1.3&nbsp;&nbsp;# Arr::collapse()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-crossJoin">2.1.4&nbsp;&nbsp;# Arr::crossJoin()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-divide">2.1.5&nbsp;&nbsp;# Arr::divide()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-dot">2.1.6&nbsp;&nbsp;# Arr::dot()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-except">2.1.7&nbsp;&nbsp;# Arr::except()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-exists">2.1.8&nbsp;&nbsp;# Arr::exists()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Array-first">2.1.9&nbsp;&nbsp;# Array::first()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-flatten">2.1.10&nbsp;&nbsp;# Arr::flatten()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-forget">2.1.11&nbsp;&nbsp;# Arr::forget()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-get">2.1.12&nbsp;&nbsp;# Arr::get()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-has">2.1.13&nbsp;&nbsp;# Arr::has()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-hasAny">2.1.14&nbsp;&nbsp;# Arr::hasAny()</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arr-isAssoc">2.1.15&nbsp;&nbsp;# Arr::isAssoc()</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-digging-deeper-helpers/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-digging-deeper-helpers/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Digging Deeper - Helpers
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-01-09T08:14:56.000Z" itemprop="datePublished">1月 9 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            7 分钟 讀完 (大概 1111 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h2 id="Method-Listing"><a href="#Method-Listing" class="headerlink" title="# Method Listing"></a># Method Listing</h2><h3 id="Arrays-amp-Objects"><a href="#Arrays-amp-Objects" class="headerlink" title="# Arrays &amp; Objects"></a># Arrays &amp; Objects</h3><h4 id="Arr-accessible"><a href="#Arr-accessible" class="headerlink" title="# Arr::accessible()"></a># Arr::accessible()</h4><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Collection</span>;</span><br><span class="line"></span><br><span class="line">$isAccessible = Arr::accessible([<span class="hljs-string">'a'</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">'b'</span> =&gt; <span class="hljs-number">2</span>]);</span><br><span class="line"></span><br><span class="line">$isAccessible = Arr::accessible(<span class="hljs-keyword">new</span> Collection);</span><br><span class="line"></span><br><span class="line">$isAccessible = Arr::accessible(<span class="hljs-string">'abc'</span>);</span><br><span class="line"></span><br><span class="line">$isAccessible = Arr::accessible(<span class="hljs-keyword">new</span> stdClass);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>判斷 parameter 是否 array accessible</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// false</span></span><br><span class="line"><span class="hljs-comment">// false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-add"><a href="#Arr-add" class="headerlink" title="# Arr::add()"></a># Arr::add()</h4><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = Arr::add([<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>], <span class="hljs-string">'price'</span>, <span class="hljs-number">100</span>);</span><br><span class="line"></span><br><span class="line">$array = Arr::add([<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>, <span class="hljs-string">'price'</span> =&gt; <span class="hljs-keyword">null</span>], <span class="hljs-string">'price'</span>, <span class="hljs-number">100</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將 key / value 加到 arg1 array<br>如果 given key 不存在於該 array, 或存在但其 value 為 null</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// ['name' =&gt; 'Desk', 'price' =&gt; 100]</span></span><br><span class="line"><span class="hljs-comment">// ['name' =&gt; 'Desk', 'price' =&gt; 100]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-collapse"><a href="#Arr-collapse" class="headerlink" title="# Arr::collapse()"></a># Arr::collapse()</h4><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = Arr::collapse([[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>], [<span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>]]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將含有多個 arrays 的 array 變成一個 single array</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// [1, 2, 3, 4, 5, 6, 7, 8, 9]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-crossJoin"><a href="#Arr-crossJoin" class="headerlink" title="# Arr::crossJoin()"></a># Arr::crossJoin()</h4><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$matrix = Arr::crossJoin([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], [<span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>]);</span><br><span class="line"></span><br><span class="line">$matrix = Arr::crossJoin([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], [<span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>], [<span class="hljs-string">'I'</span>, <span class="hljs-string">'II'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>cross join 帶入的 array</p>
+</li>
+<li><p><strong>Output</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">    [</span></span><br><span class="line"><span class="hljs-comment">        [1, 'a'],</span></span><br><span class="line"><span class="hljs-comment">        [1, 'b'],</span></span><br><span class="line"><span class="hljs-comment">        [2, 'a'],</span></span><br><span class="line"><span class="hljs-comment">        [2, 'b'],</span></span><br><span class="line"><span class="hljs-comment">    ]</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment">    [</span></span><br><span class="line"><span class="hljs-comment">        [1, 'a', 'I'],</span></span><br><span class="line"><span class="hljs-comment">        [1, 'a', 'II'],</span></span><br><span class="line"><span class="hljs-comment">        [1, 'b', 'I'],</span></span><br><span class="line"><span class="hljs-comment">        [1, 'b', 'II'],</span></span><br><span class="line"><span class="hljs-comment">        [2, 'a', 'I'],</span></span><br><span class="line"><span class="hljs-comment">        [2, 'a', 'II'],</span></span><br><span class="line"><span class="hljs-comment">        [2, 'b', 'I'],</span></span><br><span class="line"><span class="hljs-comment">        [2, 'b', 'II'],</span></span><br><span class="line"><span class="hljs-comment">    ]</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-divide"><a href="#Arr-divide" class="headerlink" title="# Arr::divide()"></a># Arr::divide()</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">[$keys, $values] = Arr::divide([<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>返回兩個 arrays, 一個裝 key, 一個裝 value</p>
+</li>
+<li><p><strong>Output</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// $keys: ['name']</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// $values: ['Desk']</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-dot"><a href="#Arr-dot" class="headerlink" title="# Arr::dot()"></a># Arr::dot()</h4><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'products'</span> =&gt; [<span class="hljs-string">'desk'</span> =&gt; [<span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>]]];</span><br><span class="line"></span><br><span class="line">$flattened = Arr::dot($array);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將一個 multi-dimensional array 變成一個 single array, 並使用 <code>. (英文句點符號)</code> 來表示 depth</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// ['products.desk.price' =&gt; 100]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-except"><a href="#Arr-except" class="headerlink" title="# Arr::except()"></a># Arr::except()</h4><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>, <span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>];</span><br><span class="line"></span><br><span class="line">$filtered = Arr::except($array, [<span class="hljs-string">'price'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將指定於 arg2 的 key 從 arg1 array 中移除</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// ['name' =&gt; 'Desk']</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-exists"><a href="#Arr-exists" class="headerlink" title="# Arr::exists()"></a># Arr::exists()</h4><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'John Doe'</span>, <span class="hljs-string">'age'</span> =&gt; <span class="hljs-number">17</span>];</span><br><span class="line"></span><br><span class="line">$exists = Arr::exists($array, <span class="hljs-string">'name'</span>);</span><br><span class="line"></span><br><span class="line">$exists = Arr::exists($array, <span class="hljs-string">'salary'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>判斷 arg2 的 key 是否存在於 arg1 array</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Array-first"><a href="#Array-first" class="headerlink" title="# Array::first()"></a># Array::first()</h4><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-number">100</span>, <span class="hljs-number">200</span>, <span class="hljs-number">300</span>];</span><br><span class="line"></span><br><span class="line">$first = Arr::first($array, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($value, $key)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $value &gt;= <span class="hljs-number">150</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>回傳 arg1 array 中第一個符合 arg2 closure 中邏輯的輸出</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 200</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$first = Arr::first($array, $callback, $default);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>回傳 arg1 array 中第一個符合 arg2 closure 中邏輯的輸出, 如果 array 中沒有出現符合的 item, 則 return arg3 $default</p>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-flatten"><a href="#Arr-flatten" class="headerlink" title="# Arr::flatten()"></a># Arr::flatten()</h4><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Joe'</span>, <span class="hljs-string">'languages'</span> =&gt; [<span class="hljs-string">'PHP'</span>, <span class="hljs-string">'Ruby'</span>]];</span><br><span class="line"></span><br><span class="line">$flattened = Arr::flatten($array);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將一個 multi-dimensional array 變為一個 single array</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// ['Joe', 'PHP', 'Ruby']</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-forget"><a href="#Arr-forget" class="headerlink" title="# Arr::forget()"></a># Arr::forget()</h4><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'products'</span> =&gt; [<span class="hljs-string">'desk'</span> =&gt; [<span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>]]];</span><br><span class="line"></span><br><span class="line">Arr::forget($array, <span class="hljs-string">'products.desk'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>將 arg2 指定 key 從 arg1 $array 中移除<br>可使用 <code>. (英文句點符號)</code> 來表示 depth</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// ['products' =&gt; []]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-get"><a href="#Arr-get" class="headerlink" title="# Arr::get()"></a># Arr::get()</h4><h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'products'</span> =&gt; [<span class="hljs-string">'desk'</span> =&gt; [<span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>]]];</span><br><span class="line"></span><br><span class="line">$price = Arr::get($array, <span class="hljs-string">'products.desk.price'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>從 arg1 $array 中取得 arg2 指定 key 的 value<br>可使用 <code>. (英文句點符號)</code> 來表示 depth</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 100</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$discount = Arr::get($array, <span class="hljs-string">'products.desk.discount'</span>, <span class="hljs-number">0</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>從 arg1 $array 中取得 arg2 指定 key 的 value<br>可使用 <code>. (英文句點符號)</code> 來表示 depth<br>如果沒有指定 key, 可指定 default 值</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 0</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-has"><a href="#Arr-has" class="headerlink" title="# Arr::has()"></a># Arr::has()</h4><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'product'</span> =&gt; [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>, <span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>]];</span><br><span class="line"></span><br><span class="line">$contains = Arr::has($array, <span class="hljs-string">'product.name'</span>);</span><br><span class="line"></span><br><span class="line">$contains = Arr::has($array, [<span class="hljs-string">'product.price'</span>, <span class="hljs-string">'product.discount'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>判斷 arg2 指定 key 是否存在於 arg1 $array<br>可使用 <code>. (英文句點符號)</code> 來表示 depth</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-hasAny"><a href="#Arr-hasAny" class="headerlink" title="# Arr::hasAny()"></a># Arr::hasAny()</h4><h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$array = [<span class="hljs-string">'product'</span> =&gt; [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>, <span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>]];</span><br><span class="line"></span><br><span class="line">$contains = Arr::hasAny($array, <span class="hljs-string">'product.name'</span>);</span><br><span class="line"></span><br><span class="line">$contains = Arr::hasAny($array, [<span class="hljs-string">'product.name'</span>, <span class="hljs-string">'product.discount'</span>]);</span><br><span class="line"></span><br><span class="line">$contains = Arr::hasAny($array, [<span class="hljs-string">'category'</span>, <span class="hljs-string">'product.discount'</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>判斷 arg2 指定的的多個 item 是否有任何一個存在於 arg1 $array</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br></p>
+<h4 id="Arr-isAssoc"><a href="#Arr-isAssoc" class="headerlink" title="# Arr::isAssoc()"></a># Arr::isAssoc()</h4><h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Arr</span>;</span><br><span class="line"></span><br><span class="line">$isAssoc = Arr::isAssoc([<span class="hljs-string">'product'</span> =&gt; [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Desk'</span>, <span class="hljs-string">'price'</span> =&gt; <span class="hljs-number">100</span>]]);</span><br><span class="line"></span><br><span class="line">$isAssoc = Arr::isAssoc([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>判斷帶入的 array 是否為一個 associative array<br>如果沒有從 0 開始的 sequential number 作為 key 的 array 都視為 associative array</p>
+</li>
+<li><strong>Output</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Helpers/">#Laravel Helpers</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-digging-deeper-file-storage/">Laravel - Digging Deeper - File Storage (官方文件原子化翻譯文件)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-digging-deeper-helpers/';
+        this.page.identifier = 'zh-tw/laravel-digging-deeper-helpers/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2021 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            
+                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                           
+                           <i class="fab fa-github"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                           
+                           <i class="fab fa-medium"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                           
+                           <i class="fab fa-linkedin"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                           
+                           <i class="fab fa-facebook"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                           
+                           <i class="far fa-address-card"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                           
+                           <i class="far fa-envelope"></i>
+                           
+                       </a>
+                          
+                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                           
+                           <i class="fab fa-skype"></i>
+                           
+                       </a>
+                          
+                       
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
