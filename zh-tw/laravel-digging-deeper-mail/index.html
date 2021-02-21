@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Mail,Laravel Documentation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-mail/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2021-02-11T05:10:10.308Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)">
+<meta name="twitter:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-digging-deeper-mail/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Mail,Laravel Documentation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-mail/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2021-02-11T05:10:10.308Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)">
+<meta name="twitter:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Driver-Transport-Prerequisites">2&nbsp;&nbsp;<b># Driver / Transport Prerequisites</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Mailgun-Driver">2.1.1&nbsp;&nbsp;# Mailgun Driver</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Postmark-Driver">2.1.2&nbsp;&nbsp;# Postmark Driver</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#SES-Driver">2.1.3&nbsp;&nbsp;# SES Driver</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Writing-Mailables">3&nbsp;&nbsp;<b># Writing Mailables</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuring-The-Sender">3.1&nbsp;&nbsp;# Configuring The Sender</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-The-from-Method">3.1.1&nbsp;&nbsp;# Using The from Method</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-A-Global-from-address">3.1.2&nbsp;&nbsp;# Using A Global from address</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuring-The-View">3.2&nbsp;&nbsp;# Configuring The View</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Plain-Text-Emails">3.2.1&nbsp;&nbsp;# Plain Text Emails</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#View-Data">3.3&nbsp;&nbsp;# View Data</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Via-Public-Properties">3.3.1&nbsp;&nbsp;# Via Public Properties</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Via-The-with-Method">3.3.2&nbsp;&nbsp;# Via The with Method:</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Attachments">3.4&nbsp;&nbsp;# Attachments</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Attaching-Files-from-Disk">3.4.1&nbsp;&nbsp;# Attaching Files from Disk</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Raw-Data-Attachment">3.4.2&nbsp;&nbsp;# Raw Data Attachment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Inline-Attachments">3.4.3&nbsp;&nbsp;# Inline Attachments</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Embedding-Raw-Data-Attachments">3.4.4&nbsp;&nbsp;# Embedding Raw Data Attachments</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-SwiftMailer-Message">3.5&nbsp;&nbsp;# Customizing The SwiftMailer Message</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Markdown-Mailables">4&nbsp;&nbsp;<b># Markdown Mailables</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Generating-Markdown-Mailables">4.1&nbsp;&nbsp;# Generating Markdown Mailables</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Writing-Markdown-Messages">4.2&nbsp;&nbsp;# Writing Markdown Messages</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Button-Component">4.2.1&nbsp;&nbsp;# Button Component</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Panel-Component">4.2.2&nbsp;&nbsp;# Panel Component</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Table-Component">4.2.3&nbsp;&nbsp;# Table Component</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Components">4.3&nbsp;&nbsp;# Customizing The Components</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-CSS">4.3.1&nbsp;&nbsp;# Customizing The CSS</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Sending-Mail">5&nbsp;&nbsp;<b># Sending Mail</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Looping-Over-Recipients">5.1.1&nbsp;&nbsp;# Looping Over Recipients</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Sending-Mail-Via-A-Specific-Mailer">5.1.2&nbsp;&nbsp;# Sending Mail Via A Specific Mailer</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Queueing-Mail">5.2&nbsp;&nbsp;# Queueing Mail</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Queueing-A-Mail-Message">5.2.1&nbsp;&nbsp;# Queueing A Mail Message</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Delayed-Message-Queueing">5.2.2&nbsp;&nbsp;# Delayed Message Queueing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Pushing-To-Specific-Queues">5.2.3&nbsp;&nbsp;# Pushing To Specific Queues</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Queueing-By-Default">5.2.4&nbsp;&nbsp;# Queueing By Default</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Queued-Mailables-amp-Database-Transaction">5.2.5&nbsp;&nbsp;# Queued Mailables &amp;amp;amp; Database Transaction</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Rendering-Mailables">6&nbsp;&nbsp;<b># Rendering Mailables</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Previewing-Mailables-In-The-Browser">6.1&nbsp;&nbsp;# Previewing Mailables In The Browser</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Localizing-Mailables">7&nbsp;&nbsp;<b># Localizing Mailables</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#User-Preferred-Locales">7.1&nbsp;&nbsp;# User Preferred Locales</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Testing-Mailables">8&nbsp;&nbsp;<b># Testing Mailables</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Mail-amp-Local-Development">9&nbsp;&nbsp;<b># Mail &amp;amp;amp; Local Development</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Events">10&nbsp;&nbsp;<b># Events</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-digging-deeper-mail/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-digging-deeper-mail/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-01-31T04:01:17.000Z" itemprop="datePublished">1月 31 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            19 分钟 讀完 (大概 2855 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<a id="more"></a>
+
+<br>
+<br>
+
+<h2 id="Driver-Transport-Prerequisites"><a href="#Driver-Transport-Prerequisites" class="headerlink" title="# Driver / Transport Prerequisites"></a># Driver / Transport Prerequisites</h2><h4 id="Mailgun-Driver"><a href="#Mailgun-Driver" class="headerlink" title="# Mailgun Driver"></a># Mailgun Driver</h4><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// config/services.php</span></span><br><span class="line"><span class="hljs-string">'mailgun'</span> =&gt; [</span><br><span class="line">    <span class="hljs-string">'domain'</span> =&gt; env(<span class="hljs-string">'MAILGUN_DOMAIN'</span>),</span><br><span class="line">    <span class="hljs-string">'secret'</span> =&gt; env(<span class="hljs-string">'MAILGUN_SECRET'</span>),</span><br><span class="line">    <span class="hljs-string">'endpoint'</span> =&gt; env(<span class="hljs-string">'MAILGUN_ENDPOINT'</span>, <span class="hljs-string">'api.eu.mailgun.net'</span>),</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>設定 mail driver mailgun service, 如果不是使用 United States Mailgun region, 可以自定義在 endpoint</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Postmark-Driver"><a href="#Postmark-Driver" class="headerlink" title="# Postmark Driver"></a># Postmark Driver</h4><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">composer <span class="hljs-keyword">require</span> wildbit/swiftmailer-postmark</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 postmark mail driver 需要安裝的套件</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// config/services.php</span></span><br><span class="line"><span class="hljs-string">'postmark'</span> =&gt; [</span><br><span class="line">    <span class="hljs-string">'token'</span> =&gt; env(<span class="hljs-string">'POSTMARK_TOKEN'</span>),</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>mail driver psotmark 的設定</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// config/mail.php</span></span><br><span class="line"><span class="hljs-string">'postmark'</span> =&gt; [</span><br><span class="line">    <span class="hljs-string">'transport'</span> =&gt; <span class="hljs-string">'postmark'</span>,</span><br><span class="line">    <span class="hljs-string">'message_stream_id'</span> =&gt; env(<span class="hljs-string">'POSTMARK_MESSAGE_STREAM_ID'</span>),</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可自定義 postmark mail driver 的 message_stream</p>
+</li>
+</ul>
+<br>
+
+<h4 id="SES-Driver"><a href="#SES-Driver" class="headerlink" title="# SES Driver"></a># SES Driver</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer require aws/aws-sdk-php</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>要在 Laravel 使用 AWS 的服務, 如 s3, SES, SQS 時, 需安裝 AWS SDK</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// config/services.php</span></span><br><span class="line"><span class="hljs-string">'ses'</span> =&gt; [</span><br><span class="line">    <span class="hljs-string">'key'</span> =&gt; env(<span class="hljs-string">'AWS_ACCESS_KEY_ID'</span>),</span><br><span class="line">    <span class="hljs-string">'secret'</span> =&gt; env(<span class="hljs-string">'AWS_SECRET_ACCESS_KEY'</span>),</span><br><span class="line">    <span class="hljs-string">'region'</span> =&gt; env(<span class="hljs-string">'AWS_DEFAULT_REGION'</span>, <span class="hljs-string">'us-east-1'</span>),</span><br><span class="line">    <span class="hljs-string">'options'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'ConfigurationSetName'</span> =&gt; <span class="hljs-string">'MyConfigurationSet'</span>,</span><br><span class="line">        <span class="hljs-string">'Tags'</span> =&gt; [</span><br><span class="line">            [<span class="hljs-string">'Name'</span> =&gt; <span class="hljs-string">'foo'</span>, <span class="hljs-string">'Value'</span> =&gt; <span class="hljs-string">'bar'</span>],</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>除了 AWS 預設的 key, secret, region 之外, 還可設置 additional 的 setting</p>
+</li>
+</ul>
+<br>
+  
+## # Generating Mailables
+###### **以下的 Laravel example code 的意思是？**
+- **Example**:
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:mail OrderShipped</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Answer</strong>:<br>建立一個 mailable class, 會放在 app/Mail</li>
+</ul>
+<br>
+
+<h2 id="Writing-Mailables"><a href="#Writing-Mailables" class="headerlink" title="# Writing Mailables"></a># Writing Mailables</h2><h3 id="Configuring-The-Sender"><a href="#Configuring-The-Sender" class="headerlink" title="# Configuring The Sender"></a># Configuring The Sender</h3><h4 id="Using-The-from-Method"><a href="#Using-The-from-Method" class="headerlink" title="# Using The from Method"></a># Using The from Method</h4><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// in mailable class</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;from(<span class="hljs-string">'example@example.com'</span>)</span><br><span class="line">                -&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build 中, 可以使用 from 來指定由的 from </p>
+</li>
+</ul>
+<br>
+
+<h4 id="Using-A-Global-from-address"><a href="#Using-A-Global-from-address" class="headerlink" title="# Using A Global from address"></a># Using A Global from address</h4><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// config/mail.php</span></span><br><span class="line"><span class="hljs-string">'from'</span> =&gt; [<span class="hljs-string">'address'</span> =&gt; <span class="hljs-string">'example@example.com'</span>, <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'App Name'</span>],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可在 config/mail.php 定義 global 的 from, 即寄件人信箱, 若需要 ad hoc 可在 mailable class 的 build method 中使用 from() 定義</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// config/mail.php</span></span><br><span class="line"><span class="hljs-string">'reply_to'</span> =&gt; [<span class="hljs-string">'address'</span> =&gt; <span class="hljs-string">'example@example.com'</span>, <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'App Name'</span>],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>定義 reply_to address<br>當收到 mail 時, 預設按下 reply 會寄給 FROM address, 若要指定一個跟 FROM address 不同的 reply address, 可在此定義</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Configuring-The-View"><a href="#Configuring-The-View" class="headerlink" title="# Configuring The View"></a># Configuring The View</h3><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build method 內, 使用 view() 來指定渲染該 mail 的 template</p>
+</li>
+</ul>
+<h4 id="Plain-Text-Emails"><a href="#Plain-Text-Emails" class="headerlink" title="# Plain Text Emails"></a># Plain Text Emails</h4><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>)</span><br><span class="line">                -&gt;text(<span class="hljs-string">'emails.orders.shipped_plain'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可以同時定義 HTML 以及 plain text version, 當 user 切換為 plain text version 時, 就會顯示該版本</p>
+</li>
+</ul>
+<br>
+
+<h3 id="View-Data"><a href="#View-Data" class="headerlink" title="# View Data"></a># View Data</h3><h4 id="Via-Public-Properties"><a href="#Via-Public-Properties" class="headerlink" title="# Via Public Properties"></a># Via Public Properties</h4><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Mail</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrderShipped</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mailable</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">use</span> <span class="hljs-title">Queueable</span>, <span class="hljs-title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> $order;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(Order $order)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;order = $order;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// on template</span></span><br><span class="line">&lt;div&gt;</span><br><span class="line">    Price: &#123;&#123; $order-&gt;price &#125;&#125;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當使用 mailable class 時, 可在 constructor 內定義 property, 此 property 可在 template 中被調用</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Via-The-with-Method"><a href="#Via-The-with-Method" class="headerlink" title="# Via The with Method:"></a># Via The with Method:</h4><h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrderShipped</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mailable</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">use</span> <span class="hljs-title">Queueable</span>, <span class="hljs-title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">protected</span> $order;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">(Order $order)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;order = $order;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>)</span><br><span class="line">                    -&gt;with([</span><br><span class="line">                        <span class="hljs-string">'orderName'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;order-&gt;name,</span><br><span class="line">                        <span class="hljs-string">'orderPrice'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;order-&gt;price,</span><br><span class="line">                    ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// template file</span></span><br><span class="line">&lt;div&gt;</span><br><span class="line">    Price: &#123;&#123; $orderPrice &#125;&#125;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>如果 mailable 中的 property 使用 protected 或 private 的話, 則必須使用 with() 將 data pass 過去</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Attachments"><a href="#Attachments" class="headerlink" title="# Attachments"></a># Attachments</h3><h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>)</span><br><span class="line">                -&gt;attach(<span class="hljs-string">'/path/to/file'</span>, [</span><br><span class="line">                    <span class="hljs-string">'as'</span> =&gt; <span class="hljs-string">'name.pdf'</span>,</span><br><span class="line">                    <span class="hljs-string">'mime'</span> =&gt; <span class="hljs-string">'application/pdf'</span>,</span><br><span class="line">                ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build method 中, 可以使用 attach() 定義 attachment, arg2 還可以定義檔名以及 mine type</p>
+</li>
+</ul>
+<h4 id="Attaching-Files-from-Disk"><a href="#Attaching-Files-from-Disk" class="headerlink" title="# Attaching Files from Disk"></a># Attaching Files from Disk</h4><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">   <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>)</span><br><span class="line">               -&gt;attachFromStorage(<span class="hljs-string">'/path/to/file'</span>, <span class="hljs-string">'name.pdf'</span>, [</span><br><span class="line">                   <span class="hljs-string">'mime'</span> =&gt; <span class="hljs-string">'application/pdf'</span></span><br><span class="line">               ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build method 中, 使用 attachFromStorage, attach filesystem disk 的 file 到 email, arg2 可指定檔名, arg3 可指定 mine type</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">   <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>)</span><br><span class="line">               -&gt;attachFromStorageDisk(<span class="hljs-string">'s3'</span>, <span class="hljs-string">'/path/to/file'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build method 中, 使用 attachFromStorageDisk, attach filesystem disk 的 file 到 email, arg1 可指定要使用哪一個 disk</p>
+</li>
+</ul>
+<h4 id="Raw-Data-Attachment"><a href="#Raw-Data-Attachment" class="headerlink" title="# Raw Data Attachment"></a># Raw Data Attachment</h4><h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>)</span><br><span class="line">                -&gt;attachData(<span class="hljs-keyword">$this</span>-&gt;pdf, <span class="hljs-string">'name.pdf'</span>, [</span><br><span class="line">                    <span class="hljs-string">'mime'</span> =&gt; <span class="hljs-string">'application/pdf'</span>,</span><br><span class="line">                ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>attach raw data, 通常是 attach 當次 request 產生的 pdf, 在 memory 中, 並沒有存到 disk 中, arg2 可指定檔名 arg3 可指定 mine type</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Inline-Attachments"><a href="#Inline-Attachments" class="headerlink" title="# Inline Attachments"></a># Inline Attachments</h4><h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">&lt;body&gt;</span><br><span class="line">    Here is an image:</span><br><span class="line"></span><br><span class="line">    &lt;img src=<span class="hljs-string">"&#123;&#123; $message-&gt;embed($pathToImage) &#125;&#125;"</span>&gt;</span><br><span class="line">&lt;/body&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>email template 中, 可以使用 $message variable 的 embed method 來實現 inline attachment</p>
+<br>
+
+</li>
+</ul>
+<h4 id="Embedding-Raw-Data-Attachments"><a href="#Embedding-Raw-Data-Attachments" class="headerlink" title="# Embedding Raw Data Attachments"></a># Embedding Raw Data Attachments</h4><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">&lt;body&gt;</span><br><span class="line">    Here is an image from raw data:</span><br><span class="line"></span><br><span class="line">    &lt;img src=<span class="hljs-string">"&#123;&#123; $message-&gt;embedData($data, 'example-image.jpg') &#125;&#125;"</span>&gt;</span><br><span class="line">&lt;/body&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mail template 中, 如果 memory 中已有檔案, 可以使用 embedData method 來實現 inline attachment</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Customizing-The-SwiftMailer-Message"><a href="#Customizing-The-SwiftMailer-Message" class="headerlink" title="# Customizing The SwiftMailer Message"></a># Customizing The SwiftMailer Message</h3><h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;view(<span class="hljs-string">'emails.orders.shipped'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;withSwiftMessage(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($message)</span> </span>&#123;</span><br><span class="line">        $message-&gt;getHeaders()-&gt;addTextHeader(</span><br><span class="line">            <span class="hljs-string">'Custom-Header'</span>, <span class="hljs-string">'Header Value'</span></span><br><span class="line">        );</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build method 中, 使用 withSwiftMessage(), 可註冊一個 closure, 會跟著 SwiftMailer message instance 被觸發, 可在送出 mail 前做一些客製化</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Markdown-Mailables"><a href="#Markdown-Mailables" class="headerlink" title="# Markdown Mailables"></a># Markdown Mailables</h2><h3 id="Generating-Markdown-Mailables"><a href="#Generating-Markdown-Mailables" class="headerlink" title="# Generating Markdown Mailables"></a># Generating Markdown Mailables</h3><h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan make:mail OrderShipped --markdown=emails.orders.shipped</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>建立一個 mailable class, 以及相對應的 markdown template</p>
+<h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6></li>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">build</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;from(<span class="hljs-string">'example@example.com'</span>)</span><br><span class="line">                -&gt;markdown(<span class="hljs-string">'emails.orders.shipped'</span>, [</span><br><span class="line">                    <span class="hljs-string">'url'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;orderUrl,</span><br><span class="line">                ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 mailable class 的 build method 中, 使用 markdown(), arg1 指定 markdown template, arg2 可帶入 array, 該 array data 會在 template 中可被以變數的方式使用</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Writing-Markdown-Messages"><a href="#Writing-Markdown-Messages" class="headerlink" title="# Writing Markdown Messages"></a># Writing Markdown Messages</h3><h6 id="以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？"><a href="#以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？" class="headerlink" title="以下的 Laravel Mailable Markdown Template example code 的意思是？"></a><strong>以下的 Laravel Mailable Markdown Template example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@component(<span class="hljs-string">'mail::message'</span>)</span><br><span class="line"><span class="hljs-comment"># Order Shipped</span></span><br><span class="line"></span><br><span class="line">Your order has been shipped!</span><br><span class="line"></span><br><span class="line">@component(<span class="hljs-string">'mail::button'</span>, [<span class="hljs-string">'url'</span> =&gt; $url])</span><br><span class="line">View Order</span><br><span class="line">@endcomponent</span><br><span class="line"></span><br><span class="line">Thanks,&lt;br&gt;</span><br><span class="line">&#123;&#123; config(<span class="hljs-string">'app.name'</span>) &#125;&#125;</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>Laravel 的 Mailable Markdown Template 結合了 Blade 的 component 以及 Markdown 語法, 可使用 Laravel 預設的 email UI component</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Button-Component"><a href="#Button-Component" class="headerlink" title="# Button Component"></a># Button Component</h4><h6 id="以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？-1"><a href="#以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel Mailable Markdown Template example code 的意思是？"></a><strong>以下的 Laravel Mailable Markdown Template example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@component(<span class="hljs-string">'mail::button'</span>, [<span class="hljs-string">'url'</span> =&gt; $url, <span class="hljs-string">'color'</span> =&gt; <span class="hljs-string">'success'</span>])</span><br><span class="line">View Order</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Laravel 內建的 email UI component, 為一個 button, 可指定 url 以及 color, color 又可指定 <strong>primary</strong>, <strong>success</strong>, 以及 <strong>error</strong></p>
+</li>
+</ul>
+<br>
+
+<h4 id="Panel-Component"><a href="#Panel-Component" class="headerlink" title="# Panel Component"></a># Panel Component</h4><h6 id="以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？-2"><a href="#以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel Mailable Markdown Template example code 的意思是？"></a><strong>以下的 Laravel Mailable Markdown Template example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@component(<span class="hljs-string">'mail::panel'</span>)</span><br><span class="line">This is the panel content.</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Laravel 內建的 email UI component, panel 的效果會讓該區塊的背景顏色稍為不同, 可以達到引起注意力的效果</p>
+<br>
+
+</li>
+</ul>
+<h4 id="Table-Component"><a href="#Table-Component" class="headerlink" title="# Table Component"></a># Table Component</h4><h6 id="以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？-3"><a href="#以下的-Laravel-Mailable-Markdown-Template-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel Mailable Markdown Template example code 的意思是？"></a><strong>以下的 Laravel Mailable Markdown Template example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@component(<span class="hljs-string">'mail::table'</span>)</span><br><span class="line">| Laravel       | Table         | Example  |</span><br><span class="line">| ------------- |:-------------:| --------:|</span><br><span class="line">| Col <span class="hljs-number">2</span> is      | Centered      | $<span class="hljs-number">10</span>      |</span><br><span class="line">| Col <span class="hljs-number">3</span> is      | Right-Aligned | $<span class="hljs-number">20</span>      |</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Laravel 內建的 email UI component, 就是 Markdown table 的效果</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Customizing-The-Components"><a href="#Customizing-The-Components" class="headerlink" title="# Customizing The Components"></a># Customizing The Components</h3><h6 id="以下的-Laravel-example-commadn-的意思是？"><a href="#以下的-Laravel-example-commadn-的意思是？" class="headerlink" title="以下的 Laravel example commadn 的意思是？"></a><strong>以下的 Laravel example commadn 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan vendor:publish --tag=laravel-mail</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可以匯出 Laravel 內建的 mail template, 匯出後可依照自己的需求去做進一步客製化, 會匯出到 <code>resources/views/vendor/mail</code> 資料夾</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Customizing-The-CSS"><a href="#Customizing-The-CSS" class="headerlink" title="# Customizing The CSS"></a># Customizing The CSS</h4><h6 id="Laravel-中-如果我要客製化-Markdown-template-的-CSS-該怎麼做？"><a href="#Laravel-中-如果我要客製化-Markdown-template-的-CSS-該怎麼做？" class="headerlink" title="Laravel 中, 如果我要客製化 Markdown template 的 CSS, 該怎麼做？"></a><strong>Laravel 中, 如果我要客製化 Markdown template 的 CSS, 該怎麼做？</strong></h6><ol>
+<li>在 export components 後, 修改 <code>resources/views/vendor/mail/html/themes</code> 資料夾中的 default.css</li>
+<li>在 <code>resources/views/vendor/mail/html/themes</code> 資料夾中建立一個新的 CSS file, 並在 <code>config/mail.php</code> 中修改 theme 要吃的檔案</li>
+<li>若要針對單一 mailable class 修改, 可在 mailable class 中的 <code>$theme</code> property 中, 指定要吃的 theme css file</li>
+</ol>
+<br>
+
+<h2 id="Sending-Mail"><a href="#Sending-Mail" class="headerlink" title="# Sending Mail"></a># Sending Mail</h2><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrderShipmentController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span><span class="hljs-params">(Request $request)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $order = Order::findOrFail($request-&gt;order_id);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// Ship the order...</span></span><br><span class="line"></span><br><span class="line">        Mail::to($request-&gt;user())-&gt;send(<span class="hljs-keyword">new</span> OrderShipped($order));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Mail facade 的 to(), 指定收件人, 會自動到該 User model 尋找 name column 以及 email column, 然後再指定 mailable class</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::to($request-&gt;user())</span><br><span class="line">    -&gt;cc($moreUsers)</span><br><span class="line">    -&gt;bcc($evenMoreUsers)</span><br><span class="line">    -&gt;send(<span class="hljs-keyword">new</span> OrderShipped($order));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>也可使用 cc (Carbon Copy) 以及 bcc (Blind Carbon Copy) method 來寄信</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Looping-Over-Recipients"><a href="#Looping-Over-Recipients" class="headerlink" title="# Looping Over Recipients"></a># Looping Over Recipients</h4><h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">foreach</span> ([<span class="hljs-string">'taylor@example.com'</span>, <span class="hljs-string">'dries@example.com'</span>] <span class="hljs-keyword">as</span> $recipient) &#123;</span><br><span class="line">    Mail::to($recipient)-&gt;send(<span class="hljs-keyword">new</span> OrderShipped($order));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>有時會需要使用 loop 來將同一個 mailable class 寄給很多收件人, 這時務必在每一個 iteration 中都要使用 new Mailable Instance, 否則 to() 會將 email append 到 mailable instance, 這樣就會變成每一個 iteration 都會寄給之前的所有收件人</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Sending-Mail-Via-A-Specific-Mailer"><a href="#Sending-Mail-Via-A-Specific-Mailer" class="headerlink" title="# Sending Mail Via A Specific Mailer"></a># Sending Mail Via A Specific Mailer</h4><h6 id="以下的-Laravel-example-code-的意思是？-24"><a href="#以下的-Laravel-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::mailer(<span class="hljs-string">'postmark'</span>)</span><br><span class="line">        -&gt;to($request-&gt;user())</span><br><span class="line">        -&gt;send(<span class="hljs-keyword">new</span> OrderShipped($order));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>Laravel 預設會使用 config/mail.php 中的 default mailer 來寄信, 也可使用 mailer() 來特別指定</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Queueing-Mail"><a href="#Queueing-Mail" class="headerlink" title="# Queueing Mail"></a># Queueing Mail</h3><h4 id="Queueing-A-Mail-Message"><a href="#Queueing-A-Mail-Message" class="headerlink" title="# Queueing A Mail Message"></a># Queueing A Mail Message</h4><h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::to($request-&gt;user())</span><br><span class="line">    -&gt;cc($moreUsers)</span><br><span class="line">    -&gt;bcc($evenMoreUsers)</span><br><span class="line">    -&gt;queue(<span class="hljs-keyword">new</span> OrderShipped($order));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 queue 來發送 mail</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Delayed-Message-Queueing"><a href="#Delayed-Message-Queueing" class="headerlink" title="# Delayed Message Queueing"></a># Delayed Message Queueing</h4><h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::to($request-&gt;user())</span><br><span class="line">    -&gt;cc($moreUsers)</span><br><span class="line">    -&gt;bcc($evenMoreUsers)</span><br><span class="line">    -&gt;later(now()-&gt;addMinutes(<span class="hljs-number">10</span>), <span class="hljs-keyword">new</span> OrderShipped($order));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 later(), 可以發送 delayed queue message</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Pushing-To-Specific-Queues"><a href="#Pushing-To-Specific-Queues" class="headerlink" title="# Pushing To Specific Queues"></a># Pushing To Specific Queues</h4><h6 id="以下的-Laravel-example-code-的意思是？-27"><a href="#以下的-Laravel-example-code-的意思是？-27" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$message = (<span class="hljs-keyword">new</span> OrderShipped($order))</span><br><span class="line">                -&gt;onConnection(<span class="hljs-string">'sqs'</span>)</span><br><span class="line">                -&gt;onQueue(<span class="hljs-string">'emails'</span>);</span><br><span class="line"></span><br><span class="line">Mail::to($request-&gt;user())</span><br><span class="line">    -&gt;cc($moreUsers)</span><br><span class="line">    -&gt;bcc($evenMoreUsers)</span><br><span class="line">    -&gt;queue($message);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 queue 發送 mail, 並指定其 connection 以及 queue</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Queueing-By-Default"><a href="#Queueing-By-Default" class="headerlink" title="# Queueing By Default"></a># Queueing By Default</h4><h6 id="以下的-Laravel-example-code-的意思是？-28"><a href="#以下的-Laravel-example-code-的意思是？-28" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Queue</span>\<span class="hljs-title">ShouldQueue</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrderShipped</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mailable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldQueue</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>如果已經確定這個 mailable 會固定使用 queue 來發送, 可以 implement ShouldQueue interface</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Queued-Mailables-amp-Database-Transaction"><a href="#Queued-Mailables-amp-Database-Transaction" class="headerlink" title="# Queued Mailables &amp; Database Transaction"></a># Queued Mailables &amp; Database Transaction</h4><h6 id="以下的-Laravel-example-code-的意思是？-29"><a href="#以下的-Laravel-example-code-的意思是？-29" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Queue</span>\<span class="hljs-title">ShouldQueue</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrderShipped</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mailable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldQueue</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> $afterCommit = <span class="hljs-keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>有時我們會在 transaction 中發送 queued mailable, 但在 transaction 完成之前 mailable 就已經 dispatch 了, 這會造成預期外的錯誤, 如要避免此情況, 可將 mailable class 的 $afterCommit property 設為 true, 這樣 queued mail 就會等到當下所有的 open transaction 都完成了才會寄出</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Rendering-Mailables"><a href="#Rendering-Mailables" class="headerlink" title="# Rendering Mailables"></a># Rendering Mailables</h2><h6 id="以下的-Laravel-example-code-的意思是？-30"><a href="#以下的-Laravel-example-code-的意思是？-30" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Mail</span>\<span class="hljs-title">InvoicePaid</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">Invoice</span>;</span><br><span class="line"></span><br><span class="line">$invoice = Invoice::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">return</span> (<span class="hljs-keyword">new</span> InvoicePaid($invoice))-&gt;render();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>render method 會以 string 的方式 return HTML content</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Previewing-Mailables-In-The-Browser"><a href="#Previewing-Mailables-In-The-Browser" class="headerlink" title="# Previewing Mailables In The Browser"></a># Previewing Mailables In The Browser</h3><h6 id="以下的-Laravel-example-code-的意思是？-31"><a href="#以下的-Laravel-example-code-的意思是？-31" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'/mailable'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    $invoice = App\Models\Invoice::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> App\Mail\InvoicePaid($invoice);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在設計 mailable class 時, 會希望可以即時地看到畫面, 這時可以直接 return mailable instance<br>需注意這並不會 return inline attachment, 如需測試 inline attachment, 可使用 MailHog 或 HELO</p>
+<br>
+
+</li>
+</ul>
+<h2 id="Localizing-Mailables"><a href="#Localizing-Mailables" class="headerlink" title="# Localizing Mailables"></a># Localizing Mailables</h2><h6 id="以下的-Laravel-example-code-的意思是？-32"><a href="#以下的-Laravel-example-code-的意思是？-32" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::to($request-&gt;user())-&gt;locale(<span class="hljs-string">'es'</span>)-&gt;send(</span><br><span class="line">    <span class="hljs-keyword">new</span> OrderShipped($order)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 locale() 來指定 locale</p>
+</li>
+</ul>
+<br>
+
+<h3 id="User-Preferred-Locales"><a href="#User-Preferred-Locales" class="headerlink" title="# User Preferred Locales"></a># User Preferred Locales</h3><h6 id="以下的-Laravel-example-code-的意思是？-33"><a href="#以下的-Laravel-example-code-的意思是？-33" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Translation</span>\<span class="hljs-title">HasLocalePreference</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">HasLocalePreference</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">preferredLocale</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;locale;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">// in controller</span></span><br><span class="line">Mail::to($request-&gt;user())-&gt;send(<span class="hljs-keyword">new</span> OrderShipped($order));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當 notifiable model implement HasLocalePreference interface 之後, 可在 preferredLocale() 中定義要使用的 locale, 當使用 to() 發送 mailable 給指定 user 時, 會自動抓取資料庫中的 locale</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Testing-Mailables"><a href="#Testing-Mailables" class="headerlink" title="# Testing Mailables"></a># Testing Mailables</h2><h6 id="以下的-Laravel-example-code-的意思是？-34"><a href="#以下的-Laravel-example-code-的意思是？-34" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Mail</span>\<span class="hljs-title">InvoicePaid</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_mailable_content</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $user = User::factory()-&gt;create();</span><br><span class="line"></span><br><span class="line">    $mailable = <span class="hljs-keyword">new</span> InvoicePaid($user);</span><br><span class="line"></span><br><span class="line">    $mailable-&gt;assertSeeInHtml($user-&gt;email);</span><br><span class="line">    $mailable-&gt;assertSeeInHtml(<span class="hljs-string">'Invoice Paid'</span>);</span><br><span class="line"></span><br><span class="line">    $mailable-&gt;assertSeeInText($user-&gt;email);</span><br><span class="line">    $mailable-&gt;assertSeeInText(<span class="hljs-string">'Invoice Paid'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可使用 mailable testing method 來驗證 mailable 是否包含指定的 string, assertSeeInHtml 跟 assertSeeInText 差別在於 HTML version mail 跟 plain text version mail</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Mail-amp-Local-Development"><a href="#Mail-amp-Local-Development" class="headerlink" title="# Mail &amp; Local Development"></a># Mail &amp; Local Development</h2><h6 id="Laravel-中-如果要測試-mail-是否有被發送-可使用哪兩種方式？"><a href="#Laravel-中-如果要測試-mail-是否有被發送-可使用哪兩種方式？" class="headerlink" title="Laravel 中, 如果要測試 mail 是否有被發送, 可使用哪兩種方式？"></a><strong>Laravel 中, 如果要測試 mail 是否有被發送, 可使用哪兩種方式？</strong></h6><p>Log driver 或一些其他的服務, 像是 HELO, Mailtrap, MailHog</p>
+<br>
+
+<h2 id="Events"><a href="#Events" class="headerlink" title="# Events"></a># Events</h2><h6 id="以下的-Laravel-example-code-的意思是？-35"><a href="#以下的-Laravel-example-code-的意思是？-35" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> $listen = [</span><br><span class="line">    <span class="hljs-string">'Illuminate\Mail\Events\MessageSending'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'App\Listeners\LogSendingMessage'</span>,</span><br><span class="line">    ],</span><br><span class="line">    <span class="hljs-string">'Illuminate\Mail\Events\MessageSent'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'App\Listeners\LogSentMessage'</span>,</span><br><span class="line">    ],</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可註冊 listener 監聽兩種 mail event, MessageSending event 在 mail 發送前被觸發, MessageSent 在發送後觸發, 注意如果只是 queue 的話並不會觸發, 待該 job 真正被 worker pick up 被執行時才會觸發</p>
+</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Mail/">#Laravel Mail</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-digging-deeper-task-scheduling/">Laravel - Digging Deeper - Task Scheduling (官方文件原子化翻譯)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/howToSendMailViaAWSSES/">怎麼在 Laravel 中, 利用 AWS SES 發郵件?</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-digging-deeper-mail/';
+        this.page.identifier = 'zh-tw/laravel-digging-deeper-mail/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2021 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
+            
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

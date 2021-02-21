@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Build a WebDAV server with NGINX - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -242,30 +242,59 @@
 <li>User cloud access specified folder after login</li>
 </ol>
 <a id="more"></a>
-<p><br><br><br><br><br></p>
+
+<br>
+<br>
+<br>
+
 <h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><p>GCP Instance<br>Ubuntu 18.04<br>NGINX<br>Root</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get install nginx-full</span><br></pre></td></tr></table></figure>
-<p><br><br><br><br><br></p>
-<h2 id="Turn-on-gzip"><a href="#Turn-on-gzip" class="headerlink" title="Turn on gzip"></a>Turn on gzip</h2><p><strong>Bandwidth is limited, and the performance of machines is always faster, so we compress data with gzip before sending them to customer to decrease the amount of traffic</strong><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sed -i <span class="hljs-string">'/gzip_/ s/#\ //g'</span> /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure></p>
-<p><strong>/gzip_/</strong>: Look for lines containing <code>gzip_</code><br><strong>s/#\ //g</strong>: Replace <code>#</code> with <code></code></p>
+
+<br>
+<br>
+<br>
+
+<h2 id="Turn-on-gzip"><a href="#Turn-on-gzip" class="headerlink" title="Turn on gzip"></a>Turn on gzip</h2><p><strong>Bandwidth is limited, and the performance of machines is always faster, so we compress data with gzip before sending them to customer to decrease the amount of traffic</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sed -i <span class="hljs-string">'/gzip_/ s/#\ //g'</span> /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
+
+<p><strong>/gzip_/</strong>: Look for lines containing <code>gzip_</code><br><strong>s/#\ //g</strong>: Replace <code>#</code> with <code> </code></p>
 <p><strong>It means that we uncomment the gzip</strong></p>
-<p><br><br><br><br><br></p>
-<h2 id="Configure-WebDAV-Server"><a href="#Configure-WebDAV-Server" class="headerlink" title="Configure WebDAV Server"></a>Configure WebDAV Server</h2><p><strong>Create config file</strong><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/nginx/conf.d/webdav.conf</span><br></pre></td></tr></table></figure></p>
-<p><strong>Config</strong><br><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line">    <span class="hljs-attribute">listen</span> [::]:<span class="hljs-number">80</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server_name</span> yourDomain;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">auth_basic</span>              realm_name;</span><br><span class="line">    <span class="hljs-comment"># The file containing authorized users</span></span><br><span class="line">    <span class="hljs-attribute">auth_basic_user_file</span>    /etc/nginx/.credentials.list;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment"># dav allowed method</span></span><br><span class="line">    <span class="hljs-attribute">dav_methods</span>     PUT DELETE MKCOL COPY MOVE;</span><br><span class="line">    <span class="hljs-comment"># Allow current scope perform specified DAV method</span></span><br><span class="line">    <span class="hljs-attribute">dav_ext_methods</span> PROPFIND OPTIONS;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment"># In this folder, newly created folder or file is to have specified permission. If none is given, default is user:rw. If all or group permission is specified, user could be skipped</span></span><br><span class="line">    <span class="hljs-attribute">dav_access</span>      user:rw group:rw all:r;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment"># Temporary folder</span></span><br><span class="line">    <span class="hljs-attribute">client_body_temp_path</span>   /tmp/nginx/client-bodies;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment"># MAX size of uploaded file, 0 mean unlimited</span></span><br><span class="line">    <span class="hljs-attribute">client_max_body_size</span>    <span class="hljs-number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment"># Allow autocreate folder here if necessary</span></span><br><span class="line">    <span class="hljs-attribute">create_full_put_path</span>    <span class="hljs-literal">on</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
+<h2 id="Configure-WebDAV-Server"><a href="#Configure-WebDAV-Server" class="headerlink" title="Configure WebDAV Server"></a>Configure WebDAV Server</h2><p><strong>Create config file</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/nginx/conf.d/webdav.conf</span><br></pre></td></tr></table></figure>
+
+<p><strong>Config</strong></p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line">    <span class="hljs-attribute">listen</span> [::]:<span class="hljs-number">80</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server_name</span> yourDomain;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">auth_basic</span>              realm_name;</span><br><span class="line">    <span class="hljs-comment"># The file containing authorized users</span></span><br><span class="line">    <span class="hljs-attribute">auth_basic_user_file</span>    /etc/nginx/.credentials.list;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment"># dav allowed method</span></span><br><span class="line">    <span class="hljs-attribute">dav_methods</span>     PUT DELETE MKCOL COPY MOVE;</span><br><span class="line">    <span class="hljs-comment"># Allow current scope perform specified DAV method</span></span><br><span class="line">    <span class="hljs-attribute">dav_ext_methods</span> PROPFIND OPTIONS;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment"># In this folder, newly created folder or file is to have specified permission. If none is given, default is user:rw. If all or group permission is specified, user could be skipped</span></span><br><span class="line">    <span class="hljs-attribute">dav_access</span>      user:rw group:rw all:r;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment"># Temporary folder</span></span><br><span class="line">    <span class="hljs-attribute">client_body_temp_path</span>   /tmp/nginx/client-bodies;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment"># MAX size of uploaded file, 0 mean unlimited</span></span><br><span class="line">    <span class="hljs-attribute">client_max_body_size</span>    <span class="hljs-number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment"># Allow autocreate folder here if necessary</span></span><br><span class="line">    <span class="hljs-attribute">create_full_put_path</span>    <span class="hljs-literal">on</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="Create-users"><a href="#Create-users" class="headerlink" title="Create users"></a>Create users</h2><ul>
 <li>輸入 user<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> -n <span class="hljs-string">'userName:'</span> | sudo tee -a /etc/nginx/.credentials.list;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>Print out the user name, <code>tee</code> will print the user and direct it into /etc/nginx/.credential.list file</p>
-<p><br></p>
+<br>
+
 <ul>
 <li>Enter password<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">openssl passwd -apr1 | sudo tee -a /etc/nginx/.credentials.list;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>Turn password to encrypted characters with <code>openssl passwd -apr1</code> rule, print and direct into /etc/nginx/.credentials.list file. <code>-a</code> = append</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="It’s-done"><a href="#It’s-done" class="headerlink" title="It’s done!"></a>It’s done!</h2>
     
     </div>
@@ -333,53 +362,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

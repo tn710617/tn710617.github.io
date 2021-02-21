@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Build a SFTP Server on Linux - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -252,20 +252,32 @@
 <li>Users <code>can</code> perform uploading and downloading in specified directories</li>
 </ul>
 <a id="more"></a>
-<p><br><br><br><br><br></p>
+
+<br>
+<br>
+<br>
+
 <h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><p>GCP Ubuntu 18.04<br>The default user of the following operation is root. If you are not, put sudo in the beginning.</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="Create-a-SFTP-group"><a href="#Create-a-SFTP-group" class="headerlink" title="Create a SFTP group"></a>Create a SFTP group</h2><ul>
 <li><p>Create a group</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">group add sftp-users</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Make sure the group was created</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">grep <span class="hljs-string">'sftp-users'</span> /etc/group</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="Create-SFTP-users"><a href="#Create-SFTP-users" class="headerlink" title="Create SFTP users"></a>Create SFTP users</h2><ul>
 <li>Create users<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">useradd -g sftp-users -d /upload -s /sbin/nologin <span class="hljs-built_in">test</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p><code>-g</code>: default group<br><code>-d</code>: default home directory<br><code>-s</code>: default shell, nologin shell is common used on system accounts, which are not granted with login permission</p>
@@ -275,9 +287,13 @@
 </li>
 <li><p>If the user already existed, we could simply revise the setting</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">usermod -g sftp-users -d /upload -s /sbin/nologin <span class="hljs-built_in">test</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="SSH-configuration"><a href="#SSH-configuration" class="headerlink" title="SSH configuration"></a>SSH configuration</h2><ul>
 <li><p>Open SSH config file</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
@@ -290,18 +306,28 @@
 </li>
 <li><p><code>ChrootDirectory</code>: Set root directory of that group</p>
 </li>
-<li><code>%u</code>: It means user, so whatever users’ root directories will become the users’ name. In this case, the root directory is /home/sftp-users/test</li>
-<li><code>ForceCommand</code>: Force internal-sftp</li>
-<li>The <code>Match</code> setting above should put at the end of the file, otherwise an error would occur</li>
+<li><p><code>%u</code>: It means user, so whatever users’ root directories will become the users’ name. In this case, the root directory is /home/sftp-users/test</p>
+</li>
+<li><p><code>ForceCommand</code>: Force internal-sftp</p>
+</li>
+<li><p>The <code>Match</code> setting above should put at the end of the file, otherwise an error would occur</p>
+</li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="Directory-allowed-for-uploading-and-downloading"><a href="#Directory-allowed-for-uploading-and-downloading" class="headerlink" title="Directory allowed for uploading and downloading"></a>Directory allowed for uploading and downloading</h2><ul>
 <li>Build a folder allowed for the user to upload and download<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">install -d -o <span class="hljs-built_in">test</span> -g sftp-users /home/sftp-users/<span class="hljs-built_in">test</span>/upload</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p><code>-d</code>: type is directory<br><code>-o</code>: owner<br><code>-g</code>: group</p>
 <p>The user is only allowed to upload and download in this <strong>upload</strong> folder<br>Per SSH security regulation, the owner of chrootDirectory should be root, and only root could possess <strong>w</strong> permission. If the folder of chrootDirectory is not root, no one could login in</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="It’s-Done"><a href="#It’s-Done" class="headerlink" title="It’s Done!"></a>It’s Done!</h2>
     
     </div>
@@ -375,53 +401,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - The Basics - Error Handling (官方文件原子化翻譯筆記) - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -262,9 +262,14 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Configuration"><a href="#Configuration" class="headerlink" title="# Configuration"></a># Configuration</h2><h6 id="Laravel-中-哪個設定會決定當遇到錯誤時-是否印出-stack-of-trace-information？"><a href="#Laravel-中-哪個設定會決定當遇到錯誤時-是否印出-stack-of-trace-information？" class="headerlink" title="Laravel 中, 哪個設定會決定當遇到錯誤時, 是否印出 stack of trace information？"></a><strong>Laravel 中, 哪個設定會決定當遇到錯誤時, 是否印出 stack of trace information？</strong></h6><p><code>config/app.php</code> 中的 <code>APP_DEBUG</code> option</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="The-Exception-Handler"><a href="#The-Exception-Handler" class="headerlink" title="# The Exception Handler"></a># The Exception Handler</h2><h3 id="Report-Method"><a href="#Report-Method" class="headerlink" title="# Report Method"></a># Report Method</h3><h6 id="Laravel-中-所有的-exceptions-都是由哪一個-class-所處理？"><a href="#Laravel-中-所有的-exceptions-都是由哪一個-class-所處理？" class="headerlink" title="Laravel 中, 所有的 exceptions 都是由哪一個 class 所處理？"></a><strong>Laravel 中, 所有的 exceptions 都是由哪一個 class 所處理？</strong></h6><p><code>App\Exceptions\Handler</code></p>
 <h6 id="Laravel-中-如果我要-log-exceptions-或傳送到外部服務-可以使用-哪一個-class-的-哪一個-method"><a href="#Laravel-中-如果我要-log-exceptions-或傳送到外部服務-可以使用-哪一個-class-的-哪一個-method" class="headerlink" title="Laravel 中, 如果我要 log exceptions 或傳送到外部服務, 可以使用 哪一個 class 的 哪一個 method"></a><strong>Laravel 中, 如果我要 log exceptions 或傳送到外部服務, 可以使用 <em>哪一個 class</em> 的 <em>哪一個 method</em></strong></h6><ul>
 <li><code>App\Exceptions\Handler</code> class</li>
@@ -277,7 +282,8 @@
 <li><p><strong>Answer</strong>:<br>如果 exception 為自定義的某個 exception, 那就執行特別邏輯, 若否, 則執行預設的 log 邏輯</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Global-Log-Context"><a href="#Global-Log-Context" class="headerlink" title="# Global Log Context"></a># Global Log Context</h4><h6 id="Laravel-預設會將目前的-user-id-加到-exception-的-log-message-當中-如果我想要增加新的資訊到預設輸出-我可以在-哪個-class-的-哪個-method-定義這件事？"><a href="#Laravel-預設會將目前的-user-id-加到-exception-的-log-message-當中-如果我想要增加新的資訊到預設輸出-我可以在-哪個-class-的-哪個-method-定義這件事？" class="headerlink" title="Laravel 預設會將目前的 user id 加到 exception 的 log message 當中, 如果我想要增加新的資訊到預設輸出, 我可以在 哪個 class 的 哪個 method 定義這件事？"></a><strong>Laravel 預設會將目前的 user id 加到 exception 的 log message 當中, 如果我想要增加新的資訊到預設輸出, 我可以在 <em>哪個 class</em> 的 <em>哪個 method</em> 定義這件事？</strong></h6><ul>
 <li>App\Exceptions\Handler class</li>
 <li>context method</li>
@@ -286,10 +292,11 @@
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">context</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> array_merge(<span class="hljs-keyword">parent</span>::context(), [</span><br><span class="line">        <span class="hljs-string">'foo'</span> =&gt; <span class="hljs-string">'bar'</span>,</span><br><span class="line">        <span class="hljs-string">'ray'</span> =&gt; <span class="hljs-string">'owner'</span></span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>將 <code>[&#39;foo&#39; =&gt; &#39;bar&#39;, &#39;ray&#39; =&gt; &#39;owner&#39;]</code> 加到預設的 context, 即 exception 的 log message 中<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0" alt></p>
+<li><p><strong>Answer</strong>:<br>將 <code>[&#39;foo&#39; =&gt; &#39;bar&#39;, &#39;ray&#39; =&gt; &#39;owner&#39;]</code> 加到預設的 context, 即 exception 的 log message 中<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0"></p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="The-Report-Helper"><a href="#The-Report-Helper" class="headerlink" title="# The Report Helper"></a># The <code>Report</code> Helper</h4><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isValid</span><span class="hljs-params">($value)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">        <span class="hljs-comment">// Validate the value...</span></span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (Throwable $e) &#123;</span><br><span class="line">        report($e);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -297,7 +304,8 @@
 <li><p><strong>Answer</strong>:<br>catch Throwable error, 將之 report 之後, return false, 原本的行為為 throw($e), 讓 Laravel 預設的 handler 去 render</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Ignoring-Exceptions-By-Type"><a href="#Ignoring-Exceptions-By-Type" class="headerlink" title="# Ignoring Exceptions By Type"></a># Ignoring Exceptions By Type</h4><h6 id="Laravel-中-解釋以下的-example"><a href="#Laravel-中-解釋以下的-example" class="headerlink" title="Laravel 中, 解釋以下的 example"></a><strong>Laravel 中, 解釋以下的 example</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> $dontReport = [</span><br><span class="line">    \Illuminate\Auth\AuthenticationException::class,</span><br><span class="line">    \Illuminate\Auth\Access\AuthorizationException::class,</span><br><span class="line">    \Symfony\Component\HttpKernel\<span class="hljs-keyword">Exception</span>\HttpException::class,</span><br><span class="line">    \Illuminate\Database\Eloquent\ModelNotFoundException::class,</span><br><span class="line">    \Illuminate\Validation\ValidationException::class,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
@@ -305,16 +313,19 @@
 <li><p><strong>Answer</strong>:<br>定義你不想要記錄到 log file 的 exceptions</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h2 id="Render-Method"><a href="#Render-Method" class="headerlink" title="# Render Method"></a># Render Method</h2><h6 id="解釋以下的-Laravel-example"><a href="#解釋以下的-Laravel-example" class="headerlink" title="解釋以下的 Laravel example"></a><strong>解釋以下的 Laravel example</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span><span class="hljs-params">($request, Throwable $exception)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> ($exception <span class="hljs-keyword">instanceof</span> CustomException) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> response()-&gt;view(<span class="hljs-string">'errors.custom'</span>, [], <span class="hljs-number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">parent</span>::render($request, $exception);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用 render method 來定義 exception 的 response</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span><span class="hljs-params">($request, Throwable $exception)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 如果 exception 為指定的</span></span><br><span class="line">    <span class="hljs-keyword">if</span> ($exception <span class="hljs-keyword">instanceof</span> CustomException) &#123;</span><br><span class="line">        <span class="hljs-comment">// 做相對應的客製化 response</span></span><br><span class="line">        <span class="hljs-keyword">return</span> response()-&gt;view(<span class="hljs-string">'errors.custom'</span>, [], <span class="hljs-number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 若非指定 exception, 採用預設 response</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">parent</span>::render($request, $exception);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Reportable-amp-Renderable-Exceptions"><a href="#Reportable-amp-Renderable-Exceptions" class="headerlink" title="# Reportable &amp; Renderable Exceptions"></a># Reportable &amp; Renderable Exceptions</h3><h6 id="Laravel-中-如果我想要建立客製化的-exception-可以在哪個資料夾內建立？"><a href="#Laravel-中-如果我想要建立客製化的-exception-可以在哪個資料夾內建立？" class="headerlink" title="Laravel 中, 如果我想要建立客製化的 exception, 可以在哪個資料夾內建立？"></a><strong>Laravel 中, 如果我想要建立客製化的 exception, 可以在哪個資料夾內建立？</strong></h6><p><code>app/Exceptions</code></p>
 <h6 id="解釋以下-Laravel-example"><a href="#解釋以下-Laravel-example" class="headerlink" title="解釋以下 Laravel example"></a><strong>解釋以下 Laravel example</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -322,9 +333,12 @@
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Exceptions</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Exception</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 使用客製化 exception, 並 extend Exeeption, 另一個方法是在 Exception Handler 中的 render() 使用 type hint catch 指定的 exception</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RenderException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Exception</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 可在 report 內定義該 exception 被 throw 時的行為, 即該 log exception 或是導向外部 service, 預設是 log</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">report</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 可在 render 內定義該 exception 被 throw 時的行為</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span><span class="hljs-params">($request)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> response(...);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="HTTP-Exceptions"><a href="#HTTP-Exceptions" class="headerlink" title="# HTTP Exceptions"></a># HTTP Exceptions</h2><h6 id="Laravel-中-如果我要立即的回傳一個-exception-帶著我指定的-error-code-那我可以使用哪一個-global-helper"><a href="#Laravel-中-如果我要立即的回傳一個-exception-帶著我指定的-error-code-那我可以使用哪一個-global-helper" class="headerlink" title="Laravel 中, 如果我要立即的回傳一個 exception, 帶著我指定的 error code, 那我可以使用哪一個 global helper?"></a><strong>Laravel 中, 如果我要立即的回傳一個 exception, 帶著我指定的 error code, 那我可以使用哪一個 global helper?</strong></h6><p>abort helper</p>
 <h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -333,7 +347,8 @@
 <li><p><strong>Answer</strong>:<br>回傳 exception 403, 並帶著 exception message</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Custom-HTTP-Error-Pages"><a href="#Custom-HTTP-Error-Pages" class="headerlink" title="# Custom HTTP Error Pages"></a># Custom HTTP Error Pages</h3><h6 id="Laravel-中-如果我想要客製化-HTTP-Error-pages-可以將檔案至於哪個資料夾下？"><a href="#Laravel-中-如果我想要客製化-HTTP-Error-pages-可以將檔案至於哪個資料夾下？" class="headerlink" title="Laravel 中, 如果我想要客製化 HTTP Error pages, 可以將檔案至於哪個資料夾下？"></a><strong>Laravel 中, 如果我想要客製化 HTTP Error pages, 可以將檔案至於哪個資料夾下？</strong></h6><p><code>resources/views/errors/</code></p>
 <h6 id="Laravel-中-如果我想要客製化-HTTP-Error-pages-假設我要客製化的-error-code-為-404-那在資料夾-resources-views-errors-中-我的檔案名稱為？"><a href="#Laravel-中-如果我想要客製化-HTTP-Error-pages-假設我要客製化的-error-code-為-404-那在資料夾-resources-views-errors-中-我的檔案名稱為？" class="headerlink" title="Laravel 中, 如果我想要客製化 HTTP Error pages, 假設我要客製化的 error code 為 404, 那在資料夾 resources/views/errors/ 中, 我的檔案名稱為？"></a><strong>Laravel 中, 如果我想要客製化 HTTP Error pages, 假設我要客製化的 error code 為 404, 那在資料夾 <code>resources/views/errors/</code> 中, 我的檔案名稱為？</strong></h6><p><code>404.blade.php</code></p>
 <h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
@@ -427,53 +442,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

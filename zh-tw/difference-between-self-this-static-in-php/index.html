@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Self, this, static 在 PHP 中的差異 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -258,37 +258,49 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>俗話說的好, 今天你不弄死他, 改天他就弄死你。 同理可證, 今天你不搞懂它, 改天你照樣會在讀自己或別人寫的 code 時被弄死。<br>就讓我們一起一次搞懂它吧！</p>
 <a id="more"></a>
+
 <h2 id="Static-Variable"><a href="#Static-Variable" class="headerlink" title="Static Variable"></a><strong>Static Variable</strong></h2><p><strong>曾幾何時, 我也幻想, 如果可以不看 example code 就可以理解 OOP, 那該是多好的一件事啊！ 如果你也跟我有同樣的想法, 那… 醒醒吧, 別作夢了！ 蛤？ 你說你很清醒？ 那趕快洗洗睡吧, 這裡沒你什麼事了…</strong><br><strong>一般來說, 變數在 function 執行完畢時就會釋放, 如下面的 example:</strong></p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  $var = <span class="hljs-number">0</span>;</span><br><span class="line">  $var += <span class="hljs-number">1</span>;</span><br><span class="line">  <span class="hljs-keyword">echo</span> $var . PHP_EOL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testtest</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  $var = <span class="hljs-number">0</span>;</span><br><span class="line">  $var += <span class="hljs-number">1</span>;</span><br><span class="line">  <span class="hljs-keyword">echo</span> $var . PHP_EOL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(); <span class="hljs-comment">// 1</span></span><br><span class="line">test(); <span class="hljs-comment">// 1</span></span><br><span class="line">test(); <span class="hljs-comment">// 1</span></span><br><span class="line">testtest(); <span class="hljs-comment">// 1</span></span><br><span class="line">testtest(); <span class="hljs-comment">// 1</span></span><br><span class="line">testtest(); <span class="hljs-comment">// 1</span></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>然而, 我們只需在變數前面加上 <code>static</code>, 它就會變成 <code>static variable</code>, <code>static variable</code> 會將值保留下來, 如下 example, 不同的 function 中的 <code>static variable</code> 會分別各自累加上一次的結果</strong></p>
 <ul>
 <li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">static</span> $var;</span><br><span class="line">  $var += <span class="hljs-number">1</span>;</span><br><span class="line">  <span class="hljs-keyword">echo</span> $var . PHP_EOL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testtest</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">static</span> $var;</span><br><span class="line">  $var += <span class="hljs-number">1</span>;</span><br><span class="line">  <span class="hljs-keyword">echo</span> $var . PHP_EOL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test(); <span class="hljs-comment">// 1</span></span><br><span class="line">test(); <span class="hljs-comment">// 2</span></span><br><span class="line">test(); <span class="hljs-comment">// 3</span></span><br><span class="line">testtest(); <span class="hljs-comment">// 1</span></span><br><span class="line">testtest(); <span class="hljs-comment">// 2</span></span><br><span class="line">testtest(); <span class="hljs-comment">// 3</span></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p><strong>從上面的 example 可以看到, 不同 function 中定義的 <code>static variable</code> 是不會互相影響的, 但若是定義為 class property, 那作用範圍便是套用到全部的 method, 如下 example, 不同 method 的執行結果會累加到 <code>static variable</code></strong></p>
 <ul>
 <li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">static</span> $var;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">  </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">self</span>::$var += <span class="hljs-number">1</span>;</span><br><span class="line">    <span class="hljs-keyword">echo</span> <span class="hljs-keyword">self</span>::$var . PHP_EOL;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testtest</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">  </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">self</span>::$var += <span class="hljs-number">1</span>;</span><br><span class="line">    <span class="hljs-keyword">echo</span> <span class="hljs-keyword">self</span>::$var . PHP_EOL;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  A::test(); <span class="hljs-comment">// 1</span></span><br><span class="line">  A::test(); <span class="hljs-comment">// 2</span></span><br><span class="line">  A::test(); <span class="hljs-comment">// 3</span></span><br><span class="line">  A::testtest(); <span class="hljs-comment">// 4</span></span><br><span class="line">  A::testtest(); <span class="hljs-comment">// 5</span></span><br><span class="line">  A::testtest(); <span class="hljs-comment">// 6</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Static-this-self"><a href="#Static-this-self" class="headerlink" title="Static, this, self"></a><strong>Static, this, self</strong></h2><p><strong>下面的 example 有點大包, 其實我原本參照的資料來源更大包。 但其實只是字多了一點, 沒有複雜的 method 傳遞, 並且註解有詳述原理, 不經一番寒徹骨, 焉得梅花撲鼻香啊！</strong></p>
 <ul>
 <li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="hljs-keyword">protected</span> $name = <span class="hljs-string">'A'</span>;</span><br><span class="line">    <span class="hljs-keyword">static</span> $alias = <span class="hljs-string">'a'</span>;</span><br><span class="line">    <span class="hljs-keyword">const</span> HASH = <span class="hljs-string">'md5'</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dd</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">$this</span>-&gt;name; <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">static</span>::$alias; <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;     </span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">static</span>::HASH; <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;     </span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">self</span>::$alias; <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">self</span>::HASH; <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;</span><br><span class="line"> </span><br><span class="line">        var_dump(<span class="hljs-keyword">new</span> <span class="hljs-keyword">self</span>); <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;</span><br><span class="line">        var_dump(<span class="hljs-keyword">$this</span>); <span class="hljs-keyword">echo</span> <span class="hljs-string">'--'</span>;</span><br><span class="line">        var_dump(<span class="hljs-keyword">new</span> <span class="hljs-keyword">static</span>); <span class="hljs-keyword">echo</span> <span class="hljs-string">'&lt;br&gt;'</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $name = <span class="hljs-string">'B'</span>;</span><br><span class="line">    <span class="hljs-keyword">static</span> $alias = <span class="hljs-string">'b'</span>;</span><br><span class="line">    <span class="hljs-keyword">const</span> HASH = <span class="hljs-string">'sha1'</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// $this-&gt;name = A, $this 代表當前 instance, 而當前 instance 為 </span></span><br><span class="line"> <span class="hljs-comment">// class A 的 instance, 故為 class A 中的 protected variable</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// static::$alias = a, static 為 forwarding call, static 的 forwarding call</span></span><br><span class="line"> <span class="hljs-comment">// 下面會詳述。 呼叫的 instance 的 class 為 class A, 所以取 class A 中定義的 static variable</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// static::HASH = md5, 原理同上</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// self::$alias = a, self 表示當前 method 歸屬的 class, 此處為 class A, </span></span><br><span class="line"> <span class="hljs-comment">// 因此使用 class A 中定義的 static variable</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// self::HASH = md5, 原理同上</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// new self = class A, 如同上面提到的, 當前 method 所在的 class 為 class A</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// $this = class A, 原理同上, $this 為 class A 的 instance, 所以是 class A</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// new static = 同上, 原始被呼叫的 class 為 class A, 所以為 class A</span></span><br><span class="line">(<span class="hljs-keyword">new</span> A)-&gt;dd();  </span><br><span class="line"><span class="hljs-comment">// 輸出為: A--a--md5--a--md5--object(A)#2 (1) &#123; ["name":protected]=&gt; string(1) "A" &#125; </span></span><br><span class="line"><span class="hljs-comment">// --object(A)#1 (1) &#123; ["name":protected]=&gt; string(1) "A" &#125; </span></span><br><span class="line"><span class="hljs-comment">// --object(A)#2 (1) &#123; ["name":protected]=&gt; string(1) "A" &#125;</span></span><br><span class="line"></span><br><span class="line"> <span class="hljs-comment">// $this-&gt;name = B, $this 代表當前 instance, 也就是 class B</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// static::$alias = b, static 為 forwarding call, static 的 forwarding call 下面會詳述。</span></span><br><span class="line"> <span class="hljs-comment">// 呼叫的 instance 的 class 為 class B, 所以取 class B 中定義的 static variable</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// static::HASH = sha1, 原理同上</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// self::$alias = a, self 表示當前 method 歸屬的 class, 因 class B 使用的 test() method 是</span></span><br><span class="line"> <span class="hljs-comment">// 繼承自 class A 的, 實際上 self 為 class A, 所以使用定義在 class A 的 alias</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// self::HASH = md5, 原理同上</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// new self = class A, 如同上面提到的, 當前 method 定義於 class A</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// $this = class B, 原理同上, $this 為 class B 的 instance, 所以是 class B</span></span><br><span class="line"> </span><br><span class="line"> <span class="hljs-comment">// new static = 同上, 原始被呼叫的 class 為 class B, 所以為 class B</span></span><br><span class="line"> </span><br><span class="line">(<span class="hljs-keyword">new</span> B)-&gt;dd();  </span><br><span class="line"><span class="hljs-comment">// 輸出為: B--b--sha1--a--md5--object(A)#2 (1) &#123; ["name":protected]=&gt; string(1) "A" &#125; </span></span><br><span class="line"><span class="hljs-comment">// --object(B)#1 (1) &#123; ["name":protected]=&gt; string(1) "B" &#125; </span></span><br><span class="line"><span class="hljs-comment">// --object(B)#2 (1) &#123; ["name":protected]=&gt; string(1) "B" &#125;</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="self"><a href="#self" class="headerlink" title="self"></a><strong>self</strong></h3><p><strong>首先, 先來看看 <code>self</code> 吧！ <code>self</code> 代表著當下的 class, 跟 <code>__class__</code> 是一樣的。 啥？ 看無？ 都說了, 要看 example code 嘛！</strong></p>
 <ul>
 <li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">self</span>::who();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">B::test();</span><br><span class="line"><span class="hljs-comment">// 輸出為 A</span></span><br><span class="line"><span class="hljs-comment">// 因為 B 本身沒有 test(), 所以調用 A 的 test(), 而 test() 中的 </span></span><br><span class="line"><span class="hljs-comment">// self 代表 test() 歸屬的 class, 即 A, 所以會調用 A 的 who()</span></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="static"><a href="#static" class="headerlink" title="static"></a><strong>static</strong></h3><p><strong>上面看完 self, 接下來瞧瞧 static, static:: 代表上一個調用 non-forwarding call 的 class, 不懂沒關係, 這個特性叫做 Late Static Bindings, 下面會詳述。 一樣看一段 example</strong></p>
 <ul>
 <li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 唯一跟上一個 example 不同之處, 把 self 換成了 static</span></span><br><span class="line">        <span class="hljs-keyword">static</span>::who(); </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">B::test();</span><br><span class="line"><span class="hljs-comment">// 輸出為 B</span></span><br><span class="line"><span class="hljs-comment">// static 代表著上一個調用 non-forwarding call 的 class, 即 B</span></span><br><span class="line"><span class="hljs-comment">// 下面會針對 forwarding call 以及 non-forwarding call 詳述</span></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Late-Static-Bindings"><a href="#Late-Static-Bindings" class="headerlink" title="Late Static Bindings"></a><strong>Late Static Bindings</strong></h3><p><strong>這幾個字看似玄乎, 可其實就嚇嚇沒耐心的人而已！ static method 都會有 Late Static Bindings 的特性, 而這個特性是什麼呢？<br>static method 會把最後一次調用 <code>non-forwarding call</code> 的 class name 記錄下來, 也就是說, static 代表的 class 就是上一次呼叫 <code>non-forwarding call</code> 的 class<br>那什麼是 <code>forwarding call</code> 呢？ 下面幾種都算：</strong></p>
 <ul>
 <li>self::</li>
@@ -297,9 +309,12 @@
 <li>forward_static_call()</li>
 </ul>
 <p><strong>上面這些都是 <code>forwarding call</code>, 那 <code>non-forwarding call</code> 呢？ 比如 <code>A::test()</code>, 這就是 <code>non-forwarding call</code>, 而 A 就是呼叫 <code>non-forwarding call</code> 的 class<br>看不懂對吧？ 哈哈, 你一撅屁股我就知道你要拉什麼屎! 這樣你就看得懂那你就是天才了, 我自己寫的人都看不太懂了。<br>所以我開頭說了嘛, 想不讀 example code 就想了解 OOP, 根本是癡人說夢啊！<br>還是乖乖認命地在看幾段 example code 吧！ 看完 example code 之後再上來看這一段, 就懂了！</strong></p>
-<p><strong>Example:</strong><br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// who() 為 echo called class name, 因此 static 代表什麼, 決定著輸出</span></span><br><span class="line">        <span class="hljs-keyword">static</span>::who(); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>.<span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 上面有提到 A:: 算 non-forwarding call, 所以假如後面有呼叫 static:: 的話, static 就會代表 A</span></span><br><span class="line">        A::foo(); </span><br><span class="line">        <span class="hljs-comment">// 上面有提到, parent:: 算 forwarding call, 而上一個 non-forwarding call </span></span><br><span class="line">        <span class="hljs-comment">// 為 C::test(), 因此如果後面有使用 static::, static 表示 C</span></span><br><span class="line">        <span class="hljs-keyword">parent</span>::foo(); </span><br><span class="line">        <span class="hljs-comment">// 同上</span></span><br><span class="line">        <span class="hljs-keyword">self</span>::foo(); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>.<span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">C</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">B</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>.<span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">C::test();</span><br><span class="line"><span class="hljs-comment">// A C C</span></span><br><span class="line"><span class="hljs-comment">// A::foo() 輸出 A, 如上所述, A:: 為 non-forwarding call, </span></span><br><span class="line"><span class="hljs-comment">// 因此 static::who() 這邊的 static 代表 A</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// parent::foo() 輸出 C, 如上所述, parent:: 為 forwarding call, </span></span><br><span class="line"><span class="hljs-comment">// 因此 foo() 中的 static 還是代表上一個 non-forwarding call, 即 C</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// self::foo() 輸出為 C, 同上</span></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>Example:</strong></p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// who() 為 echo called class name, 因此 static 代表什麼, 決定著輸出</span></span><br><span class="line">        <span class="hljs-keyword">static</span>::who(); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>.<span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 上面有提到 A:: 算 non-forwarding call, 所以假如後面有呼叫 static:: 的話, static 就會代表 A</span></span><br><span class="line">        A::foo(); </span><br><span class="line">        <span class="hljs-comment">// 上面有提到, parent:: 算 forwarding call, 而上一個 non-forwarding call </span></span><br><span class="line">        <span class="hljs-comment">// 為 C::test(), 因此如果後面有使用 static::, static 表示 C</span></span><br><span class="line">        <span class="hljs-keyword">parent</span>::foo(); </span><br><span class="line">        <span class="hljs-comment">// 同上</span></span><br><span class="line">        <span class="hljs-keyword">self</span>::foo(); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>.<span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">C</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">B</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">who</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__CLASS__</span>.<span class="hljs-string">"\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">C::test();</span><br><span class="line"><span class="hljs-comment">// A C C</span></span><br><span class="line"><span class="hljs-comment">// A::foo() 輸出 A, 如上所述, A:: 為 non-forwarding call, </span></span><br><span class="line"><span class="hljs-comment">// 因此 static::who() 這邊的 static 代表 A</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// parent::foo() 輸出 C, 如上所述, parent:: 為 forwarding call, </span></span><br><span class="line"><span class="hljs-comment">// 因此 foo() 中的 static 還是代表上一個 non-forwarding call, 即 C</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// self::foo() 輸出為 C, 同上</span></span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>看完上面的 example, 是不是比較看得懂 Late Static Bindings 特性以及 forwarding call 跟 non-forwarding call 的差異了呢？ 下面繼續聊聊 self 跟 static 的差異</strong></p>
-<p><br></p>
+<br>
+
 <h3 id="self-與-static"><a href="#self-與-static" class="headerlink" title="self 與 static"></a>self 與 static</h3><p><strong>self 與 static 都可以做到以下的事</strong></p>
 <ul>
 <li>取用 static property</li>
@@ -312,7 +327,8 @@
 <li>static 代表上一個 non-forwarding 調用的 class</li>
 </ul>
 <p><strong>這樣是不是清楚又明瞭呢？<br>接下來, 我們來看看在 non-static 的狀況下, 又會有什麼特別的行為</strong></p>
-<p><br></p>
+<br>
+
 <h3 id="this-與-static"><a href="#this-與-static" class="headerlink" title="$this 與 static"></a><strong>$this 與 static</strong></h3><p><strong>在進到 non-static 環境之前, 先來看看 $this 跟 static 有何差異</strong><br><strong>相同處：</strong></p>
 <ul>
 <li>原則上, 兩者指向的 class 都相同, 除非調用 static 之前有呼叫 <code>non-forwarding call</code> 而變更了 static 的指向, 這個上面有詳述, 還有點模糊的話再上去看一次。</li>
@@ -323,20 +339,26 @@
 <li>$this 指向的是實際調用的 instance, 而 static 指向的是調用的 class, 原則上兩者會是同一個 class, 但不同的 object</li>
 </ul>
 <p><strong>好啦, 接下來就來看看在 non-static context 中, $this 與 static 不同的行為</strong></p>
-<p><br></p>
+<br>
+
 <h3 id="non-static-context-非靜態環境"><a href="#non-static-context-非靜態環境" class="headerlink" title="non-static context (非靜態環境)"></a><strong>non-static context (非靜態環境)</strong></h3><p><strong>首先, 先看看以下兩點 $this 與 static 不同的行為, 再對照下面的 example code 就會更明白</strong></p>
 <ul>
-<li>static 會先到 <em>它指向的 class</em> 中找尋 <em>private method</em>, 在尋找 <em>public method</em>, 如果沒找到, 再去 <em>調用 static 的 method 所在的 class</em> 中尋找 <em>private method</em>, 然後是 <em>public method</em>, 如果存在就調用, 並停止找尋。</li>
+<li><p>static 會先到 <em>它指向的 class</em> 中找尋 <em>private method</em>, 在尋找 <em>public method</em>, 如果沒找到, 再去 <em>調用 static 的 method 所在的 class</em> 中尋找 <em>private method</em>, 然後是 <em>public method</em>, 如果存在就調用, 並停止找尋。</p>
+</li>
 <li><p>$this 會先到 <em>調用 $this 的 method 所在的 class</em> 中尋找 <em>private method</em>, 再到 <em>它指向的 instance 的 class</em> 中尋找 <em>private method</em>, 然後是 <em>public method</em>, 再來是在 <em>調用 $this 的 method 所在的 class</em> 中尋找 <em>public method</em>, 只要找到就調用, 並停止找尋</p>
 </li>
 <li><p><strong>Example</strong></p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">__class__</span> . PHP_EOL;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;foo();</span><br><span class="line">        <span class="hljs-keyword">static</span>::foo();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// foo() 是從 A copy 過來 B 的, 因此它的 scope 依然是 A</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">C</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">A</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 這個 foo() 覆蓋了 class A 的 foo(), 所以新的 scope 為 C</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$b = <span class="hljs-keyword">new</span> B();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// $this-&gt;foo() 輸出為 A, 如上所述, class B 本身沒有 test(), 所以會調用 class A 的</span></span><br><span class="line"><span class="hljs-comment">// 而 $this 會先到 "調用 $this-&gt;foo()" 的 method, 即 test(), 所在的 class, 即 class A,  </span></span><br><span class="line"><span class="hljs-comment">// 中尋找 private method, 你可以試試在 class B 中新增一個一模一樣的 private method foo(),</span></span><br><span class="line"><span class="hljs-comment">// 結果還是會先調用 class A 的 foo()</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// static::foo() 輸出為 A, 同上, 但 class B 並沒有 foo(), 所以調用了 class A 的 foo()</span></span><br><span class="line"><span class="hljs-comment">// 可以試試在 class B 新增一個 private method foo(), 這樣會報錯, 因為 static 會先從實際調用</span></span><br><span class="line"><span class="hljs-comment">// class, 即 class B, 尋找 private method, 這樣就變成從 class A 去呼叫 class B 的 private</span></span><br><span class="line"><span class="hljs-comment">// method, private method 只可從所屬的 class 中才可調用, 當然, 如果改成 public method, </span></span><br><span class="line"><span class="hljs-comment">// 那輸出就會變成 B</span></span><br><span class="line">$b-&gt;test();</span><br><span class="line"></span><br><span class="line">$c = <span class="hljs-keyword">new</span> C();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// $this-&gt;foo() 輸出是 A, 這點同上, 不加贅述</span></span><br><span class="line"><span class="hljs-comment">// static::foo() 會 fail, 因為 static 會到實際調用的 class 中尋找 private method, 而</span></span><br><span class="line"><span class="hljs-comment">// class C 中確實定義了 private method foo(), 這樣就變成了從 class A 的 scope 去調用</span></span><br><span class="line"><span class="hljs-comment">// class C 的 private method, 所以錯了</span></span><br><span class="line"><span class="hljs-comment">// 可以試試把 class C 中的 foo() 改成 public, 且輸入跟 class A foo() 一樣的內容</span></span><br><span class="line"><span class="hljs-comment">// 這樣輸出就會變成 C 了</span></span><br><span class="line">$c-&gt;test();   </span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>寫這篇寫了兩天, 這兩天只有上帝跟我知道我在寫什麼, 所以我盡可能地把它寫的詳盡, 一方面也是取之於網路, 回饋於網路。<br>另一方面是, 我不想幾個禮拜之後只剩上帝知道這篇在寫什麼。 搞不好祂也不知道嗚嗚嗚。<br>若內容有錯誤, 請不吝指教, 我當立即修正以避免誤導大家。</p>
 <p>歡迎轉載, 但請註明出處！</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="參考來源"><a href="#參考來源" class="headerlink" title="參考來源"></a>參考來源</h2><p><a href="https://www.php.net/manual/en/language.oop5.late-static-bindings.php" target="_blank" rel="noopener">PHP-Late Static Bindings</a><br><a href="https://blog.csdn.net/lamp_yang_3533/article/details/79912453" target="_blank" rel="noopener">CSDN lamp_yang_3533 的部落格</a><br><a href="https://malagege.github.io/blog/2019/02/20/PHP-static%E9%82%A3%E4%BA%9B%E4%BA%8B/" target="_blank" rel="noopener">程式狂想筆記</a></p>
 
     
@@ -411,53 +433,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

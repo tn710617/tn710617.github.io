@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Database - Query Builder (官方文件原子化翻譯筆記) - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -378,7 +378,10 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Retrieving-Results"><a href="#Retrieving-Results" class="headerlink" title="# Retrieving Results"></a># Retrieving Results</h2><h3 id="Retrieving-All-Rows-From-A-Table"><a href="#Retrieving-All-Rows-From-A-Table" class="headerlink" title="# Retrieving All Rows From A Table"></a># Retrieving All Rows From A Table</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">DB</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $users = DB::table(<span class="hljs-string">'users'</span>)-&gt;get();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> view(<span class="hljs-string">'user.index'</span>, [<span class="hljs-string">'users'</span> =&gt; $users]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -386,7 +389,8 @@
 <li><p><strong>Answer</strong>:<br>取得 users table 中所有的 records, 並將資料帶到 ‘views/user/index’ page</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Retrieving-A-Single-Row-Column-From-A-Table"><a href="#Retrieving-A-Single-Row-Column-From-A-Table" class="headerlink" title="# Retrieving A Single Row / Column From A Table"></a># Retrieving A Single Row / Column From A Table</h3><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$email = DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'name'</span>, <span class="hljs-string">'John'</span>)-&gt;value(<span class="hljs-string">'email'</span>);</span><br></pre></td></tr></table></figure>
@@ -401,7 +405,8 @@
 <li><p><strong>Answer</strong>:<br>從 Query Builder 的結果, collection of models 中, 回傳第一個 model</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h2 id="Retrieving-A-List-Of-Column-Values"><a href="#Retrieving-A-List-Of-Column-Values" class="headerlink" title="# Retrieving A List Of Column Values"></a># Retrieving A List Of Column Values</h2><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$titles = DB::table(<span class="hljs-string">'roles'</span>)-&gt;pluck(<span class="hljs-string">'title'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> ($titles <span class="hljs-keyword">as</span> $title) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> $title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -409,7 +414,8 @@
 <li><p><strong>Answer</strong>:<br>取得 roles collection 中的 title column data</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Chunking-Results"><a href="#Chunking-Results" class="headerlink" title="# Chunking Results"></a># Chunking Results</h3><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;orderBy(<span class="hljs-string">'id'</span>)-&gt;chunk(<span class="hljs-number">100</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($users)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Process the records...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -424,7 +430,8 @@
 <li><p><strong>Answer</strong>:<br>chunkById 預設會使用 orderBy id, 並且會記住上一個 chunk 的 last id<br>效能上使用 chunkById 更好, 因為 chunk 是採用 offset … limit, 這樣當資料越來越多的時候, 會造成不必要的效能浪費, 而 chunkById 是採用 where id &gt; $lastId, 因為效能上較佳<br>再者, 因為 chunkById 預設會 orderby id, 所以不會有 chunk 跟 chunk 之間因為順序錯亂而丟失 item 的情況</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Aggregates"><a href="#Aggregates" class="headerlink" title="# Aggregates"></a># Aggregates</h3><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;count();</span><br></pre></td></tr></table></figure>
@@ -439,7 +446,8 @@
 <li><p><strong>Answer</strong>:<br>可得 orders table 中, price column value 最大的那筆資料</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Determining-If-Records-Exist"><a href="#Determining-If-Records-Exist" class="headerlink" title="# Determining If Records Exist"></a># Determining If Records Exist</h4><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'orders'</span>)-&gt;where(<span class="hljs-string">'finalized'</span>, <span class="hljs-number">1</span>)-&gt;exists();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'orders'</span>)-&gt;where(<span class="hljs-string">'finalized'</span>, <span class="hljs-number">1</span>)-&gt;doesntExist();</span><br></pre></td></tr></table></figure>
@@ -447,7 +455,9 @@
 <li><p><strong>Answer</strong>:<br>判斷該 model 是否存在, return boolean</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Selects"><a href="#Selects" class="headerlink" title="# Selects"></a># Selects</h2><h4 id="Specifying-A-Select-Clause"><a href="#Specifying-A-Select-Clause" class="headerlink" title="# Specifying A Select Clause"></a># Specifying A Select Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;select(<span class="hljs-string">'name'</span>, <span class="hljs-string">'email as user_email'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
@@ -462,7 +472,9 @@
 <li><p><strong>Answer</strong>:<br>使用 addSelect(), 在原本既存的 $query 多 select 一個 column</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Raw-Expressions"><a href="#Raw-Expressions" class="headerlink" title="# Raw Expressions"></a># Raw Expressions</h2><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                     -&gt;select(DB::raw(<span class="hljs-string">'count(*) as user_count, status'</span>))</span><br><span class="line">                     -&gt;where(<span class="hljs-string">'status'</span>, <span class="hljs-string">'&lt;&gt;'</span>, <span class="hljs-number">1</span>)</span><br><span class="line">                     -&gt;groupBy(<span class="hljs-string">'status'</span>)</span><br><span class="line">                     -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -498,7 +510,9 @@
 <li><p><strong>Answer</strong>:<br>若要使用 raw group by constraint, 可使用 groupByRaw()</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Joins"><a href="#Joins" class="headerlink" title="# Joins"></a># Joins</h2><h4 id="Inner-Join-Clause"><a href="#Inner-Join-Clause" class="headerlink" title="# Inner Join Clause"></a># Inner Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;join(<span class="hljs-string">'contacts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'contacts.user_id'</span>)</span><br><span class="line">            -&gt;join(<span class="hljs-string">'orders'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'orders.user_id'</span>)</span><br><span class="line">            -&gt;select(<span class="hljs-string">'users.*'</span>, <span class="hljs-string">'contacts.phone'</span>, <span class="hljs-string">'orders.price'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -506,7 +520,8 @@
 <li><p><strong>Answer</strong>:<br>使用 join 取得多張 table 資料</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Left-Join-Right-Join-Clause"><a href="#Left-Join-Right-Join-Clause" class="headerlink" title="# Left Join / Right Join Clause"></a># Left Join / Right Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;leftJoin(<span class="hljs-string">'posts'</span>, <span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'posts.user_id'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -521,7 +536,9 @@
 <li><p><strong>Answer</strong>:<br>若要 rightJoin, 可使用 rightJoin(), 會取得 posts table 上所有的欄位, 包括 posts.user_id 為 null 的欄位也會取出</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h4 id="Cross-Join-Clause"><a href="#Cross-Join-Clause" class="headerlink" title="# Cross Join Clause"></a># Cross Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sizes = DB::table(<span class="hljs-string">'sizes'</span>)</span><br><span class="line">            -&gt;crossJoin(<span class="hljs-string">'colors'</span>)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -543,7 +560,8 @@
 <li><p><strong>Answer</strong>:<br>join 並且附加額外的 where clause</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Subquery-Joins"><a href="#Subquery-Joins" class="headerlink" title="# Subquery Joins"></a># Subquery Joins</h4><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$latestPosts = DB::table(<span class="hljs-string">'posts'</span>)</span><br><span class="line">                   -&gt;select(<span class="hljs-string">'user_id'</span>, DB::raw(<span class="hljs-string">'MAX(created_at) as last_post_created_at'</span>))</span><br><span class="line">                   -&gt;where(<span class="hljs-string">'is_published'</span>, <span class="hljs-keyword">true</span>)</span><br><span class="line">                   -&gt;groupBy(<span class="hljs-string">'user_id'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">        -&gt;joinSub($latestPosts, <span class="hljs-string">'latest_posts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($join)</span> </span>&#123;</span><br><span class="line">            $join-&gt;on(<span class="hljs-string">'users.id'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'latest_posts.user_id'</span>);</span><br><span class="line">        &#125;)-&gt;get();</span><br></pre></td></tr></table></figure>
@@ -551,7 +569,9 @@
 <li><p><strong>Answer</strong>:<br>使用 joinSub() join $latestPosts 這個 subquery, arg1 為 subquery, arg2 定義 subquery 的 table alias</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Unions"><a href="#Unions" class="headerlink" title="# Unions"></a># Unions</h2><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$first = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;whereNull(<span class="hljs-string">'first_name'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;whereNull(<span class="hljs-string">'last_name'</span>)</span><br><span class="line">            -&gt;union($first)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -559,7 +579,9 @@
 <li><p><strong>Answer</strong>:<br>使用 union 一次取出兩個 query 不重複的資料</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Where-Clauses"><a href="#Where-Clauses" class="headerlink" title="# Where Clauses"></a># Where Clauses</h2><h3 id="Simple-Where-Clauses"><a href="#Simple-Where-Clauses" class="headerlink" title="# Simple Where Clauses"></a># Simple Where Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'='</span>, <span class="hljs-number">100</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
@@ -581,7 +603,8 @@
 <li><p><strong>Answer</strong>:<br>相當於 where(‘status’, ‘=’, ‘1’)-&gt;where(‘subscribed’, ‘&lt;&gt;’, ‘1’)</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Or-Statements"><a href="#Or-Statements" class="headerlink" title="# Or Statements"></a># Or Statements</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-3"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-3" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                    -&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)</span><br><span class="line">                    -&gt;orWhere(<span class="hljs-string">'name'</span>, <span class="hljs-string">'John'</span>)</span><br><span class="line">                    -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -589,7 +612,8 @@
 <li><p><strong>Answer</strong>:<br>取得第一個 where clause 或 第二個 where clause 的 query 結果, 簡單來說, 誰找到的都算數</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Or-Statements-1"><a href="#Or-Statements-1" class="headerlink" title="# Or Statements"></a># Or Statements</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-4"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-4" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">            -&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)</span><br><span class="line">            -&gt;orWhere(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">                $query-&gt;where(<span class="hljs-string">'name'</span>, <span class="hljs-string">'Abigail'</span>)</span><br><span class="line">                      -&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">50</span>);</span><br><span class="line">            &#125;)</span><br><span class="line">            -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -597,7 +621,8 @@
 <li><p><strong>Answer</strong>:<br>// SQL: select * from users where votes &gt; 100 or (name = ‘Abigail’ and votes &gt; 50)</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Additional-Where-Clauses"><a href="#Additional-Where-Clauses" class="headerlink" title="# Additional Where Clauses"></a># Additional Where Clauses</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-5"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-5" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">           -&gt;whereBetween(<span class="hljs-string">'votes'</span>, [<span class="hljs-number">1</span>, <span class="hljs-number">100</span>])</span><br><span class="line">           -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -696,7 +721,8 @@
 <li><p><strong>Answer</strong>:<br>一次附加多個 whereColumn clauses</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Parameter-Grouping"><a href="#Parameter-Grouping" class="headerlink" title="# Parameter Grouping"></a># Parameter Grouping</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-19"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-19" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">           -&gt;where(<span class="hljs-string">'name'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'John'</span>)</span><br><span class="line">           -&gt;where(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">               $query-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)</span><br><span class="line">                     -&gt;orWhere(<span class="hljs-string">'title'</span>, <span class="hljs-string">'='</span>, <span class="hljs-string">'Admin'</span>);</span><br><span class="line">           &#125;)</span><br><span class="line">           -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -704,16 +730,19 @@
 <li><p><strong>Answer</strong>:<br>在一個 where closure 內附加多個 where clauses</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Where-Exists-Clauses"><a href="#Where-Exists-Clauses" class="headerlink" title="# Where Exists Clauses"></a># Where Exists Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-20"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-20" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">           -&gt;whereExists(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">               $query-&gt;select(DB::raw(<span class="hljs-number">1</span>))</span><br><span class="line">                     -&gt;from(<span class="hljs-string">'orders'</span>)</span><br><span class="line">                     -&gt;whereRaw(<span class="hljs-string">'orders.user_id = users.id'</span>);</span><br><span class="line">           &#125;)</span><br><span class="line">           -&gt;get();</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"># 如果 select 1 from orders ... 有返回的話, 回傳 select * from users</span><br><span class="line">select * from users</span><br><span class="line">where exists (</span><br><span class="line">    select 1 from orders where orders.user_id = users.id</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Subquery-Where-Clause"><a href="#Subquery-Where-Clause" class="headerlink" title="# Subquery Where Clause"></a># Subquery Where Clause</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-21"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-21" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line">$users = User::where(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">    $query-&gt;select(<span class="hljs-string">'type'</span>)</span><br><span class="line">        -&gt;from(<span class="hljs-string">'membership'</span>)</span><br><span class="line">        -&gt;whereColumn(<span class="hljs-string">'user_id'</span>, <span class="hljs-string">'users.id'</span>)</span><br><span class="line">        -&gt;orderByDesc(<span class="hljs-string">'start_date'</span>)</span><br><span class="line">        -&gt;limit(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;, <span class="hljs-string">'Pro'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
@@ -721,7 +750,8 @@
 <li><p><strong>Answer</strong>:<br>如果 subquery 取得的 type === ‘Pro’ 的話, 取得 users, 也就是說, 會取得最新有 membership 的 user</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="JSON-Where-Clauses"><a href="#JSON-Where-Clauses" class="headerlink" title="# JSON Where Clauses"></a># JSON Where Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-22"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-22" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                -&gt;where(<span class="hljs-string">'options-&gt;language'</span>, <span class="hljs-string">'en'</span>)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -757,7 +787,9 @@
 <li><p><strong>Answer</strong>:<br>取 users, 其 options 欄位中的 languages 是一個 array, 其 length 為 0</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Ordering-Grouping-Limit-amp-Offset"><a href="#Ordering-Grouping-Limit-amp-Offset" class="headerlink" title="# Ordering, Grouping, Limit &amp; Offset"></a># Ordering, Grouping, Limit &amp; Offset</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-27"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-27" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                -&gt;orderBy(<span class="hljs-string">'name'</span>, <span class="hljs-string">'desc'</span>)</span><br><span class="line">                -&gt;orderBy(<span class="hljs-string">'email'</span>, <span class="hljs-string">'asc'</span>)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -807,7 +839,9 @@
 <li><p><strong>Answer</strong>:<br>跳過十筆資料, 然後只取五筆, 也可用 offset 以及 limit</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Conditional-Clauses"><a href="#Conditional-Clauses" class="headerlink" title="# Conditional Clauses"></a># Conditional Clauses</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-34"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-34" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$sortBy = <span class="hljs-keyword">null</span>;</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">                -&gt;when($sortBy, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query, $sortBy)</span> </span>&#123;</span><br><span class="line">                    <span class="hljs-keyword">return</span> $query-&gt;orderBy($sortBy);</span><br><span class="line">                &#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">                    <span class="hljs-keyword">return</span> $query-&gt;orderBy(<span class="hljs-string">'name'</span>);</span><br><span class="line">                &#125;)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
@@ -815,7 +849,9 @@
 <li><p><strong>Answer</strong>:<br>當 when 的第一個 parameter 為 true 時, 方執行第二個 parameter closure, 若第一個 parameter 為 false, 則執行第二個 closure</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Inserts"><a href="#Inserts" class="headerlink" title="# Inserts"></a># Inserts</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-35"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-35" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;insert([</span><br><span class="line">    [<span class="hljs-string">'email'</span> =&gt; <span class="hljs-string">'taylor@example.com'</span>, <span class="hljs-string">'votes'</span> =&gt; <span class="hljs-number">0</span>],</span><br><span class="line">    [<span class="hljs-string">'email'</span> =&gt; <span class="hljs-string">'dayle@example.com'</span>, <span class="hljs-string">'votes'</span> =&gt; <span class="hljs-number">0</span>],</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
@@ -837,7 +873,9 @@
 <li><p><strong>Answer</strong>:<br>自動取得 auto-increment ID, 預設欄位名稱為 id, 若要特別指定欄位名稱, 可帶入第二個 parameter</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Updates"><a href="#Updates" class="headerlink" title="# Updates"></a># Updates</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-38"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-38" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$affected = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">              -&gt;where(<span class="hljs-string">'id'</span>, <span class="hljs-number">1</span>)</span><br><span class="line">              -&gt;update([<span class="hljs-string">'votes'</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure>
@@ -852,7 +890,8 @@
 <li><p><strong>Answer</strong>:<br>如果 parameter 1 的條件有找到 record 的話, 使用 parameter 2 指定的資料更新該 record, 如果沒找到, 會使用兩個 parameter 的資料來建立一個新的 record</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Updating-JSON-Columns"><a href="#Updating-JSON-Columns" class="headerlink" title="# Updating JSON Columns"></a># Updating JSON Columns</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-40"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-40" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$affected = DB::table(<span class="hljs-string">'users'</span>)</span><br><span class="line">              -&gt;where(<span class="hljs-string">'id'</span>, <span class="hljs-number">1</span>)</span><br><span class="line">              -&gt;update([<span class="hljs-string">'options-&gt;enabled'</span> =&gt; <span class="hljs-keyword">true</span>]);</span><br></pre></td></tr></table></figure>
@@ -860,23 +899,28 @@
 <li><p><strong>Answer</strong>:<br>更新 JSON Columns</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Increment-amp-Decrement"><a href="#Increment-amp-Decrement" class="headerlink" title="# Increment &amp; Decrement"></a># Increment &amp; Decrement</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-41"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-41" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;increment(<span class="hljs-string">'votes'</span>);</span><br><span class="line"></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;increment(<span class="hljs-string">'votes'</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;decrement(<span class="hljs-string">'votes'</span>);</span><br><span class="line"></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;decrement(<span class="hljs-string">'votes'</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;increment(<span class="hljs-string">'votes'</span>, <span class="hljs-number">1</span>, [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'John'</span>]);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 加 1</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;increment(<span class="hljs-string">'votes'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 加 5</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;increment(<span class="hljs-string">'votes'</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 減 1</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;decrement(<span class="hljs-string">'votes'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 減 5</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;decrement(<span class="hljs-string">'votes'</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 除了將 votes column 加 1 之外, 還更新 name column, 更新為 John</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;increment(<span class="hljs-string">'votes'</span>, <span class="hljs-number">1</span>, [<span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'John'</span>]);</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="Laravel-Query-Builder-當中-當我使用-increment-或-decrement-method-時-會觸發-model-event-嗎？"><a href="#Laravel-Query-Builder-當中-當我使用-increment-或-decrement-method-時-會觸發-model-event-嗎？" class="headerlink" title="Laravel Query Builder 當中, 當我使用 increment 或 decrement method 時, 會觸發 model event 嗎？"></a><strong>Laravel Query Builder 當中, 當我使用 increment 或 decrement method 時, 會觸發 model event 嗎？</strong></h6><p>不會</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Deletes"><a href="#Deletes" class="headerlink" title="# Deletes"></a># Deletes</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-42"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-42" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;delete();</span><br><span class="line"></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;delete();</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 刪除 users table 中的所有 records</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;delete();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 刪除 users table 中指定的 records</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;delete();</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-43"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-43" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
@@ -886,7 +930,9 @@
 <li><p><strong>Answer</strong>:<br>刪除所有資料庫的資料, 並且重置 auto-incrementing ID</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Pessimistic-Locking"><a href="#Pessimistic-Locking" class="headerlink" title="# Pessimistic Locking"></a># Pessimistic Locking</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-44"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-44" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;sharedLock()-&gt;get();</span><br></pre></td></tr></table></figure>
@@ -901,13 +947,16 @@
 <li><p><strong>Answer</strong>:<br>鎖住指定的 rows, 在解除鎖定之前, 這些 rows 無法被 update, 也無法被 select</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Debugging"><a href="#Debugging" class="headerlink" title="# Debugging"></a># Debugging</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-46"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-46" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;dd();</span><br><span class="line"></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;dump();</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 印出 debug information, 並且停止執行該 request</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;dd();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 印出 debug information, 繼續執行該 request</span></span><br><span class="line">DB::table(<span class="hljs-string">'users'</span>)-&gt;where(<span class="hljs-string">'votes'</span>, <span class="hljs-string">'&gt;'</span>, <span class="hljs-number">100</span>)-&gt;dump();</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 
@@ -928,7 +977,7 @@
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/zh-tw/laravel-database-pagination/">Laravel - Database - Pagination (未完成)</a>
+            <a href="/zh-tw/laravel-database-pagination/">Laravel - Database - Pagination (官方文件原子化翻譯)</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
@@ -987,53 +1036,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

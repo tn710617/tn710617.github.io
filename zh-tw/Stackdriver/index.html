@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Stackdriver 快速開始 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -218,43 +218,37 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#建立運行時間確認">6&nbsp;&nbsp;<b>建立運行時間確認</b></a>
+                    <a class="navbar-item" href="#建立一個警告政策">6&nbsp;&nbsp;<b>建立一個警告政策</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#建立一個警告政策">7&nbsp;&nbsp;<b>建立一個警告政策</b></a>
+                    <a class="navbar-item" href="#建立控制面板和圖表">7&nbsp;&nbsp;<b>建立控制面板和圖表</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#建立控制面板和圖表">8&nbsp;&nbsp;<b>建立控制面板和圖表</b></a>
+                    <a class="navbar-item" href="#檢視紀錄">8&nbsp;&nbsp;<b>檢視紀錄</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#檢視紀錄">9&nbsp;&nbsp;<b>檢視紀錄</b></a>
+                    <a class="navbar-item" href="#確認-uptime-check-結果以及警告觸發">9&nbsp;&nbsp;<b>確認 uptime check 結果以及警告觸發</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#確認-uptime-check-結果以及警告觸發">10&nbsp;&nbsp;<b>確認 uptime check 結果以及警告觸發</b></a>
+                    <a class="navbar-item" href="#確認警報是否有觸發">10&nbsp;&nbsp;<b>確認警報是否有觸發</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#確認警報是否有觸發">11&nbsp;&nbsp;<b>確認警報是否有觸發</b></a>
-                    
-                    
-                    <hr class="navbar-divider">
-                    
-                    
-                    <a class="navbar-item" href="#測試你的理解">12&nbsp;&nbsp;<b>測試你的理解</b></a>
+                    <a class="navbar-item" href="#測試你的理解">11&nbsp;&nbsp;<b>測試你的理解</b></a>
                     
                 </div>
             </div>
@@ -322,10 +316,15 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇實作將告訴你如何利用Stackdriver來監看Google Compute Engine virtual machine instance，你也將安裝監看以及紀錄的服務在你的VM上，他們可以從你的instance上收集更多的資訊<br><a id="more"></a> </p>
-<p><br><br><br></p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇實作將告訴你如何利用Stackdriver來監看Google Compute Engine virtual machine instance，你也將安裝監看以及紀錄的服務在你的VM上，他們可以從你的instance上收集更多的資訊</p>
+<a id="more"></a> 
+<br>
+<br>
+
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用Google的Qwiklab平台學習的同時，做的一份學習筆記, 一些專有名詞將不會被翻譯</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
 <p>詳讀所有的教學。 Labs 是有時間限制的, 而且你不可以停止時間倒數。 倒數計時器在你按下 Start Lab 按鈕後開始倒數, 上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
 <p>Qwiklabs 的手把手環境, 讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程, 而不是在一個模擬或是展示的環境。 我們透過提供你一個全新的、暫時的帳號密碼, 在計時器歸零之前, 你可以用來登入並存取 Google Cloud Platform。</p>
@@ -341,7 +340,7 @@
 <ul>
 <li>按下 <b>Start Lab</b> 按鈕。 如果你需要付費, 會有一個彈出視窗來讓你選擇付費的方式。 在左方你會看到一個面板, 上面有暫時的帳號密碼, 你必須使用這些帳號密碼在此次 lab</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
 <ul>
 <li>複製 <code>username</code>, 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗, 顯示<code>選擇帳號</code>的頁面</li>
 </ul>
@@ -349,7 +348,7 @@
 <ul>
 <li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
 <ul>
 <li>登入頁面開啟, 貼上之前複製的 <code>username</code> 以及 <code>password</code>, 然後貼上</li>
 </ul>
@@ -363,146 +362,211 @@
 </li>
 </ul>
 <p>稍待一些時候, GCP 控制台將會在這個視窗開啟。</p>
-<p><strong>注意：</strong> 按下左上方位於 <code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code>, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務<br><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
-<p><br></p>
+<p><strong>注意：</strong> 按下左上方位於 <code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code>, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務<br><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+<br>
+
 <h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。 它提供了5GB的 home 資料夾, 並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
 <ul>
 <li>在 <code>GCP 控制台</code>, 右上的工具列,點擊 <code>Open Cloud Shell</code> 按鈕</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
 <ul>
 <li>在打開的對話框裡, 按下 <code>START CLOUD SHELL</code>:</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
 <p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
 <p>連結並提供環境會需要一點時間。 當你連結成功, 這代表你已成功獲得授權, 且此專案已被設為你的專案ID, 例如：</p>
-<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
 <p><strong>gcloud</strong> 是 <code>Google Cloud Platform</code> 的 command-line 工具, 他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
-<p>使用這個 command, 你可以列出有效帳戶名稱:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure></p>
-<p>輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure></p>
-<p>範例輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure></p>
+<p>使用這個 command, 你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
+<p>輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
 <p>你可以使用以下 command 來列出專案 ID</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
-<p>輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure></p>
-<p>範例輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure></p>
+
+<p>輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
 <p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h3 id="建立一個Compute-Engine-Instance"><a href="#建立一個Compute-Engine-Instance" class="headerlink" title="建立一個Compute Engine Instance"></a>建立一個Compute Engine Instance</h3><ul>
-<li><p>在GCP主控台的控制面板， Navigation menu &gt; Compute Engine &gt; VM instance，然後點擊 Create<br>￼<br><img src="https://i.imgur.com/mvBTBMR.png" alt></p>
+<li><p> 在GCP主控台的控制面板， Navigation menu &gt; Compute Engine &gt; VM instance，然後點擊 Create<br>￼<br><img src="https://i.imgur.com/mvBTBMR.png"></p>
 </li>
 <li><p>照下面的資訊填入相對應的空格，無提到的空格內請保持預設值</p>
 <ul>
 <li>Name: <code>lamp-1-vm</code></li>
-<li>Region: <code>us-central1 (Iowa)`</code></li>
+<li>Region: `us-central1 (Iowa)``</li>
 <li>Zone: <code>us-central1-a</code></li>
 <li>Machine type: <code>small (1 shared vCPU)</code></li>
-<li>Firewall: <code>Select Allow HTTP traffic</code><br><img src="https://i.imgur.com/qxughsD.png" alt></li>
+<li>Firewall: <code>Select Allow HTTP traffic</code><br><img src="https://i.imgur.com/qxughsD.png"></li>
 </ul>
 </li>
 <li><p>點擊Create</p>
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="安裝Apache2-Server"><a href="#安裝Apache2-Server" class="headerlink" title="安裝Apache2 Server"></a>安裝Apache2 Server</h2><ul>
-<li><p>在主控台，點擊SSH來開啟一個連接此instance的terminal<br><img src="https://i.imgur.com/2dwL5CK.png" alt></p>
+<li><p>在主控台，點擊SSH來開啟一個連接此instance的terminal<br><img src="https://i.imgur.com/2dwL5CK.png"></p>
 </li>
 <li><p>在SSH視窗中，執行下面的指令來設定Apache2</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install apache2 php7.0</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>當詢問是否繼續<code>y</code></li>
+<li><p>當詢問是否繼續<code>y</code></p>
+</li>
 <li><p>如果你無法安裝php7.0，裝php5</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service apache2 restart</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>回到主控台，在VM instance的頁面，點選External IP處以連接到Apache2預設頁面<br><img src="https://i.imgur.com/WtTHffk.png" alt></p>
+<li><p>回到主控台，在VM instance的頁面，點選External IP處以連接到Apache2預設頁面<br><img src="https://i.imgur.com/WtTHffk.png"></p>
 </li>
 </ul>
-<p><img src="https://i.imgur.com/mMgX8SJ.png" alt></p>
-<p><br><br><br><br><br></p>
+<p><img src="https://i.imgur.com/mMgX8SJ.png"></p>
+<br>
+<br>
+<br>
+
 <h2 id="建立-Stackdriver-帳號"><a href="#建立-Stackdriver-帳號" class="headerlink" title="建立 Stackdriver 帳號"></a>建立 Stackdriver 帳號</h2><ul>
 <li><p>要使用 Stackdriver ，你的專案必須要在一個 Stackdriver 帳號內，接下的步驟將建立一個有試用期的 Stackdriver 帳號</p>
 <p>  (1) 在GCP主控台，點擊 Navigation menu &gt; Monitoring</p>
-<pre><code>- 這將在一個新視窗開啟 Stackdriver，並顯示你的 Qwiklabs 專案。 點擊 Create workspace
-![](https://i.imgur.com/0wwazU5.png)
-</code></pre><p>  (2) 在接下來的頁面:</p>
-<pre><code>- 加入 GCP 專案到 monitor ，你將看到你的專案顯示已勾選
-![](https://i.imgur.com/97vi3ch.png)
-- 點擊 Continue
-- 監看 AWS 帳號 - 略過設定
-- 安裝 Stackdriver 監看代理
-</code></pre></li>
-</ul>
+<pre><code>  - 這將在一個新視窗開啟 Stackdriver，並顯示你的 Qwiklabs 專案。 點擊 Create workspace
+  ![](https://i.imgur.com/0wwazU5.png)
+</code></pre>
+<p>  (2) 在接下來的頁面:</p>
+<pre><code>  - 加入 GCP 專案到 monitor ，你將看到你的專案顯示已勾選
+  ![](https://i.imgur.com/97vi3ch.png)
+  - 點擊 Continue
+  - 監看 AWS 帳號 - 略過設定
+  - 安裝 Stackdriver 監看代理
+  
+</code></pre>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -sSO https://dl.google.com/cloudagents/install-monitoring-agent.sh</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo bash install-monitoring-agent.sh</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>安裝 Stachdriver 記錄代理<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo bash install-logging-agent.sh</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>點擊 Continue</li>
 <li>點擊 Launch monitoring</li>
 </ul>
-<p><br><br><br><br><br></p>
-<h2 id="建立運行時間確認"><a href="#建立運行時間確認" class="headerlink" title="建立運行時間確認"></a>建立運行時間確認</h2><p><br>Uptime check 用以確認資源總是可以被存取，在此範例中，我們將建立一個 uptime check 來確認 Google 網頁正常運行中<br></p><br>- 在 Stackdriver console 主控台，在控制面板上，點擊 Create an Uptime Check 按鈕。你也可以從左邊到 menu 中，找到 Uptime Checks &gt; Uptime Checks Overview ，然後點擊 Create an Uptime Check<br><br>- 編輯 New Uptime Check ，加入以下資訊<br>    - Title: <code>Lamp Uptime Check</code><br>    - Check type: <code>HTTP</code><br>    - Resource Type: <code>Instacne</code><br>    - Applies to: <code>Single, lamp-1-vm</code><br>    - Path: <code>leave at default</code><br>    - Check every: <code>1 min</code><br><img src="https://i.imgur.com/uHraYcN.png" alt><br><p><br>如果 instance 沒有自動載入在我們寫則 “single” 之後，取消這次的 uptime check ，重新整理 Stackdriver 頁面，然後重新試一遍<br></p>
+<br>
+<br>
+<br>
+    
+## 建立運行時間確認
+<p>
+Uptime check 用以確認資源總是可以被存取，在此範例中，我們將建立一個 uptime check 來確認 Google 網頁正常運行中
+</p>
+- 在 Stackdriver console 主控台，在控制面板上，點擊 Create an Uptime Check 按鈕。你也可以從左邊到 menu 中，找到 Uptime Checks > Uptime Checks Overview ，然後點擊 Create an Uptime Check
 
 <ul>
+<li><p>編輯 New Uptime Check ，加入以下資訊</p>
+<ul>
+<li>Title: <code>Lamp Uptime Check</code></li>
+<li>Check type: <code>HTTP</code></li>
+<li>Resource Type: <code>Instacne</code></li>
+<li>Applies to: <code>Single, lamp-1-vm</code></li>
+<li>Path: <code>leave at default</code></li>
+<li>Check every: <code>1 min</code><br><img src="https://i.imgur.com/uHraYcN.png"><p>
+如果 instance 沒有自動載入在我們寫則 "single" 之後，取消這次的 uptime check ，重新整理 Stackdriver 頁面，然後重新試一遍
+</p>
+</li>
+</ul>
+</li>
 <li><p>點擊 Test 來確認我們的 uptime check 可以連結到資源</p>
 </li>
 <li><p>點擊 save ，當顯示所有的資源都已經可以連接</p>
 </li>
-<li>點擊 No thanks 來為這個 uptime check 建立一個警告政策</li>
+<li><p>點擊 No thanks 來為這個 uptime check 建立一個警告政策</p>
+</li>
 </ul>
-<p><br>Uptime Check 的設置將會需要一些時間生效，我們繼續我們的進度，等等我們再來確認結果。讓我們先來建立一個警告政策。<br></p>
+<p>
+Uptime Check 的設置將會需要一些時間生效，我們繼續我們的進度，等等我們再來確認結果。讓我們先來建立一個警告政策。
+</p>
 
-<p><br><br><br><br><br></p>
-<h2 id="建立一個警告政策"><a href="#建立一個警告政策" class="headerlink" title="建立一個警告政策"></a>建立一個警告政策</h2><p><br>利用 Stackdriver 來建立一個或多個的 alerting policies.<br>從左邊的選單，點擊 Alerting &gt; Create a Policy ，然後設置 Conditions, Notifications, and Documentation<br></p>
+<br>
+<br>
+<br>
+
+<h2 id="建立一個警告政策"><a href="#建立一個警告政策" class="headerlink" title="建立一個警告政策"></a>建立一個警告政策</h2><p>
+利用 Stackdriver 來建立一個或多個的 alerting policies.
+從左邊的選單，點擊 Alerting > Create a Policy ，然後設置 Conditions, Notifications, and Documentation
+</p>
 
 <ul>
-<li>條件： 點擊 Add Condition<ul>
+<li>條件： 點擊 Add Condition</li>
 <li>依照下面的資訊來設置空格處，如果沒有提到，請保留為默認值</li>
 <li>Target:</li>
 </ul>
-</li>
-</ul>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"> Resource Type: GCE VM Instance (gce_instance)</span><br><span class="line"></span><br><span class="line">Metric: Type &quot;network&quot; then select Network traffic</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/Lkjz74o.png" alt></p>
+
+<p><img src="https://i.imgur.com/Lkjz74o.png"></p>
 <ul>
 <li>Configuration<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Condition: is above</span><br><span class="line"></span><br><span class="line">Threshold: 500 bytes</span><br><span class="line"></span><br><span class="line">For: 1 minute</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><img src="https://i.imgur.com/ps4d7Zr.png" alt></p>
+<p><img src="https://i.imgur.com/ps4d7Zr.png"></p>
 <ul>
-<li>點擊 Save<ul>
+<li>點擊 Save</li>
 <li>Notifications: </li>
-</ul>
-</li>
-<li>選擇 Email Address ，然後輸入你的個人信箱地址<br><img src="https://i.imgur.com/wNbfKuk.png" alt><ul>
+<li>選擇 Email Address ，然後輸入你的個人信箱地址<br><img src="https://i.imgur.com/wNbfKuk.png"></li>
 <li>Documentation: </li>
-</ul>
-</li>
-<li>點擊 Add Documentation 然後新增一個訊息，這個訊息將會被包含在郵件警告中<ul>
+<li>點擊 Add Documentation 然後新增一個訊息，這個訊息將會被包含在郵件警告中</li>
 <li>Name this policy:</li>
-</ul>
-</li>
 <li><code>Inbound Traffic Alert</code></li>
 <li>點擊 save</li>
 </ul>
-<p><br>我們已經建立一個警告了！<br>在等待系統觸發警告的同時，建立一個控制面板和圖表，然後看一下紀錄<br></p>
+<p>
+我們已經建立一個警告了！
+在等待系統觸發警告的同時，建立一個控制面板和圖表，然後看一下紀錄
+</p>
 
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="建立控制面板和圖表"><a href="#建立控制面板和圖表" class="headerlink" title="建立控制面板和圖表"></a>建立控制面板和圖表</h2><ul>
-<li>左邊選單， Dashboards &gt; Create Dashboard</li>
-<li>螢幕右上方，點擊 Add Chart</li>
-<li><p>在 <code>Find resource type and metric</code> 區域，輸入 <code>CPU</code> ，然後選擇 CPU Load(1m).<br><img src="https://i.imgur.com/gKbyxR7.png" alt></p>
-<p><br>GCE VM instance 根據資源類型自動被選擇，圖表名稱自動命名，但如果你想要的話，你可以自訂命名<br></p>
+<li><p>左邊選單， Dashboards &gt; Create Dashboard</p>
+</li>
+<li><p>螢幕右上方，點擊 Add Chart</p>
+</li>
+<li><p>在 <code>Find resource type and metric</code> 區域，輸入 <code>CPU</code> ，然後選擇 CPU Load(1m).<br><img src="https://i.imgur.com/gKbyxR7.png"></p>
+<p>
+GCE VM instance 根據資源類型自動被選擇，圖表名稱自動命名，但如果你想要的話，你可以自訂命名
+</p>
 </li>
 <li><p>點擊 save</p>
 </li>
 </ul>
-<p><br>現在建立第二個圖表<br></p>
+<p>
+現在建立第二個圖表
+</p>
 
 <ul>
 <li>在新的控制面板右上方的選單，選擇 Add Chart</li>
@@ -512,54 +576,77 @@
 <li>點擊 save</li>
 <li>重新命名新的控制面板，從 <code>Untitled Dashboard</code> 改成 <code>Stackdriver LAMP Qwik Start Dashboard</code></li>
 </ul>
-<p><br><br><br><br><br></p>
-<h2 id="檢視紀錄"><a href="#檢視紀錄" class="headerlink" title="檢視紀錄"></a>檢視紀錄</h2><p><br>Stackdriver Monitoring 和 Stackdriver Logging 緊密地互相整合著<br></p>
+<br>
+<br>
+<br>
 
-<p><br>在Stackdriver 左手邊選單，點擊 Logging 來檢視紀錄<br></p>
+<h2 id="檢視紀錄"><a href="#檢視紀錄" class="headerlink" title="檢視紀錄"></a>檢視紀錄</h2><p>
+Stackdriver Monitoring 和 Stackdriver Logging 緊密地互相整合著
+</p>
+
+<p>
+在Stackdriver 左手邊選單，點擊 Logging 來檢視紀錄
+</p>
 
 <ul>
-<li>選擇 GCE VM instance &gt; lamp-1-vm 在第一個下拉選單</li>
-<li>從第二個下拉選單選擇 syslog，然後點擊OK</li>
-<li>其餘欄位保留預設</li>
-<li><p>選擇 <code>Start streaming logs</code> 圖案<br><img src="https://i.imgur.com/I5Lc6uy.png" alt></p>
+<li><p>選擇 GCE VM instance &gt; lamp-1-vm 在第一個下拉選單</p>
 </li>
-<li><p>可以看到這個 VM instance 的 logs<br><img src="https://i.imgur.com/G1uXXyG.png" alt></p>
+<li><p>從第二個下拉選單選擇 syslog，然後點擊OK</p>
+</li>
+<li><p>其餘欄位保留預設</p>
+</li>
+<li><p>選擇 <code>Start streaming logs</code> 圖案<br><img src="https://i.imgur.com/I5Lc6uy.png"></p>
+</li>
+<li><p>可以看到這個 VM instance 的 logs<br><img src="https://i.imgur.com/G1uXXyG.png"></p>
 </li>
 </ul>
-<p><br>現在來看看，當我們開始跟結束時，會發生什麼事<br></p>
+<p>
+現在來看看，當我們開始跟結束時，會發生什麼事
+</p>
 
 <ul>
 <li>點擊並拖曳 Logs Viewer brower 視窗，所以 Compute Engine console 和 Stackdriver Logging console 會並排</li>
 </ul>
-<p><img src="https://i.imgur.com/H388NeT.png" alt></p>
+<p><img src="https://i.imgur.com/H388NeT.png"></p>
 <ul>
-<li>在主控台內，VM instance 視窗，點擊 lamp-1-vm instance</li>
+<li><p>在主控台內，VM instance 視窗，點擊 lamp-1-vm instance</p>
+</li>
 <li><p>在 VM instance details 視窗，於螢幕上方點擊 Stop，然後確認停止 instance ，這會需要幾分鐘，我們來看 log messages</p>
 </li>
 <li><p>我們可以看著 Logs View 視窗，然後看VM什麼時候被結束</p>
 </li>
-<li>在 VM instance detail 視窗，在螢幕最上方點擊 Start，然後確認。這會需要幾分鐘的時間，我們可以檢視 log 訊息</li>
+<li><p>在 VM instance detail 視窗，在螢幕最上方點擊 Start，然後確認。這會需要幾分鐘的時間，我們可以檢視 log 訊息</p>
+</li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="確認-uptime-check-結果以及警告觸發"><a href="#確認-uptime-check-結果以及警告觸發" class="headerlink" title="確認 uptime check 結果以及警告觸發"></a>確認 uptime check 結果以及警告觸發</h2><ul>
 <li><p>在 Stackdriver 左邊區域，點擊 <code>Uptime Checks &gt; Lamp Uptime Check</code> 。這將顯示 uptime check 的細節，包含等待時間， uptime 百分比，區域結果以及設定檢查。如果你看到的 Location result 是  “No checks have run yet” ，那請等待幾分鐘，然後重新整理頁面</p>
 </li>
 <li><p>左方區域點擊 Uptime Checks &gt; Uptime Checks Overview ，這將提供所有運行中的 uptime checks ，包含網站在不同區域的狀態</p>
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="確認警報是否有觸發"><a href="#確認警報是否有觸發" class="headerlink" title="確認警報是否有觸發"></a>確認警報是否有觸發</h2><ul>
 <li>在 StackDriver 主控台，左方頁面點擊 Alerting &gt; Incidents ，如果你沒有看到開啟的事件，請確定一下你在看的是 RESOLVED 頁面</li>
 <li>依然在 Stackdriver 主控台，點擊 Alerting &gt; Events ，你應該會看到一個事件列表</li>
 <li>確認一下我們的 email 帳號，應該會收到警報</li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="測試你的理解"><a href="#測試你的理解" class="headerlink" title="測試你的理解"></a>測試你的理解</h2><p>下面有多重選擇的問題來鞏固你對本教程概念的理解，盡你所能的回答吧：</p>
 <ul>
 <li>Stackdriver supports which of the following cloud platforms / Stackdriver 支援以下哪種雲端平台?<ul>
-<li style="list-style: none"><input type="checkbox" checked> Google Cloud Platform</li>
-<li style="list-style: none"><input type="checkbox"> Azure</li>
-<li style="list-style: none"><input type="checkbox" checked> Amazon Web Services</li>
+<li><input checked disabled type="checkbox"> Google Cloud Platform</li>
+<li><input disabled type="checkbox"> Azure</li>
+<li><input checked disabled type="checkbox"> Amazon Web Services</li>
 </ul>
 </li>
 </ul>
@@ -640,53 +727,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

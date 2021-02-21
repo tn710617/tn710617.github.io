@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Understand how GCP Load Balancer works and build one - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -319,7 +319,7 @@
 </ol>
 <ul>
 <li>In this article, we are going to build a unmanaged Load Balancer, the easiest one.</li>
-<li>Detailed explanation for every component<h3 id="The-concept-in-Graph-Image-source：-Google-："><a href="#The-concept-in-Graph-Image-source：-Google-：" class="headerlink" title="The concept in Graph (Image source： Google )："></a>The concept in Graph (Image source： Google )：</h3><img src="https://i.imgur.com/VxUj5Ru.png" alt></li>
+<li>Detailed explanation for every component<h3 id="The-concept-in-Graph-Image-source：-Google-："><a href="#The-concept-in-Graph-Image-source：-Google-：" class="headerlink" title="The concept in Graph (Image source： Google )："></a>The concept in Graph (Image source： Google )：</h3><img src="https://i.imgur.com/VxUj5Ru.png"></li>
 </ul>
 <ol>
 <li>Users from IPv4 and IPv6 make requests to our service</li>
@@ -334,9 +334,11 @@
 <h2 id="Google-Cloud-SDK-Installation"><a href="#Google-Cloud-SDK-Installation" class="headerlink" title="Google Cloud SDK Installation"></a>Google Cloud SDK Installation</h2><p>In this article, we are going to use <code>Google Cloud SDK</code> on every section, so before we start, let’s install it first.<br>Installation way varies per your Operating System. We could refer to <a href="https://cloud.google.com/sdk/install" target="_blank" rel="noopener">Official Documentation</a></p>
 <h2 id="Create-an-instance"><a href="#Create-an-instance" class="headerlink" title="Create an instance"></a>Create an instance</h2><ul>
 <li>Build two instances<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create <span class="hljs-built_in">test</span>-01 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=30GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=<span class="hljs-built_in">test</span>-01,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create <span class="hljs-built_in">test</span>-02 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=30GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=<span class="hljs-built_in">test</span>-02,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li>Build two machines, named test-01 and test-02</li>
 <li>Boot-drive capacity is 30 GB</li>
@@ -348,12 +350,18 @@
 <li><code>zone</code> specify the zone of the <code>instance</code>. Be aware that some resources are limited with <code>zone</code> and <code>region</code></li>
 <li>Reference <a href="https://cloud.google.com/sdk/gcloud/reference/compute/instances/create" target="_blank" rel="noopener">official documentation</a></li>
 </ol>
-<h2 id="Instance-Environment-Installation"><a href="#Instance-Environment-Installation" class="headerlink" title="Instance Environment Installation"></a>Instance Environment Installation</h2><p>The followings are about instance environment. You could simply skip it because it doesn’t have much to do with our subject.<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.nvm"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> &amp;&amp; nvm install yourNodeVersion &amp;&amp; apt-get install npm -y &amp;&amp; npm install pm2 -g &amp;&amp; pm2 update &amp;&amp; apt-get install git -y &amp;&amp; apt-get install build-essential</span><br></pre></td></tr></table></figure></p>
+<h2 id="Instance-Environment-Installation"><a href="#Instance-Environment-Installation" class="headerlink" title="Instance Environment Installation"></a>Instance Environment Installation</h2><p>The followings are about instance environment. You could simply skip it because it doesn’t have much to do with our subject.</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.nvm"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> &amp;&amp; nvm install yourNodeVersion &amp;&amp; apt-get install npm -y &amp;&amp; npm install pm2 -g &amp;&amp; pm2 update &amp;&amp; apt-get install git -y &amp;&amp; apt-get install build-essential</span><br></pre></td></tr></table></figure>
+
 <h2 id="Create-firewall-rules"><a href="#Create-firewall-rules" class="headerlink" title="Create firewall-rules"></a>Create firewall-rules</h2><p>We need to create <code>firewall-rules</code> per the port you use and so request could be led to the instance.</p>
 <p>We could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/" target="_blank" rel="noopener">official documentation</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-01 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-01</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-02 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-02</span><br></pre></td></tr></table></figure>
-<h2 id="Static-External-IP"><a href="#Static-External-IP" class="headerlink" title="Static External IP"></a>Static External IP</h2><p>We are going to create a static IP for further usage, we could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create" target="_blank" rel="noopener">official documentation</a><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses create lb-test \</span><br><span class="line">    --ip-version=IPV4 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure></p>
+
+<h2 id="Static-External-IP"><a href="#Static-External-IP" class="headerlink" title="Static External IP"></a>Static External IP</h2><p>We are going to create a static IP for further usage, we could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create" target="_blank" rel="noopener">official documentation</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses create lb-test \</span><br><span class="line">    --ip-version=IPV4 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <h2 id="Instance-group"><a href="#Instance-group" class="headerlink" title="Instance group"></a>Instance group</h2><p><code>Instance group</code> can consist of multiple <code>instance</code>, and it the bulk of <code>backend-service</code>, we could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/instance-groups/managed/create" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li><p>With <code>instance group</code>, we could create different <code>backend-service</code> later on <code>Load Balancer</code></p>
@@ -364,42 +372,59 @@
 </li>
 <li><p>Add existing <code>instance</code> into <code>instance group</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged add-instances <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instances <span class="hljs-built_in">test</span>-01,<span class="hljs-built_in">test</span>-02 \</span><br><span class="line">    --zone asia-east1-c</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h2 id="Health-check"><a href="#Health-check" class="headerlink" title="Health check"></a>Health check</h2><p><code>health-check</code> could prob specified port with specified frequency. If there is no response from specified port, <code>health-check</code> would diagnose this port as unhealthy, and <code>backend-service</code> would not send request to unhealthy destination.</p>
 <p> We could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/http-health-checks/create?hl=zh-tw" target="_blank" rel="noopener">official documentation</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-3000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 3000'</span>\</span><br><span class="line">    --port=3000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-6000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 6000'</span>\</span><br><span class="line">    --port=6000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-9000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 9000'</span>\</span><br><span class="line">    --port=9000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-12000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 12000'</span>\</span><br><span class="line">    --port=12000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-15000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 15000'</span>\</span><br><span class="line">    --port=15000</span><br></pre></td></tr></table></figure>
+
 <h2 id="Backend-service"><a href="#Backend-service" class="headerlink" title="Backend service"></a>Backend service</h2><p>The <code>--port-name</code> here is what we set up above. In this example, different <code>backend-service</code> would send request to different port. <code>instance group</code> has not been mentioned yet? Don’t worry, in next step, we will add <code>instance group</code> into <code>backend-service</code></p>
 <p>Also, <code>health-check</code> will be added into <code>backend-service</code> because <code>backend-service</code> is going to decide which <code>instance</code> the request should be sent to.<br>We could refer to the <a href="https://cloud.google.com/sdk/gcloud/reference/compute/backend-services/create" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Build backend-service<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port1 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port1 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-3000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port2 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port2 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-6000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port3 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port3 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-9000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port4 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port4 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-12000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port5 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port5 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-15000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <p>Next, we are going to add <code>instance group</code> into the <code>backend-service</code> we just built. Since we’ve designated port when creating <code>backend-service</code>, <code>backend-service</code> would lead requests to the designated port of the <code>instance group</code></p>
 <p>Besides setting which port the request to be sent, we are going to set up the benchmark of <code>instance</code> utilisation. <code>UTILIZATION</code> means the percentage of usage. When it reaches 80%, <code>backend-service</code> would stop sending request to this <code>instance</code></p>
 <p><code>capacity-scaler</code> means <code>1 * 0.8</code>, so if you have multiple <code>backend-service</code> using one <code>instance-group</code>, and you want to keep more utilisation capacity for some other <code>backend-service</code>, then you could give a lower <code>capacity-scaler</code>. So when this <code>backend-service</code> already use <code>capacity-scaler * max-utilization</code>, request from this <code>backend-service</code> would not be sent to this <code>instance-group</code>, which save the utilisation capacity of the <code>instance-group</code> for other <code>backend-service</code></p>
 <p>We could refer to the example below, and also the <a href="https://cloud.google.com/sdk/gcloud/reference/compute/backend-services/add-backend" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Add <code>instance group</code> into <code>backend-service</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port1 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port2 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port3 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port4 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port5 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <h2 id="URL-map"><a href="#URL-map" class="headerlink" title="URL map"></a>URL map</h2><p>We’ve covered <code>backend-service</code> above, and <code>url-map</code> is what leads request to <code>backend-service</code></p>
 <p>Firstly, let’s create a <code>url-map</code>, and specify a default <code>backend-service</code>. It means that if destination is not specified, request would be sent to this default <code>backend-service</code></p>
 <p>We could refer to the example below, also the <a href="https://cloud.google.com/sdk/gcloud/reference/compute/url-maps/" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Create a <code>url-map</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps create web-map \</span><br><span class="line">    --default-service backend-service-port1</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>After we created a <code>url-map</code>, and specified a default <code>backend-service</code>, now we could specify more rules with which the request should be led to <code>backend-service</code></p>
@@ -410,6 +435,7 @@
 <p>We could refer to the example below, also the <a href="https://cloud.google.com/sdk/gcloud/reference/compute/url-maps/add-path-matcher" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Add <code>path-matcher</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port1 \</span><br><span class="line">   --path-matcher-name pathmap-port1 \</span><br><span class="line">   --new-hosts=sunday.com.tw</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>Here you could find a new component called <code>path-rules</code></p>
@@ -418,15 +444,20 @@
 <p>When the requested path is <code>unhappy</code>, like <code>monday.com.tw/unhappy</code>, the request would be sent to <code>backend-service-port2</code></p>
 <p>When the requested path is <code>sad</code>, like <code>monday.com.tw/sad</code>, the request would be sent to <code>backend-service-port3</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port2 \</span><br><span class="line">   --path-matcher-name pathmap-port2 \</span><br><span class="line">   --path-rules=/happy=backend-service-port1,/unhappy=backend-service-port2,/sad=backend-service-port3 \</span><br><span class="line">   --new-hosts=monday.com.tw</span><br></pre></td></tr></table></figure>
-<p>example same as above, the request to <code>tuesday.com.tw</code> would be sent to <code>backend-service-port3</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port3 \</span><br><span class="line">   --path-matcher-name pathmap-port3 \</span><br><span class="line">   --new-hosts=tuesday.com.tw</span><br></pre></td></tr></table></figure></p>
+
+<p>example same as above, the request to <code>tuesday.com.tw</code> would be sent to <code>backend-service-port3</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port3 \</span><br><span class="line">   --path-matcher-name pathmap-port3 \</span><br><span class="line">   --new-hosts=tuesday.com.tw</span><br></pre></td></tr></table></figure>
+
 <h2 id="Create-a-SSL-certificate"><a href="#Create-a-SSL-certificate" class="headerlink" title="Create a SSL certificate"></a>Create a SSL certificate</h2><p>In order to let our service support <code>HTTPS</code>, we need to create <code>ssl-certificates</code>. It could be either <code>self-managed</code> or <code>google-managed</code></p>
 <p><code>self-managed</code> means the ssl certificate managed on your own. In the following example, we will use <code>google-managed</code></p>
 <p>We could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/ssl-certificates/" target="_blank" rel="noopener">official documentation</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud beta compute ssl-certificates create www-ssl-cert \</span><br><span class="line">  --domains sunday.com.tw,monday.com.tw,tuesday.com.tw</span><br></pre></td></tr></table></figure>
+
 <h2 id="HTTP-proxy"><a href="#HTTP-proxy" class="headerlink" title="HTTP proxy"></a>HTTP proxy</h2><p>All the HTTP request will get here, and be sent to <code>backend-service</code> via <code>url-map</code></p>
 <p>We could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/target-http-proxies/" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Create a HTTP proxy<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute target-http-proxies create http-lb-proxy \</span><br><span class="line">    --url-map web-map</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h2 id="HTTPS-proxy"><a href="#HTTPS-proxy" class="headerlink" title="HTTPS proxy"></a>HTTPS proxy</h2><p>All the HTTPS request will get here, and be sent to <code>backend-service</code> via <code>url-map</code></p>
@@ -434,16 +465,19 @@
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/target-https-proxies/" target="_blank" rel="noopener">官方文件</a><br>We could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/target-https-proxies/" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Create HTTPS proxy<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute target-https-proxies create https-lb-proxy \</span><br><span class="line">--url-map web-map \</span><br><span class="line">--ssl-certificates www-ssl-cert</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h2 id="Check-Static-External-IP"><a href="#Check-Static-External-IP" class="headerlink" title="Check Static External IP"></a>Check Static External IP</h2><p>List the addresses we’ve created</p>
 <p>We could refer to <a href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create?hl=zh-tw" target="_blank" rel="noopener">official documentation</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses list</span><br></pre></td></tr></table></figure>
+
 <h2 id="Forwarding-rules"><a href="#Forwarding-rules" class="headerlink" title="Forwarding rules"></a>Forwarding rules</h2><p>When the requested address and port match the <code>forwarding-rules</code>, lead the request to designated <code>target-http-proxy</code></p>
 <p>Replace the <code>[LB_IP_ADDRESS]</code> below with the static external IP we just created</p>
 <p>We could refer to the <a href="https://cloud.google.com/sdk/gcloud/reference/compute/forwarding-rules/" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Create HTTP <code>forwarding-rules</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute forwarding-rules create http-content-rule \</span><br><span class="line">    --address [LB_IP_ADDRESS] \</span><br><span class="line">    --global \</span><br><span class="line">    --target-http-proxy http-lb-proxy \</span><br><span class="line">    --ports 80</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>When the requested address and port match the <code>forwarding-rules</code>, lead the request to designated <code>target-https-proxy</code></p>
@@ -451,6 +485,7 @@
 <p>We could refer to the <a href="https://cloud.google.com/sdk/gcloud/reference/compute/forwarding-rules/" target="_blank" rel="noopener">official documentation</a></p>
 <ul>
 <li>Create HTTPS <code>forwarding-rules</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute forwarding-rules create https-content-rule \</span><br><span class="line">    --address [LB_IP_ADDRESS] \</span><br><span class="line">    --global \</span><br><span class="line">    --target-https-proxy https-lb-proxy \</span><br><span class="line">    --ports 443</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Above-mentioned is the flow of <code>Load Balancer</code> of GCP as follows:<br><code>request</code> =&gt; <code>forwarding-rules</code> =&gt; <code>target-http(s)-proxy</code> =&gt; <code>url-map</code> =&gt; <code>backend-service</code> =&gt; <code>instance-group</code> =&gt; <code>instance</code></p>
@@ -531,53 +566,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Google Cloud Pub/Sub 初探 - 控制面板 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -302,15 +302,23 @@
     
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Google Cloud Pub/Sub 是一個訊息服務，提供在不同的應用或服務之間，傳遞事件資料，資料的產生者發佈訊息到 <code>Cloud Pub/Sub topic</code>, 訂閱者可以經由訂閱拉回訊息，或是設定好，當某事件被觸發時，就觸發訂閱。 每個訂閱者必須在可設定的一段時間內確認收到訊息</p>
 <a id="more"></a>
-<p><br></p>
+
+<br>
+
 <h3 id="你將會做什麼？"><a href="#你將會做什麼？" class="headerlink" title="你將會做什麼？"></a>你將會做什麼？</h3><ul>
 <li>設定一個 <code>topic</code> 來存放資料</li>
 <li>訂閱一個 <code>topic</code> 來存取資料</li>
 <li>發佈，然後經由訂閱者來消耗訊息</li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
 <p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
 <p>Qwiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
@@ -326,7 +334,7 @@
 <ol>
 <li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
 <ol start="2">
 <li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
 </ol>
@@ -334,7 +342,7 @@
 <ol start="3">
 <li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
 <ol start="4">
 <li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
 </ol>
@@ -349,45 +357,55 @@
 </ol>
 <p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
 <p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
-<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
-<p><br></p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+<br>
+
 <h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
 <ol>
 <li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
 <ol start="2">
 <li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
 <p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
 <p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
-<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
 <p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
 <p>使用這個 command ,你可以列出有效帳戶名稱:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
 <p>輸出:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
 <p>範例輸出:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
 <p>你可以使用以下 command 來列出專案 ID</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+
 <p>輸出：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
 <p>範例輸出：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
 <p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="設定-Pub-Sub"><a href="#設定-Pub-Sub" class="headerlink" title="設定 Pub/Sub"></a>設定 Pub/Sub</h2><p>你可以使用 <code>Google Cloud Shell</code> 主控台來操作 <code>Google Cloud Pub/Sub</code></p>
 <p>要使用 <code>Pub/Sub</code>, 你建立一個 <code>topic</code> 來存放資料，以及一個訂閱來存取被發佈到 <code>topic</code> 的資料</p>
 <ol>
 <li>點擊 <b>Navigation menu &gt; Pub/Sub &gt; Topics </b></li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/DClO4pHKaQm44mTTelVW-4RsaCkNFnPNe5w1zByIaYuqeEEN73vts6HPeTj2vM6aFjlHojeZ0SlgIX0ZvJPldjb2DSDfVPpVvSoOm1WueXcNtATDegjd2TC4LzAPfC3i8E_PWCPCD_jwr38IXH_Zse8AWyKLeDpqAlZXXZ9DWdOlNBxY3xgY4KmaWpFCLvzFsTYZj_l_tDH2CFoTWNLQshbVoDIX7INM1WcIspG2-yVElm-p0On1hk9nmqfNNcG-FthyuQi3ARTMCXok7gCF2j4qRxT0K9hI1klCBuvALEYFyR2XN7Ug5ho8C9LtTm-Yk3iZD6h4o9_KWI_iFOIMhCQOUIuaaQKsP9VfN33RiydsOAeHQemlZNDL0hueMgM_q2LqVzwB8tvXsVJxa9FfyYSIkKiLaim1KYDtOzR3zB3zPkKFnYUIrmO9FKWmXnWjsSJaJKC-ynSl0yO7SktnLbVEDsa385dwECDph07_qgwuauo_AEsbwUY7GnKcDF5bPdqwd6blkukevB00JF0N37XNk_CURI8SjRxFpKD91tBxVMpi0ICcRHthSF3AL2WriJN4h0pV7-W4owLoesU9eu0FdWGMdoDruYSZ31d_ue91fMQAFTONCKQWLgLgGIawAdXzgVAQD7NHmtb9q2_bdJVujQTOFzU=w432-h602-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/DClO4pHKaQm44mTTelVW-4RsaCkNFnPNe5w1zByIaYuqeEEN73vts6HPeTj2vM6aFjlHojeZ0SlgIX0ZvJPldjb2DSDfVPpVvSoOm1WueXcNtATDegjd2TC4LzAPfC3i8E_PWCPCD_jwr38IXH_Zse8AWyKLeDpqAlZXXZ9DWdOlNBxY3xgY4KmaWpFCLvzFsTYZj_l_tDH2CFoTWNLQshbVoDIX7INM1WcIspG2-yVElm-p0On1hk9nmqfNNcG-FthyuQi3ARTMCXok7gCF2j4qRxT0K9hI1klCBuvALEYFyR2XN7Ug5ho8C9LtTm-Yk3iZD6h4o9_KWI_iFOIMhCQOUIuaaQKsP9VfN33RiydsOAeHQemlZNDL0hueMgM_q2LqVzwB8tvXsVJxa9FfyYSIkKiLaim1KYDtOzR3zB3zPkKFnYUIrmO9FKWmXnWjsSJaJKC-ynSl0yO7SktnLbVEDsa385dwECDph07_qgwuauo_AEsbwUY7GnKcDF5bPdqwd6blkukevB00JF0N37XNk_CURI8SjRxFpKD91tBxVMpi0ICcRHthSF3AL2WriJN4h0pV7-W4owLoesU9eu0FdWGMdoDruYSZ31d_ue91fMQAFTONCKQWLgLgGIawAdXzgVAQD7NHmtb9q2_bdJVujQTOFzU=w432-h602-no"></p>
 <ol start="2">
 <li>點擊<b>Create a topic</b></li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/uTFi_OjxNquR8ZCcZzYjt9AZaZu31JwwWjXbkffggA6vbuYHT2VkeAecXRVO4C9ewEhxZo2RGaMei_1bAALXvLexXeqjK7_BluumGHJQ-Tw78LTv0_R793QZJD2gJlUzde9IDiUK0zZJtbgXj3mQ49DK-aCLO91VIRwq6W7ZQRcmrdfxWglCpO7Sf6WHHf6BD0Fm4JeOmHtB1RrvKawtamVYLerzdjUaLGBWk_PTM_19OT2LHbpdVkSnYzoeg9qPASsilcoK-7_4O3fHVS90meDDntdeK_Hpv30raFZ7u70kwd1zB9rk5zAVHd4pTI6iYXK6FgQrRrPecGS5ZzLO_5Oiv0qkbjjJmi0JGt4K5AAONOG8xYq52hDzoPYvVtCj4ifjY0PM3O24epVBXhucaGujQQHuu7YfTUdmqehtT_gZc69pSqHOHaGs7p39OjrqqKEgxhw9v3rwzpoOLW_U-eBa_x31-gntniY8nAdgpIX1AqBhA0NQXFtPwZwEzG3lzFbcx59nyd458PLs9dvCK1InN5Jbt8k3I4of4bQbUxR-benFTQ08sbNly5a_I8KonohvWfEwhS14SkzjnLMwAA08kJDWJFY4jMHgMso4lD7dgXb0trWFKOC_qtV9aF5dUhmkD1nkTh5xxQ4UgKvDAU3WBfGkc8E=w1533-h480-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/uTFi_OjxNquR8ZCcZzYjt9AZaZu31JwwWjXbkffggA6vbuYHT2VkeAecXRVO4C9ewEhxZo2RGaMei_1bAALXvLexXeqjK7_BluumGHJQ-Tw78LTv0_R793QZJD2gJlUzde9IDiUK0zZJtbgXj3mQ49DK-aCLO91VIRwq6W7ZQRcmrdfxWglCpO7Sf6WHHf6BD0Fm4JeOmHtB1RrvKawtamVYLerzdjUaLGBWk_PTM_19OT2LHbpdVkSnYzoeg9qPASsilcoK-7_4O3fHVS90meDDntdeK_Hpv30raFZ7u70kwd1zB9rk5zAVHd4pTI6iYXK6FgQrRrPecGS5ZzLO_5Oiv0qkbjjJmi0JGt4K5AAONOG8xYq52hDzoPYvVtCj4ifjY0PM3O24epVBXhucaGujQQHuu7YfTUdmqehtT_gZc69pSqHOHaGs7p39OjrqqKEgxhw9v3rwzpoOLW_U-eBa_x31-gntniY8nAdgpIX1AqBhA0NQXFtPwZwEzG3lzFbcx59nyd458PLs9dvCK1InN5Jbt8k3I4of4bQbUxR-benFTQ08sbNly5a_I8KonohvWfEwhS14SkzjnLMwAA08kJDWJFY4jMHgMso4lD7dgXb0trWFKOC_qtV9aF5dUhmkD1nkTh5xxQ4UgKvDAU3WBfGkc8E=w1533-h480-no"></p>
 <ol start="3">
 <li><code>topic</code> 必須是一個獨一無二的名字，在這個 <code>lab</code> 中，將你的 <code>topic</code> 取名為 <code>MyTopic</code>. 在 <code>Create a topic</code> 視窗中：</li>
 </ol>
@@ -396,58 +414,75 @@
 <li>將 <b>Encryption</b> 留為默認值</li>
 <li>點擊 <b>CREATE TOPIC</b></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/GMjvYya2HvUiffOrSMM87q6ATsGakEsZzeEA8EyURylbZbeBahqzShv2-4Y7fyRTdl03CWfHt_2dAUPhQn8r6s9_9D6XKkMgOpT6rc8d2cvbwtM5x9ozT29XpWTntDQcM_65oxc6vVLpSU0VkQzP8VhZO1Uh6INTRjRDJ51z5lfX5D1L6SJ3PQKLf6Nln8r-NC15GVP9xJ08oxm_C36IpNjV_ovuwIgs4FksFMta-yA8Uc_FtqLOHcsEuDVmWUvgce_e1-VqYpehymQRgqCl-lPIC0LlsM-FUknieB813KYrbGTE-de1Hh8epKHk4P5CRpSZEQ1PbcuuMXMcE4CYV_n_AbATRxdHsL7KyNH8h51Eiwu6NVrTLhKuW-oHhjRiaU-3rjRzFWrxMeKZS8d3zzss9UgIUhM1l8mfqKhHksYI6DKVet_0w_F00WjAP40iK9_fI0p8VRZr_LqFgZLn_22EsTL8lgKSC66I_5Xmqrr3BaFQUxUUE9aPgcTvAVi2lnqjLZmzhK2-N6a0jCJz39NdVD5VoyRHIoQfBnFx5aoBRRWipxFvJZA_6uDPhQHAoyP49gdkUY5tBnwfT0CeY34Yp6YsmoqIDGgr18-zl90TSf6U_x_q2RAW8VVfjbctfFg2xt_ds2Ap0JA_LA84aHh4FTeDb9A=w1002-h744-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/GMjvYya2HvUiffOrSMM87q6ATsGakEsZzeEA8EyURylbZbeBahqzShv2-4Y7fyRTdl03CWfHt_2dAUPhQn8r6s9_9D6XKkMgOpT6rc8d2cvbwtM5x9ozT29XpWTntDQcM_65oxc6vVLpSU0VkQzP8VhZO1Uh6INTRjRDJ51z5lfX5D1L6SJ3PQKLf6Nln8r-NC15GVP9xJ08oxm_C36IpNjV_ovuwIgs4FksFMta-yA8Uc_FtqLOHcsEuDVmWUvgce_e1-VqYpehymQRgqCl-lPIC0LlsM-FUknieB813KYrbGTE-de1Hh8epKHk4P5CRpSZEQ1PbcuuMXMcE4CYV_n_AbATRxdHsL7KyNH8h51Eiwu6NVrTLhKuW-oHhjRiaU-3rjRzFWrxMeKZS8d3zzss9UgIUhM1l8mfqKhHksYI6DKVet_0w_F00WjAP40iK9_fI0p8VRZr_LqFgZLn_22EsTL8lgKSC66I_5Xmqrr3BaFQUxUUE9aPgcTvAVi2lnqjLZmzhK2-N6a0jCJz39NdVD5VoyRHIoQfBnFx5aoBRRWipxFvJZA_6uDPhQHAoyP49gdkUY5tBnwfT0CeY34Yp6YsmoqIDGgr18-zl90TSf6U_x_q2RAW8VVfjbctfFg2xt_ds2Ap0JA_LA84aHh4FTeDb9A=w1002-h744-no"></p>
 <p>你已經建立了 <code>topic</code></p>
-<p><img src="https://lh3.googleusercontent.com/-rMJeM2FbQYixife8Ql4AcyvStvrKXHYD6jqBzZEUAe8kOVomAF3aLtJfzVGMscFZ1AS-_96Y8L7PQg0m2o1PR7NmDARRGw8w9OL-ClN1ydWgmEp8EnfFGxkgYxVAolYmszyKU4U-iSdSgnCHbl6YBbOEg8_qvbztpENTBktZnBFmXeKQdq-KQLV_BLSv9lHHglGwoMctKuKxz9-LtpWB9oCBoI37h7L2x9LqdSFZP8FVO7TBl3b7CZttxa3ozBfS-e1e2l9ekK5wNCWEeDM2bNTxyH4c8YeIWKfz-4aQjCAXUWjZBZGiJKa4-uUft1dTg1n5EmF6BfuKMI8_lnle8_7i4_ocQpIqcCtsM76V48W7nJSvYwHL9sgiFGXXKo2ccDN3W4V2KPs6lOQvAvv-WVsbWSQ_YgJSFtlmBjgUaolq2dJJCqmdjkTfWsOqwxg0gXA3KlaIdCftDi_r8NTUn1ZiYZw3mCUc2xdfIeIhmTWtcm94u3a3_q3qWyHV2ly4UkknVEVVlsJcasYwxgOhk5FGryoCg4C5lyhE2XrT5B10UvUFNcxF-NyB_Tnfk9Nl270AFETCMIAWMdnESbLVCtbuXe3RzUo2DlQhYGshbcVE9634xSiBb8SfszvWPxfMwm8MCgAu6WahfuqHht0Pn09rikeSkM=w1387-h986-no" alt></p>
-<p><br></p>
+<p><img src="https://lh3.googleusercontent.com/-rMJeM2FbQYixife8Ql4AcyvStvrKXHYD6jqBzZEUAe8kOVomAF3aLtJfzVGMscFZ1AS-_96Y8L7PQg0m2o1PR7NmDARRGw8w9OL-ClN1ydWgmEp8EnfFGxkgYxVAolYmszyKU4U-iSdSgnCHbl6YBbOEg8_qvbztpENTBktZnBFmXeKQdq-KQLV_BLSv9lHHglGwoMctKuKxz9-LtpWB9oCBoI37h7L2x9LqdSFZP8FVO7TBl3b7CZttxa3ozBfS-e1e2l9ekK5wNCWEeDM2bNTxyH4c8YeIWKfz-4aQjCAXUWjZBZGiJKa4-uUft1dTg1n5EmF6BfuKMI8_lnle8_7i4_ocQpIqcCtsM76V48W7nJSvYwHL9sgiFGXXKo2ccDN3W4V2KPs6lOQvAvv-WVsbWSQ_YgJSFtlmBjgUaolq2dJJCqmdjkTfWsOqwxg0gXA3KlaIdCftDi_r8NTUn1ZiYZw3mCUc2xdfIeIhmTWtcm94u3a3_q3qWyHV2ly4UkknVEVVlsJcasYwxgOhk5FGryoCg4C5lyhE2XrT5B10UvUFNcxF-NyB_Tnfk9Nl270AFETCMIAWMdnESbLVCtbuXe3RzUo2DlQhYGshbcVE9634xSiBb8SfszvWPxfMwm8MCgAu6WahfuqHht0Pn09rikeSkM=w1387-h986-no"></p>
+<br>
+
 <h3 id="測試任務是否完成"><a href="#測試任務是否完成" class="headerlink" title="測試任務是否完成"></a>測試任務是否完成</h3><p>點擊<b>Check my progress</b> 來和對目前任務進度。如果你已經成功建立 <code>Cloud Pub/Sub topic</code>, 你會得到評價的分數</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="增加一個訂閱"><a href="#增加一個訂閱" class="headerlink" title="增加一個訂閱"></a>增加一個訂閱</h2><p>現在你將建立一個訂閱來存取 <code>topic</code></p>
 <ol>
 <li>在左邊的控制列點擊 <b>Topics</b> 回到 <b>Topics</b> 對話框, 在我們剛剛建立的 <code>topic</code>，在三個點的圖案處按一下，然後點擊 <b>Create subscription</b></li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/l_8o2sUjv8fPnSQX8uMMk7menPyQe_s6W9n_A_J8ysJcDL1QG34CCy3jADE1Tx-uaDAfrGjIODkCWcGWfDNwqe59EhEvOZMNHpb-MnNlrcGtFyLiuzfcloIA1RMdfeCjRh2xtaCmzMEFQLEk_1O8b-zqoYG3142aJnWSS2pnf82f8jYyKIhy_gRedee8lVHFC6R7tLjQaGMiqa7r86U3P2NdP-kVjpGuNoKrI7lg9PKkfDrIjSIh3XPJN38RC7kNfweqWEAtAhpX9j5A4HGZPRplHfGSRJZlMQEW9d1ykgzRPFp2ylQpMzNtTuwgi8l1zY74X1bQrnA9vL9lVVI5TGdWqpMWLiq9m46M0qIXW7ULCqdqA80XYFym3PLFB8vlPiH_d2H56B23Suklam3Qwj1G0P9sjFJ6_2T5-MixzD7tHYgFn3zO1JzHAn7e0xyZGSJunqT_P7iKmSm37NN553q8KxPoxA9KkiUSpjb59Kuy9o2TqYS9BzdUJ_tJ2DJVF70Ot6rgdthgFAQkpSfEem3KaT8s32bikqk4cNuIWq7S7UHpyAI_8v8EcWqb1gcE6D63l09z7NGW7ETm1erEnzm7773Z8plUpJ6gNm8qoWvYmvAOmZ_EV-1tFPqP2KBSNuwZvE9hNuYl74UHv_9Pxavng9HKTPw=w1159-h651-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/l_8o2sUjv8fPnSQX8uMMk7menPyQe_s6W9n_A_J8ysJcDL1QG34CCy3jADE1Tx-uaDAfrGjIODkCWcGWfDNwqe59EhEvOZMNHpb-MnNlrcGtFyLiuzfcloIA1RMdfeCjRh2xtaCmzMEFQLEk_1O8b-zqoYG3142aJnWSS2pnf82f8jYyKIhy_gRedee8lVHFC6R7tLjQaGMiqa7r86U3P2NdP-kVjpGuNoKrI7lg9PKkfDrIjSIh3XPJN38RC7kNfweqWEAtAhpX9j5A4HGZPRplHfGSRJZlMQEW9d1ykgzRPFp2ylQpMzNtTuwgi8l1zY74X1bQrnA9vL9lVVI5TGdWqpMWLiq9m46M0qIXW7ULCqdqA80XYFym3PLFB8vlPiH_d2H56B23Suklam3Qwj1G0P9sjFJ6_2T5-MixzD7tHYgFn3zO1JzHAn7e0xyZGSJunqT_P7iKmSm37NN553q8KxPoxA9KkiUSpjb59Kuy9o2TqYS9BzdUJ_tJ2DJVF70Ot6rgdthgFAQkpSfEem3KaT8s32bikqk4cNuIWq7S7UHpyAI_8v8EcWqb1gcE6D63l09z7NGW7ETm1erEnzm7773Z8plUpJ6gNm8qoWvYmvAOmZ_EV-1tFPqP2KBSNuwZvE9hNuYl74UHv_9Pxavng9HKTPw=w1159-h651-no"></p>
 <ol start="2">
-<li><p>在 <b>Add subscription to topic</b> 對話框：</p>
-<ul>
-<li>輸入 <code>subscription</code> 的名字，例如 <b>MySub</b></li>
-<li>將 Delivery type 設為 <b>Pull</b></li>
-<li>將其他選項都留為預設值</li>
+<li>在 <b>Add subscription to topic</b> 對話框：<ul>
+<li><p>輸入 <code>subscription</code> 的名字，例如 <b>MySub</b></p>
+</li>
+<li><p>將 Delivery type 設為 <b>Pull</b></p>
+</li>
+<li><p>將其他選項都留為預設值</p>
+</li>
 <li><p>點擊 <b>Create</b></p>
-<p><img src="https://lh3.googleusercontent.com/6LqQSCqc9HcAr0tiD2mMBSXQGZoHZd2EBUBJYgpb4CGlB0jn1NN5O2vGOzNbRwkz29U9KHsghcL3-_l6bcEYeNkKs7jPzeErgzNr7LMFA0440kua6ERZhVMnO0FA_jq2agRwwhNyJWbYNn66l3hpS0TQehuTaXwxSFGBr5AajWuHSz30ApGbc1VWnBkHWjmoUgP6eq5mbjsjX6aWSY01YWGghgTtWz0I9_yBTGe9vhXdzICsRpdEYNHKbTLp3eWG7wQuKIMNh7mahsWJS-Cp59wOHurdERvV-wQFL9VXJ0tWhMJRplU8qtnWjzcwpXe5UIP-OxQpwZ_a1ZPcByrQKLcYonxZNar909IRriHd3vUxuFI9GWr5aQcwQz3KPo4pSvt359ePG17WiGC58CKrHPJQf1cX4S3TNHOkpsMOggvJYOOt260moeGaoYqSO2rm4gHM3ndUr6kTauFmjxmM_yk_6HsUuRMXVyYMas5P6XbtrTMa9ZD4HI6_saMiL5c7fE0yFwwtO4Vm75YeIBWDFonQNqKWaPaFbP8CJg__7n1oyupoKjVz_HuqhOy5aQEt9C17sS1rOzKMsHF0vVW6INP99fc5uciwo_esTHM80zUHvdT63sNv1EvQiCFGrh9EnRkSsZ6fuEHiWaHimdWAZ4w7FEoH36s=w1107-h1563-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/6LqQSCqc9HcAr0tiD2mMBSXQGZoHZd2EBUBJYgpb4CGlB0jn1NN5O2vGOzNbRwkz29U9KHsghcL3-_l6bcEYeNkKs7jPzeErgzNr7LMFA0440kua6ERZhVMnO0FA_jq2agRwwhNyJWbYNn66l3hpS0TQehuTaXwxSFGBr5AajWuHSz30ApGbc1VWnBkHWjmoUgP6eq5mbjsjX6aWSY01YWGghgTtWz0I9_yBTGe9vhXdzICsRpdEYNHKbTLp3eWG7wQuKIMNh7mahsWJS-Cp59wOHurdERvV-wQFL9VXJ0tWhMJRplU8qtnWjzcwpXe5UIP-OxQpwZ_a1ZPcByrQKLcYonxZNar909IRriHd3vUxuFI9GWr5aQcwQz3KPo4pSvt359ePG17WiGC58CKrHPJQf1cX4S3TNHOkpsMOggvJYOOt260moeGaoYqSO2rm4gHM3ndUr6kTauFmjxmM_yk_6HsUuRMXVyYMas5P6XbtrTMa9ZD4HI6_saMiL5c7fE0yFwwtO4Vm75YeIBWDFonQNqKWaPaFbP8CJg__7n1oyupoKjVz_HuqhOy5aQEt9C17sS1rOzKMsHF0vVW6INP99fc5uciwo_esTHM80zUHvdT63sNv1EvQiCFGrh9EnRkSsZ6fuEHiWaHimdWAZ4w7FEoH36s=w1107-h1563-no"></p>
 <p>你的訂閱被列在訂閱清單中</p>
-<p><img src="https://lh3.googleusercontent.com/DtrddoerQ8dVfpZMk9lllXmlukaQL0_kLyqClFv4L-EPExHFvFZxTLNIC1dKHKtKT_e10Ney_2h9XNdpOQxWdlbsbEMdOidhDokRgmhjGKu5EY4D-h860Th96dDlVFZYoZWrYTDee0zbVpFQwoVU9Pc2nxD56eozQgOEMvtttJkOeKIgHwfNVCvMRMpUxVlxAcmKLmlaL5fSCy3v_Fyd_XfA-YvqF0pOaFZ4Eu2BvqYdQVb0ux4qpT11QbF7JyYkmb5BeOC5_4bz7nkcYuEsT70TuO9giaCv7y0mmkD9l6kknJ3s_vgAtd_8NPGA89v6VBub1dm0wFNRWcRgnrUmVcVNOKuZcZJadCbTo35qrEHOCHLRv5bDwN4VdSlHlVFXmigY5L3e_bOAquUMqMeqopXLNVtkpowMXvEGxwvxBCIA4mGc-vi1FQPtFOEuaAdg3vOdiYQ1zzyWW_8r_wb_BpifO1eXPM26MNn-hD9qadeBJ_MPoXsxweP1gd2o3AjQCpJ0pasndtRpnc4ZX7YGLWsRpNz6VvUPFUG6sQbQEXxRDZN-6W7-FW1ueq_KoVN4-2P9i_lv982v-OHdl8L4oV4EqVEYfoeZmkn2VzkrSaWhcHIZdtnvYYQdOD3k7dIBtz5HGgrrHYrgIUwotQnAJ9gF4x5P86c=w1303-h1090-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/DtrddoerQ8dVfpZMk9lllXmlukaQL0_kLyqClFv4L-EPExHFvFZxTLNIC1dKHKtKT_e10Ney_2h9XNdpOQxWdlbsbEMdOidhDokRgmhjGKu5EY4D-h860Th96dDlVFZYoZWrYTDee0zbVpFQwoVU9Pc2nxD56eozQgOEMvtttJkOeKIgHwfNVCvMRMpUxVlxAcmKLmlaL5fSCy3v_Fyd_XfA-YvqF0pOaFZ4Eu2BvqYdQVb0ux4qpT11QbF7JyYkmb5BeOC5_4bz7nkcYuEsT70TuO9giaCv7y0mmkD9l6kknJ3s_vgAtd_8NPGA89v6VBub1dm0wFNRWcRgnrUmVcVNOKuZcZJadCbTo35qrEHOCHLRv5bDwN4VdSlHlVFXmigY5L3e_bOAquUMqMeqopXLNVtkpowMXvEGxwvxBCIA4mGc-vi1FQPtFOEuaAdg3vOdiYQ1zzyWW_8r_wb_BpifO1eXPM26MNn-hD9qadeBJ_MPoXsxweP1gd2o3AjQCpJ0pasndtRpnc4ZX7YGLWsRpNz6VvUPFUG6sQbQEXxRDZN-6W7-FW1ueq_KoVN4-2P9i_lv982v-OHdl8L4oV4EqVEYfoeZmkn2VzkrSaWhcHIZdtnvYYQdOD3k7dIBtz5HGgrrHYrgIUwotQnAJ9gF4x5P86c=w1303-h1090-no"></p>
 </li>
 </ul>
 </li>
 </ol>
-<p><br></p>
+<br>
+
 <h3 id="測試任務是否完成-1"><a href="#測試任務是否完成-1" class="headerlink" title="測試任務是否完成"></a>測試任務是否完成</h3><p>點擊<b>Check my progress</b> 來和對目前任務進度。如果你已經成功建立 <code>Cloud Pub/Sub topic</code>, 你會得到評價的分數</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="測試你的理解"><a href="#測試你的理解" class="headerlink" title="測試你的理解"></a>測試你的理解</h2><p>底下有一些問題用來鞏固你對這個 <code>lab</code> 概念的了解，盡你所能的去回答吧</p>
 <p>一個發佈者的的應用，建立並且傳送訊息到 <code>___</code>. 訂閱者的應用建立一個 <code>___</code> 到 <code>topic</code> 來取得訊息</p>
 <ul>
-<li style="list-style: none"><input type="checkbox" checked> topic, subscription</li>
-<li style="list-style: none"><input type="checkbox"> topic, topic</li>
-<li style="list-style: none"><input type="checkbox"> subscription, subscription</li>
-<li style="list-style: none"><input type="checkbox"> subscription, topic</li>
+<li><input checked disabled type="checkbox"> topic, subscription</li>
+<li><input disabled type="checkbox"> topic, topic</li>
+<li><input disabled type="checkbox"> subscription, subscription</li>
+<li><input disabled type="checkbox"> subscription, topic</li>
 </ul>
 <p><code>Cloud Pub/Sub</code> 是一個被設計為高度可靠以及可規模化的異步訊息服務</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="發佈訊息到-topic"><a href="#發佈訊息到-topic" class="headerlink" title="發佈訊息到 topic"></a>發佈訊息到 topic</h2><ol>
 <li>在 <b>Topics details</b> 對話框的上方，點擊 <b>PUBLISH MESSAGE</b>。 你可能需要調寬瀏覽器的視窗來檢視 <b>PUBLISH MESSAGE</b> 選項</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/nRuOAu9Fxu7Gn34Fp3c0ClEV8neY1S2x82ASW4tA8-FIA8OT9lRVkhR9a4MbHZzehBDGKdDAF5_J8GXAMEAYYtAtBojY6ydqk8q3H4vWDwSjeeWPR2JD2GNnuCiNgEQT_-P9qYq0s5b06A-4mpqNPgO8V8JS-T3wUwW-zIwF3m6kabOowfa3GR3wv148ZroTD32LN5JzJiGeeS5XqZ5mpv-YReZ-eD0mtjKoZ-6oD3Y9a5ldP759X2VtVIwa7LZtGFr2H24k1_e4qdXc0rCj99PgVjKcxtDazvu0kE8MhCaeq3Sw0v-vdVDT1BTVtvS5u7Fe-zhjzzQ2oRT4QqFtiOHhwWtgW24aoFHU-rEeKB_C1mw31T_AvClLBMGQCeOo6NFD4rlg_3EXvAlzdqKfyuFtNR-JhB1E5047LRnnDowsnR4MIO_F1u7uqoKBTijpRlBgItZOoZxIFHpPIDyr7i_eEhUIIl45B8olK8vUy9VkoD_ktpOBsqbuWULhtY3VbgRHgvFgUmbhiy-u4XmuSn9W2pyxTE_fo61_8Ku4cBJ9Bks5JxNDq0h2MsYyiLq55-TTky7mcufygUoqxfIIbr3eKZvZH50ARKZwTgOQeNoYvrXVqkTrkgrQOCvjb-C1F_WRd2MgHaQjMdRPFopeKsqL44lRuOI=w1272-h801-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/nRuOAu9Fxu7Gn34Fp3c0ClEV8neY1S2x82ASW4tA8-FIA8OT9lRVkhR9a4MbHZzehBDGKdDAF5_J8GXAMEAYYtAtBojY6ydqk8q3H4vWDwSjeeWPR2JD2GNnuCiNgEQT_-P9qYq0s5b06A-4mpqNPgO8V8JS-T3wUwW-zIwF3m6kabOowfa3GR3wv148ZroTD32LN5JzJiGeeS5XqZ5mpv-YReZ-eD0mtjKoZ-6oD3Y9a5ldP759X2VtVIwa7LZtGFr2H24k1_e4qdXc0rCj99PgVjKcxtDazvu0kE8MhCaeq3Sw0v-vdVDT1BTVtvS5u7Fe-zhjzzQ2oRT4QqFtiOHhwWtgW24aoFHU-rEeKB_C1mw31T_AvClLBMGQCeOo6NFD4rlg_3EXvAlzdqKfyuFtNR-JhB1E5047LRnnDowsnR4MIO_F1u7uqoKBTijpRlBgItZOoZxIFHpPIDyr7i_eEhUIIl45B8olK8vUy9VkoD_ktpOBsqbuWULhtY3VbgRHgvFgUmbhiy-u4XmuSn9W2pyxTE_fo61_8Ku4cBJ9Bks5JxNDq0h2MsYyiLq55-TTky7mcufygUoqxfIIbr3eKZvZH50ARKZwTgOQeNoYvrXVqkTrkgrQOCvjb-C1F_WRd2MgHaQjMdRPFopeKsqL44lRuOI=w1272-h801-no"></p>
 <ol start="2">
 <li>在 <b>Message</b> 欄位中輸入 <code>Hello World</code>, 然後點擊 <b>Publish</b></li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/sgt4TgzHWj62DUm7Io3LFB14bg8mSPIibOEq4xaemPey3UMVO2cJ4no7X-u9s331Dkx2ZuzNixoa2XPaGPz1PpBrZi3B7qEorJm_erbNl2ieHxEwGJesBKrdwyUZfGAyYvGkTw0EdhmS5osiQBN-eUAKLKJmW7P7E3gyN-2baaetxU_H9W8SN3o2pTB2BxR4yueVlfku8clAElAZAXl9Pvj1efQ6m3HqSSkDrqjpPAv4BWueVht8yWvyMWRYtsic_Llw1t19hM8v8Kx242YtKTxBUYZX0h_scyrrekcrt2EFioi8pxu4SeeLAmbd6TnPumvAHCGSONGHvaNgFUo4MNNZvuWWTKCun8goJKqSzRUdPvzN4NXrWfKRtQNgem6p0vmu6zEWpIgPzxQGS7_8glwmlhFDyqFgGOZi4mBZycoLje7odQl1we0vgS8_CpOsTZFhXONEt2xjzvjrWVwZWMdmqWkyHYD33iCjlVT2lHV5D91rknS_t46V0RME4v-tqA1ZjESQIyIHC2S1PKb9tsKOGTqery1uQCMUe1A3QwucED3-9CQaDpNgP4XhzqRdDuKYQdVc7T2USly-TQKoxsXFjCaHRmMKWJpvXs5tTGth2uBsbQi2CUMhGxUWsDIJ47e9q6S-mRjj6fwbFXZdQumXdFXhC4o=w1003-h1074-no" alt></p>
-<p><br><br><br><br><br></p>
+<p><img src="https://lh3.googleusercontent.com/sgt4TgzHWj62DUm7Io3LFB14bg8mSPIibOEq4xaemPey3UMVO2cJ4no7X-u9s331Dkx2ZuzNixoa2XPaGPz1PpBrZi3B7qEorJm_erbNl2ieHxEwGJesBKrdwyUZfGAyYvGkTw0EdhmS5osiQBN-eUAKLKJmW7P7E3gyN-2baaetxU_H9W8SN3o2pTB2BxR4yueVlfku8clAElAZAXl9Pvj1efQ6m3HqSSkDrqjpPAv4BWueVht8yWvyMWRYtsic_Llw1t19hM8v8Kx242YtKTxBUYZX0h_scyrrekcrt2EFioi8pxu4SeeLAmbd6TnPumvAHCGSONGHvaNgFUo4MNNZvuWWTKCun8goJKqSzRUdPvzN4NXrWfKRtQNgem6p0vmu6zEWpIgPzxQGS7_8glwmlhFDyqFgGOZi4mBZycoLje7odQl1we0vgS8_CpOsTZFhXONEt2xjzvjrWVwZWMdmqWkyHYD33iCjlVT2lHV5D91rknS_t46V0RME4v-tqA1ZjESQIyIHC2S1PKb9tsKOGTqery1uQCMUe1A3QwucED3-9CQaDpNgP4XhzqRdDuKYQdVc7T2USly-TQKoxsXFjCaHRmMKWJpvXs5tTGth2uBsbQi2CUMhGxUWsDIJ47e9q6S-mRjj6fwbFXZdQumXdFXhC4o=w1003-h1074-no"></p>
+<br>
+<br>
+<br>
+
 <h2 id="檢視訊息"><a href="#檢視訊息" class="headerlink" title="檢視訊息"></a>檢視訊息</h2><p>要檢視訊息，你將需要使用 <code>subscription (MySub)</code> 來從 <code>topic (MyTopic)</code> 取得訊息 <code>(Hello World)</code></p>
 <p>在命令行輸入以下指令</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud pubsub subscriptions pull --auto-ack MySub</span><br></pre></td></tr></table></figure>
+
 <p>訊息將會出現在輸出的 <code>DATA</code> 欄位</p>
-<p><img src="https://lh3.googleusercontent.com/euZtshqHLP5uQXjPFx-0p-roPHWflE2FYydg6hV-XddEP_UX4h-vnnv6xjRdfBbgdReNV50cf4f7Ln2mrYZYGKMCETJmgb8rDshauCaz-z-EWNm3NTKcoNQdl7S4ym5a1ubdoc5bMIEFTJrxzuoUcYWUdazAOn7t1ilIRfRDt3KimRxJUkUgCm-Kz7l5rXPoQeW9Beumm01wmBqYPqKwapDugcflNbR0d8NJ_5ry73qhlIIZVMaw-CuNHIpqNghFZj7RGq4mgLw1FQBqkqY0yZrrwlESBM4k6E0dlkjNSyt2Qp0qwN4YUt-LcneN_yW0Fnh0TD3JlQiOMBCfFx80hdd6MmlYY_9VoJ8t4ARlLVMemdViicGbE-mGZqXbrkO0ARz-vazX8ye03JuX8VYnf0x4N7031uRjkMe6nLboO8gInZyU_KD9rO-ee5Uv6ai2V05RqXvxHpkWXaW8uDpGc18DdyUbQ7FByDsx7KLUbirVq2l-74FQgGhw7Y__bQ0ChdjU31zomobquh1ZLNJmO-A_5Ja3QwYtYHsQqRZWXzSa2cC_Fml2dNp5mucU6ye_MRcNJWwWrp4iJZcXvAcuX0QP-iAhV7nZnDARj-n3TEnCpj1IrpHbixXpG9wlVakYYnz2Evcu4_oqIEHeCSyc8litHACyt_Q=w988-h213-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/euZtshqHLP5uQXjPFx-0p-roPHWflE2FYydg6hV-XddEP_UX4h-vnnv6xjRdfBbgdReNV50cf4f7Ln2mrYZYGKMCETJmgb8rDshauCaz-z-EWNm3NTKcoNQdl7S4ym5a1ubdoc5bMIEFTJrxzuoUcYWUdazAOn7t1ilIRfRDt3KimRxJUkUgCm-Kz7l5rXPoQeW9Beumm01wmBqYPqKwapDugcflNbR0d8NJ_5ry73qhlIIZVMaw-CuNHIpqNghFZj7RGq4mgLw1FQBqkqY0yZrrwlESBM4k6E0dlkjNSyt2Qp0qwN4YUt-LcneN_yW0Fnh0TD3JlQiOMBCfFx80hdd6MmlYY_9VoJ8t4ARlLVMemdViicGbE-mGZqXbrkO0ARz-vazX8ye03JuX8VYnf0x4N7031uRjkMe6nLboO8gInZyU_KD9rO-ee5Uv6ai2V05RqXvxHpkWXaW8uDpGc18DdyUbQ7FByDsx7KLUbirVq2l-74FQgGhw7Y__bQ0ChdjU31zomobquh1ZLNJmO-A_5Ja3QwYtYHsQqRZWXzSa2cC_Fml2dNp5mucU6ye_MRcNJWwWrp4iJZcXvAcuX0QP-iAhV7nZnDARj-n3TEnCpj1IrpHbixXpG9wlVakYYnz2Evcu4_oqIEHeCSyc8litHACyt_Q=w988-h213-no"></p>
 <p>你建立了 <code>Pub/Sub topic</code>，並且發佈到這個 <code>topic</code>, 建立了 <code>subscription</code>, 然後使用 <code>subscription</code> 來取得在 <code>topic</code> 的資料</p>
 <p>恭喜完成本教程！</p>
 
@@ -527,53 +562,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

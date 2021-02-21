@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>伸縮自如的 git flow - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -342,6 +342,7 @@
 </li>
 </ol>
 <a id="more"></a>
+
 <p>以 Ray 來說，我在開發時，習慣畫流程圖，並且將我腦中覺得可行的邏輯一條條寫下來，然後實踐。 通常一個大功能可能會由好幾個邏輯組成，而這個 git flow 讓我可以在一個 feature 分支上，將我的每一個小邏輯都記錄下來，分成一個個 commit 。 最後確定沒有問題了，在轉換成正式上線時需要的大功能 commit 。<br>在實踐這個 git flow 的過程中，我對 git rebase 的熟悉與日俱增，並且訓練自己以更嚴謹的方式來做每一個 commit。<br>以下 Ray 個人覺得這個 git flow 可以帶來的好處：</p>
 <ol>
 <li>因為 commit 很小，邏輯單一，不管是在實驗或是除錯方面，都有不可言諭的便利性。</li>
@@ -353,8 +354,12 @@
 <p>當我們在本地 commit 時，我們傾向這個 commit 可以越小越好，因為越小越純粹功能越單一的 commit ，不管是在 Debug ，或是邏輯實驗與印證都有不可言傳，只可意會的妙用！</p>
 <h2 id="例如呢？"><a href="#例如呢？" class="headerlink" title="例如呢？"></a>例如呢？</h2><p>讓我們具體一點!</p>
 <p>當今天你在 Debug ，發現印出來的東西不如你的預期。你嘗試不同的方式來測試，直到印出的數據是你想要的！</p>
-<p>如果你的 commit 有符合上面的原則，在這個時候呢，在每一次失敗的嘗試之後，你不需要繁複的修修改改。你只需要簡單的<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git reset --hard</span><br></pre></td></tr></table></figure></p>
-<p>就算你一個 commit 邏輯整個錯了，如果你的 commit 功能夠單一，要拿掉這個 commit ，你只需要<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git reset @^ --hard</span><br></pre></td></tr></table></figure></p>
+<p>如果你的 commit 有符合上面的原則，在這個時候呢，在每一次失敗的嘗試之後，你不需要繁複的修修改改。你只需要簡單的</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git reset --hard</span><br></pre></td></tr></table></figure>
+
+<p>就算你一個 commit 邏輯整個錯了，如果你的 commit 功能夠單一，要拿掉這個 commit ，你只需要</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git reset @^ --hard</span><br></pre></td></tr></table></figure>
+
 <h2 id="我們想要的是什麼？"><a href="#我們想要的是什麼？" class="headerlink" title="我們想要的是什麼？"></a>我們想要的是什麼？</h2><p>然而，正式上線的 git flow 不容許我們這樣做。正式上線的 git flow 通常會要求推上去的每一個 commit 都要’指定的功能正常’。意思可以理解說，如果要將 commit 最小化，那很有可能我們會需要多個最小化的 commit 來組成一個正式上線公司所需要的大功能。</p>
 <h2 id="需求整理"><a href="#需求整理" class="headerlink" title="需求整理"></a>需求整理</h2><ul>
 <li>開發時： 我們需要隨時可以 commit 的靈活度，功能越單一越好</li>
@@ -369,9 +374,9 @@
 <li>(選擇性)以上兩個分支我都要保留其各自獨特的歷史</li>
 </ol>
 <h2 id="具體看起來是？"><a href="#具體看起來是？" class="headerlink" title="具體看起來是？"></a>具體看起來是？</h2><p>如下圖可以看到，左邊是檔案內容，右邊是 commit ，大家可以看到，在 develop branch 上，每個 small function 都對應到相應的檔案，這只是範例，表達我們所要的最小 commit 的概念。</p>
-<p><img src="https://i.imgur.com/k68xKOP.png" alt></p>
+<p><img src="https://i.imgur.com/k68xKOP.png"></p>
 <h3 id="master-分支"><a href="#master-分支" class="headerlink" title="master 分支:"></a>master 分支:</h3><p>接下來，如下圖我們來看看實際上線時， commit 應該是什麼樣子。我們可以看到，在 master branch 上，我們只有4個 commit ，而每個 commit 都包含了4個檔案(除了 .gitignore 的 commit 之外)。這只是範例，表達正式上線時所需求的 commit 標準往往比我們理想的最小 commit 還要大。</p>
-<p><img src="https://i.imgur.com/A9DB2U2.png" alt></p>
+<p><img src="https://i.imgur.com/A9DB2U2.png"></p>
 <p><a href="https://github.com/tn710617/ray_gitflow" target="_blank" rel="noopener">範例連結</a></p>
 <h2 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h2><h3 id="一切的起點"><a href="#一切的起點" class="headerlink" title="一切的起點"></a>一切的起點</h3><p>通常 .gitignore 會是一切的起點！</p>
 <ul>
@@ -380,6 +385,7 @@
 </li>
 <li><p>完成第一個 commit</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git add .ignore; git commit -m <span class="hljs-string">'Added .gitignore'</span>;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="develop-分支"><a href="#develop-分支" class="headerlink" title="develop 分支"></a>develop 分支</h3><p>接下來，我們將以 master branch 為基礎，建立 develop branch ，如同前面敘述的， develop branch 上面的 commit 會是最細最小的，而 master branch 上的 commit 會是符合正式上線標準的。</p>
@@ -387,20 +393,23 @@
 <li>首先，從已經設定好 .gitignore 的 master 分支為基礎，建立 develop 分支</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git checkout -b develop</span><br></pre></td></tr></table></figure>
+
 <h3 id="feature-分支"><a href="#feature-分支" class="headerlink" title="feature 分支"></a>feature 分支</h3><p>然後呢，我們要開始開發了！</p>
 <ul>
 <li>建立一個 feature 分支</li>
 <li>這個 feature 分支代表當前正在開發的功能</li>
 <li>這邊所說的功能，是依照<code>正式上線</code>的標準</li>
 <li>所以，一個功能等於一個 feature 分支<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git checkout -b feature;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="自由的-commit"><a href="#自由的-commit" class="headerlink" title="自由的 commit"></a>自由的 commit</h3><ul>
 <li>在 feature branch 上，我們可以隨便 commit ，可以完全依照我們本身的 commit 習慣，把 commit 做到最細小，以享受在開發以及測試過程中帶來的方便</li>
 <li>建立檔案1~4，然後每個檔案分別代表一個最細小的 commit<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">touch &#123;1..4&#125;;</span><br><span class="line">git add 1;</span><br><span class="line">git commit 1 -m <span class="hljs-string">'small function 1'</span>;</span><br><span class="line">git add 2;</span><br><span class="line">git commit 2 -m <span class="hljs-string">'small function 2'</span>;</span><br><span class="line">git add 3;</span><br><span class="line">git commit 3 -m <span class="hljs-string">'small function 3'</span>;</span><br><span class="line">git add 4;</span><br><span class="line">git commit 4 -m <span class="hljs-string">'small function 4'</span>;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><img src="https://i.imgur.com/oIU88lD.png" alt></p>
+<p><img src="https://i.imgur.com/oIU88lD.png"></p>
 <h3 id="功能完成了"><a href="#功能完成了" class="headerlink" title="功能完成了"></a>功能完成了</h3><ul>
 <li><p>在測試完成之後，確定沒有問題了！現在我們要把我們 commit 的標準轉換成正式上線的標準</p>
 </li>
@@ -419,6 +428,7 @@
 </li>
 <li><p>接下來，要把 toBeMerged branch 變成符合被 master branch merge 的狀態</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git rebase -i master</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="壓縮、重新命名-commit"><a href="#壓縮、重新命名-commit" class="headerlink" title="壓縮、重新命名 commit"></a>壓縮、重新命名 commit</h3><ul>
@@ -430,10 +440,12 @@
 </li>
 <li><p>然後<code>:wq</code>存檔離開</p>
 </li>
-<li>此時使用<code>git log</code>來看看，看起來會像是下圖那樣<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">log</span></span><br></pre></td></tr></table></figure>
+<li><p>此時使用<code>git log</code>來看看，看起來會像是下圖那樣</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">log</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><img src="https://i.imgur.com/qjFEZL4.png" alt></p>
+<p><img src="https://i.imgur.com/qjFEZL4.png"></p>
 <h3 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h3><ul>
 <li><p>讓我們回到 master 來把它 merge 掉吧！</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git checkout master;</span><br><span class="line">git merge toBeMerged;</span><br></pre></td></tr></table></figure>
@@ -445,6 +457,7 @@
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git branch -D feature toBeMerged</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>複習一下，還記得我們要的是什麼嗎？</p>
 <ul>
@@ -458,26 +471,31 @@
 </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git checkout master;</span><br><span class="line">git <span class="hljs-built_in">log</span></span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/ojrNLd5.png" alt></p>
+
+<p><img src="https://i.imgur.com/ojrNLd5.png"></p>
 <ul>
 <li>看看檔案內容<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><img src="https://i.imgur.com/cxAiRSi.png" alt></p>
+<p><img src="https://i.imgur.com/cxAiRSi.png"></p>
 <ul>
 <li>看看 develop 分支的 commit</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git checkout develop;</span><br><span class="line">git tag <span class="hljs-string">'bigFunction1'</span></span><br><span class="line">git <span class="hljs-built_in">log</span></span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/02dAiQM.png" alt></p>
+
+<p><img src="https://i.imgur.com/02dAiQM.png"></p>
 <ul>
 <li>看看檔案內容</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/4ea0xNr.png" alt></p>
+
+<p><img src="https://i.imgur.com/4ea0xNr.png"></p>
 <h3 id="第二階段"><a href="#第二階段" class="headerlink" title="第二階段"></a>第二階段</h3><ul>
 <li>一樣的流程，建立 feature branch ，然後是 toBeMerge branch</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git checkout develop;</span><br><span class="line">git checkout -b feature;</span><br><span class="line">touch &#123;5..8&#125;;</span><br><span class="line">git add 5;</span><br><span class="line">git commit -m <span class="hljs-string">'small function 5'</span>;</span><br><span class="line">git add 6;</span><br><span class="line">git commit -m <span class="hljs-string">'small function 6'</span>;</span><br><span class="line">git add 7;</span><br><span class="line">git commit -m <span class="hljs-string">'small function 7'</span>;</span><br><span class="line">git add 8;</span><br><span class="line">git commit -m <span class="hljs-string">'small function 8'</span>;</span><br><span class="line">git checkout -b toBeMerged;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>重點來了，這時我們不能使用傳統的 rebase 來改造 toBeMerged branch ，因為 toBeMerged branch 的歷史不曾存在於 master branch 。 </p>
 </li>
@@ -485,7 +503,7 @@
 <ul>
 <li><p>兩者要有共同的歷史(同sha1值)</p>
 </li>
-<li><p>先前已經被 merge 過的，未壓縮過的 commit 不可以重複出現。簡單來說， samll function 1~4  早就被壓縮成 big function 1 了，所以 small funciton 1~4 不可以再出現</p>
+<li><p>先前已經被 merge 過的，未壓縮過的 commit 不可以重複出現。簡單來說， samll function 1<del>4  早就被壓縮成 big function 1 了，所以 small funciton 1</del>4 不可以再出現</p>
 </li>
 <li><p>master branch 上面沒有的內容，要壓縮成一個 commit</p>
 </li>
@@ -511,28 +529,32 @@
 </li>
 </ul>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">git checkout develop;</span><br><span class="line">git tag bigFunction2;</span><br><span class="line">git log --oneline</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>develop 分支上的 commit</li>
 </ul>
-<p><img src="https://i.imgur.com/fVfHNBn.png" alt></p>
+<p><img src="https://i.imgur.com/fVfHNBn.png"></p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>develop 分支上的檔案內容</li>
 </ul>
-<p><img src="https://i.imgur.com/Z5fXui6.png" alt></p>
+<p><img src="https://i.imgur.com/Z5fXui6.png"></p>
 <ul>
 <li>來看看當前 master 分支上的 commit 狀態，以及檔案內容</li>
 </ul>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">git checkout master;</span><br><span class="line">git log</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>develop 分支上的 commit</li>
 </ul>
-<p><img src="https://i.imgur.com/Lp2a8ue.png" alt></p>
+<p><img src="https://i.imgur.com/Lp2a8ue.png"></p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>develop 分支上的檔案內容</li>
 </ul>
-<p><img src="https://i.imgur.com/qCpk4Ji.png" alt></p>
+<p><img src="https://i.imgur.com/qCpk4Ji.png"></p>
 <h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>此範例中的git flow，可以讓我們在開發過程中以最小的 commit 來進行，甚至是以任何我們喜歡的方式來進行，而不需因為正式上線的 commit 標準有所犧牲。<br>過程看似複雜，看就 Ray 的使用經驗，如果相關原理都已經非常熟悉，其實指令輸入很快就完成了。<br>範例中的 develop 分支不一定需要保留，因為日後若正式上線的 commit 有錯誤的話還是得從正式上線的 commit 來做修正，當然如果保留的話，應該還可以衍生一些其他的變化以及應用，這些就留待各位自己去發掘啦！<br>若大家有任何想法歡迎在下面留言，我相信意見想法的交流是進步的捷徑。</p>
 
     
@@ -617,53 +639,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

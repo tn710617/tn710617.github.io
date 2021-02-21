@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>手把手教你理解並建立 GCP 平衡負載 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -319,6 +319,7 @@
 <li>當一台機器掛了，你還有另外一台</li>
 <li>當負載到達一定程度，可以啟動 auto scaling (本篇不會使用到)</li>
 <li>配合適當的 CI / CD, 以及健康檢查，可達到 <code>rolling upgrade</code> 的效果<a id="more"></a>
+
 </li>
 </ol>
 <h3 id="本篇重點"><a href="#本篇重點" class="headerlink" title="本篇重點"></a>本篇重點</h3><ul>
@@ -326,7 +327,7 @@
 <li>為避免混淆，本篇對於有意義的元件術語，將維持原文，不會特別翻譯</li>
 <li>詳解每個元件行為</li>
 </ul>
-<h3 id="簡單的概念圖如下-圖片來源：-Google-："><a href="#簡單的概念圖如下-圖片來源：-Google-：" class="headerlink" title="簡單的概念圖如下 (圖片來源： Google )："></a>簡單的概念圖如下 (圖片來源： Google )：</h3><p><img src="https://i.imgur.com/VxUj5Ru.png" alt></p>
+<h3 id="簡單的概念圖如下-圖片來源：-Google-："><a href="#簡單的概念圖如下-圖片來源：-Google-：" class="headerlink" title="簡單的概念圖如下 (圖片來源： Google )："></a>簡單的概念圖如下 (圖片來源： Google )：</h3><p><img src="https://i.imgur.com/VxUj5Ru.png"></p>
 <ol>
 <li>IPv4 以及 IPv6 的使用者，對我們的服務發請求</li>
 <li>我們設定的 <code>IPv4 以及 IPv6 Forwading rules</code>，會將使用者導向我們設定好的 <code>HTTP(S) proxy</code></li>
@@ -342,7 +343,9 @@
 <li>建立兩個 instances</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create <span class="hljs-built_in">test</span>-01 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=30GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=<span class="hljs-built_in">test</span>-01,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create <span class="hljs-built_in">test</span>-02 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=30GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=<span class="hljs-built_in">test</span>-02,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure>
+
 <ol>
 <li>建立二台機器, 叫做 test-01, test-02</li>
 <li>開機碟的空間為 30GB</li>
@@ -356,41 +359,58 @@
 </ol>
 <h2 id="instance-環境建置"><a href="#instance-環境建置" class="headerlink" title="instance 環境建置"></a>instance 環境建置</h2><p>以下為 <code>instance</code> 上的環境建置範例，與本篇主題較無關係，可跳過</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.nvm"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> &amp;&amp; nvm install yourNodeVersion &amp;&amp; apt-get install npm -y &amp;&amp; npm install pm2 -g &amp;&amp; pm2 update &amp;&amp; apt-get install git -y &amp;&amp; apt-get install build-essential</span><br></pre></td></tr></table></figure>
+
 <h2 id="開啟防火牆"><a href="#開啟防火牆" class="headerlink" title="開啟防火牆"></a>開啟防火牆</h2><p>看服務跑在哪一個 port, 我們需要將防火牆打開，這樣 <code>instance group</code> 才能將 request 從 <code>Load Balancer</code> 經由 <code>backend-service</code> 導向相對應的 port, 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-01 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-01</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create <span class="hljs-built_in">test</span>-02 --allow tcp:123,tcp:456,tcp:789 --target-tags <span class="hljs-built_in">test</span>-02</span><br></pre></td></tr></table></figure>
+
 <h2 id="外部靜態-IP"><a href="#外部靜態-IP" class="headerlink" title="外部靜態 IP"></a>外部靜態 IP</h2><p>這邊建立一個 IPv4 的靜態 IP , 之後會用到, 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create?hl=zh-tw" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses create lb-test \</span><br><span class="line">    --ip-version=IPV4 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <h2 id="Instance-group"><a href="#Instance-group" class="headerlink" title="Instance group"></a>Instance group</h2><p><code>Instance group</code> 可由多個 <code>instance</code> 所組成，為組成 <code>backend-service</code> 的主體, 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/instance-groups/managed/create" target="_blank" rel="noopener">官方文件</a></p>
 <ul>
 <li>建立 <code>instance group</code>, 之後 <code>Load Balancer</code> 可以用它來建立不同的 <code>backend-service</code> </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged create <span class="hljs-built_in">test</span> --description <span class="hljs-string">'run test project'</span> --zone asia-east1-c</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>設定 named port, 所以不同的 <code>backend-service</code> 可以指定要用哪一個 port </li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged <span class="hljs-built_in">set</span>-named-ports <span class="hljs-built_in">test</span> --named-ports port1:3000,port2:6000,port3:9000,port4:12000,port5:15000 --zone asia-east1-c</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>將現有的 <code>instance</code> 加到 <code>instance group</code></li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged add-instances <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instances <span class="hljs-built_in">test</span>-01,<span class="hljs-built_in">test</span>-02 \</span><br><span class="line">    --zone asia-east1-c</span><br></pre></td></tr></table></figure>
+
 <h2 id="Health-check"><a href="#Health-check" class="headerlink" title="Health check"></a>Health check</h2><p><code>health-check</code> , 可根據我們指定的頻率，探測指定的 port, 如果該 port 無回應， <code>health-check</code> 將判定這個 port 不健康， <code>backend-service</code> 不會將 request 送往不健康的 <code>instance</code></p>
 <p> 可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/http-health-checks/create?hl=zh-tw" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-3000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 3000'</span>\</span><br><span class="line">    --port=3000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-6000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 6000'</span>\</span><br><span class="line">    --port=6000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-9000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 9000'</span>\</span><br><span class="line">    --port=9000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-12000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 12000'</span>\</span><br><span class="line">    --port=12000</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp <span class="hljs-built_in">test</span>-tcp-15000 \</span><br><span class="line">    --description=<span class="hljs-string">'test tcp 15000'</span>\</span><br><span class="line">    --port=15000</span><br></pre></td></tr></table></figure>
+
 <h2 id="Backend-service"><a href="#Backend-service" class="headerlink" title="Backend service"></a>Backend service</h2><p>這邊的 <code>--port-name</code>, 就是上面我們在 <code>instance-group</code> 中，建立的 port, 在此範例中，不同的 <code>backend-service</code> 會將 request 導向不同的 port, 這邊看起來沒有提到 <code>instance group</code> ? 別緊張，下一步我們就會把 <code>instance group</code> 加到 <code>backend-service</code> 當中。</p>
 <p> 同理， <code>health-check</code> 也是掛在 <code>backend-service</code> 上的, 因為 <code>backend-service</code> 將決定要將 request 導向哪一個 <code>instance</code>。可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/backend-services/create" target="_blank" rel="noopener">官方文件</a></p>
 <ul>
 <li>建立後端服務</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port1 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port1 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-3000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port2 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port2 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-6000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port3 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port3 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-9000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port4 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port4 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-12000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port5 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port5 \</span><br><span class="line">    --health-checks <span class="hljs-built_in">test</span>-tcp-15000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <p>接下來，我們將 <code>instance group</code> 加到我們剛剛建立的 <code>backend-service</code>, 因為我們在建立 <code>backend-service</code> 時就已指定了 port, 所以 <code>backend-service</code> 會將 request 導向所屬的 <code>instance group</code> 中已指定的 port, 嗯, 聽起來有點饒舌, 不過的確是這樣。</p>
 <p>除了設定導向的 port 之外，這邊也會設定 <code>instance</code> 的負載門檻。 設定 <code>UTILIZATION</code> 表示使用率，當使用到 80 % 時， <code>backend-service</code> 便會停止將 request 導向這個 <code>instance</code></p>
 <p><code>capacity-scaler</code> 表示， <code>1 * 0.8</code>, 所以說，如果你有多個 <code>backend-service</code> 使用這個 <code>instance-group</code>, 那你希望多保留一些 <code>instance-group</code> 的可使用率，給其他 <code>backend-service</code> 使用，那就可以將 <code>capacity-scaler</code> 調低，如此一來，當這個 <code>backend-service</code> 已使用了 <code>capacity-scaler * max-utilization</code> 的 CPU 時，來自於該 <code>backend-service</code> 的請求就不會導向該 <code>instance-group</code>, 可以很大程度地保留該 <code>instance-group</code> 服務其他 <code>backend-service</code> 的可用性。</p>
@@ -399,10 +419,15 @@
 <li>將 instance group 加到 backend-service</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port1 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port2 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port3 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port4 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port5 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
 <h2 id="URL-map"><a href="#URL-map" class="headerlink" title="URL map"></a>URL map</h2><p>前面介紹完了 <code>backend-service</code>, 那這個 <code>url-map</code>, 就是將 request 導向 <code>backend-service</code> 的元件。</p>
 <p>首先，我們要先建立一個 <code>url-map</code>, 並且給予一個默認的 <code>backend-service</code>, 意思就是說，如果沒有特別指定的話，收到的 request 要導向哪一個 <code>backend-service</code></p>
 <p>下面範例，可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/url-maps/" target="_blank" rel="noopener">官方文件</a></p>
@@ -410,6 +435,7 @@
 <li>建立 URL-map</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps create web-map \</span><br><span class="line">    --default-service backend-service-port1</span><br></pre></td></tr></table></figure>
+
 <p>上面建立了 <code>url-map</code>, 並且指定了一個默認的 <code>backend-service</code>, 現在我們可以定義怎麼樣的 request 該導向哪一個 <code>backend-service</code>。</p>
 <p>路徑的指定，我們需要使用 <code>path-matcher</code>, 範例如下：  </p>
 <p><code>path-matcher</code>: 建立一個 <code>path-matcher</code>, 並給予指定的路徑規則</p>
@@ -420,24 +446,29 @@
 <li>新增 path-matcher</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port1 \</span><br><span class="line">   --path-matcher-name pathmap-port1 \</span><br><span class="line">   --new-hosts=sunday.com.tw</span><br></pre></td></tr></table></figure>
+
 <p>這邊可以看到比上面多了一個新的元件，叫做 <code>path-rules</code></p>
 <p>當 request 的 host 為 <code>monday.com.tw</code>, 默認路徑如 <code>/</code> 會導向 <code>backend-service-port2</code></p>
 <p>當 request 的路徑為 <code>happy</code>, 如 <code>monday.com.tw/happy</code>, 會導向 <code>backend-service-port1</code></p>
 <p>當 request 的路徑為 <code>unhappy</code>, 如 <code>monday.com.tw/unhappy</code>, 會導向 <code>backend-service-port2</code></p>
 <p>當 request 的路徑為 <code>sad</code>, 如 <code>monday.com.tw/sad</code>, 會導向 <code>backend-service-port3</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port2 \</span><br><span class="line">   --path-matcher-name pathmap-port2 \</span><br><span class="line">   --path-rules=/happy=backend-service-port1,/unhappy=backend-service-port2,/sad=backend-service-port3 \</span><br><span class="line">   --new-hosts=monday.com.tw</span><br></pre></td></tr></table></figure>
+
 <p>以下範例同上，當 request 為 <code>tuesday.com.tw</code> 時，導向 <code>backend-service-port3</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port3 \</span><br><span class="line">   --path-matcher-name pathmap-port3 \</span><br><span class="line">   --new-hosts=tuesday.com.tw</span><br></pre></td></tr></table></figure>
+
 <h2 id="建立-SSL-憑證"><a href="#建立-SSL-憑證" class="headerlink" title="建立 SSL 憑證"></a>建立 SSL 憑證</h2><p>要讓我們的服務支援 <code>HTTPS</code>, 我們需要建立 <code>ssl-certificates</code>, <code>ssl-certificates</code> 分成 <code>self-managed</code>, 以及 <code>google-managed</code>。</p>
 <p><code>self-managed</code> 顧名思義就是你提供你自己的 ssl 簽證，以下範例採用 <code>google-managed</code></p>
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/ssl-certificates/" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud beta compute ssl-certificates create www-ssl-cert \</span><br><span class="line">  --domains sunday.com.tw,monday.com.tw,tuesday.com.tw</span><br></pre></td></tr></table></figure>
+
 <h2 id="HTTP-proxy"><a href="#HTTP-proxy" class="headerlink" title="HTTP proxy"></a>HTTP proxy</h2><p>所有來自 HTTP 的請求，都會先到這裡，再經由我們剛剛建立的 <code>url-map</code> 導向指定的 <code>backend-service</code></p>
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/target-http-proxies/" target="_blank" rel="noopener">官方文件</a></p>
 <ul>
 <li>建立 HTTP proxy</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute target-http-proxies create http-lb-proxy \</span><br><span class="line">    --url-map web-map</span><br></pre></td></tr></table></figure>
+
 <h2 id="HTTPS-proxy"><a href="#HTTPS-proxy" class="headerlink" title="HTTPS proxy"></a>HTTPS proxy</h2><p>所有來自 HTTPS 的請求，都會先到這裡，再經由我們剛剛建立的 <code>url-map</code> 導向指定的 <code>backend-service</code></p>
 <p>並且，我們剛剛建立的 <code>ssl-certificates</code> 也要掛在這, 這樣 <code>target-https-proxies</code> 才能支援 HTTPS</p>
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/target-https-proxies/" target="_blank" rel="noopener">官方文件</a></p>
@@ -445,9 +476,11 @@
 <li>建立 HTTPS proxy</li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute target-https-proxies create https-lb-proxy \</span><br><span class="line">--url-map web-map \</span><br><span class="line">--ssl-certificates www-ssl-cert</span><br></pre></td></tr></table></figure>
+
 <h2 id="查看外部靜態-IP-清單"><a href="#查看外部靜態-IP-清單" class="headerlink" title="查看外部靜態 IP 清單"></a>查看外部靜態 IP 清單</h2><p>列出我們一開始建立的 <code>addresses</code></p>
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create?hl=zh-tw" target="_blank" rel="noopener">官方文件</a></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses list</span><br></pre></td></tr></table></figure>
+
 <h2 id="轉發規則"><a href="#轉發規則" class="headerlink" title="轉發規則"></a>轉發規則</h2><p>當 request 的 address 以及 port 符合 <code>forwarding-rules</code>, 導向指定的 <code>target-http-proxy</code></p>
 <p>下面範例的 <code>[LB_IP_ADDRESS]</code> 請替換為上面建立的靜態 IP</p>
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/forwarding-rules/" target="_blank" rel="noopener">官方文件</a></p>
@@ -455,6 +488,7 @@
 <li>建立 HTTP <code>forwarding-rules</code></li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute forwarding-rules create http-content-rule \</span><br><span class="line">    --address [LB_IP_ADDRESS] \</span><br><span class="line">    --global \</span><br><span class="line">    --target-http-proxy http-lb-proxy \</span><br><span class="line">    --ports 80</span><br></pre></td></tr></table></figure>
+
 <p>當 request 的 address 以及 port 符合 <code>forwarding-rules</code>, 導向指定的 <code>target-https-proxy</code></p>
 <p>下面範例的 <code>[LB_IP_ADDRESS]</code> 請替換為上面建立的靜態 IP</p>
 <p>可參考<a href="https://cloud.google.com/sdk/gcloud/reference/compute/forwarding-rules/" target="_blank" rel="noopener">官方文件</a></p>
@@ -462,6 +496,7 @@
 <li>建立 HTTPS <code>forwarding-rules</code></li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute forwarding-rules create https-content-rule \</span><br><span class="line">    --address [LB_IP_ADDRESS] \</span><br><span class="line">    --global \</span><br><span class="line">    --target-https-proxy https-lb-proxy \</span><br><span class="line">    --ports 443</span><br></pre></td></tr></table></figure>
+
 <h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>以上便是 GCP <code>Load Balancer</code> 的 gcloud 各元件順序流程，順序如下：<br><code>request</code> =&gt; <code>forwarding-rules</code> =&gt; <code>target-http(s)-proxy</code> =&gt; <code>url-map</code> =&gt; <code>backend-service</code> =&gt; <code>instance-group</code> =&gt; <code>instance</code></p>
 <p>照著以上範例跑完之後，只要在 instance 跑服務，並且跑在範例上指定的 port 號，那 request 應會照著上面的順序到達我們的服務。</p>
 <p>我花了不少時間來寫這篇文章，希望有幫到需要的人，如果你已經看到這裡，很感謝你把它看完了！</p>
@@ -540,53 +575,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

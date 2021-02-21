@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>使用 BigQuery 以及 Stackdriver 來分析 BigQuery 用量 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -313,10 +313,18 @@
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>Stackdriver Logging</code> 讓你可以在 Google Cloud Platform 的服務上，針對紀錄作儲存，分析，搜尋，監控，以及警告還有事件，包含 BigQuery 服務。<br><code>Stackdriver</code> 也提供匯出特定記錄到接收器的功能，例如 <code>Cloud Pub/Sub</code>, <code>Cloud Storage</code>, 或 <code>BigQuery</code></p>
 <p>在本教程中，你將在 Stackdriver 中檢視 BigQuery 的紀錄，設定接收器來匯出記錄到 BigQuery, 然後使用 SQL 來分析這些紀錄</p>
 <a id="more"></a>
-<p><br><br><br><br><br></p>
+
+<br>
+<br>
+<br>
+
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
-<p><br><br><br><br><br></p>
-<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><br></p>
+<br>
+<br>
+<br>
+
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><br>
+
 <h3 id="Qwiklabs-setup"><a href="#Qwiklabs-setup" class="headerlink" title="Qwiklabs setup"></a>Qwiklabs setup</h3><p><b>在你按下 Start Lab 按鈕之前</b></p>
 <p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
 <p>Quiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Quiclabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
@@ -332,7 +340,7 @@
 <ol>
 <li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
 <ol start="2">
 <li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
 </ol>
@@ -340,7 +348,7 @@
 <ol start="3">
 <li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
 <ol start="4">
 <li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
 </ol>
@@ -355,49 +363,65 @@
 </ol>
 <p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
 <p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
-<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
 <h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
 <ol>
 <li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
 <ol start="2">
 <li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
 </ol>
-<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
 <p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
 <p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
-<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
 <p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
 <p>使用這個 command ,你可以列出有效帳戶名稱:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
 <p>輸出:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
 <p>範例輸出:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
 <p>你可以使用以下 command 來列出專案 ID</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+
 <p>輸出：</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
 <p>範例輸出：</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
 <p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
-<p><br><br><br><br><br></p>
-<h2 id="打開-BigQuery"><a href="#打開-BigQuery" class="headerlink" title="打開 BigQuery"></a>打開 BigQuery</h2><p><br></p>
+<br>
+<br>
+<br>
+
+<h2 id="打開-BigQuery"><a href="#打開-BigQuery" class="headerlink" title="打開 BigQuery"></a>打開 BigQuery</h2><br>
+
 <h3 id="打開-Big-Query-主控台"><a href="#打開-Big-Query-主控台" class="headerlink" title="打開 Big Query 主控台"></a>打開 Big Query 主控台</h3><p>在 Google Cloud Console, 選擇 <b>Navigation menu &gt; BigQuery</b></p>
-<p><img src="https://lh3.googleusercontent.com/oYrzTQkL5we3SzM3Vm-gOnl6dfz7CWfED8NfyJy5OQd8I0-zgKeinGS_EbBvDWOPfg5OBfYREGv074JfktfOv6w-tTLgp0HkOHOhQwDS6avMPzbNmvxx9aoKvVf1FAYrs0dOkN7vp-ra7vsgzHH5LkACKWbZ6HzkIsHt2k0Mi9aDMgcwykXiy38zxkXVBylbkuoegfW06qeSzLDEa5lOmtxwtU-pgb3B2pf7YzqbtHsvT_xzHszrFJT3kmOovNkO-mJl43ks4-YLF-2mhi8UfdNEuGNVuLSECFHtomQkk3jSfcUxj0xB1lSAKBPUA3B5PYhovVpxTmAzhoVWfarfWC0bvPd8RW_bY-Hse9NZOCUmuMpg0Zj9Xl1VfGRlWMt5cqHPaIxmWc7GAv8Dqt80UTAphsA6KPg1hof9g8U6Wc6UDe8_aWmLASRfbsuGBAfaGUTflO_3BVDSENwbFrX5rZEZbgBb3EBCxEA26mDRePNwFDKp5Qqf_baecifniKKfZGuQtlptMHEBMaCF55e0kmjY8RZ6iMJZHlQzHxUprt6Vkj5MXtbsLo3RYnje7YC0BoKdXRuwFhJ-Du5hSdzZDpuusJv5vCRsLI3qn-b1tsKx5EPdzRm9pYE80OioskWD6NiENpqUcemumfwQUzrpbiKch7J9_YDrMc_lMM8qbIEEBj13UinsChE=w228-h309-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/oYrzTQkL5we3SzM3Vm-gOnl6dfz7CWfED8NfyJy5OQd8I0-zgKeinGS_EbBvDWOPfg5OBfYREGv074JfktfOv6w-tTLgp0HkOHOhQwDS6avMPzbNmvxx9aoKvVf1FAYrs0dOkN7vp-ra7vsgzHH5LkACKWbZ6HzkIsHt2k0Mi9aDMgcwykXiy38zxkXVBylbkuoegfW06qeSzLDEa5lOmtxwtU-pgb3B2pf7YzqbtHsvT_xzHszrFJT3kmOovNkO-mJl43ks4-YLF-2mhi8UfdNEuGNVuLSECFHtomQkk3jSfcUxj0xB1lSAKBPUA3B5PYhovVpxTmAzhoVWfarfWC0bvPd8RW_bY-Hse9NZOCUmuMpg0Zj9Xl1VfGRlWMt5cqHPaIxmWc7GAv8Dqt80UTAphsA6KPg1hof9g8U6Wc6UDe8_aWmLASRfbsuGBAfaGUTflO_3BVDSENwbFrX5rZEZbgBb3EBCxEA26mDRePNwFDKp5Qqf_baecifniKKfZGuQtlptMHEBMaCF55e0kmjY8RZ6iMJZHlQzHxUprt6Vkj5MXtbsLo3RYnje7YC0BoKdXRuwFhJ-Du5hSdzZDpuusJv5vCRsLI3qn-b1tsKx5EPdzRm9pYE80OioskWD6NiENpqUcemumfwQUzrpbiKch7J9_YDrMc_lMM8qbIEEBj13UinsChE=w228-h309-no"></p>
 <p><b>Welcome to BigQuery in the Cloud Console</b> 訊息視窗彈出。這個訊息視窗提供快速導覽的連結，以及一些更新訊息</p>
 <p>點擊 <b>Done</b></p>
 <p><code>BigQuery</code> 主控台開啟</p>
-<p><img src="https://lh3.googleusercontent.com/mmIyr-iBLAsx6Yi9b769k6SuxeI-YpVot6YedvnXB_SVMfA6WRVR72HAWdDpygB6hdD1JB-1BqjT7VfIRWrVVJDuAN4eupr36HCOTG8QtsssUAOXih8oOpxM1ah2fCts1POlG7SnYgQIfuWP4lP-7hczaO8W2yAz0ItDQLuTVgb0WRW02zAhTxq_PkvjApuDwPNszKb5qymIBTZPD02Uk5xn_7Ndn20I7cpDKrS6bLJgw1zqpxN0TD9SGriAs4s58dUkdOdimK8KQhPLem99yVgX_k2qPpOPNU7kuSNzM8JLN-_QTmEBhugWD3rnDAnYdJhOU5090A3K-zxZHjkLPRuz1tJdQcovl6DR6QQZHDOtcyGWPzj9vMEoCFl23JxlevWYO6IFSsQEnW_32jKVyuvpNL5ItgqaTpTKwC5FS6wyckAKyb09bEMrGxRbWTtpN12gSXfOqWeHm6uoDsox7eRL4xz8daOWV0KYVMYfkzbBmwbP8qLpOFU2gyr29M056lN2ySCeH2kHToWrIlynfy2C6gSIZ6M3zRHIwy3Xlo4dHpmagG7skg5Q07yRDTs_PHXdPQpeUOxEZogS4Mt5UqFUQCQcq2216t2COyy9_80GtcxvO8Bwdx7Ocs9d68KOgki-7JhnlvG2q5WpYLTyPTn9ViTd7Z-YbTRo8ZUaI1Ze--1ARN6XztM=w1280-h874-no" alt></p>
-<p><br><br><br><br><br></p>
+<p><img src="https://lh3.googleusercontent.com/mmIyr-iBLAsx6Yi9b769k6SuxeI-YpVot6YedvnXB_SVMfA6WRVR72HAWdDpygB6hdD1JB-1BqjT7VfIRWrVVJDuAN4eupr36HCOTG8QtsssUAOXih8oOpxM1ah2fCts1POlG7SnYgQIfuWP4lP-7hczaO8W2yAz0ItDQLuTVgb0WRW02zAhTxq_PkvjApuDwPNszKb5qymIBTZPD02Uk5xn_7Ndn20I7cpDKrS6bLJgw1zqpxN0TD9SGriAs4s58dUkdOdimK8KQhPLem99yVgX_k2qPpOPNU7kuSNzM8JLN-_QTmEBhugWD3rnDAnYdJhOU5090A3K-zxZHjkLPRuz1tJdQcovl6DR6QQZHDOtcyGWPzj9vMEoCFl23JxlevWYO6IFSsQEnW_32jKVyuvpNL5ItgqaTpTKwC5FS6wyckAKyb09bEMrGxRbWTtpN12gSXfOqWeHm6uoDsox7eRL4xz8daOWV0KYVMYfkzbBmwbP8qLpOFU2gyr29M056lN2ySCeH2kHToWrIlynfy2C6gSIZ6M3zRHIwy3Xlo4dHpmagG7skg5Q07yRDTs_PHXdPQpeUOxEZogS4Mt5UqFUQCQcq2216t2COyy9_80GtcxvO8Bwdx7Ocs9d68KOgki-7JhnlvG2q5WpYLTyPTn9ViTd7Z-YbTRo8ZUaI1Ze--1ARN6XztM=w1280-h874-no"></p>
+<br>
+<br>
+<br>
+
 <h2 id="建立資料組"><a href="#建立資料組" class="headerlink" title="建立資料組"></a>建立資料組</h2><ul>
 <li>在 <b>Resources</b> 區塊中，點擊 <code>qwiklabs-gcp-</code> 開頭的資源</li>
 <li>點擊 <b>CREATE DATASET</b></li>
 <li>設定 <code>Dataset ID</code> 到 <b>bq_logs</b></li>
 <li>點擊 <b>Create dataset</b></li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="執行一個查詢"><a href="#執行一個查詢" class="headerlink" title="執行一個查詢"></a>執行一個查詢</h2><p>首先，執行一個簡單的查詢，在 <code>Stackdriver</code> 中產生一筆紀錄。 之後，你將使用這個紀錄來簡單設置匯出功能，從 <code>Stackdriver</code> 到 <code>BigQuery</code></p>
 <ul>
 <li><p>複製底下代碼，然後在 <code>BigQuery</code> 的查詢編輯器中貼上</p>
@@ -406,24 +430,27 @@
 <li><p>點擊 <b>Run</b> </p>
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="設定從-Stackdriver-匯出紀錄"><a href="#設定從-Stackdriver-匯出紀錄" class="headerlink" title="設定從 Stackdriver 匯出紀錄"></a>設定從 Stackdriver 匯出紀錄</h2><h3 id="在-Stackdriver-檢視紀錄"><a href="#在-Stackdriver-檢視紀錄" class="headerlink" title="在 Stackdriver 檢視紀錄"></a>在 Stackdriver 檢視紀錄</h3><ul>
 <li>在 Google Cloud Console 選擇 <b>Navigation menu &gt; Logging &gt; Logs Viewer</b></li>
 <li>在第一個下拉視窗的搜索框中，選擇 <code>BigQuery</code></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/OyldtpujU1c2n36v2tZXVjsE1OoPbAWI4LMsEQBxefj67tMrMAqDmTeRzRvkQ_n2Tp-Ji27n56jpPAM9wvOxqsmtxvF_ftpmD3eO-ewnxJJbcIP2ZCMvNTqSF0lnPn1YLoiS8XrHerlaLGPy5k3ExwTaMJHzo7TapWuHnuJx02neLB5dcmkU1QZxeUNXFTd3NgT8OeOZ-AIErFxMaOaCm15Ut1BbkFGcsLntKN2WeuSl4lWFOqCUr35zU2NuKqqg17bw47W0z65psJVu84AsO52UIrjawnXsDRHZd86tylDtN9LRSxhK8NUg1OibHdPC9rYprECtKfoYhLnAK6KndYu4PuuILovZSNED_0bZj9zdGJ6PvEC9lXbeqdvd8HNllsuli_wR_kGu57tWo2nql5R_djwAbFDEnT2q8Sfs4alnrDk2s8MMmoDK49gDqjwrqQ9OJmH445tbzuQXpFSzkpN5ntZlsWtZvmzehrNan2dQXwARZp86kqtbgdeTyQlHvCk1o8QkZDEOAX3YG6LnzLMMwplGpZ05hWn8eDb_T5BsG8UEvAk2wE6L-39Stgvj4Zppx7l8Efsq5JMI0jGPGrGFQZrWvs7NEFIg0-B8bhekeZ6qGO4vWw4ogQDlpMu-EwP3WXKhK6JnJrz5Z_8XUk2ZdhnAfQRffp_3zcAv23HbCH34zbczBAk=w1280-h384-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/OyldtpujU1c2n36v2tZXVjsE1OoPbAWI4LMsEQBxefj67tMrMAqDmTeRzRvkQ_n2Tp-Ji27n56jpPAM9wvOxqsmtxvF_ftpmD3eO-ewnxJJbcIP2ZCMvNTqSF0lnPn1YLoiS8XrHerlaLGPy5k3ExwTaMJHzo7TapWuHnuJx02neLB5dcmkU1QZxeUNXFTd3NgT8OeOZ-AIErFxMaOaCm15Ut1BbkFGcsLntKN2WeuSl4lWFOqCUr35zU2NuKqqg17bw47W0z65psJVu84AsO52UIrjawnXsDRHZd86tylDtN9LRSxhK8NUg1OibHdPC9rYprECtKfoYhLnAK6KndYu4PuuILovZSNED_0bZj9zdGJ6PvEC9lXbeqdvd8HNllsuli_wR_kGu57tWo2nql5R_djwAbFDEnT2q8Sfs4alnrDk2s8MMmoDK49gDqjwrqQ9OJmH445tbzuQXpFSzkpN5ntZlsWtZvmzehrNan2dQXwARZp86kqtbgdeTyQlHvCk1o8QkZDEOAX3YG6LnzLMMwplGpZ05hWn8eDb_T5BsG8UEvAk2wE6L-39Stgvj4Zppx7l8Efsq5JMI0jGPGrGFQZrWvs7NEFIg0-B8bhekeZ6qGO4vWw4ogQDlpMu-EwP3WXKhK6JnJrz5Z_8XUk2ZdhnAfQRffp_3zcAv23HbCH34zbczBAk=w1280-h384-no"></p>
 <p>應會看到幾筆紀錄出現</p>
 <p>尋找含有 “jobcompleted” 字串的紀錄</p>
-<p><img src="https://lh3.googleusercontent.com/fZF2tqXip9XyB-C5UUw6cDmYJ4NY7FejNPs3ruB5sQ1hrLA1tx555xoin0ydeTTO4GMkIAROb_yLz-hgqcHyEOD656_L_vbEenzHf2oEoz8lIJD-mDdWVCQ3Mebtuh84zB68Df-gQL0AJYpf7geSuZ1t__9SvHX9mQ1XqZyOTfr7DmL7Ump-T-oyaOZvzMEHFkF309rhsD1tM5OgXjjlPrGp8iddr9hDJuh06M9gcyJ2AB6UhlVcejZKAm8UsUJ5Zcu4EmJdY77eE4G6aci6x9NDW1st8kUtyH5bJqChFN3jeHM6RuT6ueLJgw0e8PlTcFBlTD1traYlFpxx0vuAWx70gxsv-Q36hQuOpqfhpET2ap-am8g_tS9T9yavhJKvdpSM475ER3YAtvaWtQDPBIiy2zNsp1AS6802rwEhWuuO1T-fzLWbfGIMOOei_3GSgLAwJG5GliJFTsNDxn2j7Aue2gg3tYkqYtCARIT1cfz3WRYHnWFE23Rux83yGehHdfLcE15NLKg2Th49q-YDEbm7v_rbjnnXO_fnl6UV2EYqq9ZPVftZJV7BbthZAcSKor44DPFrZAgmSzlEkR9Y2-oDUxnqGhPIYTu2MTa88ZM_h2hba34b2QbKe86E_VwDj45N73V2Yo7K2Ab_ceJMcm28LimslDLDn7sjtdS-QQfkgj0sxfYV4xQ=w1280-h518-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/fZF2tqXip9XyB-C5UUw6cDmYJ4NY7FejNPs3ruB5sQ1hrLA1tx555xoin0ydeTTO4GMkIAROb_yLz-hgqcHyEOD656_L_vbEenzHf2oEoz8lIJD-mDdWVCQ3Mebtuh84zB68Df-gQL0AJYpf7geSuZ1t__9SvHX9mQ1XqZyOTfr7DmL7Ump-T-oyaOZvzMEHFkF309rhsD1tM5OgXjjlPrGp8iddr9hDJuh06M9gcyJ2AB6UhlVcejZKAm8UsUJ5Zcu4EmJdY77eE4G6aci6x9NDW1st8kUtyH5bJqChFN3jeHM6RuT6ueLJgw0e8PlTcFBlTD1traYlFpxx0vuAWx70gxsv-Q36hQuOpqfhpET2ap-am8g_tS9T9yavhJKvdpSM475ER3YAtvaWtQDPBIiy2zNsp1AS6802rwEhWuuO1T-fzLWbfGIMOOei_3GSgLAwJG5GliJFTsNDxn2j7Aue2gg3tYkqYtCARIT1cfz3WRYHnWFE23Rux83yGehHdfLcE15NLKg2Th49q-YDEbm7v_rbjnnXO_fnl6UV2EYqq9ZPVftZJV7BbthZAcSKor44DPFrZAgmSzlEkR9Y2-oDUxnqGhPIYTu2MTa88ZM_h2hba34b2QbKe86E_VwDj45N73V2Yo7K2Ab_ceJMcm28LimslDLDn7sjtdS-QQfkgj0sxfYV4xQ=w1280-h518-no"></p>
 <ul>
 <li>點擊位於左方，下圖中的三角箭頭來打開數據，然後在右手邊點擊 <b>Expand all</b></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/czG2mvVggaqtH5NYoz6nIIxNcIBWc_OqvhYCxXkOIuCoviGjH86uD1fAf4gbVAOc7CrGgMCjZzm9ze6iNa5K_Qh3ZDeQOvYgW6WRKdQwI9pgXRPrBKChCmQ-AiWDVg4KYtbKU0P3DZkRf-hTGySbnlAxq34DuNdMrroAdjJPqS5wnilRv2vEvLFugCqS1O5qjTx_VIDer6jRMzCPbb3KcOR17AgHPxxUVHzij_Z1UgEgiG0kC9qrHfAz7dA6ZRl0s-S7e6Jca1HPx6fVzW5GkE2EE-1rMFhhXlPkugsjAsCUYfP2rIscpOmVEXyCzgDCnqsuSMMdoWZ1BvIvvjNjCXpOzff025HaqraHpBdSut62IIifB55xgkKPGF1qBb4CERJWIaX_0cMhFEJZ_0h4yv0Rb-Vq3cp9H7vs-97GuXWWHit8K2SXjThKWyNHEfCoHYQV_rmZpVs06jTNkc6XH0vmNPhcd6UKwqoRjZKX0MwiIdQ9P3JtF9Ffe0Ig1zrGpqBI6ii4YtmkArWCpz5C4CCDuRrdiR_P_T9pnT460zqlyk1vTNGOZFZ1x3cHFqJHNwrewIP8b7PW3H9pxhInGdXSgGAPGXQDT7i_dmEFhhuqEJNz5rGxsGnYu6yTwHaPw8HBmKRDJ6wzxA0bUXOYTDQpX3LEyYrMmQFpP582FEXkx7zFx5mtyhw=w1225-h679-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/czG2mvVggaqtH5NYoz6nIIxNcIBWc_OqvhYCxXkOIuCoviGjH86uD1fAf4gbVAOc7CrGgMCjZzm9ze6iNa5K_Qh3ZDeQOvYgW6WRKdQwI9pgXRPrBKChCmQ-AiWDVg4KYtbKU0P3DZkRf-hTGySbnlAxq34DuNdMrroAdjJPqS5wnilRv2vEvLFugCqS1O5qjTx_VIDer6jRMzCPbb3KcOR17AgHPxxUVHzij_Z1UgEgiG0kC9qrHfAz7dA6ZRl0s-S7e6Jca1HPx6fVzW5GkE2EE-1rMFhhXlPkugsjAsCUYfP2rIscpOmVEXyCzgDCnqsuSMMdoWZ1BvIvvjNjCXpOzff025HaqraHpBdSut62IIifB55xgkKPGF1qBb4CERJWIaX_0cMhFEJZ_0h4yv0Rb-Vq3cp9H7vs-97GuXWWHit8K2SXjThKWyNHEfCoHYQV_rmZpVs06jTNkc6XH0vmNPhcd6UKwqoRjZKX0MwiIdQ9P3JtF9Ffe0Ig1zrGpqBI6ii4YtmkArWCpz5C4CCDuRrdiR_P_T9pnT460zqlyk1vTNGOZFZ1x3cHFqJHNwrewIP8b7PW3H9pxhInGdXSgGAPGXQDT7i_dmEFhhuqEJNz5rGxsGnYu6yTwHaPw8HBmKRDJ6wzxA0bUXOYTDQpX3LEyYrMmQFpP582FEXkx7zFx5mtyhw=w1225-h679-no"></p>
 <p>這將以 JSON 格式來顯示數據，往下滑看看不一樣的欄位</p>
 <ul>
 <li>回到剛剛的開頭處，點擊 ‘jobcompleted’ 然後選擇 <b>Show Matching Entries</b></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/xv7wcB353Rm4LGGRmpS2gZ9EMgKEFrZlN952ymbmH9PjBOpmdmMM2lO7ea0e4MpY0_--AJc69k5S5mqfKDL06jtkDp8oSjzkq_9kqdQjPqE2J_e_HKMqgTF0DYE2Jbgxhv7Ow9eSMIc-dut0biWlvXnQEW4XfRAp4S1FtrOBBsei5i3IpFqm2QMjbz0f5J29SiMlOzDjHTycVrESHJtpBvSiOdNEdw2UdAIz0mWxzCB1VelxrxEKhvyIkqDS91JComMY_KS8O7dL_DwLztRht2ha0o1tqDI1x5yfsR3YFsBIhM5KKb0Rh5xLEnkI69d21xXm-qBoFlxNN3njUhE9rkalca_3_c9WdLAz-Rb62bTaDqVPQcvfXRcDYIF96mq61zSJTz1nBLoP3geSfCNfOMQh_piQdyAovjjV2tdP8FJmaykYn_7A2wJYjj6YUpjsYMebaj6F5NdIrVzNJSCm4kSxTYDpF-p1PPazw0bfBIH0oMPmbsBfjsfrboV_nfuomiR1D9z15kkR2PKPs4oddEKPxDnQ3ZpueNeNA4GOp0ZaxlmJY_eD5ugM4E0M-XSREghw9uXzZLdGCqp6y089B17onwpRrF463UdaRDQ8R1kW4PTv4Qh-Yx7jryZRztAYUjrKX7kLK2mmpMBFYjWmR0mTqHnPpuT36QHU6cm67G4FK9hvDbGqbPA=w1280-h272-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/xv7wcB353Rm4LGGRmpS2gZ9EMgKEFrZlN952ymbmH9PjBOpmdmMM2lO7ea0e4MpY0_--AJc69k5S5mqfKDL06jtkDp8oSjzkq_9kqdQjPqE2J_e_HKMqgTF0DYE2Jbgxhv7Ow9eSMIc-dut0biWlvXnQEW4XfRAp4S1FtrOBBsei5i3IpFqm2QMjbz0f5J29SiMlOzDjHTycVrESHJtpBvSiOdNEdw2UdAIz0mWxzCB1VelxrxEKhvyIkqDS91JComMY_KS8O7dL_DwLztRht2ha0o1tqDI1x5yfsR3YFsBIhM5KKb0Rh5xLEnkI69d21xXm-qBoFlxNN3njUhE9rkalca_3_c9WdLAz-Rb62bTaDqVPQcvfXRcDYIF96mq61zSJTz1nBLoP3geSfCNfOMQh_piQdyAovjjV2tdP8FJmaykYn_7A2wJYjj6YUpjsYMebaj6F5NdIrVzNJSCm4kSxTYDpF-p1PPazw0bfBIH0oMPmbsBfjsfrboV_nfuomiR1D9z15kkR2PKPs4oddEKPxDnQ3ZpueNeNA4GOp0ZaxlmJY_eD5ugM4E0M-XSREghw9uXzZLdGCqp6y089B17onwpRrF463UdaRDQ8R1kW4PTv4Qh-Yx7jryZRztAYUjrKX7kLK2mmpMBFYjWmR0mTqHnPpuT36QHU6cm67G4FK9hvDbGqbPA=w1280-h272-no"></p>
 <p>這將會完成正確的搜尋設定</p>
 <h3 id="建立匯出"><a href="#建立匯出" class="headerlink" title="建立匯出"></a>建立匯出</h3><p>現在你有需要的紀錄了，很簡單的就可以設定匯出</p>
 <ul>
@@ -438,14 +465,23 @@
 <li>點擊 <b>CLOSE</b> </li>
 </ul>
 <p>之後任何的紀錄都會被匯出到這一個 <code>bq_logs</code> 資料組</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="執行範例查詢"><a href="#執行範例查詢" class="headerlink" title="執行範例查詢"></a>執行範例查詢</h2><p>為了讓新的表格載入入一些紀錄，我們需要執行一些範例的查詢</p>
 <p>移動到 <b>Cloud Shell</b> , 複製下面的代碼，然後貼到 Cloud Shell 上</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">bq query --location=us --use_legacy_sql=<span class="hljs-literal">false</span> --use_cache=<span class="hljs-literal">false</span> <span class="hljs-string">'</span></span><br><span class="line"><span class="hljs-string">SELECT fullName, AVG(CL.numberOfYears) avgyears</span></span><br><span class="line"><span class="hljs-string">FROM `bigquery-samples.nested.persons_living`, UNNEST(citiesLived) as CL</span></span><br><span class="line"><span class="hljs-string">GROUP BY fullname'</span></span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">bq query --location=us --use_legacy_sql=<span class="hljs-literal">false</span> --use_cache=<span class="hljs-literal">false</span> <span class="hljs-string">'</span></span><br><span class="line"><span class="hljs-string">select month, avg(mean_temp) as avgtemp</span></span><br><span class="line"><span class="hljs-string">from `bigquery-samples.weather_geo.gsod`</span></span><br><span class="line"><span class="hljs-string">where station_number = 947680</span></span><br><span class="line"><span class="hljs-string">and year = 2010</span></span><br><span class="line"><span class="hljs-string">group by month</span></span><br><span class="line"><span class="hljs-string">order by month'</span></span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">bq query --location=us --use_legacy_sql=<span class="hljs-literal">false</span> --use_cache=<span class="hljs-literal">false</span> <span class="hljs-string">'</span></span><br><span class="line"><span class="hljs-string">select CONCAT(departure_airport, "-", arrival_airport) as route, count(*) as numberflights</span></span><br><span class="line"><span class="hljs-string">from `bigquery-samples.airline_ontime_data.airline_id_codes` ac,</span></span><br><span class="line"><span class="hljs-string">`bigquery-samples.airline_ontime_data.flights` fl</span></span><br><span class="line"><span class="hljs-string">where ac.code = fl.airline_code</span></span><br><span class="line"><span class="hljs-string">and regexp_contains(ac.airline ,  r"Alaska")</span></span><br><span class="line"><span class="hljs-string">group by 1</span></span><br><span class="line"><span class="hljs-string">order by 2 desc</span></span><br><span class="line"><span class="hljs-string">LIMIT 10'</span></span><br></pre></td></tr></table></figure>
+
 <p>你將會看到每筆查詢回應的結果</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="在-BigQuery-中檢視紀錄"><a href="#在-BigQuery-中檢視紀錄" class="headerlink" title="在 BigQuery 中檢視紀錄"></a>在 BigQuery 中檢視紀錄</h2><ul>
 <li>移動到 BigQuery (<b>Navigation menu &gt; BigQuery</b>)</li>
 <li>展開 <b>qwiklabs-gcp-</b> 開頭的資源，並且檢查 <b>bq_logs</b> 資料組</li>
@@ -461,6 +497,7 @@
 <li>在 BigQuery 的查詢編輯器，將 <your-project-id> 替換成你的 project name (在 Qwiklab 視窗左手邊可以很簡單的複製) 後，執行以下的 SQL </your-project-id></li>
 </ul>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE OR REPLACE VIEW</span><br><span class="line">  bq_logs.v_querylogs AS</span><br><span class="line">SELECT</span><br><span class="line">  resource.labels.project_id,</span><br><span class="line">  protopayload_auditlog.authenticationInfo.principalEmail,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobConfiguration.query.query,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobConfiguration.query.statementType,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatus.error.message,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.startTime,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.endTime,</span><br><span class="line">  TIMESTAMP_DIFF(protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.endTime,           protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.startTime, MILLISECOND)/1000 AS run_seconds,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.totalProcessedBytes,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.totalSlotMs,</span><br><span class="line">  ARRAY(SELECT as STRUCT datasetid, tableId FROM UNNEST(protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.referencedTables)) as tables_ref,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.totalTablesProcessed,</span><br><span class="line">  protopayload_auditlog.servicedata_v1_bigquery.jobCompletedEvent.job.jobStatistics.queryOutputRowCount,</span><br><span class="line">  severity</span><br><span class="line">FROM</span><br><span class="line">  `&lt;YOUR-PROJECT-ID&gt;.bq_logs.cloudaudit_googleapis_com_data_access_*`</span><br><span class="line">ORDER BY</span><br><span class="line">  startTime</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>現在可以查詢 <code>VIEW</code>, 執行以下指令</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">SELECT * FROM bq_logs.v_querylogs</span><br></pre></td></tr></table></figure>
@@ -468,7 +505,7 @@
 <li><p>檢視結果<br>檢視你之前執行的三筆查詢，跟下圖類似</p>
 </li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/jBUhwg9zBK77f4Q-ppkSPtRXlSKVTsZayJ4ZKyhpvbW9kBfuTt-lbaigb89seiEDT6XVYOl-7uXBfBYS4vmygpp8srmicwRSjXO8F8p7U02iTDivCvAhkU2CG2C7r9XDehHTQEe_JGCVRjf8Q3fvwhza-JYC7Io5PywCnlg8KHtP83F8IOj4EHII8MS_DN4Gf-4n5dJyeroWSyC8aECRVle-jjcqgEZP-rrsfdluhv_-hjfKURGXZQo46V8i84oX6m-9mNdd4fDF34gStWhXd1kFj72-AjSvWTevFt1k7n5wsUQNKpkhCfnGQX1eps8oEuO4TtKOY5rvl7-s613vz44ognNqldCXZRfY6fyDunM6n0fZr369X54H_wqquauNsSqH92nIGTsz7jtQMeOgMcagCcyUcEvJ81M1YT3PRj7GnAI_m7PpiILe0edOc_OLBgRalw8-nYg8syf2y09T8cTV7VYBmRyNXbhCFMdyU_bgkh5IVqIO3lOvSv4XFKlJOJ601OsS-_nT6HGP2ZF2C_brYs2CSeijqLyVYXa7a-MPWF15gkb7zDZ4y2gJdc7QPSXHRLS9dRBqHzckz-ppf9VzkBczTvoXrXiZkv-gZpknz-AxbuLuciBSBrgyeQSASSoAXMPpREyaYxkf7Vv38JPKKqiuxXVcovZQcwor4o9yepV5d0guPI0=w1280-h325-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/jBUhwg9zBK77f4Q-ppkSPtRXlSKVTsZayJ4ZKyhpvbW9kBfuTt-lbaigb89seiEDT6XVYOl-7uXBfBYS4vmygpp8srmicwRSjXO8F8p7U02iTDivCvAhkU2CG2C7r9XDehHTQEe_JGCVRjf8Q3fvwhza-JYC7Io5PywCnlg8KHtP83F8IOj4EHII8MS_DN4Gf-4n5dJyeroWSyC8aECRVle-jjcqgEZP-rrsfdluhv_-hjfKURGXZQo46V8i84oX6m-9mNdd4fDF34gStWhXd1kFj72-AjSvWTevFt1k7n5wsUQNKpkhCfnGQX1eps8oEuO4TtKOY5rvl7-s613vz44ognNqldCXZRfY6fyDunM6n0fZr369X54H_wqquauNsSqH92nIGTsz7jtQMeOgMcagCcyUcEvJ81M1YT3PRj7GnAI_m7PpiILe0edOc_OLBgRalw8-nYg8syf2y09T8cTV7VYBmRyNXbhCFMdyU_bgkh5IVqIO3lOvSv4XFKlJOJ601OsS-_nT6HGP2ZF2C_brYs2CSeijqLyVYXa7a-MPWF15gkb7zDZ4y2gJdc7QPSXHRLS9dRBqHzckz-ppf9VzkBczTvoXrXiZkv-gZpknz-AxbuLuciBSBrgyeQSASSoAXMPpREyaYxkf7Vv38JPKKqiuxXVcovZQcwor4o9yepV5d0guPI0=w1280-h325-no"></p>
 <h2 id="恭喜"><a href="#恭喜" class="headerlink" title="恭喜"></a>恭喜</h2><p>你已經完成本教程</p>
 
     
@@ -549,53 +586,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

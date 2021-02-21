@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Eloquent ORM - Mutators - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -272,7 +272,10 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Accessors-amp-Mutators"><a href="#Accessors-amp-Mutators" class="headerlink" title="# Accessors &amp; Mutators"></a># Accessors &amp; Mutators</h2><h3 id="Defining-An-Accessor"><a href="#Defining-An-Accessor" class="headerlink" title="# Defining An Accessor"></a># Defining An Accessor</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFirstNameAttribute</span><span class="hljs-params">($value)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> ucfirst($value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -287,7 +290,8 @@
 <li><p><strong>Answer</strong>:<br>定義一個 accessor<br>full_name 是一個 computed value, 來源來自 first_name 以及 last_name column, 所以當我使用 <code>$user-&gt;full_name</code> 時, 會自動取得 accessor 中定義的值<br>由於 full_name 並不存在於 table 中, 因此當我回傳整個 model 時並不會出現 full_name 這個 attribute, 可透過 append() 達成</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Defining-A-Mutator"><a href="#Defining-A-Mutator" class="headerlink" title="# Defining A Mutator"></a># Defining A Mutator</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setFirstNameAttribute</span><span class="hljs-params">($value)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;attributes[<span class="hljs-string">'first_name'</span>] = strtolower($value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -295,7 +299,9 @@
 <li><p><strong>Answer</strong>:<br>定義一個 mutator<br>當我們定義一個 model 的 attribute 時, mutator 會自動地呼叫 mutator, 對 attribute 進行操控<br>以此 example 來說, 如果我使用 <code>$user-&gt;first_name = &#39;Sally&#39;;</code>, 那就會自動將 Sally 轉成小寫, 這實在 Eloquent Model 中 <strong>first_name</strong> 會是 <strong>sally</strong></p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Date-Mutators"><a href="#Date-Mutators" class="headerlink" title="# Date Mutators"></a># Date Mutators</h2><h6 id="Laravel-中-預設-Eloquent-會將-created-at-以及-updated-at-轉成哪一個-class-的-instance"><a href="#Laravel-中-預設-Eloquent-會將-created-at-以及-updated-at-轉成哪一個-class-的-instance" class="headerlink" title="Laravel 中, 預設 Eloquent 會將 created_at 以及 updated_at 轉成哪一個 class 的 instance?"></a><strong>Laravel 中, 預設 Eloquent 會將 <code>created_at</code> 以及 <code>updated_at</code> 轉成哪一個 class 的 instance?</strong></h6><p>Carbon</p>
 <h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -318,7 +324,8 @@
 <li><p><strong>Answer</strong>:<br>將 deleted_at 使用 Carbon class 的 getTimestamp() 轉成 timestamp 格式</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Data-Formats"><a href="#Data-Formats" class="headerlink" title="# Data Formats"></a># Data Formats</h4><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $dateFormat = <span class="hljs-string">'U'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -326,7 +333,9 @@
 <li><p><strong>Answer</strong>:<br>Laravel 預設的 timestamps 格式為 <code>&#39;Y-m-d H:i:s</code>, 這也是會存在資料庫中的格式, 如果要自定義的話, 可以再 model 中的 <code>$dateFormat</code> property 自定義</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Attribute-Casting"><a href="#Attribute-Casting" class="headerlink" title="# Attribute Casting"></a># Attribute Casting</h2><h6 id="Laravel-Model-Attribute-Casting-支援哪些-type？"><a href="#Laravel-Model-Attribute-Casting-支援哪些-type？" class="headerlink" title="Laravel Model Attribute Casting 支援哪些 type？"></a><strong>Laravel Model Attribute Casting 支援哪些 type？</strong></h6><ul>
 <li>integer</li>
 <li>real</li>
@@ -354,13 +363,15 @@
 </li>
 </ul>
 <h6 id="Laravel-Model-Attribute-Casting-可以-cast-null-嗎？"><a href="#Laravel-Model-Attribute-Casting-可以-cast-null-嗎？" class="headerlink" title="Laravel Model Attribute Casting 可以 cast null 嗎？"></a><strong>Laravel Model Attribute Casting 可以 cast null 嗎？</strong></h6><p>不可</p>
-<p><br></p>
+<br>
+
 <h3 id="Custom-Casts"><a href="#Custom-Casts" class="headerlink" title="# Custom Casts"></a># Custom Casts</h3><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Casts</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">CastsAttributes</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Json</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CastsAttributes</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> json_decode($value, <span class="hljs-keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">set</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> json_encode($value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Casts</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">CastsAttributes</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 定義一個 custom cast</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Json</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CastsAttributes</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// get 代表如何將資料庫中取得的資料進行轉換</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 將資料庫取得的資料從 json 轉成 associatibe array</span></span><br><span class="line">        <span class="hljs-keyword">return</span> json_decode($value, <span class="hljs-keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// set 代表如何將資料轉換成適合存進資料庫的形式</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">set</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 將要存進資料庫的資料轉成 json 格式</span></span><br><span class="line">        <span class="hljs-keyword">return</span> json_encode($value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
@@ -370,23 +381,27 @@
 <li><p><strong>Answer</strong>:<br>在定義了 custom cast class 之後, 使用 User model 的 $cast property 來使用這個 custom cast class</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Value-Object-Casting"><a href="#Value-Object-Casting" class="headerlink" title="# Value Object Casting"></a># Value Object Casting</h4><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Casts</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">Address</span> <span class="hljs-title">as</span> <span class="hljs-title">AddressModel</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">CastsAttributes</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">InvalidArgumentException</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Address</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CastsAttributes</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> AddressModel(</span><br><span class="line">            $attributes[<span class="hljs-string">'address_line_one'</span>],</span><br><span class="line">            $attributes[<span class="hljs-string">'address_line_two'</span>]</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">set</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (! $value <span class="hljs-keyword">instanceof</span> AddressModel) &#123;</span><br><span class="line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidArgumentException(<span class="hljs-string">'The given value is not an Address instance.'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> [</span><br><span class="line">            <span class="hljs-string">'address_line_one'</span> =&gt; $value-&gt;lineOne,</span><br><span class="line">            <span class="hljs-string">'address_line_two'</span> =&gt; $value-&gt;lineTwo,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Casts</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">CastsAttributes</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">InvalidArgumentException</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 此為 value object casting</span></span><br><span class="line"><span class="hljs-comment">// 比方說, 我們在 User model 的 $cast property 定義 ['address' =&gt; App\Casts\Address], 再到 App\Models 下建立一個 Address model</span></span><br><span class="line"><span class="hljs-comment">// App\Models\Address class 為我們實際上要操作的 value object, 而當前這個 class 是這個 value object 與 User model 之間的 caster</span></span><br><span class="line"><span class="hljs-comment">// 當我使用 $user-&gt;address 時, 實際上便會呼叫當前 class 的 get(), 從 DB 中將資料帶入 App\Models\Address 這個 class 中</span></span><br><span class="line"><span class="hljs-comment">// 而當使用 $user-&gt;address-&gt;lineOne = '123', $user-&gt;save() 時, 則會呼叫 set(), 將 object 中的 property insert 到資料庫中的欄位</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Address</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CastsAttributes</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// $model 代表呼叫 Address 的 model, $user-&gt;address, model 就是 $user</span></span><br><span class="line">    <span class="hljs-comment">// $key 代表 address</span></span><br><span class="line">    <span class="hljs-comment">// $value 代表 address 的 value</span></span><br><span class="line">    <span class="hljs-comment">// $attribute 代表 raw data, 即 DB 中的 column</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">	<span class="hljs-comment">// 從 DB 中取出 'address_line_one', 'address_line_two', 並 assign 到 Address object 中的 lineOne, 及 lineTwo property</span></span><br><span class="line">        <span class="hljs-comment">// 若 property 數量大於 attribute, 則會噴錯</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Address(</span><br><span class="line">            $attributes[<span class="hljs-string">'address_line_one'</span>],</span><br><span class="line">            $attributes[<span class="hljs-string">'address_line_two'</span>]</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">set</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (! $value <span class="hljs-keyword">instanceof</span> Address) &#123;</span><br><span class="line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidArgumentException(<span class="hljs-string">'The given value is not an Address instance.'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// 將 $value-&gt;lineOne 以及 lineTwo 儲存到資料庫的 address_line_one, address_line_two column</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [</span><br><span class="line">            <span class="hljs-string">'address_line_one'</span> =&gt; $value-&gt;lineOne,</span><br><span class="line">            <span class="hljs-string">'address_line_two'</span> =&gt; $value-&gt;lineTwo,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Casts</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">Address</span> <span class="hljs-title">as</span> <span class="hljs-title">AddressModel</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">CastsAttributes</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">InvalidArgumentException</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Address</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CastsAttributes</span>, <span class="hljs-title">SerializesCastableAttributes</span>;</span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">serialize</span><span class="hljs-params">($model, string $key, $value, array $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> (string) $value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br><strong>short</strong>: 讓 custom cast class 可以 serialize object 或 JSON<br><strong>long</strong>: 當使用 toArray method 來將 Eloquent model 轉成 array 或 JSON 時, custom cast value objects 將會被 serialize 如果有 implement Arrayable 或 JsonSerializable interface 的話。 然而, 當使用第三方 library 提供的 value objects 時, 可能無法在這些 object 上 implement 這些 interface, 因此可在 custom cast class implement SerializesCastableAttributes interface, 並新增 serialize method</p>
+<li><p><strong>Answer</strong>:</p>
 </li>
 </ul>
-<p><br></p>
+<p><strong>short</strong>: 讓 custom cast class 可以 serialize object 或 JSON<br><strong>long</strong>: 當使用 toArray method 來將 Eloquent model 轉成 array 或 JSON 時, custom cast value objects 將會被 serialize 如果有 implement Arrayable 或 JsonSerializable interface 的話。 然而, 當使用第三方 library 提供的 value objects 時, 可能無法在這些 object 上 implement 這些 interface, 因此可在 custom cast class implement SerializesCastableAttributes interface, 並新增 serialize method</p>
+<br>
+
 <h4 id="Inbound-Casting"><a href="#Inbound-Casting" class="headerlink" title="# Inbound Casting"></a># Inbound Casting</h4><h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Casts</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">CastsInboundAttributes</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Hash</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CastsInboundAttributes</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $algorithm;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">($algorithm = null)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;algorithm = $algorithm;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">set</span><span class="hljs-params">($model, $key, $value, $attributes)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> is_null(<span class="hljs-keyword">$this</span>-&gt;algorithm)</span><br><span class="line">                    ? bcrypt($value)</span><br><span class="line">                    : hash(<span class="hljs-keyword">$this</span>-&gt;algorithm, $value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -394,7 +409,8 @@
 <li><p><strong>Answer</strong>:<br>如果 custom cast 的作用範圍只限定於將要存進資料庫的資料作轉換, 但從資料庫取出資料時並不另外轉換, 在這樣的情況話, 就可以使用 inbound custom cast<br>需 implement CastsInboundAttributes interface, 以及只需 set method 即可</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Cast-Parameters"><a href="#Cast-Parameters" class="headerlink" title="# Cast Parameters"></a># Cast Parameters</h4><h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Authenticatable</span>;</span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $casts = [</span><br><span class="line">        <span class="hljs-string">'secret'</span> =&gt; Hash::class.<span class="hljs-string">':sha256'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -402,16 +418,19 @@
 <li><p><strong>Answer</strong>:<br>將 parameter “sha256” 帶入 custom cast class “Hash”</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Castables"><a href="#Castables" class="headerlink" title="# Castables"></a># Castables</h4><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Authenticatable</span>;</span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $casts = [</span><br><span class="line">        <span class="hljs-string">'address'</span> =&gt; \App\Models\Address::class.<span class="hljs-string">':argument'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Address</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Castable</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">castUsing</span><span class="hljs-params">(array $arguments)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> AddressCast::class;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 這是實作 cast value object 的另外一種方式, 個人覺得這種方式比較直觀</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Authenticatable</span>;</span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 除了指定為 custom cast class 之外, 也可以直接指定要操作的 cast value object class</span></span><br><span class="line">    <span class="hljs-comment">// 需注意的是, 後面的 argument 會被 pass 到 custom cast class, 而不是 cast value object class</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> $casts = [</span><br><span class="line">        <span class="hljs-string">'address'</span> =&gt; \App\Models\Address::class.<span class="hljs-string">':argument'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 而在 cast value object class 中, 要 implement Castable interface</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Address</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Castable</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 並且, 要定義一個 castUsing method, 指定使用哪一個 custom cast class</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">castUsing</span><span class="hljs-params">(array $arguments)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> AddressCast::class;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Array-amp-JSON-Casting"><a href="#Array-amp-JSON-Casting" class="headerlink" title="# Array &amp; JSON Casting"></a># Array &amp; JSON Casting</h3><h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $casts = [</span><br><span class="line">        <span class="hljs-string">'options'</span> =&gt; <span class="hljs-string">'array'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$user = App\Models\User::find(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">$options = $user-&gt;options;</span><br><span class="line"></span><br><span class="line">$options[<span class="hljs-string">'key'</span>] = <span class="hljs-string">'value'</span>;</span><br><span class="line"></span><br><span class="line">$user-&gt;options = $options;</span><br><span class="line"></span><br><span class="line">$user-&gt;save();</span><br></pre></td></tr></table></figure>
@@ -426,7 +445,8 @@
 <li><p><strong>Answer</strong>:<br>更新 JSON column 中的 key 為 ‘testKey’ 的 value 更新為 ‘testValue’</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Date-Casting"><a href="#Date-Casting" class="headerlink" title="# Date Casting"></a># Date Casting</h3><h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> $casts = [</span><br><span class="line">    <span class="hljs-string">'created_at'</span> =&gt; <span class="hljs-string">'datetime:Y-m-d'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
@@ -434,13 +454,15 @@
 <li><p><strong>Answer</strong>:<br>雖說 created_at 預設就會被 cast 成 datetime type, 但還可以特別指定格式<br>當 model 被 serialized 成 array 或 JSON 時, 會使用這個格式</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Query-Time-Casting"><a href="#Query-Time-Casting" class="headerlink" title="# Query Time Casting"></a># Query Time Casting</h3><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = User::select([</span><br><span class="line">    <span class="hljs-string">'users.*'</span>,</span><br><span class="line">    <span class="hljs-string">'last_posted_at'</span> =&gt; Post::selectRaw(<span class="hljs-string">'MAX(created_at)'</span>)</span><br><span class="line">            -&gt;whereColumn(<span class="hljs-string">'user_id'</span>, <span class="hljs-string">'users.id'</span>)</span><br><span class="line">])-&gt;withCasts([</span><br><span class="line">    <span class="hljs-string">'last_posted_at'</span> =&gt; <span class="hljs-string">'datetime'</span></span><br><span class="line">])-&gt;get();</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:<br>在 query 的過程中, 將 ‘last_posted_at’ 轉成 datetime type, 即 carbon instance, 若不使用 withCasts, 則 last_posted_at 會是一個 raw string, 如下 example</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = User::select([</span><br><span class="line">    <span class="hljs-string">'users.*'</span>,</span><br><span class="line">    <span class="hljs-string">'last_posted_at'</span> =&gt; Post::selectRaw(<span class="hljs-string">'MAX(created_at)'</span>)</span><br><span class="line">        -&gt;whereColumn(<span class="hljs-string">'user_id'</span>, <span class="hljs-string">'users.id'</span>)</span><br><span class="line">])-&gt;withCasts([</span><br><span class="line">    <span class="hljs-string">'last_posted_at'</span> =&gt; <span class="hljs-string">'datetime'</span></span><br><span class="line">])-&gt;get();</span><br><span class="line"></span><br><span class="line">$last_posted_at = $users-&gt;first()-&gt;last_posted_at;</span><br><span class="line"><span class="hljs-comment">// 若不使用 cast, 是無法使用 Carbon class year property 的</span></span><br><span class="line">dd($last_posted_at-&gt;year);</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 
@@ -520,53 +542,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

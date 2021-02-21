@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Netdata 學習筆記 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -254,8 +254,10 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這是一份未整理過的 Netdata 學習筆記<br>內容參考出處：<br><a href="https://docs.netdata.cloud/" target="_blank" rel="noopener">官方文件</a></p>
 <a id="more"></a>
+
 <h2 id="Configuration-設定檔"><a href="#Configuration-設定檔" class="headerlink" title="Configuration (設定檔)"></a>Configuration (設定檔)</h2><p>檔案位置: <code>/etc/netdata/netdata.conf</code></p>
 <h3 id="backend"><a href="#backend" class="headerlink" title="backend"></a>backend</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[backend]</span><br><span class="line">    enabled = yes | no</span><br><span class="line">    type = graphite | opentsdb:telnet | opentsdb:http | opentsdb:https | prometheus_remote_write | json | kinesis | mongodb</span><br><span class="line">    host tags = list of TAG=VALUE</span><br><span class="line">    destination = space separated list of [PROTOCOL:]HOST[:PORT] - the first working will be used, or a region for kinesis</span><br><span class="line">    data source = average | sum | as collected</span><br><span class="line">    prefix = Netdata</span><br><span class="line">    hostname = my-name</span><br><span class="line">    update every = 10</span><br><span class="line">    buffer on failures = 10</span><br><span class="line">    timeout ms = 20000</span><br><span class="line">    send charts matching = *</span><br><span class="line">    send hosts matching = localhost *</span><br><span class="line">    send names instead of ids = yes</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p><code>enabled = yes | no</code>, <strong>開啟或關閉後端</strong></p>
 </li>
@@ -275,7 +277,8 @@
 <li>MongoDB 後端在這設定中不使用 destination 選項, 它使用 mongodb.conf 設定</li>
 </ul>
 </li>
-<li><code>data source = as collected</code>, 或 <code>data source = average</code>, 或 <code>data source = sum</code>, 選擇要被傳送到後端的資料類型<ul>
+<li><p><code>data source = as collected</code>, 或 <code>data source = average</code>, 或 <code>data source = sum</code>, 選擇要被傳送到後端的資料類型</p>
+<ul>
 <li><code>as-collected</code>: 當指標被採集時, 傳送到後端, 以他們被採集時的單位。 所以說， counter 將會以 counter 傳送, gauge 也被以 gauge 傳送, 就像所有的資料採集器那樣。 例如說, 若要算出在這格式下的 CPU 使用率，你需要知道怎麼轉換 <code>kernel ticks</code> 到百分比</li>
 <li><code>average</code>: 將正規化之後的指標從 Netdata 資料庫傳送到後端。 在這個模式下，所有的指標都被以 <code>gauges</code> 傳送，並且使用 Netdata 使用的單位。 這抽象化了資料收集以及簡單化了視覺顯示，但你將沒有辦法從其他來源複製貼上 query 來轉換單位。 例如， CPU 使用百分比是被 Netdata 計算，所以 Netdata 將會轉換 ticks 到百分比，然後傳送平均百分比到後端</li>
 <li><code>sum or volume</code>: Netdata 圖表上的總合將會被傳送到後端。 所以，如果 Netdata 被設定為每 10 秒傳送資料一次，那 10 秒的總合將會被傳送。 </li>
@@ -285,6 +288,7 @@
 </li>
 </ul>
 <h2 id="利用-InfluxDB-作為-Netdata-backend"><a href="#利用-InfluxDB-作為-Netdata-backend" class="headerlink" title="利用 InfluxDB 作為 Netdata backend"></a>利用 InfluxDB 作為 Netdata backend</h2><h3 id="Netdata"><a href="#Netdata" class="headerlink" title="Netdata"></a>Netdata</h3><h4 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">bash &lt;(curl -Ss https://my-netdata.io/kickstart.sh) --dont-wait</span><br></pre></td></tr></table></figure>
+
 <h4 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h4><ul>
 <li><p>開啟設定檔</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/netdata/netdata.conf</span><br></pre></td></tr></table></figure>
@@ -294,11 +298,14 @@
 </li>
 <li><p>重新啟動</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemctl restart netdata</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="InfluxDB"><a href="#InfluxDB" class="headerlink" title="InfluxDB"></a>InfluxDB</h3><h4 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h4><p>參考<a href="https://docs.influxdata.com/influxdb/v1.7/introduction/installation/" target="_blank" rel="noopener">官方流程</a></p>
 <h4 id="開啟設定檔"><a href="#開啟設定檔" class="headerlink" title="開啟設定檔"></a>開啟設定檔</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/influxdb/influxdb.conf</span><br></pre></td></tr></table></figure>
+
 <h4 id="設定"><a href="#設定" class="headerlink" title="設定"></a>設定</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[[opentsdb]]</span><br><span class="line">   enabled = <span class="hljs-literal">true</span></span><br><span class="line">   <span class="hljs-built_in">bind</span>-address = <span class="hljs-string">"localhost:4242"</span></span><br><span class="line">   database = <span class="hljs-string">"opentsdb"</span></span><br></pre></td></tr></table></figure>
+
 
     
     </div>
@@ -372,53 +379,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

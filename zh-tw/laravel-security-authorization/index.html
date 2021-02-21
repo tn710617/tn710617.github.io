@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Security - Authorization (官方文件原子化翻譯筆記) - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -326,6 +326,7 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
+
 <h2 id="Gates"><a href="#Gates" class="headerlink" title="# Gates"></a># Gates</h2><h3 id="Writing-Gates"><a href="#Writing-Gates" class="headerlink" title="# Writing Gates"></a># Writing Gates</h3><h6 id="Laravel-Authentication-中-主要有哪兩種-authorization-方式？"><a href="#Laravel-Authentication-中-主要有哪兩種-authorization-方式？" class="headerlink" title="Laravel Authentication 中, 主要有哪兩種 authorization 方式？"></a><strong>Laravel Authentication 中, 主要有哪兩種 authorization 方式？</strong></h6><p>gates and policies</p>
 <h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -341,7 +342,8 @@
 <li><p><strong>Answer</strong>:<br>在定義一個 Gate closure based rule 時, 也可以選擇由指定的 class@method 來執行驗證邏輯</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Authorizing-Actions"><a href="#Authorizing-Actions" class="headerlink" title="# Authorizing Actions"></a># Authorizing Actions</h3><h6 id="Laravel-Authentication-中-當我使用-Gate-時-需要帶入-current-user-嗎？"><a href="#Laravel-Authentication-中-當我使用-Gate-時-需要帶入-current-user-嗎？" class="headerlink" title="Laravel Authentication 中, 當我使用 Gate 時, 需要帶入 current $user 嗎？"></a><strong>Laravel Authentication 中, 當我使用 Gate 時, 需要帶入 current $user 嗎？</strong></h6><p>不需要</p>
 <h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -378,7 +380,8 @@
 <li><p><strong>Answer</strong>:<br>判斷當前 authenticated user 是否 <code>皆不被允許</code> <strong>update $post</strong> 以及 <strong>delete $post</strong>, 會執行 <strong>update-post</strong> 以及 <strong>delete-post</strong> closure gate</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Authorizing-Or-Throwing-Exceptions"><a href="#Authorizing-Or-Throwing-Exceptions" class="headerlink" title="# Authorizing Or Throwing Exceptions"></a># Authorizing Or Throwing Exceptions</h4><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Gate::authorize(<span class="hljs-string">'update-post'</span>, $post);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// The action is authorized...</span></span><br></pre></td></tr></table></figure>
@@ -393,7 +396,8 @@
 <li><p><strong>Answer</strong>:<br>判斷當前 authenticated user 是否 <code>被允許</code> create posts, 可使用 array 帶入複數的 parameters</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Gate-Responses"><a href="#Gate-Responses" class="headerlink" title="# Gate Responses"></a># Gate Responses</h3><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Auth</span>\<span class="hljs-title">Access</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Gate</span>;</span><br><span class="line"></span><br><span class="line">Gate::define(<span class="hljs-string">'edit-settings'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($user)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $user-&gt;isAdmin</span><br><span class="line">                ? Response::allow()</span><br><span class="line">                : Response::deny(<span class="hljs-string">'You must be a super administrator.'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -408,7 +412,8 @@
 <li><p><strong>Answer</strong>:<br>取得 Gate 回傳的完整 authorization response</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Intercepting-Gate-Checks"><a href="#Intercepting-Gate-Checks" class="headerlink" title="# Intercepting Gate Checks"></a># Intercepting Gate Checks</h3><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Gate::before(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($user, $ability)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> ($user-&gt;isSuperAdmin()) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -423,7 +428,9 @@
 <li><p><strong>Answer</strong>:<br>會在所有的 gate rule 執行完畢後, 才會執行 after 內定義的規則, 比如說, 我要先驗證一些必要驗證, 最後在驗證該使用者是否為 admin</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Creating-Policies"><a href="#Creating-Policies" class="headerlink" title="# Creating Policies"></a># Creating Policies</h2><h3 id="Generating-Policies"><a href="#Generating-Policies" class="headerlink" title="# Generating Policies"></a># Generating Policies</h3><h6 id="Laravel-Authentication-中-使用-CLI-建立的-policy-會位於哪裡？"><a href="#Laravel-Authentication-中-使用-CLI-建立的-policy-會位於哪裡？" class="headerlink" title="Laravel Authentication 中, 使用 CLI 建立的 policy 會位於哪裡？"></a><strong>Laravel Authentication 中, 使用 CLI 建立的 policy 會位於哪裡？</strong></h6><p><code>app/Policies</code> 資料夾</p>
 <h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -432,7 +439,8 @@
 <li><p><strong>Answer</strong>:<br>使用 CLI 建立一個 policy 並且指定 model</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Registering-Policies"><a href="#Registering-Policies" class="headerlink" title="# Registering Policies"></a># Registering Policies</h3><h6 id="Laravel-Authentication-中-當我建立了-policy-之後-我需要在哪一個檔案中註冊它"><a href="#Laravel-Authentication-中-當我建立了-policy-之後-我需要在哪一個檔案中註冊它" class="headerlink" title="Laravel Authentication 中, 當我建立了 policy 之後, 我需要在哪一個檔案中註冊它"></a><strong>Laravel Authentication 中, 當我建立了 policy 之後, 我需要在哪一個檔案中註冊它</strong></h6><p><code>AuthServiceProvider.php</code></p>
 <h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -441,8 +449,9 @@
 <li><p><strong>Answer</strong>:<br>在 AuthServiceProvider 的 policies property 中給 model 註冊 policy</p>
 </li>
 </ul>
-<p><br></p>
-<h4 id="Policy-Auto-Discovery"><a href="#Policy-Auto-Discovery" class="headerlink" title="# Policy Auto-Discovery"></a># Policy Auto-Discovery</h4><h6 id="Laravel-Authentication-中-如果我不想要每次都手動註冊-policy-我想要使用-Laravel-預設的-auto-discovery-假設-model-name-為-User-那該-Policy-name-須為？"><a href="#Laravel-Authentication-中-如果我不想要每次都手動註冊-policy-我想要使用-Laravel-預設的-auto-discovery-假設-model-name-為-User-那該-Policy-name-須為？" class="headerlink" title="Laravel Authentication 中, 如果我不想要每次都手動註冊 policy, 我想要使用 Laravel 預設的 auto-discovery, 假設 model name 為 User, 那該 Policy name 須為？"></a><strong>Laravel Authentication 中, 如果我不想要每次都手動註冊 policy, 我想要使用 Laravel 預設的 auto-discovery, 假設 model name 為 User, 那該 Policy name 須為？</strong></h6><p><strong><em>UserPolicy</em></strong></p>
+<br>
+
+<h4 id="Policy-Auto-Discovery"><a href="#Policy-Auto-Discovery" class="headerlink" title="# Policy Auto-Discovery"></a># Policy Auto-Discovery</h4><h6 id="Laravel-Authentication-中-如果我不想要每次都手動註冊-policy-我想要使用-Laravel-預設的-auto-discovery-假設-model-name-為-User-那該-Policy-name-須為？"><a href="#Laravel-Authentication-中-如果我不想要每次都手動註冊-policy-我想要使用-Laravel-預設的-auto-discovery-假設-model-name-為-User-那該-Policy-name-須為？" class="headerlink" title="Laravel Authentication 中, 如果我不想要每次都手動註冊 policy, 我想要使用 Laravel 預設的 auto-discovery, 假設 model name 為 User, 那該 Policy name 須為？"></a><strong>Laravel Authentication 中, 如果我不想要每次都手動註冊 policy, 我想要使用 Laravel 預設的 auto-discovery, 假設 model name 為 User, 那該 Policy name 須為？</strong></h6><p><em><strong>UserPolicy</strong></em></p>
 <h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Gate</span>;</span><br><span class="line"></span><br><span class="line">Gate::guessPolicyNamesUsing(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($modelClass)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// return policy class name...</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -451,7 +460,9 @@
 </li>
 </ul>
 <h6 id="Laravel-Authentication-中-當我同時使用手動註冊-policy-以及-auto-discovery-policy-時-哪一個的優先順序較高？"><a href="#Laravel-Authentication-中-當我同時使用手動註冊-policy-以及-auto-discovery-policy-時-哪一個的優先順序較高？" class="headerlink" title="Laravel Authentication 中, 當我同時使用手動註冊 policy 以及 auto-discovery policy 時, 哪一個的優先順序較高？"></a><strong>Laravel Authentication 中, 當我同時使用手動註冊 policy 以及 auto-discovery policy 時, 哪一個的優先順序較高？</strong></h6><p>手動註冊</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Writing-Policies"><a href="#Writing-Policies" class="headerlink" title="# Writing Policies"></a># Writing Policies</h2><h3 id="Policy-Methods"><a href="#Policy-Methods" class="headerlink" title="# Policy Methods"></a># Policy Methods</h3><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Policies</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Post</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PostPolicy</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(User $user, Post $post)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $user-&gt;id === $post-&gt;user_id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -466,17 +477,20 @@
 <li><p><strong>Answer</strong>:<br>在 PostPolicy class, update method 中定義 $user 是否被允許 update $post</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Policy-Responses"><a href="#Policy-Responses" class="headerlink" title="# Policy Responses"></a># Policy Responses</h3><h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Auth</span>\<span class="hljs-title">Access</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(User $user, Post $post)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $user-&gt;id === $post-&gt;user_id</span><br><span class="line">                ? Response::allow()</span><br><span class="line">                : Response::deny(<span class="hljs-string">'You do not own this post.'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 在 policy class 中, 定義 允許, 不被允許 的 response</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Auth</span>\<span class="hljs-title">Access</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(User $user, Post $post)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $user-&gt;id === $post-&gt;user_id</span><br><span class="line">                <span class="hljs-comment">// 允許則回覆 boolean true</span></span><br><span class="line">                ? Response::allow()</span><br><span class="line">                <span class="hljs-comment">// 不允許則回傳 403, message</span></span><br><span class="line">                : Response::deny(<span class="hljs-string">'You do not own this post.'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="Laravel-Authentication-中-根據官方文件描述-我可以使用-Gate-inspect-method-來取得-policy-的-authorization-response-嗎？"><a href="#Laravel-Authentication-中-根據官方文件描述-我可以使用-Gate-inspect-method-來取得-policy-的-authorization-response-嗎？" class="headerlink" title="Laravel Authentication 中, 根據官方文件描述, 我可以使用 Gate::inspect method 來取得 policy 的 authorization response 嗎？"></a><strong>Laravel Authentication 中, 根據官方文件描述, 我可以使用 <em>Gate::inspect</em> method 來取得 policy 的 authorization response 嗎？</strong></h6><p>可以</p>
-<p><br></p>
+<br>
+
 <h3 id="Methods-Without-Models"><a href="#Methods-Without-Models" class="headerlink" title="# Methods Without Models"></a># Methods Without Models</h3><h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 在 policy class 中</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span><span class="hljs-params">(User $user)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -484,13 +498,15 @@
 <li><p><strong>Answer</strong>:<br>由於 create() 並不需要 model parameter, 因此使用 User $user 即可</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Guest-Users"><a href="#Guest-Users" class="headerlink" title="# Guest Users"></a># Guest Users</h3><h6 id="Laravel-Authentication-中-預設在-policy-以及-gate-如果沒有初始化一個-authenticated-user-的話-authorization-會-return-什麼？"><a href="#Laravel-Authentication-中-預設在-policy-以及-gate-如果沒有初始化一個-authenticated-user-的話-authorization-會-return-什麼？" class="headerlink" title="Laravel Authentication 中, 預設在 policy 以及 gate 如果沒有初始化一個 authenticated user 的話, authorization 會 return 什麼？"></a><strong>Laravel Authentication 中, 預設在 policy 以及 gate 如果沒有初始化一個 authenticated user 的話, authorization 會 return 什麼？</strong></h6><p>false</p>
 <h6 id="Laravel-Authentication-中-預設在-policy-以及-gate-如果沒有初始化一個-authenticated-user-的話-會-return-false-如果我想要讓沒有-authenticated-user-也可以通過-authorization-check-的話-有哪兩種方式？？"><a href="#Laravel-Authentication-中-預設在-policy-以及-gate-如果沒有初始化一個-authenticated-user-的話-會-return-false-如果我想要讓沒有-authenticated-user-也可以通過-authorization-check-的話-有哪兩種方式？？" class="headerlink" title="Laravel Authentication 中, 預設在 policy 以及 gate 如果沒有初始化一個 authenticated user 的話, 會 return false, 如果我想要讓沒有 authenticated user 也可以通過 authorization check 的話, 有哪兩種方式？？"></a><strong>Laravel Authentication 中, 預設在 policy 以及 gate 如果沒有初始化一個 authenticated user 的話, 會 return false, 如果我想要讓沒有 authenticated user 也可以通過 authorization check 的話, 有哪兩種方式？？</strong></h6><ul>
 <li>optional type hint</li>
 <li>return null</li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Policy-Filters"><a href="#Policy-Filters" class="headerlink" title="# Policy Filters"></a># Policy Filters</h3><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">before</span><span class="hljs-params">($user, $ability)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -499,7 +515,9 @@
 </li>
 </ul>
 <h6 id="Laravel-Authentication-中-當我在-policy-中定義一個-before-method-時-如果該-policy-class-中沒有任何-method-被呼叫-那-before-method-會被呼叫嗎？"><a href="#Laravel-Authentication-中-當我在-policy-中定義一個-before-method-時-如果該-policy-class-中沒有任何-method-被呼叫-那-before-method-會被呼叫嗎？" class="headerlink" title="Laravel Authentication 中, 當我在 policy 中定義一個 before method 時, 如果該 policy class 中沒有任何 method 被呼叫, 那 before method 會被呼叫嗎？"></a><strong>Laravel Authentication 中, 當我在 policy 中定義一個 before method 時, 如果該 policy class 中沒有任何 method 被呼叫, 那 before method 會被呼叫嗎？</strong></h6><p>不會哦</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Authorizing-Actions-Using-Polices"><a href="#Authorizing-Actions-Using-Polices" class="headerlink" title="# Authorizing Actions Using Polices"></a># Authorizing Actions Using Polices</h2><h3 id="Via-The-User-Model"><a href="#Via-The-User-Model" class="headerlink" title="# Via The User Model"></a># Via The User Model</h3><h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> ($user-&gt;can(<span class="hljs-string">'update'</span>, $post)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -507,8 +525,9 @@
 <li><p><strong>Answer</strong>:<br>使用 can() 判斷 $user 是否有 update $post 的權限, 會調用 PostPolicy</p>
 </li>
 </ul>
-<h6 id="Laravel-Authentication-中-當我使用-can-method-如下-example-時-如果說我並沒有註冊這個-policy-那-Laravel-會怎麼做？"><a href="#Laravel-Authentication-中-當我使用-can-method-如下-example-時-如果說我並沒有註冊這個-policy-那-Laravel-會怎麼做？" class="headerlink" title="Laravel Authentication 中, 當我使用 can method 如下 example 時, 如果說我並沒有註冊這個 policy, 那 Laravel 會怎麼做？"></a><strong>Laravel Authentication 中, 當我使用 <em>can</em> method 如下 example 時, 如果說我並沒有註冊這個 policy, 那 Laravel 會怎麼做？</strong></h6><p>尋找 <strong><em>closure based Gate</em></strong></p>
-<p><br></p>
+<h6 id="Laravel-Authentication-中-當我使用-can-method-如下-example-時-如果說我並沒有註冊這個-policy-那-Laravel-會怎麼做？"><a href="#Laravel-Authentication-中-當我使用-can-method-如下-example-時-如果說我並沒有註冊這個-policy-那-Laravel-會怎麼做？" class="headerlink" title="Laravel Authentication 中, 當我使用 can method 如下 example 時, 如果說我並沒有註冊這個 policy, 那 Laravel 會怎麼做？"></a><strong>Laravel Authentication 中, 當我使用 <em>can</em> method 如下 example 時, 如果說我並沒有註冊這個 policy, 那 Laravel 會怎麼做？</strong></h6><p>尋找 <em><strong>closure based Gate</strong></em></p>
+<br>
+
 <h4 id="Actions-That-Don’t-Require-Models"><a href="#Actions-That-Don’t-Require-Models" class="headerlink" title="# Actions That Don’t Require Models"></a># Actions That Don’t Require Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Post</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> ($user-&gt;can(<span class="hljs-string">'create'</span>, Post::class)) &#123;</span><br><span class="line">    <span class="hljs-comment">// Executes the "create" method on the relevant policy...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -516,7 +535,8 @@
 <li><p><strong>Answer</strong>:<br>使用 can() 驗證 $user 是否可以在 Post model 中, 有 create 的權限, 如果是 update 類型的 method 會需要帶入指定的 $model, 因為 create 是不需要帶入指定的 $model 的, 所以帶入 Post model 的完整 class name 即可</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Via-Middleware"><a href="#Via-Middleware" class="headerlink" title="# Via Middleware"></a># Via Middleware</h3><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Post</span>;</span><br><span class="line"></span><br><span class="line">Route::put(<span class="hljs-string">'/post/&#123;post&#125;'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Post $post)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// The current user may update the post...</span></span><br><span class="line">&#125;)-&gt;middleware(<span class="hljs-string">'can:update,post'</span>);</span><br></pre></td></tr></table></figure>
@@ -524,7 +544,8 @@
 <li><p><strong>Answer</strong>:<br>使用 can middleware 驗證發 request 的 user 是否具有 update 該 post model 的權限, 第一個 arg 為 update 權限, 會執行 post policy 的 update method, 第二個 ‘post’ 為 url parameter 中帶入的該 post model, update method 會判斷該 user 是否有權限 update 該 post model</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Actions-That-Don’t-Require-Models-1"><a href="#Actions-That-Don’t-Require-Models-1" class="headerlink" title="# Actions That Don’t Require Models"></a># Actions That Don’t Require Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::post(<span class="hljs-string">'/post'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// The current user may create posts...</span></span><br><span class="line">&#125;)-&gt;middleware(<span class="hljs-string">'can:create,App\Post'</span>);</span><br></pre></td></tr></table></figure>
@@ -532,7 +553,8 @@
 <li><p><strong>Answer</strong>:<br>使用 can middleware 驗證 $user 是否可以在 Post model 中, 有 create 的權限, 如果是 update 類型的 method 會需要帶入指定的 $model, 因為 create 是不需要帶入指定的 $model 的, 所以帶入 Post model 的完整 class name 即可</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Via-Controller-Helpers"><a href="#Via-Controller-Helpers" class="headerlink" title="# Via Controller Helpers"></a># Via Controller Helpers</h3><h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Post</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PostController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(Request $request, Post $post)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;authorize(<span class="hljs-string">'update'</span>, $post);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// The current user can update the blog post...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -540,7 +562,8 @@
 <li><p><strong>Answer</strong>:<br>使用 authorize method, 會根據定義的 policy 判斷該 authenticated user 是否有 update 該 $post 的權限, 如果不允許, 會 throw 403</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Action-That-Don’t-Require-Models"><a href="#Action-That-Don’t-Require-Models" class="headerlink" title="# Action That Don’t Require Models"></a># Action That Don’t Require Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-24"><a href="#以下的-Laravel-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span><span class="hljs-params">(Request $request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;authorize(<span class="hljs-string">'create'</span>, Post::class);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// The current user can create blog posts...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -548,7 +571,8 @@
 <li><p><strong>Answer</strong>:<br>使用 authorize(), 驗證 authenticated user 是否可以在 Post model 有 create 的操作權限, 該邏輯判斷定義在 PostPolicy, 若不可會直接 throw 403</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Authorizing-Resource-Controllers"><a href="#Authorizing-Resource-Controllers" class="headerlink" title="# Authorizing Resource Controllers"></a># Authorizing Resource Controllers</h4><h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Post</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Request</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PostController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;authorizeResource(Post::class, <span class="hljs-string">'post'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -556,7 +580,8 @@
 <li><p><strong>Answer</strong>:<br>在 controller 的 construct() 中使用 authorizeResource(), arg1 為 policy model class name, arg2 為 url parameter $post, 會自動將 authorize 套用到該 Resource Controller 中的每個 method</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Via-Blade-Templates"><a href="#Via-Blade-Templates" class="headerlink" title="# Via Blade Templates"></a># Via Blade Templates</h3><h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@can(<span class="hljs-string">'update'</span>, $post)</span><br><span class="line">    &lt;!-- The Current User Can Update The Post --&gt;</span><br><span class="line">@elsecan(<span class="hljs-string">'create'</span>, App\Post::class)</span><br><span class="line">    &lt;!-- The Current User Can Create <span class="hljs-keyword">New</span> Post --&gt;</span><br><span class="line">@endcan</span><br></pre></td></tr></table></figure>
@@ -577,6 +602,7 @@
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@<span class="hljs-keyword">if</span> (Auth::user()-&gt;can(<span class="hljs-string">'update'</span>, $post))</span><br><span class="line">    &lt;!-- The Current User Can Update The Post --&gt;</span><br><span class="line">@<span class="hljs-keyword">endif</span></span><br><span class="line"></span><br><span class="line">@unless (Auth::user()-&gt;can(<span class="hljs-string">'update'</span>, $post))</span><br><span class="line">    &lt;!-- The Current User Cannot Update The Post --&gt;</span><br><span class="line">@endunless</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="以下的-Laravel-example-code-的意思是？-28"><a href="#以下的-Laravel-example-code-的意思是？-28" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
@@ -586,7 +612,8 @@
 <li><p><strong>Answer</strong>:<br>判斷 current user 是否 <code>被允許</code> <strong>update</strong> 或 <strong>view</strong> 或 <strong>delete</strong> $post model, 任意一項都算<br>判斷 current user 是否 <code>被允許</code> 在 Post model 中實施 <code>create</code> 的操作<br>以上的權限邏輯都定義在 PostPolicy</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Actions-That-Don’t-Require-Models-2"><a href="#Actions-That-Don’t-Require-Models-2" class="headerlink" title="# Actions That Don’t Require Models"></a># Actions That Don’t Require Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-29"><a href="#以下的-Laravel-example-code-的意思是？-29" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@can(<span class="hljs-string">'create'</span>, App\Post::class)</span><br><span class="line">    &lt;!-- The Current User Can Create Posts --&gt;</span><br><span class="line">@endcan</span><br><span class="line"></span><br><span class="line">@cannot(<span class="hljs-string">'create'</span>, App\Post::class)</span><br><span class="line">    &lt;!-- The Current User Can<span class="hljs-string">'t Create Posts --&gt;</span></span><br><span class="line"><span class="hljs-string">@endcannot</span></span><br></pre></td></tr></table></figure>
@@ -594,7 +621,8 @@
 <li><p><strong>Answer</strong>:<br>使用 Blade authorization method<br>判斷 current user 是否 <code>被允許</code> 對 Post model 操作 create 的權限<br>判斷 current user 是否 <code>不被允許</code> 對 Post model 操作 create 的權限<br>驗證邏輯會使用定義好的 policy</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Supplying-Additional-Context"><a href="#Supplying-Additional-Context" class="headerlink" title="# Supplying Additional Context"></a># Supplying Additional Context</h3><h6 id="Laravel-Authentication-中-在定義-policy-時-如果除了-user-以及-model-之外-我還要帶入額外的參數來驗證-在以下的-example-中-參數可以帶在哪？"><a href="#Laravel-Authentication-中-在定義-policy-時-如果除了-user-以及-model-之外-我還要帶入額外的參數來驗證-在以下的-example-中-參數可以帶在哪？" class="headerlink" title="Laravel Authentication 中, 在定義 policy 時, 如果除了 user 以及 model 之外, 我還要帶入額外的參數來驗證, 在以下的 example 中, 參數可以帶在哪？"></a><strong>Laravel Authentication 中, 在定義 policy 時, 如果除了 user 以及 model 之外, 我還要帶入額外的參數來驗證, 在以下的 example 中, 參數可以帶在哪？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(User $user, Post $post, int $category)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $user-&gt;id === $post-&gt;user_id &amp;&amp;</span><br><span class="line">           $category &gt; <span class="hljs-number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -686,53 +714,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

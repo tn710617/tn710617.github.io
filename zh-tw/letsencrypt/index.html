@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -270,7 +270,8 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要分享，如何利用 <code>Let&#39;s Encrypt</code> 的 <code>cert bot</code> 來自動簽署以及更新 SSL 憑證<br><a id="more"></a></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要分享，如何利用 <code>Let&#39;s Encrypt</code> 的 <code>cert bot</code> 來自動簽署以及更新 SSL 憑證</p>
+<a id="more"></a>
 <h2 id="參考網頁"><a href="#參考網頁" class="headerlink" title="參考網頁"></a>參考網頁</h2><p><a href="https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx" target="_blank" rel="noopener">官網</a></p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Server: <code>NginX</code></li>
@@ -278,9 +279,11 @@
 </ul>
 <h2 id="設定檔"><a href="#設定檔" class="headerlink" title="設定檔"></a>設定檔</h2><ul>
 <li>這邊使用最簡單的設定, 反向代理 server 內的 9527 port, 若無反向代理需求，可以單純指向專案的 Document root 即可<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/nginx/sites-available/yourSiteName</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line">    <span class="hljs-attribute">server_name</span> yourDomainName;</span><br><span class="line">    <span class="hljs-attribute">access_log</span> /var/log/nginx/test_access_log;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:9527;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>測試 <code>syntax</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo nginx -t</span><br></pre></td></tr></table></figure>
@@ -295,10 +298,18 @@
 </li>
 </ul>
 <h2 id="新增-cerbot-PPA-Personal-Package-Archives"><a href="#新增-cerbot-PPA-Personal-Package-Archives" class="headerlink" title="新增 cerbot PPA (Personal Package Archives)"></a>新增 cerbot PPA (Personal Package Archives)</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install software-properties-common &amp;&amp; sudo add-apt-repository universe &amp;&amp; sudo add-apt-repository ppa:certbot/certbot</span><br></pre></td></tr></table></figure>
+
 <h2 id="安裝-Let’s-Encrypt"><a href="#安裝-Let’s-Encrypt" class="headerlink" title="安裝 Let’s Encrypt"></a>安裝 Let’s Encrypt</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install certbot python-certbot-nginx</span><br></pre></td></tr></table></figure>
-<h2 id="運行-cerbot"><a href="#運行-cerbot" class="headerlink" title="運行 cerbot"></a>運行 cerbot</h2><h3 id="全自動模式"><a href="#全自動模式" class="headerlink" title="全自動模式"></a>全自動模式</h3><p>如果你希望 <code>cerbot</code> 可以幫我們全自動完成設定，輸入<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo certbot --nginx</span><br></pre></td></tr></table></figure></p>
-<h3 id="半自動模式"><a href="#半自動模式" class="headerlink" title="半自動模式"></a>半自動模式</h3><p>如果你希望 <code>cerbot</code> 只幫我們拿到憑證，其他我們自己來的話，輸入<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo certbot certonly --nginx</span><br></pre></td></tr></table></figure></p>
-<h2 id="測試自動更新"><a href="#測試自動更新" class="headerlink" title="測試自動更新"></a>測試自動更新</h2><p>到這裡，應該已經可以自動更新憑證了，輸入以下指令測試<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo certbot renew --dry-run</span><br></pre></td></tr></table></figure></p>
+
+<h2 id="運行-cerbot"><a href="#運行-cerbot" class="headerlink" title="運行 cerbot"></a>運行 cerbot</h2><h3 id="全自動模式"><a href="#全自動模式" class="headerlink" title="全自動模式"></a>全自動模式</h3><p>如果你希望 <code>cerbot</code> 可以幫我們全自動完成設定，輸入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo certbot --nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="半自動模式"><a href="#半自動模式" class="headerlink" title="半自動模式"></a>半自動模式</h3><p>如果你希望 <code>cerbot</code> 只幫我們拿到憑證，其他我們自己來的話，輸入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo certbot certonly --nginx</span><br></pre></td></tr></table></figure>
+
+<h2 id="測試自動更新"><a href="#測試自動更新" class="headerlink" title="測試自動更新"></a>測試自動更新</h2><p>到這裡，應該已經可以自動更新憑證了，輸入以下指令測試</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo certbot renew --dry-run</span><br></pre></td></tr></table></figure>
+
 <p><code>cerbot</code> 安裝在以下路徑之一:</p>
 <ul>
 <li><code>/etc/crontab/</code></li>
@@ -381,53 +392,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Deploy project on GCP virtual machine via Gitlab CI/CD - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -256,6 +256,7 @@
 <li>Deploy your project on <code>GCP virtual machine</code> via <code>gitlab pusher</code></li>
 </ol>
 <a id="more"></a>
+
 <h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><h3 id="Create-a-GCP-virtual-machine"><a href="#Create-a-GCP-virtual-machine" class="headerlink" title="Create a GCP virtual machine"></a>Create a GCP virtual machine</h3><p>Here is how I would do, you could have your own way.</p>
 <ul>
 <li>Ray use <code>Mac</code>, so I install <code>Google Cloud SDK</code> locally. As to the installation, you could refer to <a href="https://cloud.google.com/sdk/docs/quickstart-macos?hl=zh-tw" target="_blank" rel="noopener">official document</a></li>
@@ -271,15 +272,32 @@
 </ol>
 </li>
 </ul>
-<p>As follows:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create example-instance-1 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=10GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=example-instance-1,http-server,https-server \</span><br><span class="line">--zone=asia-east1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure></p>
-<p>After creating, let’s produce <code>ssh-key</code> first<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C <span class="hljs-string">"root@example"</span></span><br></pre></td></tr></table></figure></p>
-<p>Assume that the key is named <code>example</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cat example.pub &gt; instanceSSHConfig &amp;&amp; vim instanceSSHList</span><br></pre></td></tr></table></figure></p>
-<p>Put <code>root</code> before the <code>key</code> in instanceSSHList file, whose format is as follows:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[USERNAME]:ssh-rsa [KEY] [USERNAME]</span><br></pre></td></tr></table></figure></p>
-<p>Get the name of the instance<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances list</span><br></pre></td></tr></table></figure></p>
-<p>Add the <code>public key</code> into the instance<br>(Be careful! This command will replace all of your SSH keys on this instance, that said, any keys without appearing on this file will be gone)<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances add-metadata instanceName --metadata-from-file ssh-keys=instanceSSHList</span><br></pre></td></tr></table></figure></p>
-<h3 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h3><p>Here we mainly install <code>nvm</code>, <code>node</code> with version v12.1.0, and <code>npm</code>. You could get more detail via the <a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">official document</a><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.nvm"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> &amp;&amp; nvm install v12.1.0 &amp;&amp; apt-get install npm -y</span><br></pre></td></tr></table></figure></p>
-<h3 id="Daemon"><a href="#Daemon" class="headerlink" title="Daemon"></a>Daemon</h3><p>Now, let’s config <code>Daemon</code>. We will run our service with <code>Daemon</code> so it will be run automatically when it’s disconnected.<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/init.d/serviceName</span><br></pre></td></tr></table></figure></p>
+<p>As follows:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create example-instance-1 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=10GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=example-instance-1,http-server,https-server \</span><br><span class="line">--zone=asia-east1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure>
+
+<p>After creating, let’s produce <code>ssh-key</code> first</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C <span class="hljs-string">"root@example"</span></span><br></pre></td></tr></table></figure>
+
+<p>Assume that the key is named <code>example</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">cat example.pub &gt; instanceSSHConfig &amp;&amp; vim instanceSSHList</span><br></pre></td></tr></table></figure>
+
+<p>Put <code>root</code> before the <code>key</code> in instanceSSHList file, whose format is as follows:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[USERNAME]:ssh-rsa [KEY] [USERNAME]</span><br></pre></td></tr></table></figure>
+
+<p>Get the name of the instance</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances list</span><br></pre></td></tr></table></figure>
+
+<p>Add the <code>public key</code> into the instance<br>(Be careful! This command will replace all of your SSH keys on this instance, that said, any keys without appearing on this file will be gone)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances add-metadata instanceName --metadata-from-file ssh-keys=instanceSSHList</span><br></pre></td></tr></table></figure>
+
+<h3 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h3><p>Here we mainly install <code>nvm</code>, <code>node</code> with version v12.1.0, and <code>npm</code>. You could get more detail via the <a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">official document</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.nvm"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/nvm.sh"</span> &amp;&amp; [ -s <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> ] &amp;&amp; \. <span class="hljs-string">"<span class="hljs-variable">$NVM_DIR</span>/bash_completion"</span> &amp;&amp; nvm install v12.1.0 &amp;&amp; apt-get install npm -y</span><br></pre></td></tr></table></figure>
+
+<h3 id="Daemon"><a href="#Daemon" class="headerlink" title="Daemon"></a>Daemon</h3><p>Now, let’s config <code>Daemon</code>. We will run our service with <code>Daemon</code> so it will be run automatically when it’s disconnected.</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/init.d/serviceName</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">#!/bin/sh</span></span><br><span class="line"><span class="hljs-comment">### BEGIN INIT INFO</span></span><br><span class="line"><span class="hljs-comment"># Provides:          yourServiceName (optional)</span></span><br><span class="line"><span class="hljs-comment"># Required-Start:    $remote_fs $syslog</span></span><br><span class="line"><span class="hljs-comment"># Required-Stop:     $remote_fs $syslog</span></span><br><span class="line"><span class="hljs-comment"># Default-Start:     2 3 4 5</span></span><br><span class="line"><span class="hljs-comment"># Default-Stop:      0 1 6</span></span><br><span class="line"><span class="hljs-comment"># Short-Description: Start daemon at boot time</span></span><br><span class="line"><span class="hljs-comment"># Description:       Enable service provided by daemon.</span></span><br><span class="line"><span class="hljs-comment">### END INIT INFO</span></span><br><span class="line"></span><br><span class="line">dir=<span class="hljs-string">"yourProjectLocation"</span></span><br><span class="line">cmd=<span class="hljs-string">"theCommandItRequiresToStartYourService"</span></span><br><span class="line">user=<span class="hljs-string">"root"</span></span><br><span class="line"></span><br><span class="line">name=`basename <span class="hljs-variable">$0</span>`</span><br><span class="line">pid_file=<span class="hljs-string">"/var/run/<span class="hljs-variable">$name</span>.pid"</span></span><br><span class="line">stdout_log=<span class="hljs-string">"/var/log/<span class="hljs-variable">$name</span>.log"</span></span><br><span class="line">stderr_log=<span class="hljs-string">"/var/log/<span class="hljs-variable">$name</span>.log"</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-title">get_pid</span></span>() &#123;</span><br><span class="line">    cat <span class="hljs-string">"<span class="hljs-variable">$pid_file</span>"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-title">is_running</span></span>() &#123;</span><br><span class="line">    [ -f <span class="hljs-string">"<span class="hljs-variable">$pid_file</span>"</span> ] &amp;&amp; ps -p `get_pid` &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">case</span> <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> <span class="hljs-keyword">in</span></span><br><span class="line">    start)</span><br><span class="line">    <span class="hljs-keyword">if</span> is_running; <span class="hljs-keyword">then</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Already started"</span></span><br><span class="line">    <span class="hljs-keyword">else</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Starting <span class="hljs-variable">$name</span>"</span></span><br><span class="line">        <span class="hljs-built_in">cd</span> <span class="hljs-string">"<span class="hljs-variable">$dir</span>"</span></span><br><span class="line">        <span class="hljs-built_in">export</span> NODE_ENV=<span class="hljs-built_in">test</span></span><br><span class="line">        <span class="hljs-keyword">if</span> [ -z <span class="hljs-string">"<span class="hljs-variable">$user</span>"</span> ]; <span class="hljs-keyword">then</span></span><br><span class="line">            sudo <span class="hljs-variable">$cmd</span> &gt;&gt; <span class="hljs-string">"<span class="hljs-variable">$stdout_log</span>"</span> 2&gt;&gt; <span class="hljs-string">"<span class="hljs-variable">$stderr_log</span>"</span> &amp;</span><br><span class="line">        <span class="hljs-keyword">else</span></span><br><span class="line">            sudo -u <span class="hljs-string">"<span class="hljs-variable">$user</span>"</span> <span class="hljs-variable">$cmd</span> &gt;&gt; <span class="hljs-string">"<span class="hljs-variable">$stdout_log</span>"</span> 2&gt;&gt; <span class="hljs-string">"<span class="hljs-variable">$stderr_log</span>"</span> &amp;</span><br><span class="line">        <span class="hljs-keyword">fi</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> $! &gt; <span class="hljs-string">"<span class="hljs-variable">$pid_file</span>"</span></span><br><span class="line">        <span class="hljs-keyword">if</span> ! is_running; <span class="hljs-keyword">then</span></span><br><span class="line">            <span class="hljs-built_in">echo</span> <span class="hljs-string">"Unable to start, see <span class="hljs-variable">$stdout_log</span> and <span class="hljs-variable">$stderr_log</span>"</span></span><br><span class="line">            <span class="hljs-built_in">exit</span> 1</span><br><span class="line">        <span class="hljs-keyword">fi</span></span><br><span class="line">    <span class="hljs-keyword">fi</span></span><br><span class="line">    ;;</span><br><span class="line">    stop)</span><br><span class="line">    <span class="hljs-keyword">if</span> is_running; <span class="hljs-keyword">then</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> -n <span class="hljs-string">"Stopping <span class="hljs-variable">$name</span>.."</span></span><br><span class="line">        <span class="hljs-built_in">kill</span> `get_pid`</span><br><span class="line">        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> 1 2 3 4 5 6 7 8 9 10</span><br><span class="line">        <span class="hljs-comment"># for i in `seq 10`</span></span><br><span class="line">        <span class="hljs-keyword">do</span></span><br><span class="line">            <span class="hljs-keyword">if</span> ! is_running; <span class="hljs-keyword">then</span></span><br><span class="line">                <span class="hljs-built_in">break</span></span><br><span class="line">            <span class="hljs-keyword">fi</span></span><br><span class="line"></span><br><span class="line">            <span class="hljs-built_in">echo</span> -n <span class="hljs-string">"."</span></span><br><span class="line">            sleep 1</span><br><span class="line">        <span class="hljs-keyword">done</span></span><br><span class="line">        <span class="hljs-built_in">echo</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> is_running; <span class="hljs-keyword">then</span></span><br><span class="line">            <span class="hljs-built_in">echo</span> <span class="hljs-string">"Not stopped; may still be shutting down or shutdown may have failed"</span></span><br><span class="line">            <span class="hljs-built_in">exit</span> 1</span><br><span class="line">        <span class="hljs-keyword">else</span></span><br><span class="line">            <span class="hljs-built_in">echo</span> <span class="hljs-string">"Stopped"</span></span><br><span class="line">            <span class="hljs-keyword">if</span> [ -f <span class="hljs-string">"<span class="hljs-variable">$pid_file</span>"</span> ]; <span class="hljs-keyword">then</span></span><br><span class="line">                rm <span class="hljs-string">"<span class="hljs-variable">$pid_file</span>"</span></span><br><span class="line">            <span class="hljs-keyword">fi</span></span><br><span class="line">        <span class="hljs-keyword">fi</span></span><br><span class="line">    <span class="hljs-keyword">else</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Not running"</span></span><br><span class="line">    <span class="hljs-keyword">fi</span></span><br><span class="line">    ;;</span><br><span class="line">    restart)</span><br><span class="line">    <span class="hljs-variable">$0</span> stop</span><br><span class="line">    <span class="hljs-keyword">if</span> is_running; <span class="hljs-keyword">then</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Unable to stop, will not attempt to start"</span></span><br><span class="line">        <span class="hljs-built_in">exit</span> 1</span><br><span class="line">    <span class="hljs-keyword">fi</span></span><br><span class="line">    <span class="hljs-variable">$0</span> start</span><br><span class="line">    ;;</span><br><span class="line">    status)</span><br><span class="line">    <span class="hljs-keyword">if</span> is_running; <span class="hljs-keyword">then</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Running"</span></span><br><span class="line">    <span class="hljs-keyword">else</span></span><br><span class="line">        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Stopped"</span></span><br><span class="line">        <span class="hljs-built_in">exit</span> 1</span><br><span class="line">    <span class="hljs-keyword">fi</span></span><br><span class="line">    ;;</span><br><span class="line">    *)</span><br><span class="line">    <span class="hljs-built_in">echo</span> <span class="hljs-string">"Usage: <span class="hljs-variable">$0</span> &#123;start|stop|restart|status&#125;"</span></span><br><span class="line">    <span class="hljs-built_in">exit</span> 1</span><br><span class="line">    ;;</span><br><span class="line"><span class="hljs-keyword">esac</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">exit</span> 0</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>If it shows that the service is not found, we need to reload the <code>daemon</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure>
@@ -293,13 +311,18 @@
 <li><p>In this example, the name of <code>Daemon</code> will be equal to the name of project</p>
 </li>
 </ul>
-<h2 id="CI-CD"><a href="#CI-CD" class="headerlink" title="CI/CD"></a>CI/CD</h2><h3 id="Gitlab-variables-setting"><a href="#Gitlab-variables-setting" class="headerlink" title="Gitlab variables setting"></a>Gitlab variables setting</h3><p><img src="https://i.imgur.com/OzII4zC.png" alt></p>
+<h2 id="CI-CD"><a href="#CI-CD" class="headerlink" title="CI/CD"></a>CI/CD</h2><h3 id="Gitlab-variables-setting"><a href="#Gitlab-variables-setting" class="headerlink" title="Gitlab variables setting"></a>Gitlab variables setting</h3><p><img src="https://i.imgur.com/OzII4zC.png"></p>
 <ul>
-<li>We are going to do <code>CI/CD</code> with <code>Gitlab pusher</code>, so we have to create a pair of <code>ssh key</code> , and set the <code>private</code> key as <code>$SSH_PRIVATE_KEY</code> in <code>variable setting</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh-keyscan to-be-conneted-instance-ip</span><br></pre></td></tr></table></figure>
+<li><p>We are going to do <code>CI/CD</code> with <code>Gitlab pusher</code>, so we have to create a pair of <code>ssh key</code> , and set the <code>private</code> key as <code>$SSH_PRIVATE_KEY</code> in <code>variable setting</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh-keyscan to-be-conneted-instance-ip</span><br></pre></td></tr></table></figure>
+
+<h3 id="Gitlab-yaml-config-file"><a href="#Gitlab-yaml-config-file" class="headerlink" title="Gitlab yaml config file"></a>Gitlab yaml config file</h3><p>We will set up the <code>yaml</code> file of <code>Gitlab pusher</code><br>In our project</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim .gitlab-ci.yml</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<h3 id="Gitlab-yaml-config-file"><a href="#Gitlab-yaml-config-file" class="headerlink" title="Gitlab yaml config file"></a>Gitlab yaml config file</h3><p>We will set up the <code>yaml</code> file of <code>Gitlab pusher</code><br>In our project<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim .gitlab-ci.yml</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># This file is a template, and might need editing before it works on your project.</span></span><br><span class="line"><span class="hljs-comment"># Official framework image. Look for the different tagged releases at:</span></span><br><span class="line"><span class="hljs-comment"># https://hub.docker.com/r/library/node/tags/</span></span><br><span class="line"><span class="hljs-attr">image:</span> <span class="hljs-attr">node:8</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># This folder is cached between builds</span></span><br><span class="line"><span class="hljs-comment"># http://docs.gitlab.com/ce/ci/yaml/README.html#cache</span></span><br><span class="line"><span class="hljs-attr">cache:</span></span><br><span class="line"><span class="hljs-attr">  paths:</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">node_modules/</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">stages:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">build</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">deploy</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">npm-build:</span></span><br><span class="line"><span class="hljs-attr">  stage:</span> <span class="hljs-string">build</span></span><br><span class="line"><span class="hljs-attr">  script:</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">rm</span> <span class="hljs-bullet">-rf</span> <span class="hljs-string">node_modules/</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">npm</span> <span class="hljs-string">i</span> <span class="hljs-string">npm@latest</span> <span class="hljs-bullet">-g</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-attr">depoly-test:</span></span><br><span class="line"><span class="hljs-attr">  stage:</span> <span class="hljs-string">deploy</span></span><br><span class="line"><span class="hljs-attr">  script:</span></span><br><span class="line">  <span class="hljs-comment"># cfr. https://docs.gitlab.com/ee/ci/ssh_keys/README.html</span></span><br><span class="line">  <span class="hljs-comment"># Install ssh-agent if not already installed, it is required by Docker.</span></span><br><span class="line">  <span class="hljs-comment"># (change apt-get to yum if you use a CentOS-based image)</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">'which ssh-agent || ( apt-get update -y &amp;&amp; apt-get install openssh-client -y )'</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-comment"># Run ssh-agent (inside the build environment)</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">eval</span> <span class="hljs-string">$(ssh-agent</span> <span class="hljs-bullet">-s)</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-comment"># Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">ssh-add</span> <span class="hljs-string">&lt;(echo</span> <span class="hljs-string">"$SSH_PRIVATE_KEY"</span><span class="hljs-string">)</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">mkdir</span> <span class="hljs-bullet">-m</span> <span class="hljs-number">700</span> <span class="hljs-bullet">-p</span> <span class="hljs-string">/root/.ssh</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">tar</span> <span class="hljs-string">zcf</span> <span class="hljs-string">../$CI_PROJECT_NAME.tar.gz</span> <span class="hljs-string">./</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">scp</span> <span class="hljs-bullet">-o</span> <span class="hljs-string">StrictHostKeyChecking=no</span> <span class="hljs-string">../$CI_PROJECT_NAME.tar.gz</span> <span class="hljs-string">root@35.201.171.244:/locationYouPrefer</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">ssh</span> <span class="hljs-string">root@yourIP</span> <span class="hljs-string">"rm -rf /locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; mkdir -p locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; tar zxf locationYouPrefer/$CI_PROJECT_NAME.tar.gz -C locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; chmod -R 655 locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; cd locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; npm rebuild &amp;&amp; /etc/init.d/$CI_PROJECT_NAME restart"</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-attr">  only:</span></span><br><span class="line"><span class="hljs-bullet">  -</span> <span class="hljs-string">branchYouPrefer</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># This file is a template, and might need editing before it works on your project.</span></span><br><span class="line"><span class="hljs-comment"># Official framework image. Look for the different tagged releases at:</span></span><br><span class="line"><span class="hljs-comment"># https://hub.docker.com/r/library/node/tags/</span></span><br><span class="line"><span class="hljs-attr">image:</span> <span class="hljs-string">node:8</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># This folder is cached between builds</span></span><br><span class="line"><span class="hljs-comment"># http://docs.gitlab.com/ce/ci/yaml/README.html#cache</span></span><br><span class="line"><span class="hljs-attr">cache:</span></span><br><span class="line">  <span class="hljs-attr">paths:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">node_modules/</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">stages:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">build</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">deploy</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">npm-build:</span></span><br><span class="line">  <span class="hljs-attr">stage:</span> <span class="hljs-string">build</span></span><br><span class="line">  <span class="hljs-attr">script:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">rm</span> <span class="hljs-string">-rf</span> <span class="hljs-string">node_modules/</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">npm</span> <span class="hljs-string">i</span> <span class="hljs-string">npm@latest</span> <span class="hljs-string">-g</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span></span><br><span class="line">  </span><br><span class="line"><span class="hljs-attr">depoly-test:</span></span><br><span class="line">  <span class="hljs-attr">stage:</span> <span class="hljs-string">deploy</span></span><br><span class="line">  <span class="hljs-attr">script:</span></span><br><span class="line">  <span class="hljs-comment"># cfr. https://docs.gitlab.com/ee/ci/ssh_keys/README.html</span></span><br><span class="line">  <span class="hljs-comment"># Install ssh-agent if not already installed, it is required by Docker.</span></span><br><span class="line">  <span class="hljs-comment"># (change apt-get to yum if you use a CentOS-based image)</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">'which ssh-agent || ( apt-get update -y &amp;&amp; apt-get install openssh-client -y )'</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-comment"># Run ssh-agent (inside the build environment)</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">eval</span> <span class="hljs-string">$(ssh-agent</span> <span class="hljs-string">-s)</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-comment"># Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">ssh-add</span> <span class="hljs-string">&lt;(echo</span> <span class="hljs-string">"$SSH_PRIVATE_KEY"</span><span class="hljs-string">)</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">mkdir</span> <span class="hljs-string">-m</span> <span class="hljs-number">700</span> <span class="hljs-string">-p</span> <span class="hljs-string">/root/.ssh</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">tar</span> <span class="hljs-string">zcf</span> <span class="hljs-string">../$CI_PROJECT_NAME.tar.gz</span> <span class="hljs-string">./</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">scp</span> <span class="hljs-string">-o</span> <span class="hljs-string">StrictHostKeyChecking=no</span> <span class="hljs-string">../$CI_PROJECT_NAME.tar.gz</span> <span class="hljs-string">root@35.201.171.244:/locationYouPrefer</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">ssh</span> <span class="hljs-string">root@yourIP</span> <span class="hljs-string">"rm -rf /locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; mkdir -p locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; tar zxf locationYouPrefer/$CI_PROJECT_NAME.tar.gz -C locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; chmod -R 655 locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; cd locationYouPrefer/$CI_PROJECT_NAME &amp;&amp; npm rebuild &amp;&amp; /etc/init.d/$CI_PROJECT_NAME restart"</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-attr">only:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-string">branchYouPrefer</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>Until now, when we use <code>git push</code> to <code>specified branch</code>, we should be able to trigger <code>gitlab pusher</code> to achieve automatic deployment</p>
 
     
@@ -380,53 +403,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

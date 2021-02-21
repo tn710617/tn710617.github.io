@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>Laravel - 部署 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
+<meta name="keywords" content="Laravel,MySQL,PHP,Nginx,Composer,Supervisor,SELinux,Redis,PHP-FPM,GIT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - 部署">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-deploayment/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
+<meta property="og:updated_time" content="2021-02-01T13:42:54.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - 部署">
+<meta name="twitter:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
+<meta name="twitter:image" content="https://i.imgur.com/G4OzdqM.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-deploayment/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
+<meta name="keywords" content="Laravel,MySQL,PHP,Nginx,Composer,Supervisor,SELinux,Redis,PHP-FPM,GIT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - 部署">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-deploayment/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
+<meta property="og:updated_time" content="2021-02-01T13:42:54.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - 部署">
+<meta name="twitter:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
+<meta name="twitter:image" content="https://i.imgur.com/G4OzdqM.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#環境資訊">2&nbsp;&nbsp;<b># 環境資訊</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署目標主要套件版本">3&nbsp;&nbsp;<b># 部署目標主要套件版本</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#新增-yum-源站以及更新">4&nbsp;&nbsp;<b># 新增 yum 源站以及更新</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Nginx">5&nbsp;&nbsp;<b># Nginx</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝">5.1&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動">5.2&nbsp;&nbsp;# 啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開機自動啟動或不自動啟動">5.3&nbsp;&nbsp;# 開機自動啟動或不自動啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認狀態">5.4&nbsp;&nbsp;# 確認狀態</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認語法是否正確">5.5&nbsp;&nbsp;# 確認語法是否正確</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#sites-available-sites-enabled-資料夾">5.6&nbsp;&nbsp;# sites-available, sites-enabled 資料夾</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立">5.6.1&nbsp;&nbsp;# 建立</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#修改設定檔">5.6.2&nbsp;&nbsp;# 修改設定檔</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#產生-symbolic-link">5.6.3&nbsp;&nbsp;# 產生 symbolic link</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#權限配置">5.7&nbsp;&nbsp;# 權限配置</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#重新安裝-若有需要">5.8&nbsp;&nbsp;# 重新安裝 (若有需要)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#完全移除-Nginx">5.8.1&nbsp;&nbsp;# 完全移除 Nginx</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#重新安裝">5.8.2&nbsp;&nbsp;# 重新安裝</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Apache">6&nbsp;&nbsp;<b># Apache</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-Apache">6.1&nbsp;&nbsp;# 安裝 Apache</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-1">6.2&nbsp;&nbsp;# 啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定開機自動重啟">6.3&nbsp;&nbsp;# 設定開機自動重啟</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認-httpd-已啟用">6.4&nbsp;&nbsp;# 確認 httpd 已啟用</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定檔">6.5&nbsp;&nbsp;# 設定檔</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-SSL-module">6.6&nbsp;&nbsp;# 安裝 SSL module</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#AWS">7&nbsp;&nbsp;<b># AWS</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定-security-inbound">7.1&nbsp;&nbsp;# 設定 security inbound</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試-LAMP-Web-伺服器">8&nbsp;&nbsp;<b># 測試 LAMP Web 伺服器</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#在-var-www-html-資料夾中建立-PHP-info">8.1.1&nbsp;&nbsp;# 在 /var/www/html 資料夾中建立 PHP info</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#訪問-http-ip-phpinfo-php">8.1.2&nbsp;&nbsp;# 訪問 http://ip/phpinfo.php</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#刪除">8.1.3&nbsp;&nbsp;# 刪除</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#PHP">9&nbsp;&nbsp;<b># PHP</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-1">9.1&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-PHP-FPM">9.2&nbsp;&nbsp;# 啟動 PHP-FPM</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開機自動啟動或不自動啟動-PHP-FPM">9.3&nbsp;&nbsp;# 開機自動啟動或不自動啟動 PHP-FPM</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#若要變更-Listen-port-9000-到-socket">9.4&nbsp;&nbsp;# 若要變更 Listen port 9000 到 socket</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#變更-php-fpm-child-process-user">9.5&nbsp;&nbsp;# 變更 php-fpm child process user</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#變更-php-fpm-child-process-user-umask">9.6&nbsp;&nbsp;# 變更 php-fpm child process user umask</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#MySQL">10&nbsp;&nbsp;<b># MySQL</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定-yum-repository">10.1&nbsp;&nbsp;# 設定 yum repository</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#disable-預設-yum-MySQL-repo">10.2&nbsp;&nbsp;# disable 預設 yum MySQL repo</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#指定-yum-mysql-repo-並安裝">10.3&nbsp;&nbsp;# 指定 yum mysql repo 並安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-2">10.4&nbsp;&nbsp;# 啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認是否啟動">10.5&nbsp;&nbsp;# 確認是否啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得臨時-root-密碼">10.6&nbsp;&nbsp;# 取得臨時 root 密碼</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#完成安全設定">10.7&nbsp;&nbsp;# 完成安全設定</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#針對專案建立使用者">10.8&nbsp;&nbsp;# 針對專案建立使用者</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立-1">10.8.1&nbsp;&nbsp;# 建立</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#賦予權限">10.8.2&nbsp;&nbsp;# 賦予權限</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Git">11&nbsp;&nbsp;<b># Git</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-2">11.1&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定可接受遠端-push">11.2&nbsp;&nbsp;# 設定可接受遠端 push</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定-hook">11.3&nbsp;&nbsp;# 設定 hook</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Composer">12&nbsp;&nbsp;<b># Composer</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-dependency">12.1&nbsp;&nbsp;# 安裝 dependency</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#下載-Composer-installer">12.2&nbsp;&nbsp;# 下載 Composer installer</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#驗證-installer-是否正確">12.3&nbsp;&nbsp;# 驗證 installer 是否正確</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-3">12.4&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#專案">13&nbsp;&nbsp;<b># 專案</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查看-nginx-user">13.1&nbsp;&nbsp;# 查看 nginx user</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查看-fpm-user">13.2&nbsp;&nbsp;# 查看 fpm user</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立資料夾">13.3&nbsp;&nbsp;# 建立資料夾</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立之後將管理專案的-group">13.4&nbsp;&nbsp;# 建立之後將管理專案的 group</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#將會存取到該專案的使用者加到該群組">13.5&nbsp;&nbsp;# 將會存取到該專案的使用者加到該群組</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#修改專案資料夾目錄權限-使用上面建立的-group">13.6&nbsp;&nbsp;# 修改專案資料夾目錄權限(使用上面建立的 group)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#本機-push-到機器上">13.7&nbsp;&nbsp;# 本機 push 到機器上</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#增加新的-remote">13.7.1&nbsp;&nbsp;# 增加新的 remote</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#push">13.7.2&nbsp;&nbsp;# push</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#專案啟動設置">13.8&nbsp;&nbsp;# 專案啟動設置</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Redis">14&nbsp;&nbsp;<b># Redis</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-4">14.1&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-3">14.2&nbsp;&nbsp;# 啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開機自動啟動或不啟動">14.3&nbsp;&nbsp;# 開機自動啟動或不啟動</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#SELinux">15&nbsp;&nbsp;<b># SELinux</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#確認-SELinux-是否開啟">15.1&nbsp;&nbsp;# 確認 SELinux 是否開啟</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#HTTP-讀取權限">15.2&nbsp;&nbsp;# HTTP 讀取權限</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查看-project-SELinux-設定">15.2.1&nbsp;&nbsp;# 查看 project SELinux 設定</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#賦予-storage-cache-資料夾讀寫權限">15.2.2&nbsp;&nbsp;# 賦予 storage, cache 資料夾讀寫權限</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#恢復預設">15.2.3&nbsp;&nbsp;# 恢復預設</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#允許-HTTP-連結資料庫-For-database">15.2.4&nbsp;&nbsp;# 允許 HTTP 連結資料庫 (For database)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#允許-HTTP-連結-socket-For-local-redis">15.2.5&nbsp;&nbsp;# 允許 HTTP 連結 socket (For local redis)</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Supervisor">16&nbsp;&nbsp;<b># Supervisor</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-5">16.1&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#執行-worker-的-user">16.2&nbsp;&nbsp;# 執行 worker 的 user</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立-2">16.2.1&nbsp;&nbsp;# 建立</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#賦予專案權限">16.2.2&nbsp;&nbsp;# 賦予專案權限</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立配置-worker-ini-檔">16.3&nbsp;&nbsp;# 建立配置 worker ini 檔</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-4">16.4&nbsp;&nbsp;# 啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開機自動啟動">16.5&nbsp;&nbsp;# 開機自動啟動</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#操作指令">16.6&nbsp;&nbsp;# 操作指令</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#時區設定">17&nbsp;&nbsp;<b># 時區設定</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MySQL-時區">17.1&nbsp;&nbsp;# MySQL 時區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#檢查-MySQL-時區">17.1.1&nbsp;&nbsp;# 檢查 MySQL 時區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Server-時區">17.2&nbsp;&nbsp;# Server 時區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得-server-時區">17.2.1&nbsp;&nbsp;# 取得 server 時區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得-server-可用時區">17.2.2&nbsp;&nbsp;# 取得 server 可用時區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定-server-時區">17.2.3&nbsp;&nbsp;# 設定 server 時區</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#設定-Laravel-時區">17.3&nbsp;&nbsp;# 設定 Laravel 時區</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#記憶體不足">18&nbsp;&nbsp;<b># 記憶體不足</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#可劃分磁碟為替代記憶體">18.1&nbsp;&nbsp;# 可劃分磁碟為替代記憶體</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#若使用-GCP-要讓-MySQL-可從外部存取">19&nbsp;&nbsp;<b># 若使用 GCP, 要讓 MySQL 可從外部存取</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開權限">19.1&nbsp;&nbsp;# 開權限</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lsb-release">20&nbsp;&nbsp;<b># lsb-release</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#安裝-6">20.1&nbsp;&nbsp;# 安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#用法">20.2&nbsp;&nbsp;# 用法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#查詢細節">20.3&nbsp;&nbsp;# 查詢細節</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#只顯示-kernel-版本">20.4&nbsp;&nbsp;# 只顯示 kernel 版本</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-deploayment/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-deploayment/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - 部署
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-01-24T12:42:52.000Z" itemprop="datePublished">1月 24 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 讀完 (大概 1830 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>記錄一些 Laravel 部署的相關設定以及步驟</p>
+<a id="more"></a>
+
+<br>
+
+<h2 id="環境資訊"><a href="#環境資訊" class="headerlink" title="# 環境資訊"></a># 環境資訊</h2><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">AWS EC2</span><br><span class="line">NAME=&quot;CentOS Linux&quot;</span><br><span class="line">VERSION=&quot;7 (Core)&quot;</span><br><span class="line">ID=&quot;centos&quot;</span><br><span class="line">ID_LIKE=&quot;rhel fedora&quot;</span><br><span class="line">VERSION_ID=&quot;7&quot;</span><br><span class="line">PRETTY_NAME=&quot;CentOS Linux 7 (Core)&quot;</span><br><span class="line">ANSI_COLOR=&quot;0;31&quot;</span><br><span class="line">CPE_NAME=&quot;cpe:/o:centos:centos:7&quot;</span><br><span class="line">HOME_URL=&quot;https://www.centos.org/&quot;</span><br><span class="line">BUG_REPORT_URL=&quot;https://bugs.centos.org/&quot;</span><br><span class="line"></span><br><span class="line">CENTOS_MANTISBT_PROJECT=&quot;CentOS-7&quot;</span><br><span class="line">CENTOS_MANTISBT_PROJECT_VERSION=&quot;7&quot;</span><br><span class="line">REDHAT_SUPPORT_PRODUCT=&quot;centos&quot;</span><br><span class="line">REDHAT_SUPPORT_PRODUCT_VERSION=&quot;7&quot;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="部署目標主要套件版本"><a href="#部署目標主要套件版本" class="headerlink" title="# 部署目標主要套件版本"></a># 部署目標主要套件版本</h2><ul>
+<li>Laravel 8</li>
+<li>PHP 7.4</li>
+<li>Nginx 1.16</li>
+<li>MySQL 8</li>
+</ul>
+<br>
+
+<h2 id="新增-yum-源站以及更新"><a href="#新增-yum-源站以及更新" class="headerlink" title="# 新增 yum 源站以及更新"></a># 新增 yum 源站以及更新</h2><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</span><br><span class="line">sudo yum -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm</span><br><span class="line">sudo yum -y install yum-utils</span><br><span class="line">sudo yum-config-manager --enable remi-php74 </span><br><span class="line">sudo yum update</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="# Nginx"></a># Nginx</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="# 安裝"></a># 安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum -y install nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="啟動"><a href="#啟動" class="headerlink" title="# 啟動"></a># 啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="開機自動啟動或不自動啟動"><a href="#開機自動啟動或不自動啟動" class="headerlink" title="# 開機自動啟動或不自動啟動"></a># 開機自動啟動或不自動啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl enable nginx</span><br><span class="line">sudo systemctl disable nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="確認狀態"><a href="#確認狀態" class="headerlink" title="# 確認狀態"></a># 確認狀態</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl status nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="確認語法是否正確"><a href="#確認語法是否正確" class="headerlink" title="# 確認語法是否正確"></a># 確認語法是否正確</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo nginx -t</span><br></pre></td></tr></table></figure>
+
+<h3 id="sites-available-sites-enabled-資料夾"><a href="#sites-available-sites-enabled-資料夾" class="headerlink" title="# sites-available, sites-enabled 資料夾"></a># sites-available, sites-enabled 資料夾</h3><h4 id="建立"><a href="#建立" class="headerlink" title="# 建立"></a># 建立</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir /etc/nginx/sites-available</span><br><span class="line">sudo mkdir /etc/nginx/sites-enabled</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改設定檔"><a href="#修改設定檔" class="headerlink" title="# 修改設定檔"></a># 修改設定檔</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /ete/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"># Load customized enabled sites</span><br><span class="line">include /etc/nginx/sites-enabled/*;</span><br></pre></td></tr></table></figure>
+
+<h4 id="產生-symbolic-link"><a href="#產生-symbolic-link" class="headerlink" title="# 產生 symbolic link"></a># 產生 symbolic link</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo ln -s /etc/nginx/sites-available/yourProjectConf /etc/nginx/sites-enabled/</span><br></pre></td></tr></table></figure>
+
+<h3 id="權限配置"><a href="#權限配置" class="headerlink" title="# 權限配置"></a># 權限配置</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chown -R nginx:nginx /var/lib/nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="重新安裝-若有需要"><a href="#重新安裝-若有需要" class="headerlink" title="# 重新安裝 (若有需要)"></a># 重新安裝 (若有需要)</h3><h4 id="完全移除-Nginx"><a href="#完全移除-Nginx" class="headerlink" title="# 完全移除 Nginx"></a># 完全移除 Nginx</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl stop nginx.service</span><br><span class="line">sudo systemctl disable nginx.service</span><br><span class="line">sudo userdel -r nginx</span><br><span class="line">sudo rm -rf /etc/nginx</span><br><span class="line">sudo rm -rf /var/log/nginx</span><br><span class="line">sudo rm -rf /var/cache/nginx/</span><br><span class="line">sudo rm -rf /usr/lib/systemd/system/nginx.service</span><br><span class="line">sudo yum remove nginx</span><br></pre></td></tr></table></figure>
+
+<h4 id="重新安裝"><a href="#重新安裝" class="headerlink" title="# 重新安裝"></a># 重新安裝</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo groupadd nginx</span><br><span class="line">sudo useradd -g nginx nginx -s /sbin/nologin</span><br><span class="line">sudo yum -y install nginx</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="# Apache"></a># Apache</h2><h3 id="安裝-Apache"><a href="#安裝-Apache" class="headerlink" title="# 安裝 Apache"></a># 安裝 Apache</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum -y install httpd24</span><br></pre></td></tr></table></figure>
+
+<h3 id="啟動-1"><a href="#啟動-1" class="headerlink" title="# 啟動"></a># 啟動</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service httpd start</span><br></pre></td></tr></table></figure>
+
+<h3 id="設定開機自動重啟"><a href="#設定開機自動重啟" class="headerlink" title="# 設定開機自動重啟"></a># 設定開機自動重啟</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chkconfig httpd on</span><br></pre></td></tr></table></figure>
+
+<h3 id="確認-httpd-已啟用"><a href="#確認-httpd-已啟用" class="headerlink" title="# 確認 httpd 已啟用"></a># 確認 httpd 已啟用</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">chkconfig --list httpd</span><br></pre></td></tr></table></figure>
+
+<h3 id="設定檔"><a href="#設定檔" class="headerlink" title="# 設定檔"></a># 設定檔</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">&lt;Direction <span class="hljs-string">"/var/www/yourProject"</span>&gt;</span><br><span class="line">    Allow Override All</span><br><span class="line">&lt;/Direction&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="安裝-SSL-module"><a href="#安裝-SSL-module" class="headerlink" title="# 安裝 SSL module"></a># 安裝 SSL module</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install mod24_ssl</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="AWS"><a href="#AWS" class="headerlink" title="# AWS"></a># AWS</h2><h3 id="設定-security-inbound"><a href="#設定-security-inbound" class="headerlink" title="# 設定 security inbound"></a># 設定 security inbound</h3><p><img src="https://i.imgur.com/G4OzdqM.png"></p>
+<br>
+
+<h2 id="測試-LAMP-Web-伺服器"><a href="#測試-LAMP-Web-伺服器" class="headerlink" title="# 測試 LAMP Web 伺服器"></a># 測試 LAMP Web 伺服器</h2><h4 id="在-var-www-html-資料夾中建立-PHP-info"><a href="#在-var-www-html-資料夾中建立-PHP-info" class="headerlink" title="# 在 /var/www/html 資料夾中建立 PHP info"></a># 在 /var/www/html 資料夾中建立 PHP info</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-string">"&lt;?php phpinfo(); ?&gt;"</span> &gt; /var/www/html/phpinfo.php</span><br></pre></td></tr></table></figure>
+
+<h4 id="訪問-http-ip-phpinfo-php"><a href="#訪問-http-ip-phpinfo-php" class="headerlink" title="# 訪問 http://ip/phpinfo.php"></a># 訪問 <a href="http://ip/phpinfo.php" target="_blank" rel="noopener">http://ip/phpinfo.php</a></h4><h4 id="刪除"><a href="#刪除" class="headerlink" title="# 刪除"></a># 刪除</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">rm /var/www/html/phpinfo.php</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="# PHP"></a># PHP</h2><h3 id="安裝-1"><a href="#安裝-1" class="headerlink" title="# 安裝"></a># 安裝</h3><ul>
+<li><p><strong>PHP</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>PHP Extensions</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php-fpm php-mysqlnd php-devel php-gd php-mbstring php-xml php-pear php-bcmath php-opcache</span><br><span class="line">sudo pecl channel-update pecl.php.net</span><br><span class="line">sudo pecl install imagick</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>其他套件</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install ImageMagick ImageMagick-devel ImageMagick-perl</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="啟動-PHP-FPM"><a href="#啟動-PHP-FPM" class="headerlink" title="# 啟動 PHP-FPM"></a># 啟動 PHP-FPM</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start php-fpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="開機自動啟動或不自動啟動-PHP-FPM"><a href="#開機自動啟動或不自動啟動-PHP-FPM" class="headerlink" title="# 開機自動啟動或不自動啟動 PHP-FPM"></a># 開機自動啟動或不自動啟動 PHP-FPM</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl enable php-fpm</span><br><span class="line">sudo systemctl disable php-fpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="若要變更-Listen-port-9000-到-socket"><a href="#若要變更-Listen-port-9000-到-socket" class="headerlink" title="# 若要變更 Listen port 9000 到 socket"></a># 若要變更 Listen port 9000 到 socket</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">; listen = 127.0.0.1:9000</span><br><span class="line">listen = /var/run/php/php7.4-fpm.sock</span><br></pre></td></tr></table></figure>
+
+<h3 id="變更-php-fpm-child-process-user"><a href="#變更-php-fpm-child-process-user" class="headerlink" title="# 變更 php-fpm child process user"></a># 變更 php-fpm child process user</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">user = php</span><br><span class="line">group = php</span><br></pre></td></tr></table></figure>
+
+<h3 id="變更-php-fpm-child-process-user-umask"><a href="#變更-php-fpm-child-process-user-umask" class="headerlink" title="# 變更 php-fpm child process user umask"></a># 變更 php-fpm child process user umask</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl edit php-fpm.service</span><br></pre></td></tr></table></figure>
+
+<p>系統會自動在 <code>/etc/systemd/system/php-fpm.service.d</code> 生成一個新的 override.conf 檔, 任何在此檔內的設定都會優先使用<br>也可修改 <code>/lib/systemd/system/php-fpm.service</code> 檔案, 不過如果系統更新, 可能會覆蓋掉這個設定</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[Service]</span><br><span class="line">UMask=0002</span><br></pre></td></tr></table></figure>
+
+<p>然後重啟</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl reload php-fpm.service</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="# MySQL"></a># MySQL</h2><h3 id="設定-yum-repository"><a href="#設定-yum-repository" class="headerlink" title="# 設定 yum repository"></a># 設定 yum repository</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo rpm -Uvh https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="disable-預設-yum-MySQL-repo"><a href="#disable-預設-yum-MySQL-repo" class="headerlink" title="# disable 預設 yum MySQL repo"></a># disable 預設 yum MySQL repo</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo sed -i &apos;s/enabled=1/enabled=0/&apos; /etc/yum.repos.d/mysql-community.repo</span><br></pre></td></tr></table></figure>
+
+<h3 id="指定-yum-mysql-repo-並安裝"><a href="#指定-yum-mysql-repo-並安裝" class="headerlink" title="# 指定 yum mysql repo 並安裝"></a># 指定 yum mysql repo 並安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum --enablerepo=mysql80-community install -y mysql-community-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="啟動-2"><a href="#啟動-2" class="headerlink" title="# 啟動"></a># 啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start mysqld</span><br></pre></td></tr></table></figure>
+
+<h3 id="確認是否啟動"><a href="#確認是否啟動" class="headerlink" title="# 確認是否啟動"></a># 確認是否啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl status mysqld</span><br></pre></td></tr></table></figure>
+
+<h3 id="取得臨時-root-密碼"><a href="#取得臨時-root-密碼" class="headerlink" title="# 取得臨時 root 密碼"></a># 取得臨時 root 密碼</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo grep &quot;A temporary password&quot; /var/log/mysqld.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="完成安全設定"><a href="#完成安全設定" class="headerlink" title="# 完成安全設定"></a># 完成安全設定</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo mysql_secure_installation</span><br></pre></td></tr></table></figure>
+
+<h3 id="針對專案建立使用者"><a href="#針對專案建立使用者" class="headerlink" title="# 針對專案建立使用者"></a># 針對專案建立使用者</h3><h4 id="建立-1"><a href="#建立-1" class="headerlink" title="# 建立"></a># 建立</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER &apos;userName&apos;@&apos;userHost&apos; IDENTIFIED BY &apos;userPassword&apos;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="賦予權限"><a href="#賦予權限" class="headerlink" title="# 賦予權限"></a># 賦予權限</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GRANT ALL ON databaseName.tableName TO &apos;userName&apos;@&apos;hostName&apos;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="Git"><a href="#Git" class="headerlink" title="# Git"></a># Git</h2><h3 id="安裝-2"><a href="#安裝-2" class="headerlink" title="# 安裝"></a># 安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install -y git</span><br></pre></td></tr></table></figure>
+
+<h3 id="設定可接受遠端-push"><a href="#設定可接受遠端-push" class="headerlink" title="# 設定可接受遠端 push"></a># 設定可接受遠端 push</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo git config receive.denyCurrentBranch ignore</span><br></pre></td></tr></table></figure>
+
+<h3 id="設定-hook"><a href="#設定-hook" class="headerlink" title="# 設定 hook"></a># 設定 hook</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /var/www/projectName/.git/hooks/post-receive</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GIT_WORK_TREE=/var/www/projectName git checkout -f</span><br><span class="line">cd /var/www/projectName</span><br><span class="line">/usr/local/bin/composer install</span><br><span class="line"></span><br><span class="line">/usr/bin/php artisan migrate</span><br><span class="line"></span><br><span class="line">/usr/bin/php artisan config:clear</span><br><span class="line">/usr/bin/php artisan config:cache</span><br><span class="line"></span><br><span class="line">/usr/bin/php artisan route:clear</span><br><span class="line">/usr/bin/php artisan route:cache</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">chmod 770 post-receive</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="# Composer"></a># Composer</h2><h3 id="安裝-dependency"><a href="#安裝-dependency" class="headerlink" title="# 安裝 dependency"></a># 安裝 dependency</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install php-cli php-zip wget unzip</span><br></pre></td></tr></table></figure>
+
+<h3 id="下載-Composer-installer"><a href="#下載-Composer-installer" class="headerlink" title="# 下載 Composer installer"></a># 下載 Composer installer</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php -r &quot;copy(&apos;https://getcomposer.org/installer&apos;, &apos;composer-setup.php&apos;);&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="驗證-installer-是否正確"><a href="#驗證-installer-是否正確" class="headerlink" title="# 驗證 installer 是否正確"></a># 驗證 installer 是否正確</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">HASH=&quot;$(wget -q -O - https://composer.github.io/installer.sig)&quot;</span><br><span class="line"></span><br><span class="line">php -r &quot;if (hash_file(&apos;SHA384&apos;, &apos;composer-setup.php&apos;) === &apos;$HASH&apos;) &#123; echo &apos;Installer verified&apos;; &#125; else &#123; echo &apos;Installer corrupt&apos;; unlink(&apos;composer-setup.php&apos;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="安裝-3"><a href="#安裝-3" class="headerlink" title="# 安裝"></a># 安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="專案"><a href="#專案" class="headerlink" title="# 專案"></a># 專案</h2><h3 id="查看-nginx-user"><a href="#查看-nginx-user" class="headerlink" title="# 查看 nginx user"></a># 查看 nginx user</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ps aux | grep nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看-fpm-user"><a href="#查看-fpm-user" class="headerlink" title="# 查看 fpm user"></a># 查看 fpm user</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ps aux | grep fpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立資料夾"><a href="#建立資料夾" class="headerlink" title="# 建立資料夾"></a># 建立資料夾</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir /var/www/projectName</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立之後將管理專案的-group"><a href="#建立之後將管理專案的-group" class="headerlink" title="# 建立之後將管理專案的 group"></a># 建立之後將管理專案的 group</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo groupadd projectName</span><br></pre></td></tr></table></figure>
+
+<h3 id="將會存取到該專案的使用者加到該群組"><a href="#將會存取到該專案的使用者加到該群組" class="headerlink" title="# 將會存取到該專案的使用者加到該群組"></a># 將會存取到該專案的使用者加到該群組</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo usermod -a -G projectGroupName userName(user,nginx,php-fpm)</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改專案資料夾目錄權限-使用上面建立的-group"><a href="#修改專案資料夾目錄權限-使用上面建立的-group" class="headerlink" title="# 修改專案資料夾目錄權限(使用上面建立的 group)"></a># 修改專案資料夾目錄權限(使用上面建立的 group)</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chown -R root:projectGroupName /var/www/projectName</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod 2770 /var/www/projectName</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo find /var/www -type d -exec sudo chmod 2770 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo find /var/www -type f -exec sudo chmod 0660 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod 770 /var/www/projectName/artisan</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo chmod 770 /var/www/projectName/.git/hooks/post-receive</span><br></pre></td></tr></table></figure>
+
+<h3 id="本機-push-到機器上"><a href="#本機-push-到機器上" class="headerlink" title="# 本機 push 到機器上"></a># 本機 push 到機器上</h3><h4 id="增加新的-remote"><a href="#增加新的-remote" class="headerlink" title="# 增加新的 remote"></a># 增加新的 remote</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">git remote add remoteName sshKeyUserName@serverIp:/var/www/projectName</span><br></pre></td></tr></table></figure>
+
+<h4 id="push"><a href="#push" class="headerlink" title="# push"></a># push</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GIT_SSH_COMMAND=&apos;ssh -i ~/.ssh/serverLoginPrivateKey&apos; git push test master</span><br></pre></td></tr></table></figure>
+
+<h3 id="專案啟動設置"><a href="#專案啟動設置" class="headerlink" title="# 專案啟動設置"></a># 專案啟動設置</h3><ul>
+<li><p>設置 .env</p>
+</li>
+<li><p>產生 key</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan key:generate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>匯入 tables</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan migrate</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<br>
+
+<h2 id="Redis"><a href="#Redis" class="headerlink" title="# Redis"></a># Redis</h2><h3 id="安裝-4"><a href="#安裝-4" class="headerlink" title="# 安裝"></a># 安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install redis</span><br><span class="line">sudo yum install php-pecl-redis</span><br></pre></td></tr></table></figure>
+
+<h3 id="啟動-3"><a href="#啟動-3" class="headerlink" title="# 啟動"></a># 啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start redis</span><br><span class="line">sudo systemctl status redis</span><br></pre></td></tr></table></figure>
+
+<h3 id="開機自動啟動或不啟動"><a href="#開機自動啟動或不啟動" class="headerlink" title="# 開機自動啟動或不啟動"></a># 開機自動啟動或不啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl enable redis</span><br><span class="line">sudo systemctl disable redis</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="SELinux"><a href="#SELinux" class="headerlink" title="# SELinux"></a># SELinux</h2><h3 id="確認-SELinux-是否開啟"><a href="#確認-SELinux-是否開啟" class="headerlink" title="# 確認 SELinux 是否開啟"></a># 確認 SELinux 是否開啟</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo getenforce</span><br></pre></td></tr></table></figure>
+
+<h3 id="HTTP-讀取權限"><a href="#HTTP-讀取權限" class="headerlink" title="# HTTP 讀取權限"></a># HTTP 讀取權限</h3><h4 id="查看-project-SELinux-設定"><a href="#查看-project-SELinux-設定" class="headerlink" title="# 查看 project SELinux 設定"></a># 查看 project SELinux 設定</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ls -Zd /var/www/projectName</span><br></pre></td></tr></table></figure>
+
+<h4 id="賦予-storage-cache-資料夾讀寫權限"><a href="#賦予-storage-cache-資料夾讀寫權限" class="headerlink" title="# 賦予 storage, cache 資料夾讀寫權限"></a># 賦予 storage, cache 資料夾讀寫權限</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo semanage fcontext -a -t httpd_sys_rw_content_t &quot;/var/www/projectName/storage(/.*)?&quot;</span><br><span class="line">sudo semanage fcontext -a -t httpd_sys_rw_content_t &quot;/var/www/projectName/bootstrap/cache(/.*)?&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>-a</strong>: 增加規則到預設安全性本文</p>
+</li>
+<li><p><strong>-m</strong>: 呈上, 修改</p>
+</li>
+<li><p><strong>-d</strong>: 呈上, 刪除</p>
+</li>
+<li><p><strong>-t</strong>: type</p>
+</li>
+</ul>
+<h4 id="恢復預設"><a href="#恢復預設" class="headerlink" title="# 恢復預設"></a># 恢復預設</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo restorecon -Rv &apos;/usr/share/nginx/html/testapp&apos;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>-R</strong>: recursive</li>
+<li><strong>-v</strong>: verbose</li>
+</ul>
+<h4 id="允許-HTTP-連結資料庫-For-database"><a href="#允許-HTTP-連結資料庫-For-database" class="headerlink" title="# 允許 HTTP 連結資料庫 (For database)"></a># 允許 HTTP 連結資料庫 (For database)</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo setsebool -P httpd_can_network_connect_db 1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>-P</strong>:直接將設定值寫入設定檔</li>
+</ul>
+<h4 id="允許-HTTP-連結-socket-For-local-redis"><a href="#允許-HTTP-連結-socket-For-local-redis" class="headerlink" title="# 允許 HTTP 連結 socket (For local redis)"></a># 允許 HTTP 連結 socket (For local redis)</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo setsebool -P httpd_can_network_connect 1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>-P</strong>:直接將設定值寫入設定檔</li>
+</ul>
+<br>
+
+<h2 id="Supervisor"><a href="#Supervisor" class="headerlink" title="# Supervisor"></a># Supervisor</h2><h3 id="安裝-5"><a href="#安裝-5" class="headerlink" title="# 安裝"></a># 安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install supervisor</span><br></pre></td></tr></table></figure>
+
+<h3 id="執行-worker-的-user"><a href="#執行-worker-的-user" class="headerlink" title="# 執行 worker 的 user"></a># 執行 worker 的 user</h3><h4 id="建立-2"><a href="#建立-2" class="headerlink" title="# 建立"></a># 建立</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo useradd userName -s /sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<h4 id="賦予專案權限"><a href="#賦予專案權限" class="headerlink" title="# 賦予專案權限"></a># 賦予專案權限</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo usermod -a -G projectGroupName workerUserName</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立配置-worker-ini-檔"><a href="#建立配置-worker-ini-檔" class="headerlink" title="# 建立配置 worker ini 檔"></a># 建立配置 worker ini 檔</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/supervisord.d/laravel-worker.ini</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[program:laravel-worker]</span><br><span class="line">process_name=%(program_name)s_%(process_num)02d</span><br><span class="line">command=/path/to/php /path/to/yourProject/artisan queue:work sqs --sleep=3 --tries=3 --max-time=3600</span><br><span class="line">autostart=true</span><br><span class="line">autorestart=true</span><br><span class="line">stopasgroup=true</span><br><span class="line">killasgroup=true</span><br><span class="line">user=workerUserName</span><br><span class="line">numprocs=8</span><br><span class="line">redirect_stderr=true</span><br><span class="line">stdout_logfile=/var/log/laravel-worker.log</span><br><span class="line">stopwaitsecs=3600</span><br></pre></td></tr></table></figure>
+
+<h3 id="啟動-4"><a href="#啟動-4" class="headerlink" title="# 啟動"></a># 啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start supervisord</span><br><span class="line">sudo systemctl status supervisord</span><br></pre></td></tr></table></figure>
+
+<h3 id="開機自動啟動"><a href="#開機自動啟動" class="headerlink" title="# 開機自動啟動"></a># 開機自動啟動</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl enable supervisord</span><br></pre></td></tr></table></figure>
+
+<h3 id="操作指令"><a href="#操作指令" class="headerlink" title="# 操作指令"></a># 操作指令</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo supervisorctl reread // 重讀但不重啟</span><br><span class="line">sudo supervisorctl update // 重讀, 並且如果 config 有變更才重啟有變更的 process</span><br><span class="line">sudo supervisorctl relaod // 重讀, 不管有無變更都會重啟所有 process</span><br><span class="line">sudo supervisorctl restart // 只重啟, 不重讀</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="時區設定"><a href="#時區設定" class="headerlink" title="# 時區設定"></a># 時區設定</h2><h3 id="MySQL-時區"><a href="#MySQL-時區" class="headerlink" title="# MySQL 時區"></a># MySQL 時區</h3><h4 id="檢查-MySQL-時區"><a href="#檢查-MySQL-時區" class="headerlink" title="# 檢查 MySQL 時區"></a># 檢查 MySQL 時區</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SELECT @@global.time_zone, @@session.time_zone;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Server-時區"><a href="#Server-時區" class="headerlink" title="# Server 時區"></a># Server 時區</h3><h4 id="取得-server-時區"><a href="#取得-server-時區" class="headerlink" title="# 取得 server 時區"></a># 取得 server 時區</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">date +%Z</span><br></pre></td></tr></table></figure>
+
+<h4 id="取得-server-可用時區"><a href="#取得-server-可用時區" class="headerlink" title="# 取得 server 可用時區"></a># 取得 server 可用時區</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo timedatectl list-timezones</span><br></pre></td></tr></table></figure>
+
+<h4 id="設定-server-時區"><a href="#設定-server-時區" class="headerlink" title="# 設定 server 時區"></a># 設定 server 時區</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo timedatectl <span class="hljs-built_in">set</span>-timezone Asia/Taipei</span><br></pre></td></tr></table></figure>
+
+<h3 id="設定-Laravel-時區"><a href="#設定-Laravel-時區" class="headerlink" title="# 設定 Laravel 時區"></a># 設定 Laravel 時區</h3><p>修改 config/app.php 中的 timezone</p>
+<br>
+
+<h2 id="記憶體不足"><a href="#記憶體不足" class="headerlink" title="# 記憶體不足"></a># 記憶體不足</h2><h3 id="可劃分磁碟為替代記憶體"><a href="#可劃分磁碟為替代記憶體" class="headerlink" title="# 可劃分磁碟為替代記憶體"></a># 可劃分磁碟為替代記憶體</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo dd <span class="hljs-keyword">if</span>=/dev/zero of=/swapfile bs=1M count=2000;</span><br><span class="line">sudo chmod 600 /swapfile;</span><br><span class="line">sudo mkswap /swapfile;</span><br><span class="line">sudo swapon /swapfile;</span><br><span class="line">swapon -s;</span><br><span class="line">sudo vim /etc/fstab;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">/swapfile swap swap defaults 0 0</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="若使用-GCP-要讓-MySQL-可從外部存取"><a href="#若使用-GCP-要讓-MySQL-可從外部存取" class="headerlink" title="# 若使用 GCP, 要讓 MySQL 可從外部存取"></a># 若使用 GCP, 要讓 MySQL 可從外部存取</h2><h3 id="開權限"><a href="#開權限" class="headerlink" title="# 開權限"></a># 開權限</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">LOCAL_IP=$(curl  http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip \</span><br><span class="line">    -H <span class="hljs-string">"Metadata-Flavor: Google"</span>)</span><br><span class="line">sudo sed -i <span class="hljs-string">"s|bind-address.*|bind-address = <span class="hljs-variable">$LOCAL_IP</span>|"</span> /etc/mysql/mysql.conf.d/mysqld.cnf</span><br></pre></td></tr></table></figure>
+
+<p>更多設定可參考<a href="https://cloud.google.com/solutions/mysql-remote-access" target="_blank" rel="noopener">官方文件</a></p>
+<br>
+
+<h2 id="lsb-release"><a href="#lsb-release" class="headerlink" title="# lsb-release"></a># lsb-release</h2><h3 id="安裝-6"><a href="#安裝-6" class="headerlink" title="# 安裝"></a># 安裝</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install lsb-release</span><br></pre></td></tr></table></figure>
+
+<h3 id="用法"><a href="#用法" class="headerlink" title="# 用法"></a># 用法</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">lsb_release --<span class="hljs-built_in">help</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">-h, --<span class="hljs-built_in">help</span>         show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span></span><br><span class="line">-v, --version      show LSB modules this system supports</span><br><span class="line">-i, --id           show distributor ID</span><br><span class="line">-d, --description  show description of this distribution</span><br><span class="line">-r, --release      show release number of this distribution</span><br><span class="line">-c, --codename     show code name of this distribution</span><br><span class="line">-a, --all          show all of the above information</span><br><span class="line">-s, --short        show requested information <span class="hljs-keyword">in</span> short format</span><br></pre></td></tr></table></figure>
+
+<h3 id="查詢細節"><a href="#查詢細節" class="headerlink" title="# 查詢細節"></a># 查詢細節</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">lsb_release -a</span><br></pre></td></tr></table></figure>
+
+<h3 id="只顯示-kernel-版本"><a href="#只顯示-kernel-版本" class="headerlink" title="# 只顯示 kernel 版本"></a># 只顯示 kernel 版本</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">uname -r</span><br></pre></td></tr></table></figure>
+
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/MySQL/">#MySQL</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/PHP/">#PHP</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Nginx/">#Nginx</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Composer/">#Composer</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Supervisor/">#Supervisor</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/SELinux/">#SELinux</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Redis/">#Redis</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/PHP-FPM/">#PHP-FPM</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GIT/">#GIT</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/howToSendMailViaAWSSES/">怎麼在 Laravel 中, 利用 AWS SES 發郵件?</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-packages-fortify/">Laravel - Packages - Fortify</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-deploayment/';
+        this.page.identifier = 'zh-tw/laravel-deploayment/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2021 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
+            
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>

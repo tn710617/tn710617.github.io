@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>架設一個 NFS Server - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -290,18 +290,36 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要紀錄如何架設一個 NFS server, 並從其他 node 共享檔案</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="環境"><a href="#環境" class="headerlink" title="# 環境"></a># 環境</h2><p>VERSION=”19.10 (Eoan Ermine)”<br>ID=ubuntu<br>ID_LIKE=debian<br>PRETTY_NAME=”Ubuntu 19.10”<br>VERSION_ID=”19.10”</p>
-<p><br><br><br></p>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="# 安裝"></a># 安裝</h2><p>假如你的 apt 無法更新, 執行<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sed -i -e <span class="hljs-string">'s/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g'</span> /etc/apt/sources.list</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
+<br>
+<br>
+
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="# 安裝"></a># 安裝</h2><p>假如你的 apt 無法更新, 執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sed -i -e <span class="hljs-string">'s/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g'</span> /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+
+<br>
+
 <h3 id="Host"><a href="#Host" class="headerlink" title="# Host"></a># Host</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install nfs-kernel-server</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="Client"><a href="#Client" class="headerlink" title="# Client"></a># Client</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install nfs-common</span><br></pre></td></tr></table></figure>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="建立分享資料夾"><a href="#建立分享資料夾" class="headerlink" title="# 建立分享資料夾"></a># 建立分享資料夾</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p /yourPreferred/directoryLocation</span><br></pre></td></tr></table></figure>
-<p>NFS server 預設會將 root 登入者轉為 nobody:nogroup, 因此修改資料夾權限<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chown nobody:nogroup /yourPreferred/directoryLocation</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br></p>
+
+<p>NFS server 預設會將 root 登入者轉為 nobody:nogroup, 因此修改資料夾權限</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chown nobody:nogroup /yourPreferred/directoryLocation</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+
 <h2 id="exports-設定檔"><a href="#exports-設定檔" class="headerlink" title="# exports 設定檔"></a># exports 設定檔</h2><ul>
 <li><p>設定 exports 檔案, 定義要 export 的資料夾以及細項設定</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/exports</span><br></pre></td></tr></table></figure>
@@ -316,57 +334,62 @@
 <thead>
 <tr>
 <th>參數</th>
-<th style="text-align:left">用途</th>
+<th align="left">用途</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>rw &amp; ro</td>
-<td style="text-align:left">該目錄分享的權限是可讀寫 (read-write) 但最終能不能讀寫，還是與檔案系統的 rwx 及身份有關。</td>
+<td align="left">該目錄分享的權限是可讀寫 (read-write) 但最終能不能讀寫，還是與檔案系統的 rwx 及身份有關。</td>
 </tr>
 <tr>
 <td>sync &amp; async</td>
-<td style="text-align:left">sync 代表資料會同步寫入到記憶體與硬碟中，async 則代表資料會先暫存於記憶體當中，而非直接寫入硬碟。 sync 會增加穩定性以及一致性, 因為返回的結果就代表遠端 disk 的狀態, 而非 cache, 但同時速度也會比較慢</td>
+<td align="left">sync 代表資料會同步寫入到記憶體與硬碟中，async 則代表資料會先暫存於記憶體當中，而非直接寫入硬碟。 sync 會增加穩定性以及一致性, 因為返回的結果就代表遠端 disk 的狀態, 而非 cache, 但同時速度也會比較慢</td>
 </tr>
 <tr>
 <td>no_root_squash</td>
-<td style="text-align:left">預設 NFS 會將來自於 root user 的 request 轉換成 nobody, 以避免 client root 擁有 host root 的權限, 若要取消預設行為, 可使用此選項</td>
+<td align="left">預設 NFS 會將來自於 root user 的 request 轉換成 nobody, 以避免 client root 擁有 host root 的權限, 若要取消預設行為, 可使用此選項</td>
 </tr>
 <tr>
 <td>root_squash</td>
-<td style="text-align:left">如上, 預設行為</td>
+<td align="left">如上, 預設行為</td>
 </tr>
 <tr>
 <td>all_squash</td>
-<td style="text-align:left">不管訪問者是誰, 全部都轉換成 nobody</td>
+<td align="left">不管訪問者是誰, 全部都轉換成 nobody</td>
 </tr>
 <tr>
 <td>anonuid &amp; anongid</td>
-<td style="text-align:left">可以自定義上面提到的 nobody, nogroup 的 uid 以及 gid, 前提是此 uid &amp; gid 必須要存在於 /etc/passwd</td>
+<td align="left">可以自定義上面提到的 nobody, nogroup 的 uid 以及 gid, 前提是此 uid &amp; gid 必須要存在於 /etc/passwd</td>
 </tr>
 <tr>
 <td>fsid</td>
-<td style="text-align:left">在 NFS4, 若設為 0, 則代表 root, 表示分享的資料夾為該 host 的 root, 即 client 端掛載時需為 <code>mount -t nfs hostIp:/ /clientTargetMountingDirectory</code>, 若分享多個資料夾, fsid 不可相同, 每個 fsid 都代表一個獨立的分享區塊</td>
+<td align="left">在 NFS4, 若設為 0, 則代表 root, 表示分享的資料夾為該 host 的 root, 即 client 端掛載時需為 <code>mount -t nfs hostIp:/ /clientTargetMountingDirectory</code>, 若分享多個資料夾, fsid 不可相同, 每個 fsid 都代表一個獨立的分享區塊</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <ul>
 <li>完成設定後, 重啟 server<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl restart nfs-kernel-server</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="防火牆設定"><a href="#防火牆設定" class="headerlink" title="# 防火牆設定"></a># 防火牆設定</h2><h3 id="查看防火牆狀態"><a href="#查看防火牆狀態" class="headerlink" title="# 查看防火牆狀態"></a># 查看防火牆狀態</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
 <p>一般來說, 防火牆越嚴謹越好, 但我們需要開啟特定的 port 讓外部可以存取 NFS server</p>
-<p><br></p>
+<br>
+
 <h3 id="開啟防火牆"><a href="#開啟防火牆" class="headerlink" title="# 開啟防火牆"></a># 開啟防火牆</h3><ul>
 <li><p>請將 client_ip 替換成實際的 client ip</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from client_ip to any port nfs</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>查看結果</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="掛載到-client-端"><a href="#掛載到-client-端" class="headerlink" title="# 掛載到 client 端"></a># 掛載到 client 端</h3><h4 id="確認-nfs-common-有啟動"><a href="#確認-nfs-common-有啟動" class="headerlink" title="# 確認 nfs-common 有啟動"></a># 確認 nfs-common 有啟動</h4><ul>
 <li><p>如果 nfs-common 服務沒啟動的話, 啟動它</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start nfs-common</span><br></pre></td></tr></table></figure>
@@ -376,22 +399,32 @@
 </li>
 <li><p>刪除後在 reload daemon</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>然後再 start nfs-common 一次</p>
-<p><br></p>
+<br>
+
 <h4 id="建立空資料夾"><a href="#建立空資料夾" class="headerlink" title="# 建立空資料夾"></a># 建立空資料夾</h4><ul>
 <li>建立一個空的資料夾<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p /yourPrefered/emptyDirectoryLocation</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="掛載"><a href="#掛載" class="headerlink" title="# 掛載"></a># 掛載</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo mount -t nfs4 yourHostIp:/ /yourPrefered/emptyDirectoryLocation</span><br></pre></td></tr></table></figure>
+
 <p>這邊要注意一下, 如果使用的是 nfs4, 那 fsid = 0 實際上就代表 root, 即根目錄實際上就是 host exports 出來的資料夾, 所以要使用 <code>yourHostIp:/</code>, 而實際上是掛載到上面在 Host 端建立的資料夾</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="卸載"><a href="#卸載" class="headerlink" title="# 卸載"></a># 卸載</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">umount /yourClientMountedDirectory</span><br></pre></td></tr></table></figure>
+
 <p>需注意, 如果你當前位置正在掛載的資料夾, 那會顯示 <strong>target is busy</strong>, 所以要先離開啦！</p>
 <h2 id="結語"><a href="#結語" class="headerlink" title="# 結語"></a># 結語</h2><p>至此簡易的 NFS 就完成掛載囉, 更多的設定可以參考文末的參考來源。</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="參考資源"><a href="#參考資源" class="headerlink" title="# 參考資源"></a># 參考資源</h2><ul>
 <li><a href="http://linux.vbird.org/linux_server/0330nfs.php" target="_blank" rel="noopener">鳥哥</a></li>
 <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04" target="_blank" rel="noopener">DigitalOcean</a></li>
@@ -470,53 +503,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

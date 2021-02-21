@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Database - Getting Started (官方文件原子化翻譯筆記) - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -342,25 +342,33 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><h6 id="Laravel-Database-中-目前-Laravel-支援哪四種資料庫？"><a href="#Laravel-Database-中-目前-Laravel-支援哪四種資料庫？" class="headerlink" title="Laravel Database 中, 目前 Laravel 支援哪四種資料庫？"></a><strong>Laravel Database 中, 目前 Laravel 支援哪四種資料庫？</strong></h6><ul>
 <li>MySQL</li>
 <li>PostgreSQL</li>
 <li>SQLite</li>
 <li>SQL Server</li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h3 id="Configuration"><a href="#Configuration" class="headerlink" title="# Configuration"></a># Configuration</h3><h6 id="Laravel-Database-中-什麼是-Database-URL"><a href="#Laravel-Database-中-什麼是-Database-URL" class="headerlink" title="Laravel Database 中, 什麼是 Database URL?"></a><strong>Laravel Database 中, 什麼是 Database URL?</strong></h6><p>將 host, port, username, password, 各項參數包含在內的一個 url</p>
-<p><br></p>
+<br>
+
 <h3 id="Read-amp-Write-Connections"><a href="#Read-amp-Write-Connections" class="headerlink" title="# Read &amp; Write Connections"></a># Read &amp; Write Connections</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'mysql'</span> =&gt; [</span><br><span class="line">    <span class="hljs-string">'read'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'host'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'192.168.1.1'</span>,</span><br><span class="line">            <span class="hljs-string">'196.168.1.2'</span>,</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">    <span class="hljs-string">'write'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'host'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'196.168.1.3'</span>,</span><br><span class="line">         ],</span><br><span class="line">    ],</span><br><span class="line">    <span class="hljs-string">'sticky'</span>    =&gt; <span class="hljs-keyword">true</span>,</span><br><span class="line">    <span class="hljs-string">'driver'</span>    =&gt; <span class="hljs-string">'mysql'</span>,</span><br><span class="line">    <span class="hljs-string">'database'</span>  =&gt; <span class="hljs-string">'database'</span>,</span><br><span class="line">    <span class="hljs-string">'username'</span>  =&gt; <span class="hljs-string">'root'</span>,</span><br><span class="line">    <span class="hljs-string">'password'</span>  =&gt; <span class="hljs-string">''</span>,</span><br><span class="line">    <span class="hljs-string">'charset'</span>   =&gt; <span class="hljs-string">'utf8mb4'</span>,</span><br><span class="line">    <span class="hljs-string">'collation'</span> =&gt; <span class="hljs-string">'utf8mb4_unicode_ci'</span>,</span><br><span class="line">    <span class="hljs-string">'prefix'</span>    =&gt; <span class="hljs-string">''</span>,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'mysql'</span> =&gt; [</span><br><span class="line">    <span class="hljs-comment">// 定義 read 的 mysql server</span></span><br><span class="line">    <span class="hljs-string">'read'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'host'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'192.168.1.1'</span>,</span><br><span class="line">            <span class="hljs-string">'196.168.1.2'</span>,</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">    <span class="hljs-comment">// 定義 write 的 mysql server</span></span><br><span class="line">    <span class="hljs-string">'write'</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">'host'</span> =&gt; [</span><br><span class="line">            <span class="hljs-string">'196.168.1.3'</span>,</span><br><span class="line">         ],</span><br><span class="line">    ],</span><br><span class="line">    <span class="hljs-comment">//如果一個 request 執行的 write 的動作, 在當次 request 的後續行為中, 如果有 read 的動作, 都將從 write 的機器讀取</span></span><br><span class="line">    <span class="hljs-string">'sticky'</span>    =&gt; <span class="hljs-keyword">true</span>,</span><br><span class="line">    <span class="hljs-string">'driver'</span>    =&gt; <span class="hljs-string">'mysql'</span>,</span><br><span class="line">    <span class="hljs-string">'database'</span>  =&gt; <span class="hljs-string">'database'</span>,</span><br><span class="line">    <span class="hljs-string">'username'</span>  =&gt; <span class="hljs-string">'root'</span>,</span><br><span class="line">    <span class="hljs-string">'password'</span>  =&gt; <span class="hljs-string">''</span>,</span><br><span class="line">    <span class="hljs-string">'charset'</span>   =&gt; <span class="hljs-string">'utf8mb4'</span>,</span><br><span class="line">    <span class="hljs-string">'collation'</span> =&gt; <span class="hljs-string">'utf8mb4_unicode_ci'</span>,</span><br><span class="line">    <span class="hljs-comment">// table prefix, 如果有多個 application 使用同一個 database 的話, 避免衝突</span></span><br><span class="line">    <span class="hljs-string">'prefix'</span>    =&gt; <span class="hljs-string">''</span>,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Using-Multiple-Database-Connections"><a href="#Using-Multiple-Database-Connections" class="headerlink" title="# Using Multiple Database Connections"></a># Using Multiple Database Connections</h3><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$users = DB::connection(<span class="hljs-string">'foo'</span>)-&gt;select(...);</span><br></pre></td></tr></table></figure>
@@ -368,7 +376,9 @@
 <li><p><strong>Answer</strong>:<br>指定使用的 DB</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Running-Raw-SQL-Queries"><a href="#Running-Raw-SQL-Queries" class="headerlink" title="# Running Raw SQL Queries"></a># Running Raw SQL Queries</h2><h3 id="Running-A-Select-Query"><a href="#Running-A-Select-Query" class="headerlink" title="# Running A Select Query"></a># Running A Select Query</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">DB</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $users = DB::select(<span class="hljs-string">'select * from users where active = ?'</span>, [<span class="hljs-number">1</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> view(<span class="hljs-string">'user.index'</span>, [<span class="hljs-string">'users'</span> =&gt; $users]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -376,7 +386,8 @@
 <li><p><strong>Answer</strong>:<br>相當於 select * from users where active = 1, 之所以使用 ? 為 binding 設計, 以避免 SQL injection<br>並 return 到 user.index view page, 像是 views/user/index.blade.php, 將 $user 以 ‘user’ 的方式帶過去該 page, 即可在 user.index page 以 $user 方式取用</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Using-Named-Bindings"><a href="#Using-Named-Bindings" class="headerlink" title="# Using Named Bindings"></a># Using Named Bindings</h3><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$results = DB::select(<span class="hljs-string">'select * from users where id = :id'</span>, [<span class="hljs-string">'id'</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure>
@@ -384,7 +395,8 @@
 <li><p><strong>Answer</strong>:<br>使用 binding 以避免 sql injection, 如果 select() 的 arg2 是一個 numerically indexed array, 那就按順序使用 <code>? (問號)</code> 即可</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Running-An-Insert-Statement"><a href="#Running-An-Insert-Statement" class="headerlink" title="# Running An Insert Statement"></a># Running An Insert Statement</h3><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::insert(<span class="hljs-string">'insert into users (id, name) values (?, ?)'</span>, [<span class="hljs-number">1</span>, <span class="hljs-string">'Dayle'</span>]);</span><br></pre></td></tr></table></figure>
@@ -392,7 +404,8 @@
 <li><p><strong>Answer</strong>:<br>insert 到 users table 的 id, name column, value 為 1, ‘Dayle’</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Running-An-Update-Statement"><a href="#Running-An-Update-Statement" class="headerlink" title="# Running An Update Statement"></a># Running An Update Statement</h3><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$affected = DB::update(<span class="hljs-string">'update users set votes = 100 where name = ?'</span>, [<span class="hljs-string">'John'</span>]);</span><br></pre></td></tr></table></figure>
@@ -400,7 +413,8 @@
 <li><p><strong>Answer</strong>:<br>使用 update(), 輸入原生 sql 語法以及 binding, 以避免 sql injection</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Running-A-Delete-Statement"><a href="#Running-A-Delete-Statement" class="headerlink" title="# Running A Delete Statement"></a># Running A Delete Statement</h3><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$deleted = DB::delete(<span class="hljs-string">'delete from users'</span>);</span><br></pre></td></tr></table></figure>
@@ -408,7 +422,8 @@
 <li><p><strong>Answer</strong>:<br>在 delete() 內輸入 mysql delete 語法, 刪除 users table 的所有資料</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Running-A-General-Statement"><a href="#Running-A-General-Statement" class="headerlink" title="# Running A General Statement"></a># Running A General Statement</h3><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::statement(<span class="hljs-string">'drop table users'</span>);</span><br></pre></td></tr></table></figure>
@@ -416,7 +431,9 @@
 <li><p><strong>Answer</strong>:<br>drop table users, 當使用一些不回傳 value 的指令, 可使用 STATEMENT</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Listening-For-Query-Events"><a href="#Listening-For-Query-Events" class="headerlink" title="# Listening For Query Events"></a># Listening For Query Events</h2><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        DB::listen(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($query)</span> </span>&#123;</span><br><span class="line">            <span class="hljs-comment">// $query-&gt;sql</span></span><br><span class="line">            <span class="hljs-comment">// $query-&gt;bindings</span></span><br><span class="line">            <span class="hljs-comment">// $query-&gt;time</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
@@ -424,7 +441,9 @@
 <li><p><strong>Answer</strong>:<br>在 AppServiceProvider boot() 中, 使用 DB::listen(), 可取得每一句 query 的實際上 sql query, binding, 以及執行時間</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Database-Transactions"><a href="#Database-Transactions" class="headerlink" title="# Database Transactions"></a># Database Transactions</h2><h6 id="Laravel-Database-當中-以下的-example-當中-什麼情況下-transaction-會-roll-back"><a href="#Laravel-Database-當中-以下的-example-當中-什麼情況下-transaction-會-roll-back" class="headerlink" title="Laravel Database 當中, 以下的 example 當中, 什麼情況下 transaction 會 roll back?"></a><strong>Laravel Database 當中, 以下的 example 當中, 什麼情況下 transaction 會 roll back?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::transaction(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    DB::table(<span class="hljs-string">'users'</span>)-&gt;update([<span class="hljs-string">'votes'</span> =&gt; <span class="hljs-number">1</span>]);</span><br><span class="line"></span><br><span class="line">    DB::table(<span class="hljs-string">'posts'</span>)-&gt;delete();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -432,7 +451,8 @@
 <li><p><strong>Answer</strong>:<br>當有 exception 被丟出的時候</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Handling-Deadlocks"><a href="#Handling-Deadlocks" class="headerlink" title="# Handling Deadlocks"></a># Handling Deadlocks</h3><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::transaction(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    DB::table(<span class="hljs-string">'users'</span>)-&gt;update([<span class="hljs-string">'votes'</span> =&gt; <span class="hljs-number">1</span>]);</span><br><span class="line"></span><br><span class="line">    DB::table(<span class="hljs-string">'posts'</span>)-&gt;delete();</span><br><span class="line">&#125;, <span class="hljs-number">5</span>);</span><br></pre></td></tr></table></figure>
@@ -440,7 +460,8 @@
 <li><p><strong>Answer</strong>:<br>使用 transaction, 若失敗會持續嘗試最多 5 次, 5 次後仍然失敗丟出 exception</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Manually-Using-Transactions"><a href="#Manually-Using-Transactions" class="headerlink" title="# Manually Using Transactions"></a># Manually Using Transactions</h3><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::beginTransaction();</span><br></pre></td></tr></table></figure>
@@ -539,53 +560,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

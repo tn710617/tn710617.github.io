@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Kubernetes - DaemonSet - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -246,7 +246,10 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本文為閱讀 Kubernetes DaemonSet 官方文件, 並將重點摘取整理為 Q&amp;A 方式</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h6 id="Kubernetes-DaemonSet-Pod-會在什麼時候被-schedule-到-Node-上？"><a href="#Kubernetes-DaemonSet-Pod-會在什麼時候被-schedule-到-Node-上？" class="headerlink" title="Kubernetes DaemonSet, Pod 會在什麼時候被 schedule 到 Node 上？"></a><strong>Kubernetes DaemonSet, Pod 會在什麼時候被 schedule 到 Node 上？</strong></h6><p>所有, 或指定的 Node 被建立時</p>
 <h6 id="Kubernetes-DaemonSet-Pod-會在什麼時候從-Node-上被移除？"><a href="#Kubernetes-DaemonSet-Pod-會在什麼時候從-Node-上被移除？" class="headerlink" title="Kubernetes DaemonSet, Pod 會在什麼時候從 Node 上被移除？"></a><strong>Kubernetes DaemonSet, Pod 會在什麼時候從 Node 上被移除？</strong></h6><p>當 Node 從 cluster 被移除時, 或刪除 DaemonSet</p>
 <h6 id="Kubernetes-DaemonSet-有哪三種普遍的應用？"><a href="#Kubernetes-DaemonSet-有哪三種普遍的應用？" class="headerlink" title="Kubernetes DaemonSet, 有哪三種普遍的應用？"></a><strong>Kubernetes DaemonSet, 有哪三種普遍的應用？</strong></h6><ul>
@@ -256,13 +259,15 @@
 </ul>
 <h6 id="以下的-Kubernetes-example-code-代表什麼意思？"><a href="#以下的-Kubernetes-example-code-代表什麼意思？" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">kube-system</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    k8s-app:</span> <span class="hljs-string">fluentd-logging</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  selector:</span></span><br><span class="line"><span class="hljs-attr">    matchLabels:</span></span><br><span class="line"><span class="hljs-attr">      name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">  template:</span></span><br><span class="line"><span class="hljs-attr">    metadata:</span></span><br><span class="line"><span class="hljs-attr">      labels:</span></span><br><span class="line"><span class="hljs-attr">        name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">    spec:</span></span><br><span class="line"><span class="hljs-attr">      tolerations:</span></span><br><span class="line"><span class="hljs-attr">      - key:</span> <span class="hljs-string">node-role.kubernetes.io/master</span></span><br><span class="line"><span class="hljs-attr">        effect:</span> <span class="hljs-string">NoSchedule</span></span><br><span class="line"><span class="hljs-attr">      containers:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">        image:</span> <span class="hljs-string">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span></span><br><span class="line"><span class="hljs-attr">        resources:</span></span><br><span class="line"><span class="hljs-attr">          limits:</span></span><br><span class="line"><span class="hljs-attr">            memory:</span> <span class="hljs-number">200</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">          requests:</span></span><br><span class="line"><span class="hljs-attr">            cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">            memory:</span> <span class="hljs-number">200</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">        volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">        - name:</span> <span class="hljs-string">varlog</span></span><br><span class="line"><span class="hljs-attr">          mountPath:</span> <span class="hljs-string">/var/log</span></span><br><span class="line"><span class="hljs-attr">        - name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line"><span class="hljs-attr">          mountPath:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br><span class="line"><span class="hljs-attr">          readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line"><span class="hljs-attr">      terminationGracePeriodSeconds:</span> <span class="hljs-number">30</span></span><br><span class="line"><span class="hljs-attr">      volumes:</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">varlog</span></span><br><span class="line"><span class="hljs-attr">        hostPath:</span></span><br><span class="line"><span class="hljs-attr">          path:</span> <span class="hljs-string">/var/log</span></span><br><span class="line"><span class="hljs-attr">      - name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line"><span class="hljs-attr">        hostPath:</span></span><br><span class="line"><span class="hljs-attr">          path:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-system</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">fluentd-logging</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">selector:</span></span><br><span class="line">    <span class="hljs-attr">matchLabels:</span></span><br><span class="line">      <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">  <span class="hljs-attr">template:</span></span><br><span class="line">    <span class="hljs-attr">metadata:</span></span><br><span class="line">      <span class="hljs-attr">labels:</span></span><br><span class="line">        <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">    <span class="hljs-attr">spec:</span></span><br><span class="line">      <span class="hljs-attr">tolerations:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">node-role.kubernetes.io/master</span></span><br><span class="line">        <span class="hljs-attr">effect:</span> <span class="hljs-string">NoSchedule</span></span><br><span class="line">      <span class="hljs-attr">containers:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">        <span class="hljs-attr">image:</span> <span class="hljs-string">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span></span><br><span class="line">        <span class="hljs-attr">resources:</span></span><br><span class="line">          <span class="hljs-attr">limits:</span></span><br><span class="line">            <span class="hljs-attr">memory:</span> <span class="hljs-string">200Mi</span></span><br><span class="line">          <span class="hljs-attr">requests:</span></span><br><span class="line">            <span class="hljs-attr">cpu:</span> <span class="hljs-string">100m</span></span><br><span class="line">            <span class="hljs-attr">memory:</span> <span class="hljs-string">200Mi</span></span><br><span class="line">        <span class="hljs-attr">volumeMounts:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlog</span></span><br><span class="line">          <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/log</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line">          <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br><span class="line">          <span class="hljs-attr">readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line">      <span class="hljs-attr">terminationGracePeriodSeconds:</span> <span class="hljs-number">30</span></span><br><span class="line">      <span class="hljs-attr">volumes:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlog</span></span><br><span class="line">        <span class="hljs-attr">hostPath:</span></span><br><span class="line">          <span class="hljs-attr">path:</span> <span class="hljs-string">/var/log</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line">        <span class="hljs-attr">hostPath:</span></span><br><span class="line">          <span class="hljs-attr">path:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 結構上跟 Deployment 十分類似</span></span><br><span class="line"><span class="hljs-comment"># 總結一下, 該 DaemonSet 會在每一個 Node 包含 Master Node</span></span><br><span class="line"><span class="hljs-comment"># 上部署 fluentd-elasticsearch 做 Log 處理</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">    name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">    namespace:</span> <span class="hljs-string">kube-system</span></span><br><span class="line"><span class="hljs-attr">    labels:</span></span><br><span class="line"><span class="hljs-attr">        k8s-app:</span> <span class="hljs-string">fluentd-logging</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">    selector:</span></span><br><span class="line"><span class="hljs-attr">        matchLabels:</span></span><br><span class="line"><span class="hljs-attr">            name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">    template:</span></span><br><span class="line"><span class="hljs-attr">        metadata:</span></span><br><span class="line"><span class="hljs-attr">            labels:</span></span><br><span class="line"><span class="hljs-attr">                name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">        spec:</span></span><br><span class="line"><span class="hljs-attr">            tolerations:</span></span><br><span class="line">                <span class="hljs-comment"># DaemonSet 預設不會執行在 Master Node 上, 使用 tolerations 可以允許</span></span><br><span class="line">                <span class="hljs-comment"># Master Node 運行 DaemonSet pod</span></span><br><span class="line"><span class="hljs-attr">                - key:</span> <span class="hljs-string">node-role.kubernetes.io/master</span></span><br><span class="line"><span class="hljs-attr">                  effect:</span> <span class="hljs-string">NoSchedule</span></span><br><span class="line"><span class="hljs-attr">            containers:</span></span><br><span class="line"><span class="hljs-attr">                - name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line"><span class="hljs-attr">                  image:</span> <span class="hljs-string">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span></span><br><span class="line"><span class="hljs-attr">                  resources:</span></span><br><span class="line"><span class="hljs-attr">                      limits:</span></span><br><span class="line"><span class="hljs-attr">                          memory:</span> <span class="hljs-number">200</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">                      requests:</span></span><br><span class="line"><span class="hljs-attr">                          cpu:</span> <span class="hljs-number">100</span><span class="hljs-string">m</span></span><br><span class="line"><span class="hljs-attr">                          memory:</span> <span class="hljs-number">200</span><span class="hljs-string">Mi</span></span><br><span class="line"><span class="hljs-attr">                  volumeMounts:</span></span><br><span class="line"><span class="hljs-attr">                      - name:</span> <span class="hljs-string">varlog</span></span><br><span class="line"><span class="hljs-attr">                        mountPath:</span> <span class="hljs-string">/var/log</span></span><br><span class="line"><span class="hljs-attr">                      - name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line"><span class="hljs-attr">                        mountPath:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br><span class="line"><span class="hljs-attr">                        readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line">            <span class="hljs-comment"># 當 Pod 要被關閉時, 會有 30 秒的優雅退出</span></span><br><span class="line"><span class="hljs-attr">            terminationGracePeriodSeconds:</span> <span class="hljs-number">30</span></span><br><span class="line"><span class="hljs-attr">            volumes:</span></span><br><span class="line"><span class="hljs-attr">                - name:</span> <span class="hljs-string">varlog</span></span><br><span class="line"><span class="hljs-attr">                  hostPath:</span></span><br><span class="line"><span class="hljs-attr">                      path:</span> <span class="hljs-string">/var/log</span></span><br><span class="line"><span class="hljs-attr">                - name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line"><span class="hljs-attr">                  hostPath:</span></span><br><span class="line"><span class="hljs-attr">                      path:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 結構上跟 Deployment 十分類似</span></span><br><span class="line"><span class="hljs-comment"># 總結一下, 該 DaemonSet 會在每一個 Node 包含 Master Node</span></span><br><span class="line"><span class="hljs-comment"># 上部署 fluentd-elasticsearch 做 Log 處理</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">    <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">    <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-system</span></span><br><span class="line">    <span class="hljs-attr">labels:</span></span><br><span class="line">        <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">fluentd-logging</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">    <span class="hljs-attr">selector:</span></span><br><span class="line">        <span class="hljs-attr">matchLabels:</span></span><br><span class="line">            <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">    <span class="hljs-attr">template:</span></span><br><span class="line">        <span class="hljs-attr">metadata:</span></span><br><span class="line">            <span class="hljs-attr">labels:</span></span><br><span class="line">                <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">        <span class="hljs-attr">spec:</span></span><br><span class="line">            <span class="hljs-attr">tolerations:</span></span><br><span class="line">                <span class="hljs-comment"># DaemonSet 預設不會執行在 Master Node 上, 使用 tolerations 可以允許</span></span><br><span class="line">                <span class="hljs-comment"># Master Node 運行 DaemonSet pod</span></span><br><span class="line">                <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">node-role.kubernetes.io/master</span></span><br><span class="line">                  <span class="hljs-attr">effect:</span> <span class="hljs-string">NoSchedule</span></span><br><span class="line">            <span class="hljs-attr">containers:</span></span><br><span class="line">                <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">                  <span class="hljs-attr">image:</span> <span class="hljs-string">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span></span><br><span class="line">                  <span class="hljs-attr">resources:</span></span><br><span class="line">                      <span class="hljs-attr">limits:</span></span><br><span class="line">                          <span class="hljs-attr">memory:</span> <span class="hljs-string">200Mi</span></span><br><span class="line">                      <span class="hljs-attr">requests:</span></span><br><span class="line">                          <span class="hljs-attr">cpu:</span> <span class="hljs-string">100m</span></span><br><span class="line">                          <span class="hljs-attr">memory:</span> <span class="hljs-string">200Mi</span></span><br><span class="line">                  <span class="hljs-attr">volumeMounts:</span></span><br><span class="line">                      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlog</span></span><br><span class="line">                        <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/log</span></span><br><span class="line">                      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line">                        <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br><span class="line">                        <span class="hljs-attr">readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line">            <span class="hljs-comment"># 當 Pod 要被關閉時, 會有 30 秒的優雅退出</span></span><br><span class="line">            <span class="hljs-attr">terminationGracePeriodSeconds:</span> <span class="hljs-number">30</span></span><br><span class="line">            <span class="hljs-attr">volumes:</span></span><br><span class="line">                <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlog</span></span><br><span class="line">                  <span class="hljs-attr">hostPath:</span></span><br><span class="line">                      <span class="hljs-attr">path:</span> <span class="hljs-string">/var/log</span></span><br><span class="line">                <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line">                  <span class="hljs-attr">hostPath:</span></span><br><span class="line">                      <span class="hljs-attr">path:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Required-Fields"><a href="#Required-Fields" class="headerlink" title="# Required Fields"></a># Required Fields</h3><h6 id="何謂-valid-DNS-subdomain-name"><a href="#何謂-valid-DNS-subdomain-name" class="headerlink" title="何謂 valid DNS subdomain name?"></a><strong>何謂 valid DNS subdomain name?</strong></h6><ul>
 <li>不可超過 253 characters</li>
 <li>alphanumeric character 開頭</li>
@@ -270,7 +275,8 @@
 <li>只可含有 lowercase alphanumeric, <code>-</code> 或 <code>.</code></li>
 </ul>
 <h6 id="Kubernetes-DaemonSet-的-name-必須合乎哪種規範？"><a href="#Kubernetes-DaemonSet-的-name-必須合乎哪種規範？" class="headerlink" title="Kubernetes DaemonSet 的 name 必須合乎哪種規範？"></a><strong>Kubernetes DaemonSet 的 name 必須合乎哪種規範？</strong></h6><p>valid DNS subdomain name</p>
-<p><br></p>
+<br>
+
 <h3 id="Pod-Template"><a href="#Pod-Template" class="headerlink" title="# Pod Template"></a># Pod Template</h3><h6 id="Kubernetes-DaemonSet-中-RestartPolicy-必須為？"><a href="#Kubernetes-DaemonSet-中-RestartPolicy-必須為？" class="headerlink" title="Kubernetes DaemonSet 中, RestartPolicy 必須為？"></a><strong>Kubernetes DaemonSet 中, RestartPolicy 必須為？</strong></h6><p>Always</p>
 
     
@@ -347,53 +353,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Kubernetes - Dashboard - 使用自定義 Service Account 登入 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -272,10 +272,15 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要紀錄如何在 Kubernetes 中安裝 Dashboard, 並建立 Server Account, 然後使用該 Service Account 的 token 登入 Dashboard</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="安裝-Dashboard"><a href="#安裝-Dashboard" class="headerlink" title="# 安裝 Dashboard"></a># 安裝 Dashboard</h2><p>首先, Dashboard 是一個套件, 作用是可以讓使用者透過 Web UI 介面取代指令的管理 Kubernetes</p>
 <p>安裝 Dashboard, 可參考 <a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">官方 Github</a></p>
-<p>依照官方 Github 的步驟, 需要使用 <code>kube proxy</code> 來存取 Dashboard, 也可另外建立一個 nodePort service<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  labels:</span></span><br><span class="line"><span class="hljs-attr">    k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line"><span class="hljs-attr">  ports:</span></span><br><span class="line"><span class="hljs-attr">    - port:</span> <span class="hljs-number">443</span></span><br><span class="line"><span class="hljs-attr">      targetPort:</span> <span class="hljs-number">8443</span></span><br><span class="line"><span class="hljs-attr">  selector:</span></span><br><span class="line"><span class="hljs-attr">    k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line"><span class="hljs-attr">  type:</span> <span class="hljs-string">NodePort</span></span><br></pre></td></tr></table></figure></p>
+<p>依照官方 Github 的步驟, 需要使用 <code>kube proxy</code> 來存取 Dashboard, 也可另外建立一個 nodePort service</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line">  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">ports:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">port:</span> <span class="hljs-number">443</span></span><br><span class="line">      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">8443</span></span><br><span class="line">  <span class="hljs-attr">selector:</span></span><br><span class="line">    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">kubernetes-dashboard</span></span><br><span class="line">  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span></span><br></pre></td></tr></table></figure>
+
 <p>我們先來看看 Dashboard 的一些詳細資料, 本篇查看 Pod, 查看 Deployment 也可</p>
 <ul>
 <li><p>取得 Dashboard pod 名稱</p>
@@ -283,6 +288,7 @@
 </li>
 <li><p>查看 Dashboard 的詳細資料</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod yourDashboardPodName -n kubernetes-dashboard</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>從 description 中可看到 Dashboard Pod 是 Listen 8443 port, 因此我們 yaml 中才會 listen 8443 port</p>
@@ -292,10 +298,13 @@
 </li>
 <li><p>查看 nodePort</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get services -n kubernetes-dashboard</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p>這時應該看到我們剛剛建立的 service, 後面會有一個 port binding, 像是 <code>443:31831/TCP</code>, 這就表示該 service 已經跟 Node 的 31831 port 對應了, 這時只要用瀏覽器開啟 <code>http://myNodeIp:31831</code>, 就可以進入 dashboard 登入頁面了<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eHYRcTxvGol76RC6xaCiDnXWT9lbVxbHnhUxZzp1oRq77Rol__jQREWC-TUfr0ToYToP5eQgL5gb6e33x9QXSFDRuPt-c49LG41m80dA7FjG-Z07aeNxLkxh6SE3DNWKIBgPFvyjkMP8FL3dfE-fC3MQ=w2558-h1864-no?authuser=0" alt></p>
-<p><br><br><br></p>
+<p>這時應該看到我們剛剛建立的 service, 後面會有一個 port binding, 像是 <code>443:31831/TCP</code>, 這就表示該 service 已經跟 Node 的 31831 port 對應了, 這時只要用瀏覽器開啟 <code>http://myNodeIp:31831</code>, 就可以進入 dashboard 登入頁面了<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eHYRcTxvGol76RC6xaCiDnXWT9lbVxbHnhUxZzp1oRq77Rol__jQREWC-TUfr0ToYToP5eQgL5gb6e33x9QXSFDRuPt-c49LG41m80dA7FjG-Z07aeNxLkxh6SE3DNWKIBgPFvyjkMP8FL3dfE-fC3MQ=w2558-h1864-no?authuser=0"></p>
+<br>
+<br>
+
 <h2 id="使用自定義的-service-account-登入"><a href="#使用自定義的-service-account-登入" class="headerlink" title="# 使用自定義的 service account 登入"></a># 使用自定義的 service account 登入</h2><p>本文中會使用 token 的方式登入<br>Kubernetes 中, 每個 <code>service account</code> 都會綁定一個 <code>secret</code> 資源, 而 <code>secret</code> 中會有一組 base64 加密的 token, 所以我們接下來要做的事情如下：</p>
 <ol>
 <li>建立擁有 cluster-admin 權限的 cluster role</li>
@@ -305,30 +314,39 @@
 <li>登入</li>
 </ol>
 <p>那就一步一步來吧！</p>
-<p><br></p>
+<br>
+
 <h3 id="建立-role"><a href="#建立-role" class="headerlink" title="# 建立 role"></a># 建立 role</h3><p>因為 Kubernetes 預設就幫我們建立了 cluster-admin 這個 role, 所以我們就不用再自己另外建立, 直接使用即可</p>
-<p><br></p>
-<h3 id="建立-service-account"><a href="#建立-service-account" class="headerlink" title="# 建立 service account"></a># 建立 service account</h3><p>那我們就建立一個 service account, 名為 <code>cluster-admin-ray</code><br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl create sa cluster-admin-ray -n kube-system</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
+<br>
+
+<h3 id="建立-service-account"><a href="#建立-service-account" class="headerlink" title="# 建立 service account"></a># 建立 service account</h3><p>那我們就建立一個 service account, 名為 <code>cluster-admin-ray</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl create sa cluster-admin-ray -n kube-system</span><br></pre></td></tr></table></figure>
+
+<br>
+
 <h3 id="建立-role-binding"><a href="#建立-role-binding" class="headerlink" title="# 建立 role binding"></a># 建立 role binding</h3><p>接下來我們要綁定上面提到的系統預設的 cluster role, 與上面建立 service account <code>cluster-admin-ray</code> 綁定, 這樣 <code>cluster-admin-ray</code> 就可以擁有該 cluster role 的權限</p>
 <ul>
 <li><p>建立 yaml 檔</p>
-<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRoleBinding</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">cluster-admin-binding</span></span><br><span class="line"><span class="hljs-attr">  annotations:</span></span><br><span class="line">    <span class="hljs-string">rbac.authorization.kubernetes.io/autoupdate:</span> <span class="hljs-string">"true"</span></span><br><span class="line"><span class="hljs-attr">roleRef:</span></span><br><span class="line">  <span class="hljs-comment"># 這邊我們並沒有特別建立這個 cluster role, 因為這是 Kubernetes 預設建立的</span></span><br><span class="line"><span class="hljs-attr">  kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">cluster-admin</span></span><br><span class="line"><span class="hljs-attr">  apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-attr">- kind:</span> <span class="hljs-string">ServiceAccount</span></span><br><span class="line"><span class="hljs-attr">  name:</span> <span class="hljs-string">cluster-admin-ray</span></span><br><span class="line"><span class="hljs-attr">  namespace:</span> <span class="hljs-string">kube-system</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRoleBinding</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">cluster-admin-binding</span></span><br><span class="line">  <span class="hljs-attr">annotations:</span></span><br><span class="line">    <span class="hljs-attr">rbac.authorization.kubernetes.io/autoupdate:</span> <span class="hljs-string">"true"</span></span><br><span class="line"><span class="hljs-attr">roleRef:</span></span><br><span class="line">  <span class="hljs-comment"># 這邊我們並沒有特別建立這個 cluster role, 因為這是 Kubernetes 預設建立的</span></span><br><span class="line">  <span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">cluster-admin</span></span><br><span class="line">  <span class="hljs-attr">apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="hljs-attr">subjects:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">cluster-admin-ray</span></span><br><span class="line">  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-system</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>建立 clusterRoleBinding</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl create -f yourYamlName</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="取得-Server-Account-的-token"><a href="#取得-Server-Account-的-token" class="headerlink" title="# 取得 Server Account 的 token"></a># 取得 Server Account 的 token</h3><p>上面已經完成綁定, 接下來我們便要取得 service account 的 token</p>
 <ul>
 <li>首先, 我們先來看看 service account<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get sa cluster-admin-ray -n kube-system -o=yaml</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p>輸出如下：<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dMpvMTGPTcu712pwmsu6qJWVKsfWg9xBMPBd6kFupEj2OkFb34nJkL9LLwUo67uiE-xxJDpHdS6TKXCUXC_IBxs7HHXSEMF9ZAO5H4SLlOb3neXS9ynRIpkbyaa-wcWdNZH72Ye9FYO76Nj0UWqD7nhg=w1846-h622-no?authuser=0" alt></p>
+<p>輸出如下：<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dMpvMTGPTcu712pwmsu6qJWVKsfWg9xBMPBd6kFupEj2OkFb34nJkL9LLwUo67uiE-xxJDpHdS6TKXCUXC_IBxs7HHXSEMF9ZAO5H4SLlOb3neXS9ynRIpkbyaa-wcWdNZH72Ye9FYO76Nj0UWqD7nhg=w1846-h622-no?authuser=0"></p>
 <p>從上面的圖片可以看到, service account 中有一個 secrets </p>
 <ul>
 <li>接下來, 我們來看看這個 secret<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get secret cluster-admin-ray-token-rtnnh -n kube-system -o=yaml</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>可以看到 secret 的詳細資料, 由於太多資料我就不貼圖了<br>裡頭有個 token 就是我們要的</p>
@@ -341,15 +359,23 @@
 </li>
 <li><p>若是你是使用 MacOS, 也可以使用下面一行搞定, 不過請記得將 service account 改成你自己的</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SECRET=`kubectl get serviceAccount yourServiceAccountName -n kube-system -o jsonpath=&#123;.secrets\[0\].name&#125;` &amp;&amp; kubectl get secret $SECRET -n kube-system -o jsonpath=&#123;.data.token&#125;|base64 -d|pbcopy</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
-<h3 id="登入"><a href="#登入" class="headerlink" title="# 登入"></a># 登入</h3><p>這一步很簡單, 使用上面拿到的 token, 使用 token 方式登入就行了<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3embXndiF7RcVqdLFo-84kQEfR_ykjMYdj5mbmIPtOa6Akl2-cQS_8F34LOaJjlmg2FbtiedgthjGi5RkreHoj1gRKITEzC0luDwWR1q6TkpqcYv9AA2j3jntqZhfFvdvjVsDK0D-BMOuJcCYpIxe-1Tw=w3840-h2000-no?authuser=0" alt></p>
-<p><br><br><br></p>
+<br>
+
+<h3 id="登入"><a href="#登入" class="headerlink" title="# 登入"></a># 登入</h3><p>這一步很簡單, 使用上面拿到的 token, 使用 token 方式登入就行了<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3embXndiF7RcVqdLFo-84kQEfR_ykjMYdj5mbmIPtOa6Akl2-cQS_8F34LOaJjlmg2FbtiedgthjGi5RkreHoj1gRKITEzC0luDwWR1q6TkpqcYv9AA2j3jntqZhfFvdvjVsDK0D-BMOuJcCYpIxe-1Tw=w3840-h2000-no?authuser=0"></p>
+<br>
+<br>
+
 <h2 id="結語"><a href="#結語" class="headerlink" title="# 結語"></a># 結語</h2><p>至於 Dashboard 有什麼功能就讓大家自行玩耍啦！ 本文到此告一段落, 下台一鞠躬！</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="參考資源"><a href="#參考資源" class="headerlink" title="# 參考資源"></a># 參考資源</h2><p><a href="https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/" target="_blank" rel="noopener">官方文件</a><br><a href="https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html" target="_blank" rel="noopener">JSONPath Syntax</a></p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="# Questions and Answers"></a># Questions and Answers</h2><h6 id="以下的-Kubernetes-example-command-代表什麼意思？"><a href="#以下的-Kubernetes-example-command-代表什麼意思？" class="headerlink" title="以下的 Kubernetes example command 代表什麼意思？"></a><strong>以下的 Kubernetes example command 代表什麼意思？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">kubectl get secret cluster-admin-ray-token-rtnnh -o jsonpath=&#123;.data.token&#125; -n kube-system | base64 -d</span><br></pre></td></tr></table></figure>
@@ -432,53 +458,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

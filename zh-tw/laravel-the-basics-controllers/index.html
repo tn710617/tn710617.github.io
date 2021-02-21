@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - The Basics - Controllers (官方文件原子化翻譯) - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -296,15 +296,21 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Basic-Controllers"><a href="#Basic-Controllers" class="headerlink" title="# Basic Controllers"></a># Basic Controllers</h2><h3 id="Defining-Controllers"><a href="#Defining-Controllers" class="headerlink" title="# Defining Controllers"></a># Defining Controllers</h3><h6 id="Laravel-中-如果不-extend-basic-controller-的話-是有什麼影響？"><a href="#Laravel-中-如果不-extend-basic-controller-的話-是有什麼影響？" class="headerlink" title="Laravel 中, 如果不 extend basic controller 的話, 是有什麼影響？"></a><strong>Laravel 中, 如果不 extend basic controller 的話, 是有什麼影響？</strong></h6><p>無法使用一些方便的功能, 像是 <code>middleware</code>, <code>validate</code>, 以及 <code>dispatch</code></p>
-<p><br></p>
+<br>
+
 <h3 id="Controllers-and-Namespaces"><a href="#Controllers-and-Namespaces" class="headerlink" title="# Controllers and Namespaces"></a># Controllers and Namespaces</h3><h6 id="Laravel-中-如果以下是我的-Controller-路徑-那我該在-Route-中怎樣定義我的-Controller-位址？"><a href="#Laravel-中-如果以下是我的-Controller-路徑-那我該在-Route-中怎樣定義我的-Controller-位址？" class="headerlink" title="Laravel 中, 如果以下是我的 Controller 路徑, 那我該在 Route 中怎樣定義我的 Controller 位址？"></a><strong>Laravel 中, 如果以下是我的 Controller 路徑, 那我該在 Route 中怎樣定義我的 Controller 位址？</strong></h6><ul>
 <li><strong>路徑</strong>:<br><code>App\Http\Controllers\Photos\AdminController</code></li>
 <li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::get(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'Photos\AdminController@method'</span>);</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="Single-Action-Controllers"><a href="#Single-Action-Controllers" class="headerlink" title="# Single Action Controllers"></a># Single Action Controllers</h3><h6 id="Laravel-中-如果我要從-CLI-建立一個-single-action-controller-我可以怎麼做？"><a href="#Laravel-中-如果我要從-CLI-建立一個-single-action-controller-我可以怎麼做？" class="headerlink" title="Laravel 中, 如果我要從 CLI 建立一個 single action controller, 我可以怎麼做？"></a><strong>Laravel 中, 如果我要從 CLI 建立一個 single action controller, 我可以怎麼做？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:controller ControllerName --invokable</span><br></pre></td></tr></table></figure>
+
 <h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ShowProfile</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__invoke</span><span class="hljs-params">($id)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> view(<span class="hljs-string">'user.profile'</span>, [<span class="hljs-string">'user'</span> =&gt; User::findOrFail($id)]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -313,13 +319,16 @@
 </li>
 </ul>
 <h6 id="Laravel-中-在-route-註冊-single-action-controller-時-需要指定-method-嗎？"><a href="#Laravel-中-在-route-註冊-single-action-controller-時-需要指定-method-嗎？" class="headerlink" title="Laravel 中, 在 route 註冊 single action controller 時, 需要指定 method 嗎？"></a><strong>Laravel 中, 在 route 註冊 single action controller 時, 需要指定 method 嗎？</strong></h6><p>不用</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Controller-Middleware"><a href="#Controller-Middleware" class="headerlink" title="# Controller Middleware"></a># Controller Middleware</h2><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;middleware(<span class="hljs-string">'auth'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;middleware(<span class="hljs-string">'log'</span>)-&gt;only(<span class="hljs-string">'index'</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;middleware(<span class="hljs-string">'subscribed'</span>)-&gt;except(<span class="hljs-string">'store'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 指定該 controller 需使用 auth middleware</span></span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;middleware(<span class="hljs-string">'auth'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 指定只有該 controller 中的 index method 使用 log middleware</span></span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;middleware(<span class="hljs-string">'log'</span>)-&gt;only(<span class="hljs-string">'index'</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 指定除了該 controller 中的 store method 之外, 其餘 method 都使用 subscribed middleware</span></span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;middleware(<span class="hljs-string">'subscribed'</span>)-&gt;except(<span class="hljs-string">'store'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="Laravel-中-除了在-route-global-以及-group-中指派-middleware-之外-我還可以在什麼地方指派？"><a href="#Laravel-中-除了在-route-global-以及-group-中指派-middleware-之外-我還可以在什麼地方指派？" class="headerlink" title="Laravel 中, 除了在 route, global, 以及 group 中指派 middleware 之外, 我還可以在什麼地方指派？"></a><strong>Laravel 中, 除了在 route, global, 以及 group 中指派 middleware 之外, 我還可以在什麼地方指派？</strong></h6><p>Controller</p>
@@ -331,8 +340,11 @@
 </li>
 </ul>
 <h6 id="Laravel-中-如果我要在-controller-中定義-非指派-一個-middleware-那我可以怎麼做？"><a href="#Laravel-中-如果我要在-controller-中定義-非指派-一個-middleware-那我可以怎麼做？" class="headerlink" title="Laravel 中, 如果我要在 controller 中定義 (非指派) 一個 middleware, 那我可以怎麼做？"></a><strong>Laravel 中, 如果我要在 controller 中定義 (非指派) 一個 middleware, 那我可以怎麼做？</strong></h6><p>在 Controller 中</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Resource-Controllers"><a href="#Resource-Controllers" class="headerlink" title="# Resource Controllers"></a># Resource Controllers</h2><h6 id="Laravel-中-如果我要使用-CLI-來建立一個-Resource-Controller-我可以怎麼做？"><a href="#Laravel-中-如果我要使用-CLI-來建立一個-Resource-Controller-我可以怎麼做？" class="headerlink" title="Laravel 中, 如果我要使用 CLI 來建立一個 Resource Controller, 我可以怎麼做？"></a><strong>Laravel 中, 如果我要使用 CLI 來建立一個 Resource Controller, 我可以怎麼做？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:controller ControllerName --resource</span><br></pre></td></tr></table></figure>
+
 <h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::resources([</span><br><span class="line">    <span class="hljs-string">'photos'</span> =&gt; <span class="hljs-string">'PhotoController'</span>,</span><br><span class="line">    <span class="hljs-string">'posts'</span> =&gt; <span class="hljs-string">'PostController'</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
@@ -340,7 +352,8 @@
 <li><p><strong>Answer</strong>:<br>一次定義多個 resource controller<br>recourse controller 可一次處理多種 action, 像是 <strong>create, edit, show, delete</strong> 等等…, 會根據 http method 以及 url 去判斷該 request 是屬於哪一種 action, 並導向該 controller 中相對應的 method</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Specifying-The-Resource-Model"><a href="#Specifying-The-Resource-Model" class="headerlink" title="# Specifying The Resource Model"></a># Specifying The Resource Model</h4><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:controller ControllerName --resorce --model=ModelName</span><br></pre></td></tr></table></figure>
@@ -348,7 +361,8 @@
 <li><p><strong>Answer</strong>:<br>自動建立一個 Resource Controller, 即 Controller 內已經幫你建立好各種預設的 method, 像是 index, update, show …etc, 而 –model 代表這些 method 預設 type hint 的 model</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Spoofing-Form-Methods"><a href="#Spoofing-Form-Methods" class="headerlink" title="# Spoofing Form Methods"></a># Spoofing Form Methods</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"/foo/bar"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"POST"</span>&gt;</span></span><br><span class="line">    @method('PUT')</span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -356,7 +370,8 @@
 <li><p><strong>Answer</strong>:<br>HTTP Form 並不支援 ‘PUT’ method, 所以使用 blade 語法來模擬 ‘PUT’ method</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Partial-Resource-Routes"><a href="#Partial-Resource-Routes" class="headerlink" title="# Partial Resource Routes"></a># Partial Resource Routes</h3><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::resource(<span class="hljs-string">'photos'</span>, <span class="hljs-string">'PhotoController'</span>)-&gt;only([</span><br><span class="line">    <span class="hljs-string">'index'</span>, <span class="hljs-string">'show'</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
@@ -371,7 +386,8 @@
 <li><p><strong>Answer</strong>:<br>只開放該 resource controller, 除了 [‘create’, ‘store’, ‘update’, ‘destroy’] 之外的 method</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="API-Resource-Route"><a href="#API-Resource-Route" class="headerlink" title="# API Resource Route"></a># API Resource Route</h4><h6 id="apiResource-route-跟-resource-route-的差別在於？"><a href="#apiResource-route-跟-resource-route-的差別在於？" class="headerlink" title="apiResource route 跟 resource route 的差別在於？"></a><strong><em>apiResource route</em> 跟 <em>resource route</em> 的差別在於？</strong></h6><p><em>apiResource route</em> 不包含 create 以及 edit method</p>
 <h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -387,7 +403,8 @@
 <li><p><strong>Answer</strong>:<br>使用 CLI 建立 apiResource controller</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Nested-Resources"><a href="#Nested-Resources" class="headerlink" title="# Nested Resources"></a># Nested Resources</h3><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::resource(<span class="hljs-string">'photos.comments'</span>, <span class="hljs-string">'PhotoCommentController'</span>);</span><br></pre></td></tr></table></figure>
@@ -395,13 +412,17 @@
 <li><p><strong>Answer</strong>:<br>建立一個 nested resources route<br>API 會像是 ‘example.com/api/photos/{photo}/comments/{comment}’<br>情境為 Photo model 有多個 Comment model, 也就是說 Comment model 必須得 belongsTo Photo model</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Shallow-Nesting"><a href="#Shallow-Nesting" class="headerlink" title="# Shallow Nesting"></a># Shallow Nesting</h3><h6 id="Laravel-中-如果我要定義一個-resource-route-具有以下的模式-那我可以怎麼樣來定義我的-route"><a href="#Laravel-中-如果我要定義一個-resource-route-具有以下的模式-那我可以怎麼樣來定義我的-route" class="headerlink" title="Laravel 中, 如果我要定義一個 resource route 具有以下的模式, 那我可以怎麼樣來定義我的 route?"></a><strong>Laravel 中, 如果我要定義一個 resource route 具有以下的模式, 那我可以怎麼樣來定義我的 route?</strong></h6><ul>
-<li><strong>Example</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fymj_L47KoIAUjSBfU8GRL1fqNzm8_1l6bv2O3VtB0I8dDlo9jh2Y8D-_2gSkc4VMQ-ON5xgvFU-7emB8MZ8zMna2ODpyo-7IuuFaJzY-ACByofnV0519ubz0t8Zy5ErfNCEXK53ZLFCtFD5mOOG1YLw=w1848-h696-no?authuser=0" alt></li>
+<li><strong>Example</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fymj_L47KoIAUjSBfU8GRL1fqNzm8_1l6bv2O3VtB0I8dDlo9jh2Y8D-_2gSkc4VMQ-ON5xgvFU-7emB8MZ8zMna2ODpyo-7IuuFaJzY-ACByofnV0519ubz0t8Zy5ErfNCEXK53ZLFCtFD5mOOG1YLw=w1848-h696-no?authuser=0"></li>
 <li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::resource(<span class="hljs-string">'photos.comments'</span>, <span class="hljs-string">'CommentController'</span>)-&gt;shallow();</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h3 id="Naming-Resource-Routes"><a href="#Naming-Resource-Routes" class="headerlink" title="# Naming Resource Routes"></a># Naming Resource Routes</h3><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::resource(<span class="hljs-string">'photos'</span>, <span class="hljs-string">'PhotoController'</span>)-&gt;names([</span><br><span class="line">    <span class="hljs-string">'create'</span> =&gt; <span class="hljs-string">'photos.build'</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
@@ -409,7 +430,8 @@
 <li><p><strong>Answer</strong>:<br>Laravel resources controller 每個 action 都會有預設的 name, 如果要自定義, 可以使用 names method</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Naming-Resource-Route-Parameters"><a href="#Naming-Resource-Route-Parameters" class="headerlink" title="# Naming Resource Route Parameters"></a># Naming Resource Route Parameters</h3><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Route::resource(<span class="hljs-string">'users'</span>, <span class="hljs-string">'AdminUserController'</span>)-&gt;parameters([</span><br><span class="line">    <span class="hljs-string">'users'</span> =&gt; <span class="hljs-string">'admin_user'</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
@@ -424,10 +446,13 @@
 <li><p><strong>Answer</strong>:<br>當使用 resource route 時, Laravel 預設會定義 verb, 比如說 <strong>Route::resource(‘photos’, ‘PhotoController’)</strong>, edit action 的 url 會是 ‘example.com/photos/{photo}/edit’<br>若要變更 url 中的 resource verb, 可以在 AppServiceProvider 的 boot method 中, 如上 example 自定義</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Supplementing-Resource-Controllers"><a href="#Supplementing-Resource-Controllers" class="headerlink" title="# Supplementing Resource Controllers"></a># Supplementing Resource Controllers</h3><h6 id="Laravel-中-當我使用了-resource-route-但我同時也定義了其他的-route-給同一個-controller-除了-resource-以外的-action-那這些額外定義的-route-應該置於-resource-route-之前還是之後？"><a href="#Laravel-中-當我使用了-resource-route-但我同時也定義了其他的-route-給同一個-controller-除了-resource-以外的-action-那這些額外定義的-route-應該置於-resource-route-之前還是之後？" class="headerlink" title="Laravel 中, 當我使用了 resource route, 但我同時也定義了其他的 route 給同一個 controller 除了 resource 以外的 action, 那這些額外定義的 route 應該置於 resource route 之前還是之後？"></a><strong>Laravel 中, 當我使用了 resource route, 但我同時也定義了其他的 route 給同一個 controller 除了 resource 以外的 action, 那這些額外定義的 route 應該置於 resource route 之前還是之後？</strong></h6><p>之前</p>
 <h6 id="Laravel-中-如果你發現你常常需要增加額外的-method-到一個-resource-controller-那你可能該怎麼做？"><a href="#Laravel-中-如果你發現你常常需要增加額外的-method-到一個-resource-controller-那你可能該怎麼做？" class="headerlink" title="Laravel 中, 如果你發現你常常需要增加額外的 method 到一個 resource controller, 那你可能該怎麼做？"></a><strong>Laravel 中, 如果你發現你常常需要增加額外的 method 到一個 resource controller, 那你可能該怎麼做？</strong></h6><p>增加新的 Controller 讓 controller 的功能比較單一</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Dependency-Injection-and-Controllers"><a href="#Dependency-Injection-and-Controllers" class="headerlink" title="# Dependency Injection and Controllers"></a># Dependency Injection and Controllers</h2><h6 id="Laravel-中-在-Controller-中可以使用哪兩種-dependency-injection-方式"><a href="#Laravel-中-在-Controller-中可以使用哪兩種-dependency-injection-方式" class="headerlink" title="Laravel 中, 在 Controller 中可以使用哪兩種 dependency injection 方式?"></a><strong>Laravel 中, 在 Controller 中可以使用哪兩種 dependency injection 方式?</strong></h6><ul>
 <li>Constructor Injection</li>
 <li>Method Injection</li>
@@ -456,7 +481,9 @@
 <h2 id="Route-Caching"><a href="#Route-Caching" class="headerlink" title="# Route Caching"></a># Route Caching</h2><h6 id="Laravel-中-closure-based-routes-可以被-cached-嗎？"><a href="#Laravel-中-closure-based-routes-可以被-cached-嗎？" class="headerlink" title="Laravel 中, closure based routes 可以被 cached 嗎？"></a><strong>Laravel 中, closure based routes 可以被 cached 嗎？</strong></h6><p>不行哦</p>
 <h6 id="Laravel-中-route-cache-的優點是？"><a href="#Laravel-中-route-cache-的優點是？" class="headerlink" title="Laravel 中, route cache 的優點是？"></a><strong>Laravel 中, route cache 的優點是？</strong></h6><p>可以大幅的縮小註冊 routes 的時間</p>
 <h6 id="Laravel-中-如果我要用-CLI-來-cache-route-我可以怎麼做？"><a href="#Laravel-中-如果我要用-CLI-來-cache-route-我可以怎麼做？" class="headerlink" title="Laravel 中, 如果我要用 CLI 來 cache route, 我可以怎麼做？"></a><strong>Laravel 中, 如果我要用 CLI 來 cache route, 我可以怎麼做？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan route:cache</span><br></pre></td></tr></table></figure>
+
 <h6 id="Laravel-中-在我使用了-route-cache-之後-如果我又新增了一個-route-那我該怎麼樣讓它生效？"><a href="#Laravel-中-在我使用了-route-cache-之後-如果我又新增了一個-route-那我該怎麼樣讓它生效？" class="headerlink" title="Laravel 中, 在我使用了 route:cache 之後, 如果我又新增了一個 route, 那我該怎麼樣讓它生效？"></a><strong>Laravel 中, 在我使用了 <code>route:cache</code> 之後, 如果我又新增了一個 route, 那我該怎麼樣讓它生效？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan route:clear</span><br><span class="line">php artisan route:cache</span><br></pre></td></tr></table></figure>
+
 
     
     </div>
@@ -534,53 +561,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

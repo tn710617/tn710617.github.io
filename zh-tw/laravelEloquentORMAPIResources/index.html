@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Eloquent ORM - API Resources - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -332,18 +332,25 @@
     
         <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Generating-Resources"><a href="#Generating-Resources" class="headerlink" title="# Generating Resources"></a># Generating Resources</h2><h6 id="在-Laravel-中-如何使用-CLI-產生一個-resource"><a href="#在-Laravel-中-如何使用-CLI-產生一個-resource" class="headerlink" title="在 Laravel 中, 如何使用 CLI 產生一個 resource"></a><strong>在 Laravel 中, 如何使用 CLI 產生一個 resource</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:resource resourceName</span><br></pre></td></tr></table></figure>
+
 <h6 id="在-Laravel-中-如何使用-CLI-產生一個-resource-collection"><a href="#在-Laravel-中-如何使用-CLI-產生一個-resource-collection" class="headerlink" title="在 Laravel 中, 如何使用 CLI 產生一個 resource collection"></a><strong>在 Laravel 中, 如何使用 CLI 產生一個 resource collection</strong></h6><ul>
 <li><p><strong>Answer1</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:resource resourceName --collection</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer2</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:resource resourceNameCollection</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h2 id="Concept-Overview1"><a href="#Concept-Overview1" class="headerlink" title="# Concept Overview1"></a># Concept Overview1</h2><h6 id="在-Laravel-中-Resource-中的-toArray-method-的作用是？"><a href="#在-Laravel-中-Resource-中的-toArray-method-的作用是？" class="headerlink" title="在 Laravel 中, Resource 中的 toArray method 的作用是？"></a><strong>在 Laravel 中, Resource 中的 toArray method 的作用是？</strong></h6><p>將 model 以及自定義的值轉成 array, 然後 Laravel 會自動將 array 轉成 JSON 輸出</p>
-<h6 id="在-Laravel-中-如何在-controller-或-route-中回傳-resource"><a href="#在-Laravel-中-如何在-controller-或-route-中回傳-resource" class="headerlink" title="在 Laravel 中, 如何在 controller 或 route 中回傳 resource?"></a><strong>在 Laravel 中, 如何在 controller 或 route 中回傳 resource?</strong></h6><p>直接帶入 closure 回傳<br><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>\<span class="hljs-title">User</span> <span class="hljs-title">as</span> <span class="hljs-title">UserResource</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> UserResource(User::find(<span class="hljs-number">1</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h6 id="在-Laravel-中-如何在-controller-或-route-中回傳-resource"><a href="#在-Laravel-中-如何在-controller-或-route-中回傳-resource" class="headerlink" title="在 Laravel 中, 如何在 controller 或 route 中回傳 resource?"></a><strong>在 Laravel 中, 如何在 controller 或 route 中回傳 resource?</strong></h6><p>直接帶入 closure 回傳</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>\<span class="hljs-title">User</span> <span class="hljs-title">as</span> <span class="hljs-title">UserResource</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> UserResource(User::find(<span class="hljs-number">1</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
 <h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>\<span class="hljs-title">User</span> <span class="hljs-title">as</span> <span class="hljs-title">UserResource</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'/user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> UserResource::collection(User::all());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -352,6 +359,7 @@
 </li>
 </ul>
 <h6 id="在-Laravel-的-resource-當中-當我們使用-collection-method-時-是否可回傳額外的-meta-data"><a href="#在-Laravel-的-resource-當中-當我們使用-collection-method-時-是否可回傳額外的-meta-data" class="headerlink" title="在 Laravel 的 resource 當中, 當我們使用 collection method 時, 是否可回傳額外的 meta data?"></a><strong>在 Laravel 的 resource 當中, 當我們使用 collection method 時, 是否可回傳額外的 meta data?</strong></h6><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">不可</span><br></pre></td></tr></table></figure>
+
 <h6 id="在-Laravel-的-resource-當中-如果我要回傳一個-collection-或是有分頁的-response-應該使用？"><a href="#在-Laravel-的-resource-當中-如果我要回傳一個-collection-或是有分頁的-response-應該使用？" class="headerlink" title="在 Laravel 的 resource 當中, 如果我要回傳一個 collection, 或是有分頁的 response, 應該使用？"></a><strong>在 Laravel 的 resource 當中, 如果我要回傳一個 collection, 或是有分頁的 response, 應該使用？</strong></h6><p>使用 resource collection</p>
 <h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -359,10 +367,13 @@
 </li>
 <li><p><strong>Answer</strong>:<br>在 resource return 的 collection 中, 在 links array 中新增 ‘self’ =&gt; ‘link-value’, 所以 return JSON 如下</p>
 <figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="hljs-attr">"data"</span>: [],</span><br><span class="line">  <span class="hljs-attr">"links"</span>: &#123;</span><br><span class="line">    <span class="hljs-attr">"first"</span>: <span class="hljs-string">"http:\/\/example-api.test\/api\/admin\/withdraws?status=11&amp;page=1"</span>,</span><br><span class="line">    <span class="hljs-attr">"last"</span>: <span class="hljs-literal">null</span>,</span><br><span class="line">    <span class="hljs-attr">"prev"</span>: <span class="hljs-literal">null</span>,</span><br><span class="line">    <span class="hljs-attr">"next"</span>: <span class="hljs-literal">null</span>,</span><br><span class="line">    <span class="hljs-attr">"self"</span>: <span class="hljs-string">"link-value"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="hljs-attr">"meta"</span>: &#123;</span><br><span class="line">    <span class="hljs-attr">"current_page"</span>: <span class="hljs-number">1</span>,</span><br><span class="line">    <span class="hljs-attr">"from"</span>: <span class="hljs-literal">null</span>,</span><br><span class="line">    <span class="hljs-attr">"path"</span>: <span class="hljs-string">"http:\/\/example-api.test\/api\/admin\/withdraws"</span>,</span><br><span class="line">    <span class="hljs-attr">"per_page"</span>: <span class="hljs-number">20</span>,</span><br><span class="line">    <span class="hljs-attr">"to"</span>: <span class="hljs-literal">null</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="在-Laravel-的-resource-當中-如何在-route-或-controller-中利用-resource-collection-回傳"><a href="#在-Laravel-的-resource-當中-如何在-route-或-controller-中利用-resource-collection-回傳" class="headerlink" title="在 Laravel 的 resource 當中, 如何在 route 或 controller 中利用 resource collection 回傳?"></a><strong>在 Laravel 的 resource 當中, 如何在 route 或 controller 中利用 resource collection 回傳?</strong></h6><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>\<span class="hljs-title">UserCollection</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line">Route::get(<span class="hljs-string">'/users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> UserCollection(User::all());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h6 id="In-Laravel-的-Resource-當中-collection-預設會繼承-resource-嗎？-會的"><a href="#In-Laravel-的-Resource-當中-collection-預設會繼承-resource-嗎？-會的" class="headerlink" title="In Laravel 的 Resource 當中, collection 預設會繼承 resource 嗎？ 會的"></a><strong>In Laravel 的 Resource 當中, collection 預設會繼承 resource 嗎？</strong> 會的</h6><p><br></p>
+
+<h6 id="In-Laravel-的-Resource-當中-collection-預設會繼承-resource-嗎？-會的"><a href="#In-Laravel-的-Resource-當中-collection-預設會繼承-resource-嗎？-會的" class="headerlink" title="In Laravel 的 Resource 當中, collection 預設會繼承 resource 嗎？ 會的"></a><strong>In Laravel 的 Resource 當中, collection 預設會繼承 resource 嗎？</strong> 會的</h6><br>
+
 <h3 id="Customizing-The-Underlying-Resource-Class"><a href="#Customizing-The-Underlying-Resource-Class" class="headerlink" title="# Customizing The Underlying Resource Class"></a># Customizing The Underlying Resource Class</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>\<span class="hljs-title">Json</span>\<span class="hljs-title">ResourceCollection</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserCollection</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ResourceCollection</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> $collects = <span class="hljs-string">'App\Http\Resources\Member'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -370,9 +381,13 @@
 <li><p><strong>Answer</strong>:<br>指定 UserCollection resource 的來源, 預設是 User Resource</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Writing-Resources"><a href="#Writing-Resources" class="headerlink" title="# Writing Resources"></a># Writing Resources</h2><h6 id="Laravel-resource-中-如何帶入-relation"><a href="#Laravel-resource-中-如何帶入-relation" class="headerlink" title="Laravel resource 中, 如何帶入 relation?"></a><strong>Laravel resource 中, 如何帶入 relation?</strong></h6><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Transform the resource into an array.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \Illuminate\Http\Request  $request</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> array</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toArray</span><span class="hljs-params">($request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'id'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;id,</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;name,</span><br><span class="line">        <span class="hljs-string">'email'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;email,</span><br><span class="line">        <span class="hljs-string">'posts'</span> =&gt; PostResource::collection(<span class="hljs-keyword">$this</span>-&gt;posts),</span><br><span class="line">        <span class="hljs-string">'created_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;created_at,</span><br><span class="line">        <span class="hljs-string">'updated_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;updated_at,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="Data-Wrapping"><a href="#Data-Wrapping" class="headerlink" title="# Data Wrapping"></a># Data Wrapping</h3><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Resources</span>\<span class="hljs-title">Json</span>\<span class="hljs-title">Resource</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Resource::withoutWrapping();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -388,8 +403,11 @@
 </li>
 </ul>
 <h6 id="Laravel-collection-當中-如果我有做分頁-還能取消最外層包住的-data-key-嗎？-不行-因為分頁預設就會有-links-meta-等-key"><a href="#Laravel-collection-當中-如果我有做分頁-還能取消最外層包住的-data-key-嗎？-不行-因為分頁預設就會有-links-meta-等-key" class="headerlink" title="Laravel collection 當中, 如果我有做分頁, 還能取消最外層包住的 data key 嗎？ 不行, 因為分頁預設就會有 links, meta 等 key"></a><strong>Laravel collection 當中, 如果我有做分頁, 還能取消最外層包住的 data key 嗎？</strong> 不行, 因為分頁預設就會有 links, meta 等 key</h6><h6 id="Laravel-resource-當中-如果我要有條件地顯示-secret-可以用哪一個-clause"><a href="#Laravel-resource-當中-如果我要有條件地顯示-secret-可以用哪一個-clause" class="headerlink" title="Laravel resource 當中, 如果我要有條件地顯示 secret, 可以用哪一個 clause?"></a><strong>Laravel resource 當中, 如果我要有條件地顯示 secret, 可以用哪一個 clause?</strong></h6><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Transform the resource into an array.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span>  \Illuminate\Http\Request  $request</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> array</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toArray</span><span class="hljs-params">($request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'id'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;id,</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;name,</span><br><span class="line">        <span class="hljs-string">'email'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;email,</span><br><span class="line">        <span class="hljs-string">'secret'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;when(Auth::user()-&gt;isAdmin(), <span class="hljs-string">'secret-value'</span>),</span><br><span class="line">        <span class="hljs-string">'created_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;created_at,</span><br><span class="line">        <span class="hljs-string">'updated_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;updated_at,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h6 id="Laravel-的-resource-當中-如果我有兩個以上的值想要有條件的顯示-要就一起顯示-要就都不顯示-可以怎麼做？"><a href="#Laravel-的-resource-當中-如果我有兩個以上的值想要有條件的顯示-要就一起顯示-要就都不顯示-可以怎麼做？" class="headerlink" title="Laravel 的 resource 當中, 如果我有兩個以上的值想要有條件的顯示, 要就一起顯示, 要就都不顯示, 可以怎麼做？"></a><strong>Laravel 的 resource 當中, 如果我有兩個以上的值想要有條件的顯示, 要就一起顯示, 要就都不顯示, 可以怎麼做？</strong></h6><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toArray</span><span class="hljs-params">($request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'id'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;id,</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;name,</span><br><span class="line">        <span class="hljs-string">'email'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;email,</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;mergeWhen(Auth::user()-&gt;isAdmin(), [</span><br><span class="line">            <span class="hljs-string">'first-secret'</span> =&gt; <span class="hljs-string">'value'</span>,</span><br><span class="line">            <span class="hljs-string">'second-secret'</span> =&gt; <span class="hljs-string">'value'</span>,</span><br><span class="line">        ]),</span><br><span class="line">        <span class="hljs-string">'created_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;created_at,</span><br><span class="line">        <span class="hljs-string">'updated_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;updated_at,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h6 id="Laravel-的-collection-當中-如果我想要有條件的顯示-relationship-該-model-有載入-relation-的話我才顯示-不載入不顯示-該怎麼做？"><a href="#Laravel-的-collection-當中-如果我想要有條件的顯示-relationship-該-model-有載入-relation-的話我才顯示-不載入不顯示-該怎麼做？" class="headerlink" title="Laravel 的 collection 當中, 如果我想要有條件的顯示 relationship, 該 model 有載入 relation 的話我才顯示, 不載入不顯示, 該怎麼做？"></a><strong>Laravel 的 collection 當中, 如果我想要有條件的顯示 relationship, 該 model 有載入 relation 的話我才顯示, 不載入不顯示, 該怎麼做？</strong></h6><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toArray</span><span class="hljs-params">($request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'id'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;id,</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;name,</span><br><span class="line">        <span class="hljs-string">'email'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;email,</span><br><span class="line">        <span class="hljs-string">'posts'</span> =&gt; PostResource::collection(<span class="hljs-keyword">$this</span>-&gt;whenLoaded(<span class="hljs-string">'posts'</span>)),</span><br><span class="line">        <span class="hljs-string">'created_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;created_at,</span><br><span class="line">        <span class="hljs-string">'updated_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;updated_at,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h6 id="以下位於-Resources-的-Laravel-example-code-的意思是？"><a href="#以下位於-Resources-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 Resources 的 Laravel example code 的意思是？"></a><strong>以下位於 Resources 的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toArray</span><span class="hljs-params">($request)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">'id'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;id,</span><br><span class="line">        <span class="hljs-string">'name'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;name,</span><br><span class="line">        <span class="hljs-string">'expires_at'</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;whenPivotLoaded(<span class="hljs-string">'role_user'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;pivot-&gt;expires_at;</span><br><span class="line">        &#125;),</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -503,53 +521,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

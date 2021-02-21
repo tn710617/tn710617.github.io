@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Digging Deeper - Cache (官方文件原子化翻譯文件) - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -334,7 +334,10 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Configuration"><a href="#Configuration" class="headerlink" title="# Configuration"></a># Configuration</h2><h3 id="Driver-Prerequisites"><a href="#Driver-Prerequisites" class="headerlink" title="# Driver Prerequisites"></a># Driver Prerequisites</h3><h4 id="Database"><a href="#Database" class="headerlink" title="# Database"></a># Database</h4><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::create(<span class="hljs-string">'cache'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;string(<span class="hljs-string">'key'</span>)-&gt;unique();</span><br><span class="line">    $table-&gt;text(<span class="hljs-string">'value'</span>);</span><br><span class="line">    $table-&gt;integer(<span class="hljs-string">'expiration'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -349,7 +352,8 @@
 <li><p><strong>Answer</strong>:<br>當使用的 Cache driver 為 database 時, 需建立 cache table</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Memcached"><a href="#Memcached" class="headerlink" title="# Memcached"></a># Memcached</h4><h6 id="Laravel-中-當使用-Memcached-時-需要安裝套件嗎？"><a href="#Laravel-中-當使用-Memcached-時-需要安裝套件嗎？" class="headerlink" title="Laravel 中, 當使用 Memcached 時, 需要安裝套件嗎？"></a><strong>Laravel 中, 當使用 Memcached 時, 需要安裝套件嗎？</strong></h6><p>需要 PECL 的 package, 可參考 <a href="https://stackoverflow.com/questions/50601476/how-to-install-memcached-module-for-php7-1-on-macos-high-sierra" target="_blank" rel="noopener">Stackoverflow</a>, <a href="https://serverpilot.io/docs/how-to-install-the-php-memcache-extension/" target="_blank" rel="noopener">ServerPilot</a></p>
 <h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -358,12 +362,15 @@
 <li><p><strong>Answer</strong>:<br>當使用 memcached 為 cache driver 時, 可在 config/cache.php 自定義 host, post, weight<br>也可以使用 sock</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Redis"><a href="#Redis" class="headerlink" title="# Redis"></a># Redis</h4><h6 id="Laravel-中-若要使用-redis-可安裝哪兩種套件"><a href="#Laravel-中-若要使用-redis-可安裝哪兩種套件" class="headerlink" title="Laravel 中, 若要使用 redis, 可安裝哪兩種套件"></a><strong>Laravel 中, 若要使用 redis, 可安裝哪兩種套件</strong></h6><ul>
 <li>PhpRedis PHP extension via PECL</li>
 <li>predis/predis via Composer</li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Cache-Usage"><a href="#Cache-Usage" class="headerlink" title="# Cache Usage"></a># Cache Usage</h2><h3 id="Obtaining-A-Cache-Instance"><a href="#Obtaining-A-Cache-Instance" class="headerlink" title="# Obtaining A Cache Instance"></a># Obtaining A Cache Instance</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Cache</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        $value = Cache::get(<span class="hljs-string">'key'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -371,7 +378,8 @@
 <li><p><strong>Answer</strong>:<br>使用 Cache::get() 取得 cache 中該 key 的 value</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Accessing-Multiple-Cache-Stores"><a href="#Accessing-Multiple-Cache-Stores" class="headerlink" title="# Accessing Multiple Cache Stores"></a># Accessing Multiple Cache Stores</h4><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = Cache::store(<span class="hljs-string">'file'</span>)-&gt;get(<span class="hljs-string">'foo'</span>);</span><br><span class="line"></span><br><span class="line">Cache::store(<span class="hljs-string">'redis'</span>)-&gt;put(<span class="hljs-string">'bar'</span>, <span class="hljs-string">'baz'</span>, <span class="hljs-number">600</span>); <span class="hljs-comment">// 10 Minutes</span></span><br></pre></td></tr></table></figure>
@@ -379,7 +387,8 @@
 <li><p><strong>Answer</strong>:<br>Laravel 支援多種 stores, 像是 apc, redis, database, array, memcached, 等等..<br>使用 store() 可以指定接下來要使用的 store, 若無指定則使用 default store<br>存到 <code>redis</code> cache, key 為 <code>bar</code>, value 為 <code>baz</code>, 有效時間為 600 seconds</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Retrieving-Items-From-The-Cache"><a href="#Retrieving-Items-From-The-Cache" class="headerlink" title="Retrieving Items From The Cache"></a>Retrieving Items From The Cache</h3><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = Cache::get(<span class="hljs-string">'key'</span>);</span><br><span class="line"></span><br><span class="line">$value = Cache::get(<span class="hljs-string">'key'</span>, <span class="hljs-string">'default'</span>);</span><br></pre></td></tr></table></figure>
@@ -394,7 +403,8 @@
 <li><p><strong>Answer</strong>:<br>從 default cache 中取得指定 key 的 value, 若無此 key 則執行 closure, 並回傳其 return value</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Checking-For-Item-Existence"><a href="#Checking-For-Item-Existence" class="headerlink" title="# Checking For Item Existence"></a># Checking For Item Existence</h4><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Cache::has(<span class="hljs-string">'key'</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -402,7 +412,8 @@
 <li><p><strong>Answer</strong>:<br>判斷 default cache 中, 該 <code>&#39;key&#39;</code> 是否存在</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Incrementing-Decrementing-Values"><a href="#Incrementing-Decrementing-Values" class="headerlink" title="# Incrementing / Decrementing Values"></a># Incrementing / Decrementing Values</h4><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::increment(<span class="hljs-string">'key'</span>);</span><br><span class="line">Cache::increment(<span class="hljs-string">'key'</span>, $amount);</span><br><span class="line">Cache::decrement(<span class="hljs-string">'key'</span>);</span><br><span class="line">Cache::decrement(<span class="hljs-string">'key'</span>, $amount);</span><br></pre></td></tr></table></figure>
@@ -410,7 +421,8 @@
 <li><p><strong>Answer</strong>:<br>increase 或 decrease 指定 <code>&#39;key&#39;</code> 的 value, arg2 為要 increase / decrease 的量</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Retrieve-amp-Store"><a href="#Retrieve-amp-Store" class="headerlink" title="# Retrieve &amp; Store"></a># Retrieve &amp; Store</h4><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = Cache::remember(<span class="hljs-string">'users'</span>, $seconds, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> DB::table(<span class="hljs-string">'users'</span>)-&gt;get();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -425,7 +437,8 @@
 <li><p><strong>Answer</strong>:<br>嘗試從 default cache 中取得 key <code>&#39;users&#39;</code> 的 value, 若 key <code>&#39;users&#39;</code> 不存在, 則執行 closure, 取得 closure 的回傳值, 同時將其存到 cache 中, 沒有失效期限</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Retrieve-amp-Delete"><a href="#Retrieve-amp-Delete" class="headerlink" title="# Retrieve &amp; Delete"></a># Retrieve &amp; Delete</h4><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = Cache::pull(<span class="hljs-string">'key'</span>);</span><br></pre></td></tr></table></figure>
@@ -433,7 +446,8 @@
 <li><p><strong>Answer</strong>:<br>嘗試從 default cache 中取得 key <code>&#39;key&#39;</code> 的 value, 並將此 key / value 從 cache 中清除, 若 key <code>&#39;users&#39;</code> 不存在, 則回傳 null</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Storing-Items-In-The-Cache"><a href="#Storing-Items-In-The-Cache" class="headerlink" title="# Storing Items In The Cache"></a># Storing Items In The Cache</h3><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::put(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>, $seconds = <span class="hljs-number">10</span>);</span><br></pre></td></tr></table></figure>
@@ -448,7 +462,8 @@
 <li><p><strong>Answer</strong>:<br>在 default cache 中存入 <code>key / value</code>, 有效期限為從現在往後算起的十分鐘後, 若 arg3 未指定, 將會無限期儲存</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Store-If-Not-Present"><a href="#Store-If-Not-Present" class="headerlink" title="# Store If Not Present"></a># Store If Not Present</h4><h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::add(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>, $seconds);</span><br></pre></td></tr></table></figure>
@@ -456,7 +471,8 @@
 <li><p><strong>Answer</strong>:<br>如果 key 在 default cache 中不存在, 則新增 <code>key / value / 有效時間</code>, 如果真的有新增, 會回傳 true, 否則 false</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Storing-Items-Forever"><a href="#Storing-Items-Forever" class="headerlink" title="# Storing Items Forever"></a># Storing Items Forever</h4><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::forever(<span class="hljs-string">'key'</span>, <span class="hljs-string">'value'</span>);</span><br></pre></td></tr></table></figure>
@@ -464,7 +480,8 @@
 <li><p><strong>Answer</strong>:<br>在 default cache 內新增一筆 key / value, 有效時間為永久, 但如果 Memcached driver, 當達到 size limit, 可能會刪除 forever 檔案</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Removing-Items-From-The-Cache"><a href="#Removing-Items-From-The-Cache" class="headerlink" title="# Removing Items From The Cache"></a># Removing Items From The Cache</h3><h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::forget(<span class="hljs-string">'key'</span>);</span><br></pre></td></tr></table></figure>
@@ -486,7 +503,8 @@
 <li><p><strong>Answer</strong>:<br>刪除整個 default cache 的資料, 不會因為 prefix 而有所區隔, 會刪除整個 cache 內的資料</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="The-Cache-Helper"><a href="#The-Cache-Helper" class="headerlink" title="# The Cache Helper"></a># The Cache Helper</h3><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$value = cache(<span class="hljs-string">'key'</span>);</span><br></pre></td></tr></table></figure>
@@ -508,9 +526,12 @@
 <li><p><strong>Answer</strong>:<br>使用 cache function, 當沒有帶入 args 時, 會回傳一個 <code>Illuminate\Contracts\Cache\Factory</code> instance<br>試圖取出 key 為 <code>users</code> 的 value, 若不存在, 執行 closure, 並將 closure 回傳值存到 default cache 當中, 有效期限為 $seconds</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Cache-Tags"><a href="#Cache-Tags" class="headerlink" title="# Cache Tags"></a># Cache Tags</h2><h6 id="Laravel-Cache-中-Cache-Tags-不支援哪幾種-driver"><a href="#Laravel-Cache-中-Cache-Tags-不支援哪幾種-driver" class="headerlink" title="Laravel Cache 中, Cache Tags 不支援哪幾種 driver?"></a><strong>Laravel Cache 中, Cache Tags 不支援哪幾種 driver?</strong></h6><p>file, dynamodb, database</p>
-<p><br></p>
+<br>
+
 <h3 id="Storing-Tagged-Cache-Items"><a href="#Storing-Tagged-Cache-Items" class="headerlink" title="# Storing Tagged Cache Items"></a># Storing Tagged Cache Items</h3><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;put(<span class="hljs-string">'John'</span>, $john, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;put(<span class="hljs-string">'Anne'</span>, $anne, $seconds);</span><br></pre></td></tr></table></figure>
@@ -518,7 +539,8 @@
 <li><p><strong>Answer</strong>:<br>在 default cache 中存入 key <code>John</code>, value <code>$john</code>, 有效期限 <code>seconds</code>, 並 tag 這筆資料 <code>[&#39;people&#39;, &#39;artists&#39;]</code></p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Accessing-Tagged-Cache-Items"><a href="#Accessing-Tagged-Cache-Items" class="headerlink" title="# Accessing Tagged Cache Items"></a># Accessing Tagged Cache Items</h3><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$john = Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;get(<span class="hljs-string">'John'</span>);</span><br><span class="line"></span><br><span class="line">$anne = Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;get(<span class="hljs-string">'Anne'</span>);</span><br></pre></td></tr></table></figure>
@@ -526,7 +548,8 @@
 <li><p><strong>Answer</strong>:<br>從 default cache 中取得 key <code>John</code>, tags <code>[&#39;people&#39;, &#39;artists&#39;]</code>  的資料</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Removing-Tagged-Cache-Items"><a href="#Removing-Tagged-Cache-Items" class="headerlink" title="# Removing Tagged Cache Items"></a># Removing Tagged Cache Items</h3><h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'artists'</span>])-&gt;put(<span class="hljs-string">'John'</span>, $john, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;put(<span class="hljs-string">'Anne'</span>, $anne, $seconds);</span><br><span class="line"></span><br><span class="line">Cache::tags([<span class="hljs-string">'people'</span>, <span class="hljs-string">'authors'</span>])-&gt;flush();</span><br></pre></td></tr></table></figure>
@@ -541,7 +564,8 @@
 <li><p><strong>Answer</strong>:<br>移除有著 tags <code>authors</code> 的 cache items, 所以 Anne 會被移除, John 不會</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h2 id="Atomic-Locks"><a href="#Atomic-Locks" class="headerlink" title="# Atomic Locks"></a># Atomic Locks</h2><h3 id="Driver-Prerequisites-1"><a href="#Driver-Prerequisites-1" class="headerlink" title="# Driver Prerequisites"></a># Driver Prerequisites</h3><h4 id="Database-1"><a href="#Database-1" class="headerlink" title="# Database"></a># Database</h4><h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::create(<span class="hljs-string">'cache_locks'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;string(<span class="hljs-string">'key'</span>)-&gt;primary();</span><br><span class="line">    $table-&gt;string(<span class="hljs-string">'owner'</span>);</span><br><span class="line">    $table-&gt;integer(<span class="hljs-string">'expiration'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -549,7 +573,8 @@
 <li><p><strong>Answer</strong>:<br>當欲使用 Cache Lock, 且 driver 為 database 時, 需要新增 cache lock 用的 table</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Managing-Locks"><a href="#Managing-Locks" class="headerlink" title="# Managing Locks"></a># Managing Locks</h3><h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$lock = Cache::lock(<span class="hljs-string">'foo'</span>, <span class="hljs-number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> ($lock-&gt;get()) &#123;</span><br><span class="line">    <span class="hljs-comment">// Lock acquired for 10 seconds...</span></span><br><span class="line"></span><br><span class="line">    $lock-&gt;release();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -578,7 +603,8 @@
 <li><p><strong>Answer</strong>:<br>嘗試取得 default cache 中的 key <code>foo</code> 並 lock 10 秒, 如果 key 正被 lock 中, 會持續嘗試 5 秒取得 key, 若 5 秒仍沒取得, 會 throw LockTimeoutException, 若取得則會執行 closure, closure 執行完後會 release 該 key</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Managing-Locks-Across-Processes"><a href="#Managing-Locks-Across-Processes" class="headerlink" title="# Managing Locks Across Processes"></a># Managing Locks Across Processes</h3><h6 id="以下的-Laravel-example-code-的意思是？-30"><a href="#以下的-Laravel-example-code-的意思是？-30" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$podcast = Podcast::find($id);</span><br><span class="line"></span><br><span class="line">$lock = Cache::lock(<span class="hljs-string">'processing'</span>, <span class="hljs-number">120</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> ($result = $lock-&gt;get()) &#123;</span><br><span class="line">    ProcessPodcast::dispatch($podcast, $lock-&gt;owner());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// job hander 當中</span></span><br><span class="line">Cache::restoreLock(<span class="hljs-string">'processing'</span>, <span class="hljs-keyword">$this</span>-&gt;owner)-&gt;release();</span><br><span class="line">Cache::lock(<span class="hljs-string">'processing'</span>)-&gt;forceRelease();</span><br></pre></td></tr></table></figure>
@@ -591,10 +617,11 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Extensions</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Cache</span>\<span class="hljs-title">Store</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MongoStore</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Store</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">($key)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">many</span><span class="hljs-params">(array $keys)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">put</span><span class="hljs-params">($key, $value, $seconds)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">putMany</span><span class="hljs-params">(array $values, $seconds)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">increment</span><span class="hljs-params">($key, $value = <span class="hljs-number">1</span>)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">decrement</span><span class="hljs-params">($key, $value = <span class="hljs-number">1</span>)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">forever</span><span class="hljs-params">($key, $value)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">forget</span><span class="hljs-params">($key)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flush</span><span class="hljs-params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getPrefix</span><span class="hljs-params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:<br>透過 implement <code>Illuminate\Contracts\Cache\Store</code>, 可自定義一個 Cache Store, 可參考 MemcachedStore 的 <a href="https://github.com/laravel/framework" target="_blank" rel="noopener">source code</a></p>
+<h6 id="Laravel-中-當我使用一個-extended-Store-時-可將自定義的-cache-driver-class-放在哪？"><a href="#Laravel-中-當我使用一個-extended-Store-時-可將自定義的-cache-driver-class-放在哪？" class="headerlink" title="Laravel 中, 當我使用一個 extended Store 時, 可將自定義的 cache driver class 放在哪？"></a><strong>Laravel 中, 當我使用一個 extended Store 時, 可將自定義的 cache driver class 放在哪？</strong></h6><p>可放在 <code>app\Extensions</code> 資料夾中, 不過這只是官方建議, 實際上放哪都行</p>
 </li>
 </ul>
-<h6 id="Laravel-中-當我使用一個-extended-Store-時-可將自定義的-cache-driver-class-放在哪？"><a href="#Laravel-中-當我使用一個-extended-Store-時-可將自定義的-cache-driver-class-放在哪？" class="headerlink" title="Laravel 中, 當我使用一個 extended Store 時, 可將自定義的 cache driver class 放在哪？"></a><strong>Laravel 中, 當我使用一個 extended Store 時, 可將自定義的 cache driver class 放在哪？</strong></h6><p>可放在 <code>app\Extensions</code> 資料夾中, 不過這只是官方建議, 實際上放哪都行</p>
-<p><br></p>
+<br>
+
 <h3 id="Registering-The-Driver"><a href="#Registering-The-Driver" class="headerlink" title="# Registering The Driver"></a># Registering The Driver</h3><h6 id="以下的-Laravel-example-code-的意思是？-32"><a href="#以下的-Laravel-example-code-的意思是？-32" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>\<span class="hljs-title">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Extensions</span>\<span class="hljs-title">MongoStore</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Cache</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CacheServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;app-&gt;booting(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>&#123;</span><br><span class="line">             Cache::extend(<span class="hljs-string">'mongo'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($app)</span> </span>&#123;</span><br><span class="line">                 <span class="hljs-keyword">return</span> Cache::repository(<span class="hljs-keyword">new</span> MongoStore);</span><br><span class="line">             &#125;);</span><br><span class="line">         &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -686,53 +713,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

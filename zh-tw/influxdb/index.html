@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>InfluxDB 學習筆記 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -398,32 +398,62 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>InfluxDB 學習筆記，內容未整理，學到什麼記什麼<br><a id="more"></a></p>
-<p><br><br><br><br><br></p>
-<h2 id="CLI"><a href="#CLI" class="headerlink" title="CLI"></a>CLI</h2><h3 id="CLI-中使用-where-clause"><a href="#CLI-中使用-where-clause" class="headerlink" title="CLI 中使用 where clause"></a>CLI 中使用 where clause</h3><p>measurement 的 double quotes <code>&quot;</code> 是必要的，但需要 escape<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">influx -execute <span class="hljs-string">"select * from \"netdata.ipv4.packets.delivered\" WHERE host = 'netdata' AND time &gt; now() - 1m"</span> -database <span class="hljs-string">'opentsdb'</span></span><br></pre></td></tr></table></figure></p>
-<p><br></p>
-<h3 id="定時清理資料庫"><a href="#定時清理資料庫" class="headerlink" title="定時清理資料庫"></a>定時清理資料庫</h3><p>可將以下的 command 寫成 shell script, 用 crontab 執行<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">influx -execute <span class="hljs-string">"delete WHERE time &lt; now() - 1h"</span> -database <span class="hljs-string">'opentsdb'</span></span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>InfluxDB 學習筆記，內容未整理，學到什麼記什麼</p>
+<a id="more"></a>
+
+<br>
+<br>
+<br>
+
+<h2 id="CLI"><a href="#CLI" class="headerlink" title="CLI"></a>CLI</h2><h3 id="CLI-中使用-where-clause"><a href="#CLI-中使用-where-clause" class="headerlink" title="CLI 中使用 where clause"></a>CLI 中使用 where clause</h3><p>measurement 的 double quotes <code>&quot;</code> 是必要的，但需要 escape</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">influx -execute <span class="hljs-string">"select * from \"netdata.ipv4.packets.delivered\" WHERE host = 'netdata' AND time &gt; now() - 1m"</span> -database <span class="hljs-string">'opentsdb'</span></span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="定時清理資料庫"><a href="#定時清理資料庫" class="headerlink" title="定時清理資料庫"></a>定時清理資料庫</h3><p>可將以下的 command 寫成 shell script, 用 crontab 執行</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">influx -execute <span class="hljs-string">"delete WHERE time &lt; now() - 1h"</span> -database <span class="hljs-string">'opentsdb'</span></span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="串接-Node-js"><a href="#串接-Node-js" class="headerlink" title="串接 Node.js"></a>串接 Node.js</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">npm install --save influx</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="串接檔範例"><a href="#串接檔範例" class="headerlink" title="串接檔範例"></a>串接檔範例</h3><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function">(<span class="hljs-params">(</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="hljs-keyword">const</span> Influx = <span class="hljs-built_in">require</span>(<span class="hljs-string">'influx/lib/src/index'</span>);</span><br><span class="line">    <span class="hljs-keyword">const</span> Netdata = <span class="hljs-keyword">new</span> Influx.InfluxDB(&#123;</span><br><span class="line">        database: <span class="hljs-string">'opentsdb'</span>,</span><br><span class="line">        username: <span class="hljs-string">''</span>,</span><br><span class="line">        password: <span class="hljs-string">''</span>,</span><br><span class="line">        <span class="hljs-comment">// 預設 port 號會自動設定為 8086</span></span><br><span class="line">        hosts: [&#123; <span class="hljs-attr">host</span>: <span class="hljs-string">'IP'</span> &#125;],</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 在設定檔中新增 method</span></span><br><span class="line">    Netdata.getData = <span class="hljs-keyword">async</span> (measurement, host, time = <span class="hljs-string">'1m'</span>) =&gt; &#123;</span><br><span class="line">        <span class="hljs-keyword">let</span> toBeReturnedObject = [];</span><br><span class="line">        <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> Netdata.query(</span><br><span class="line">            <span class="hljs-string">`select * from "<span class="hljs-subst">$&#123;measurement&#125;</span>" WHERE host = '<span class="hljs-subst">$&#123;host&#125;</span>' AND time &gt; now() - <span class="hljs-subst">$&#123;time&#125;</span>`</span></span><br><span class="line">        );</span><br><span class="line">        result.map(<span class="hljs-function"><span class="hljs-params">dot</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="hljs-keyword">let</span> object = &#123;</span><br><span class="line">                host: dot.host,</span><br><span class="line">                value: dot.value,</span><br><span class="line">                time: <span class="hljs-built_in">Number</span>(dot.time.getNanoTime())</span><br><span class="line">            &#125;;</span><br><span class="line">            toBeReturnedObject.push(object);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> toBeReturnedObject;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> Netdata;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="require-串接檔"><a href="#require-串接檔" class="headerlink" title="require 串接檔"></a>require 串接檔</h3><ul>
 <li>後面需加上 <code>()</code>;<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">const</span> Netdata = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../models/netdatadb'</span>)();</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="SHOW"><a href="#SHOW" class="headerlink" title="SHOW"></a>SHOW</h2><h3 id="SHOW-TAG-VALUES"><a href="#SHOW-TAG-VALUES" class="headerlink" title="SHOW TAG VALUES"></a>SHOW TAG VALUES</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW TAG VALUES FROM &quot;measurement&quot; WITH KEY = &quot;host&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="SHOW-TAG-KEYS"><a href="#SHOW-TAG-KEYS" class="headerlink" title="SHOW TAG KEYS"></a>SHOW TAG KEYS</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW TAG KEYS on DBName from &quot;measurement&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="SHOW-FIELD-KEYS"><a href="#SHOW-FIELD-KEYS" class="headerlink" title="SHOW FIELD KEYS"></a>SHOW FIELD KEYS</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW FIELD KEYS ON &quot;database&quot; FROM &quot;measurement&quot;</span><br></pre></td></tr></table></figure>
-<p><br><br><br><br><br></p>
+
+<br>
+<br>
+<br>
+
 <h2 id="Downsampling-and-data-retention"><a href="#Downsampling-and-data-retention" class="headerlink" title="Downsampling and data retention"></a>Downsampling and data retention</h2><h3 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h3><ul>
 <li>Continuous query (QC): 自動且規律性的執行, 可以用來降低採樣率。 <a href="https://docs.influxdata.com/influxdb/v1.7/query_language/continuous_queries/" target="_blank" rel="noopener">文件</a></li>
 <li>Retention policies (RP): InfluxDB 資料結構的一部分, 決定 InfluxDB 要保留資料多長的時間 <a href="https://docs.influxdata.com/influxdb/v1.7/query_language/database_management/#retention-policy-management" target="_blank" rel="noopener">文件</a></li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="建立-retention-policies"><a href="#建立-retention-policies" class="headerlink" title="建立 retention policies"></a>建立 retention policies</h3><ul>
 <li><p>語法範例</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE RETENTION POLICY &quot;two_hours&quot; ON &quot;food_data&quot; DURATION 2h REPLICATION 1 DEFAULT</span><br></pre></td></tr></table></figure>
@@ -433,64 +463,33 @@
 <li><p>當我們建立一個新的資料庫時, InfluxDB 會自動地產生一個 RP 叫做 autogen。 當我們建立另外一個 RP 並且設為 default 之後, autogen 將會被取代掉</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="建立-continuous-query"><a href="#建立-continuous-query" class="headerlink" title="建立 continuous query"></a>建立 continuous query</h3><ul>
 <li><p>語法範例</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE CONTINUOUS QUERY &quot;cq_30m&quot; ON &quot;food_data&quot; BEGIN</span><br><span class="line">  SELECT mean(&quot;website&quot;) AS &quot;mean_website&quot;,mean(&quot;phone&quot;) AS &quot;mean_phone&quot;</span><br><span class="line">  INTO &quot;a_year&quot;.&quot;downsampled_orders&quot;</span><br><span class="line">  FROM &quot;orders&quot;</span><br><span class="line">  GROUP BY time(30m)</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在資料庫 <code>food_data</code> 中建立一個 QC 名為 <code>cq_30m</code></p>
 </li>
-<li>將 <code>website</code> 以及 <code>phone</code> 欄位的資料從 measurement <code>orders</code></li>
-<li>將上一行的資料匯入 retention policy <code>a_year</code> 中的 measurement <code>downsampled_orders</code></li>
-<li>計算區隔為每 30 分鐘</li>
+<li><p>將 <code>website</code> 以及 <code>phone</code> 欄位的資料從 measurement <code>orders</code></p>
+</li>
+<li><p>將上一行的資料匯入 retention policy <code>a_year</code> 中的 measurement <code>downsampled_orders</code></p>
+</li>
+<li><p>計算區隔為每 30 分鐘</p>
+</li>
 </ul>
-<p><br><br><br><br><br></p>
-<h2 id="Retention-Policy"><a href="#Retention-Policy" class="headerlink" title="Retention Policy"></a>Retention Policy</h2><h3 id="Duration"><a href="#Duration" class="headerlink" title="Duration"></a>Duration</h3><table>
-<thead>
-<tr>
-<th>單位</th>
-<th>解釋</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ns</td>
-<td>nanoseconds (1 billionth of a second)</td>
-</tr>
-<tr>
-<td>u or µ</td>
-<td>microseconds (1 millionth of a second)</td>
-</tr>
-<tr>
-<td>ms</td>
-<td>milliseconds (1 thousandth of a second)</td>
-</tr>
-<tr>
-<td>s</td>
-<td>second</td>
-</tr>
-<tr>
-<td>m</td>
-<td>minute</td>
-</tr>
-<tr>
-<td>h</td>
-<td>hour</td>
-</tr>
-<tr>
-<td>d</td>
-<td>day</td>
-</tr>
-<tr>
-<td>w</td>
-<td>week</td>
-</tr>
-</tbody>
-</table>
-<p><br></p>
+<br>
+<br>
+<br>
+
+<h2 id="Retention-Policy"><a href="#Retention-Policy" class="headerlink" title="Retention Policy"></a>Retention Policy</h2><h3 id="Duration"><a href="#Duration" class="headerlink" title="Duration"></a>Duration</h3><p>單位 | 解釋<br>— |<br>ns | nanoseconds (1 billionth of a second)<br>u or µ | microseconds (1 millionth of a second)<br>ms | milliseconds (1 thousandth of a second)<br>s | second<br>m | minute<br>h | hour<br>d | day<br>w | week</p>
+<br>
+
 <h2 id="開啟身份驗證"><a href="#開啟身份驗證" class="headerlink" title="開啟身份驗證"></a>開啟身份驗證</h2><ul>
-<li>開啟身份驗證之前, 請先建立至少一個 admin user</li>
-<li>如果開啟了身份驗證, 但是沒有任何 admin user 的話, InfluxDB 將不會強制執行身份驗證, 並只會接受<strong>建立新的 admin user</strong>的 query</li>
+<li><p>開啟身份驗證之前, 請先建立至少一個 admin user</p>
+</li>
+<li><p>如果開啟了身份驗證, 但是沒有任何 admin user 的話, InfluxDB 將不會強制執行身份驗證, 並只會接受<strong>建立新的 admin user</strong>的 query</p>
+</li>
 <li><p>打開設定檔</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/influxdb/influxdb.conf</span><br></pre></td></tr></table></figure>
 </li>
@@ -499,41 +498,74 @@
 </li>
 <li><p>重新啟動 InfluxDB</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemctl restart influxdb</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h2 id="使用者權限管理"><a href="#使用者權限管理" class="headerlink" title="使用者權限管理"></a>使用者權限管理</h2><h3 id="建立-admin-使用者"><a href="#建立-admin-使用者" class="headerlink" title="建立 admin 使用者"></a>建立 admin 使用者</h3><h4 id="語法"><a href="#語法" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER &lt;username&gt; WITH PASSWORD &apos;&lt;password&gt;&apos; WITH ALL PRIVILEGES</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER paul WITH PASSWORD &apos;timeseries4days&apos; WITH ALL PRIVILEGES</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="給予現存使用者-admin-權限"><a href="#給予現存使用者-admin-權限" class="headerlink" title="給予現存使用者 admin 權限"></a>給予現存使用者 admin 權限</h3><h4 id="語法-1"><a href="#語法-1" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GRANT ALL PRIVILEGES TO &lt;username&gt;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-1"><a href="#範例-1" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GRANT ALL PRIVILEGES TO &quot;todd&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="顯示目前所有使用者是否為-admin"><a href="#顯示目前所有使用者是否為-admin" class="headerlink" title="顯示目前所有使用者是否為 admin"></a>顯示目前所有使用者是否為 admin</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW USERS</span><br></pre></td></tr></table></figure>
+
 <h3 id="建立一般使用者"><a href="#建立一般使用者" class="headerlink" title="建立一般使用者"></a>建立一般使用者</h3><h4 id="語法-2"><a href="#語法-2" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER &lt;username&gt; WITH PASSWORD &apos;&lt;password&gt;&apos;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-2"><a href="#範例-2" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE USER todd WITH PASSWORD &apos;influxdb41yf3&apos;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="給予一般使用者非-admin-權限"><a href="#給予一般使用者非-admin-權限" class="headerlink" title="給予一般使用者非 admin 權限"></a>給予一般使用者非 admin 權限</h3><h4 id="語法-3"><a href="#語法-3" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GRANT [READ,WRITE,ALL] ON &lt;database_name&gt; TO &lt;username&gt;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-3"><a href="#範例-3" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">GRANT READ ON &quot;NOAA_water_database&quot; TO &quot;todd&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="廢除一般使用者非-admin-權限"><a href="#廢除一般使用者非-admin-權限" class="headerlink" title="廢除一般使用者非 admin 權限"></a>廢除一般使用者非 admin 權限</h3><h4 id="語法-4"><a href="#語法-4" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">REVOKE [READ,WRITE,ALL] ON &lt;database_name&gt; FROM &lt;username&gt;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-4"><a href="#範例-4" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">REVOKE ALL ON &quot;NOAA_water_database&quot; FROM &quot;todd&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="列出使用者權限"><a href="#列出使用者權限" class="headerlink" title="列出使用者權限"></a>列出使用者權限</h3><h4 id="語法-5"><a href="#語法-5" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW GRANTS FOR &lt;user_name&gt;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-5"><a href="#範例-5" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SHOW GRANTS FOR &quot;todd&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="重新設定使用者密碼"><a href="#重新設定使用者密碼" class="headerlink" title="重新設定使用者密碼"></a>重新設定使用者密碼</h3><h4 id="語法-6"><a href="#語法-6" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SET PASSWORD FOR &lt;username&gt; = &apos;&lt;password&gt;&apos;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-6"><a href="#範例-6" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SET PASSWORD FOR &lt;username&gt; = &apos;&lt;password&gt;&apos;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h3 id="刪除使用者"><a href="#刪除使用者" class="headerlink" title="刪除使用者"></a>刪除使用者</h3><h4 id="語法-7"><a href="#語法-7" class="headerlink" title="語法"></a>語法</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">DROP USER &lt;username&gt;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
+
 <h4 id="範例-7"><a href="#範例-7" class="headerlink" title="範例"></a>範例</h4><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">DROP USER &quot;todd&quot;</span><br></pre></td></tr></table></figure>
-<p><br></p>
+
+<br>
 
     
     </div>
@@ -607,53 +639,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

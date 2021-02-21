@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>PHP-FPM reload 真的有優雅嗎？ - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -252,14 +252,19 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>其實這篇文章跟 <code>OPcache</code> 沒什麼太大的關係, 但卻是做這個實驗的根本原因！</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="OPcache"><a href="#OPcache" class="headerlink" title="# OPcache"></a># OPcache</h2><p><code>OPcache</code> 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。<br><strong>然而 clear cache 有以下幾種方法:</strong></p>
 <ul>
 <li>特別製作一支 API, 在裡面執行 <code>opcache_reset()</code></li>
 <li>使用套件, 這樣可以透過 CLI 清除 cache, 不過套件具體原理也是跟第一個一樣, 只不過有實作了 CLI 出來</li>
 <li>reload <code>PHP-FPM</code></li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="PHP-FPM"><a href="#PHP-FPM" class="headerlink" title="# PHP-FPM"></a># PHP-FPM</h2><p><code>PHP-FPM</code> 為 FastCGI Process Manager, 簡單來說, 這個 Manager 也是一個 Process, 而它會 fork 複數的 child FastCGI process  當收到 request 時, 便分派任務給底下的 child process 處理。<br>故事的起源, 都來自於 <a href="https://stackoverflow.com/questions/16890855/can-we-reload-one-of-the-php-fpm-pool-without-disturbing-others" target="_blank" rel="noopener">這篇 Stack Overflow</a></p>
 <p>文中提到, 如果使用 reload 參數, 便可以 gracefully restart PHP-FPM。 那這又跟今天的故事有什麼關係呢？<br>上面提到三個方法, 毫無疑問 reload <code>PHP-FPM</code> 是最簡單的, 但同時它也有著一個致命的缺點, 那就是當 reload 時, 所有 processed 中的 request 無可避免的都會中斷。 但根據這篇文章描述, 如果可以不中斷的 restart <code>PHP-FPM</code> 的話似乎是個 zero downtime 的最佳解啊！</p>
 <p>高能大大先別噴, 我知道還有 rolling update 這東西, 不過這不在今天的討論範圍內, 乾蝦！</p>
@@ -269,8 +274,12 @@
 <li><a href="https://serverfault.com/questions/917137/what-does-graceful-reload-actually-mean-with-php-fpm/917142" target="_blank" rel="noopener">還有這裡</a></li>
 </ul>
 <p>於是就開始了今天的實驗…</p>
-<p><br><br><br></p>
-<h2 id="Docker-環境測試"><a href="#Docker-環境測試" class="headerlink" title="# Docker 環境測試"></a># Docker 環境測試</h2><p>首先我使用了 Docker container 做測試, 我當然不是個空口說白話的人, 附上測試 docker-compose.yaml 檔<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">version:</span> <span class="hljs-string">"3"</span></span><br><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line"><span class="hljs-attr">  nginx:</span></span><br><span class="line"><span class="hljs-attr">    restart:</span> <span class="hljs-string">unless-stopped</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-attr">nginx:latest</span></span><br><span class="line"><span class="hljs-attr">    container_name:</span> <span class="hljs-string">nginx</span></span><br><span class="line"><span class="hljs-attr">    networks:</span></span><br><span class="line"><span class="hljs-bullet">      -</span> <span class="hljs-string">app-network</span></span><br><span class="line"><span class="hljs-attr">    ports:</span></span><br><span class="line"><span class="hljs-bullet">      -</span> <span class="hljs-number">8888</span><span class="hljs-string">:80</span></span><br><span class="line"><span class="hljs-bullet">      -</span> <span class="hljs-number">9999</span><span class="hljs-string">:443</span></span><br><span class="line"><span class="hljs-attr">  php74:</span></span><br><span class="line"><span class="hljs-attr">    image:</span> <span class="hljs-attr">php:7.4.3-fpm</span></span><br><span class="line"><span class="hljs-attr">    container_name:</span> <span class="hljs-string">php74</span></span><br><span class="line"><span class="hljs-attr">    restart:</span> <span class="hljs-string">unless-stopped</span></span><br><span class="line"><span class="hljs-attr">    networks:</span></span><br><span class="line"><span class="hljs-bullet">      -</span> <span class="hljs-string">app-network</span></span><br><span class="line"><span class="hljs-attr">networks:</span></span><br><span class="line"><span class="hljs-attr">  app-network:</span></span><br><span class="line"><span class="hljs-attr">    driver:</span> <span class="hljs-string">bridge</span></span><br></pre></td></tr></table></figure></p>
+<br>
+<br>
+
+<h2 id="Docker-環境測試"><a href="#Docker-環境測試" class="headerlink" title="# Docker 環境測試"></a># Docker 環境測試</h2><p>首先我使用了 Docker container 做測試, 我當然不是個空口說白話的人, 附上測試 docker-compose.yaml 檔</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">version:</span> <span class="hljs-string">"3"</span></span><br><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line">  <span class="hljs-attr">nginx:</span></span><br><span class="line">    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">nginx</span></span><br><span class="line">    <span class="hljs-attr">networks:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-string">app-network</span></span><br><span class="line">    <span class="hljs-attr">ports:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-number">8888</span><span class="hljs-string">:80</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-number">9999</span><span class="hljs-string">:443</span></span><br><span class="line">  <span class="hljs-attr">php74:</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">php:7.4.3-fpm</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">php74</span></span><br><span class="line">    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span></span><br><span class="line">    <span class="hljs-attr">networks:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-string">app-network</span></span><br><span class="line"><span class="hljs-attr">networks:</span></span><br><span class="line">  <span class="hljs-attr">app-network:</span></span><br><span class="line">    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span></span><br></pre></td></tr></table></figure>
+
 <p>由於測試過程比較簡單, 我就沒 mount volume 出來了</p>
 <ul>
 <li><p>首先先進到 php-fpm container </p>
@@ -278,17 +287,21 @@
 </li>
 <li><p>緊接著修改 php-fpm 的 config</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /usr/<span class="hljs-built_in">local</span>/etc/php-fpm.conf.default</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>哦哦, 對了如果你跟著照做發現 vim command not found 的話, 記得自己安裝啊哈哈</p>
 <ul>
 <li>然後 reload <code>PHP-FPM</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">kill</span> -usr2 1</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>因為 <code>kill -usr2</code> 是源碼中, 當使用 reload 時所使用的 command, 可以參考 <a href="https://github.com/php/php-src/blob/49a4e695845bf55e059e7f88e54b1111fe284223/sapi/fpm/init.d.php-fpm.in#L133" target="_blank" rel="noopener">源碼</a><br>當然, 也因為在 container 中無法直接使用 <strong>systemctl reload serviceName</strong></p>
 <ul>
-<li>接著將 <code>process_control_timeout</code> 改成 30s, 會修改這行是因為預設是 0s, 我修改是為了確認到底有沒有作用</li>
-<li>然後進到 nginx 的 container, 同上, 換個 container ID 而已, 我就不多加贅述</li>
+<li><p>接著將 <code>process_control_timeout</code> 改成 30s, 會修改這行是因為預設是 0s, 我修改是為了確認到底有沒有作用</p>
+</li>
+<li><p>然後進到 nginx 的 container, 同上, 換個 container ID 而已, 我就不多加贅述</p>
+</li>
 <li><p>然後改一下 default 的 config, 這不是個好的做法, 我一般習慣在 <code>sites-available</code> 寫好 config, 然後在 soft link 到 <code>site-enabled</code>, 不過只是為了測試就將就啦~</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/nginx/conf.d/default.conf</span><br></pre></td></tr></table></figure>
 </li>
@@ -303,18 +316,24 @@
 </li>
 <li><p>測試的時候到了！ 靠, 我都已經測過了, 還興奮個屁啊!</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl localhost:8888</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>恩恩, 有進入 sleep 的階段</p>
 <ul>
 <li>接著 reload <code>PHP-FPM</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker <span class="hljs-built_in">exec</span> -it containerId <span class="hljs-built_in">kill</span> -USR2 1</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>結果你會發現, connection 斷開了！斷開了！斷開了！ 因為很震驚, 所以打了三次!</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="GCP-VM-測試"><a href="#GCP-VM-測試" class="headerlink" title="# GCP VM 測試"></a># GCP VM 測試</h2><p>不信邪的我, 立馬在 GCP 上面開了一台小 VM 做測試, 方式跟 Docker 大同小異我就不多加贅述了, 結果是<br>還是斷開了!<br>還是斷開了!<br>還是斷開了!</p>
 <p>因為很失望所以要說三次…</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="暴風雨後的曙光？"><a href="#暴風雨後的曙光？" class="headerlink" title="# 暴風雨後的曙光？"></a># 暴風雨後的曙光？</h2><p>原本傷心欲絕, 悲憤交加的我, 在前往自我了斷的路上… 想說發個文在 FB 警醒一下世人好了, 以防有跟我一樣想不開的人… 唉, 沒有希望就不會失望啊!</p>
 <p>誰知有個大大給個提醒, <strong>會不會是 PHP 的 <code>sleep()</code> function 的問題？ 或許可以試試 <code>select sleep(30)</code> ?</strong></p>
 <p>此話當如久旱後的甘霖, 讓我放下了手中的菜刀… 想說不然試一試好了, 反正要了斷也不差這些時間, 然後冒險繼續 ing</p>
@@ -329,17 +348,23 @@
 <ul>
 <li>我一邊擦著我喜極而泣的淚水, 嗯…, 還有鼻水, 一邊接著測試, 因為我想要知道 <code>reload 到底有多優雅？</code></li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="窺探-reload-的優雅程度"><a href="#窺探-reload-的優雅程度" class="headerlink" title="# 窺探 reload 的優雅程度"></a># 窺探 reload 的優雅程度</h2><ul>
 <li><p>首先, 在發 request 之前, 我先觀察 process 狀態</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps -ax | grep php-fpm</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>然後在 request 處理完畢後, 我再觀察一次</p>
 </li>
-<li>反覆觀察幾次之後, 終於探得 reload 的優雅程度</li>
-<li>蛤？ 你還在這啊？ 那直接看結論吧！</li>
+<li><p>反覆觀察幾次之後, 終於探得 reload 的優雅程度</p>
+</li>
+<li><p>蛤？ 你還在這啊？ 那直接看結論吧！</p>
+</li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="結論"><a href="#結論" class="headerlink" title="# 結論"></a># 結論</h2><ul>
 <li>文中提到的 timeout 如果比 request 的時間還短, 那 timeout 時間到了, FPM 會強制的殺掉所有 process, 立馬跳 502 給你看</li>
 <li>在下達 reload 之後, PHP-FPM 會逐步的殺掉 process, 如果還沒完成的, PHP-FPM 會等待他們完成, 當然, 最多等待 timeout 的時間</li>
@@ -425,53 +450,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

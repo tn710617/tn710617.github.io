@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>IAM 自訂角色 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -356,17 +356,24 @@
 <p><strong>預定義角色</strong> 由 Google 建立並管理。 他們的權限視必要會自動更新, 例如 GCP 新加入了功能或服務。</p>
 <p><strong>自定義角色</strong> 為使用者自定義, 讓我們可以視需求綁定一個或多個有支援的權限。 自定義角色不被 Google 維護, 當有新權限, 新功能, 或新服務新增到 GCP, 你的自定義角色將不會自動被更新。 自定義角色由一個或多個可用的 Cloud IAM 權限所組成。 權限讓使用者可以對 Google Cloud Platform 資源做特定的操作</p>
 <a id="more"></a>
-<p><br></p>
+
+<br>
+
 <h3 id="你將在本教程中做什麼？"><a href="#你將在本教程中做什麼？" class="headerlink" title="你將在本教程中做什麼？"></a>你將在本教程中做什麼？</h3><ul>
 <li>建立, 更新, 刪除, 取消刪除自定義角色</li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="預先具備條件"><a href="#預先具備條件" class="headerlink" title="預先具備條件"></a>預先具備條件</h3><ul>
 <li>對 IAM 角色熟悉</li>
 </ul>
-<p><br></p>
+<br>
+
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
 <p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
 <p>Qwiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
@@ -382,7 +389,7 @@
 <ul>
 <li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
 <ul>
 <li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
 </ul>
@@ -390,7 +397,7 @@
 <ul>
 <li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
 <ul>
 <li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
 </ul>
@@ -405,69 +412,113 @@
 </ul>
 <p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
 <p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
-<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
-<p><br></p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+<br>
+
 <h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
 <ul>
 <li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
 <ul>
 <li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
 <p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
 <p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
-<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
 <p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
 <p>使用這個 command ,你可以列出有效帳戶名稱:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
 <p>輸出:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
 <p>範例輸出:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
 <p>你可以使用以下 command 來列出專案 ID</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+
 <p>輸出：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
 <p>範例輸出：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
 <p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="理解-IAM-自定義角色"><a href="#理解-IAM-自定義角色" class="headerlink" title="理解 IAM 自定義角色"></a>理解 IAM 自定義角色</h2><p>Cloud IAM 也提供了自定義角色的能力。 你可以建立一個自訂義的 Cloud IAM 角色, 並加入一個或多個權限, 然後將這個角色賦予給使用者。 Cloud IAM 提供圖形化以及 API 的方式來建立以及管理自定義角色</p>
 <p><strong>Key Point:</strong> 自定義角色讓你可以實施最低特權的原則, 確保在你的組織中, 使用者以及服務帳號都僅有剛好足夠完成他們工作的權限。</p>
-<aside style="background-color: rgba(26,115,232,0.08);"><br><strong>Note:</strong>  你可以建立組織等級以及專案等級的自定義角色, 但你無法建立資料夾等級的自定義角色。<br><br></aside>
+<aside style="background-color: rgba(26,115,232,0.08);">
+**Note:**  你可以建立組織等級以及專案等級的自定義角色, 但你無法建立資料夾等級的自定義角色。
+
+</aside>
 
 <p>藉由整合一個或多個 Cloud IAM 權限, 建立一個自定義角色。 權限可以讓使用者在 Cloud Platform 資源做特定的操作。</p>
 <p>在 Cloud IAM 的世界, 權限被表現為以下格式：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;service&gt;.&lt;resource&gt;.&lt;verb&gt;</span><br></pre></td></tr></table></figure>
+
 <p>例如, <code>compute.instances.list</code> 權限讓使用者可以列出他們擁有的 Google Compute Engine instance, 而 <code>compute.instances.stop</code> 讓使用者停止一台 VM</p>
 <p>通常, 但不是絕對, 權限跟 REST 方法的比例為 1:1 。 這代表說, 每一個 GCP 服務中, 每一個 REST 方法都會有一個相關的權限。 要呼叫一個方法, 你需要相對應的權限。 比如說, <code>topic.publish()</code> 的呼叫者會需要 <code>pubsub.topics.publish</code> 的權限。</p>
 <p>唯有該資源是隸屬在該專案或組織的情況之下, 你才可以在該專案或組織內賦予跟此資源有關的權限。 如果你想要自定義角色擁有不屬於這個專案或組織的資源的權限, 那是不行的。</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="必要的權限以及角色"><a href="#必要的權限以及角色" class="headerlink" title="必要的權限以及角色"></a>必要的權限以及角色</h2><p>要建立一個自定義角色, 呼叫者必須擁有 <code>iam.roles.create</code> 權限</p>
 <p>非擁有者的使用者包含 organization administrators (組織管理者), 必須要被賦予 Organization Role Administrator (組織角色管理者) (roles/iam.organizationRoleAdmin) 或是 IAM Role Administrator (IAM 角色管理者) (roles/iam.roleAdmin) 。 IAM Security Reviewer (IAM 安全審查者) (roles/iam.securityReviewer) 可以檢視自定義角色, 但無法管理他們</p>
 <p>自定義角色使用者的介面位於 Google Cloud Platform 主控台的 IAM Roles 之下。 只有有權限的使用者可以建立或管理自定義角色。 若照預設, 只有專案擁有者可以建立新角色。 專案擁有者可以藉由給予其他使用者 IAM Role Administrator 角色來做權限操作; 若是組織的話, 只有組織管理者可以賦予 Organization Role, Administrator 角色</p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="準備建立自定義角色"><a href="#準備建立自定義角色" class="headerlink" title="準備建立自定義角色"></a>準備建立自定義角色</h2><p>在自定義角色之前, 你可能會想知道</p>
 <ul>
 <li>什麼樣的權限可以應用在資源上</li>
 <li>什麼樣的角色可以被賦予在資源上</li>
 <li>什麼是角色的 metadata?</li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="檢視可獲得的資源權限"><a href="#檢視可獲得的資源權限" class="headerlink" title="檢視可獲得的資源權限"></a>檢視可獲得的資源權限</h2><p>在你建立一個自訂義角色之前, 你可能會想要知道什麼權限可以被應用到資源上。  你可以使用 gcloud command-line 工具, 主控台, 或是 IAM API 來取得所有適用在資源上的權限, 以及階層排列的資源。 例如, 你可以取得所有你可應用在一個組織中的權限, 以及那個組織中的專案的權限。</p>
-<p>執行以下的執行來取得專案中可獲得的權限列表：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam list-testable-permissions //cloudresourcemanager.googleapis.com/projects/<span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure></p>
-<p>輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">name: appengine.applications.create</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.applications.get</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.applications.update</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.instances.delete</span><br><span class="line"> stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.instances.get</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.instances.list</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">customRolesSupportLevel: TESTING</span><br><span class="line">name: appengine.memcache.addKey</span><br><span class="line">stage: BETA</span><br><span class="line">---</span><br><span class="line">customRolesSupportLevel: TESTING</span><br><span class="line">name: appengine.memcache.flush</span><br><span class="line">stage: BETA</span><br><span class="line">---</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>執行以下的執行來取得專案中可獲得的權限列表：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam list-testable-permissions //cloudresourcemanager.googleapis.com/projects/<span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure>
+
+<p>輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">name: appengine.applications.create</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.applications.get</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.applications.update</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.instances.delete</span><br><span class="line"> stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.instances.get</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">name: appengine.instances.list</span><br><span class="line">stage: GA</span><br><span class="line">---</span><br><span class="line">customRolesSupportLevel: TESTING</span><br><span class="line">name: appengine.memcache.addKey</span><br><span class="line">stage: BETA</span><br><span class="line">---</span><br><span class="line">customRolesSupportLevel: TESTING</span><br><span class="line">name: appengine.memcache.flush</span><br><span class="line">stage: BETA</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="取得角色-metadata"><a href="#取得角色-metadata" class="headerlink" title="取得角色 metadata"></a>取得角色 metadata</h2><p>在你建立自訂義角色之前, 你可能會想要獲得事先定義以及自定義角色的 metadata。 角色 metadata 包含角色 ID 以及該角色擁有的權限。 你可以使用 Google Cloud Platform 主控台或者是 IAM API 來檢視 metadata</p>
-<p>執行以下指令來檢視角色 metadata, 將 <code>[ROLE_NAME]</code> 替換成欲檢視的角色, 例如： <code>roles/viewer</code> 或 <code>roles/editor</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles describe [ROLE_NAME]</span><br></pre></td></tr></table></figure></p>
-<p>範例輸出(roles/viewer):<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Read access to all custom roles in the project.</span><br><span class="line">etag: AA==</span><br><span class="line">includedPermissions:</span><br><span class="line">- iam.roles.get</span><br><span class="line">- iam.roles.list</span><br><span class="line">- resourcemanager.projects.get</span><br><span class="line">- resourcemanager.projects.getIamPolicy</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">name: roles/iam.roleViewer</span><br><span class="line">stage: GA</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>執行以下指令來檢視角色 metadata, 將 <code>[ROLE_NAME]</code> 替換成欲檢視的角色, 例如： <code>roles/viewer</code> 或 <code>roles/editor</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles describe [ROLE_NAME]</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出(roles/viewer):</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Read access to all custom roles in the project.</span><br><span class="line">etag: AA==</span><br><span class="line">includedPermissions:</span><br><span class="line">- iam.roles.get</span><br><span class="line">- iam.roles.list</span><br><span class="line">- resourcemanager.projects.get</span><br><span class="line">- resourcemanager.projects.getIamPolicy</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">name: roles/iam.roleViewer</span><br><span class="line">stage: GA</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="檢視資源上可賦予的角色"><a href="#檢視資源上可賦予的角色" class="headerlink" title="檢視資源上可賦予的角色"></a>檢視資源上可賦予的角色</h2><p>使用 <code>gcloud iam list-grantable-roles</code> 指令來獲得可賦予到指定資源上的角色列表</p>
-<p>執行以下的 <code>gcloud</code> 指令來列出你的專案中可賦予的角色:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam list-grantable-roles //cloudresourcemanager.googleapis.com/projects/<span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure></p>
-<p>輸出應如下：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">---</span><br><span class="line">description: Full management of App Engine apps (but not storage).</span><br><span class="line">name: roles/appengine.appAdmin</span><br><span class="line">title: App Engine Admin</span><br><span class="line">---</span><br><span class="line">description: Ability to view App Engine app status.</span><br><span class="line">name: roles/appengine.appViewer</span><br><span class="line">title: App Engine Viewer</span><br><span class="line">---</span><br><span class="line">description: Ability to view App Engine app status and deployed source code.</span><br><span class="line">name: roles/appengine.codeViewer</span><br><span class="line">title: App Engine Code Viewer</span><br><span class="line">---</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>執行以下的 <code>gcloud</code> 指令來列出你的專案中可賦予的角色:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam list-grantable-roles //cloudresourcemanager.googleapis.com/projects/<span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure>
+
+<p>輸出應如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">---</span><br><span class="line">description: Full management of App Engine apps (but not storage).</span><br><span class="line">name: roles/appengine.appAdmin</span><br><span class="line">title: App Engine Admin</span><br><span class="line">---</span><br><span class="line">description: Ability to view App Engine app status.</span><br><span class="line">name: roles/appengine.appViewer</span><br><span class="line">title: App Engine Viewer</span><br><span class="line">---</span><br><span class="line">description: Ability to view App Engine app status and deployed source code.</span><br><span class="line">name: roles/appengine.codeViewer</span><br><span class="line">title: App Engine Code Viewer</span><br><span class="line">---</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="建立自定義角色"><a href="#建立自定義角色" class="headerlink" title="建立自定義角色"></a>建立自定義角色</h2><p>要建立自定義角色, 呼叫者必須擁有 <code>iam.roles.create</code> 權限。 預設來說, 專案或組織的擁有者擁有可以建立以及管理自定義角色的權限</p>
 <p>非擁有者的使用者, 包含組織管理員, 必須被賦予 Organization Role Administrator 角色, 或是 IAM Role Administrator 角色</p>
 <p>使用 <code>gcloud iam roles create</code> 指令來建立新的自訂義角色。 你有兩種方式來使用這個指令：</p>
@@ -476,8 +527,13 @@
 <li>當建立自定義角色時, 使用指定角色定義的旗標, 你必須指定指令的作用範圍, 是組織等級的還是專案等級的, 使用 <code>--organization [ORGANIZATION_ID]</code> 或 <code>--project [PROJECT_ID]</code> 旗標。 下面的範例都是建立一個專案等級的自定義角色</li>
 </ul>
 <p>循著以下的範例, 你將建立專案等級的自訂義角色</p>
-<p><br><br><br><br><br></p>
-<h2 id="使用-YAML-檔案來建立自訂義角色"><a href="#使用-YAML-檔案來建立自訂義角色" class="headerlink" title="使用 YAML 檔案來建立自訂義角色"></a>使用 YAML 檔案來建立自訂義角色</h2><p>建立一個含有自定義角色定義的 YAML 檔。 檔案的結構必須像下面這樣：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">title:</span> <span class="hljs-string">[ROLE_TITLE]</span></span><br><span class="line"><span class="hljs-attr">description:</span> <span class="hljs-string">[ROLE_DESCRIPTION]</span></span><br><span class="line"><span class="hljs-attr">stage:</span> <span class="hljs-string">[LAUNCH_STAGE]</span></span><br><span class="line"><span class="hljs-attr">includedPermissions:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">[PERMISSION_1]</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">[PERMISSION_2]</span></span><br></pre></td></tr></table></figure></p>
+<br>
+<br>
+<br>
+
+<h2 id="使用-YAML-檔案來建立自訂義角色"><a href="#使用-YAML-檔案來建立自訂義角色" class="headerlink" title="使用 YAML 檔案來建立自訂義角色"></a>使用 YAML 檔案來建立自訂義角色</h2><p>建立一個含有自定義角色定義的 YAML 檔。 檔案的結構必須像下面這樣：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">title:</span> <span class="hljs-string">[ROLE_TITLE]</span></span><br><span class="line"><span class="hljs-attr">description:</span> <span class="hljs-string">[ROLE_DESCRIPTION]</span></span><br><span class="line"><span class="hljs-attr">stage:</span> <span class="hljs-string">[LAUNCH_STAGE]</span></span><br><span class="line"><span class="hljs-attr">includedPermissions:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">[PERMISSION_1]</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">[PERMISSION_2]</span></span><br></pre></td></tr></table></figure>
+
 <p>填入值的敘述如下：</p>
 <ul>
 <li><code>[ROLE_TITLE]</code> 角色職稱, 像是 <strong>Role Viewer</strong>, 可自定義</li>
@@ -485,21 +541,47 @@
 <li><code>[LAUNCH_STAGE]</code> 角色在啟動的生命週期, 像是 ALPHA, BETA, 或 GA, 可參考<a href="https://cloud.google.com/iam/docs/understanding-custom-roles?hl=zh-tw" target="_blank" rel="noopener">文件</a></li>
 <li><code>[includePermissions]</code> 指定了一個或多個這個自定義角色將包含的權限, 像是 <strong>iam.roles.get</strong></li>
 </ul>
-<p>該是動手的時間了！ 建立你的角色定義 YAML 檔, 執行以下指令：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim role-definition.yaml</span><br></pre></td></tr></table></figure></p>
-<p>將下面的定義增加到 YAML 檔案：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">title:</span> <span class="hljs-string">"Role Editor"</span></span><br><span class="line"><span class="hljs-attr">description:</span> <span class="hljs-string">"Edit access for App Versions"</span></span><br><span class="line"><span class="hljs-attr">stage:</span> <span class="hljs-string">"ALPHA"</span></span><br><span class="line"><span class="hljs-attr">includedPermissions:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.create</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.delete</span></span><br></pre></td></tr></table></figure></p>
+<p>該是動手的時間了！ 建立你的角色定義 YAML 檔, 執行以下指令：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim role-definition.yaml</span><br></pre></td></tr></table></figure>
+
+<p>將下面的定義增加到 YAML 檔案：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">title:</span> <span class="hljs-string">"Role Editor"</span></span><br><span class="line"><span class="hljs-attr">description:</span> <span class="hljs-string">"Edit access for App Versions"</span></span><br><span class="line"><span class="hljs-attr">stage:</span> <span class="hljs-string">"ALPHA"</span></span><br><span class="line"><span class="hljs-attr">includedPermissions:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.create</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.delete</span></span><br></pre></td></tr></table></figure>
+
 <p>然後儲存並關閉檔案</p>
-<p>執行下面的 <code>gcloud</code> 指令:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles create editor --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--file role-definition.yaml</span><br></pre></td></tr></table></figure></p>
+<p>執行下面的 <code>gcloud</code> 指令:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles create editor --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--file role-definition.yaml</span><br></pre></td></tr></table></figure>
+
 <p>如果角色成功被建立, 會得到以下的回應</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Created role [editor].</span><br><span class="line">description: Edit access for App Versions</span><br><span class="line">etag: BwVs4O4E3e4=</span><br><span class="line">includedPermissions:</span><br><span class="line">- appengine.versions.create</span><br><span class="line">- appengine.versions.delete</span><br><span class="line">name: projects/[PROJECT_ID]/roles/editor</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Editor</span><br></pre></td></tr></table></figure>
-<p><br><br><br><br><br></p>
+
+<br>
+<br>
+<br>
+
 <h2 id="使用-flag-旗標-來建立自定義角色"><a href="#使用-flag-旗標-來建立自定義角色" class="headerlink" title="使用 flag (旗標) 來建立自定義角色"></a>使用 flag (旗標) 來建立自定義角色</h2><p>現在你將使用旗標方法來建立一個新的自訂義角色。 旗標方法採用一個類似 YAML 檔案的格式, 所以你將可以辨識這個指令是如何被建立的</p>
-<p>執行以下 <code>gcloud</code> 指令來使用旗標建立一個新的角色<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles create viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--title <span class="hljs-string">"Role Viewer"</span> --description <span class="hljs-string">"Custom role description."</span> \</span><br><span class="line">--permissions compute.instances.get,compute.instances.list --stage ALPHA</span><br></pre></td></tr></table></figure></p>
-<p>範例輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Created role [viewer].</span><br><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVs4PYHqYI=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
-<h2 id="列出自定義角色"><a href="#列出自定義角色" class="headerlink" title="列出自定義角色"></a>列出自定義角色</h2><p>執行以下指令來列出自定義角色, 指定專案等級或是組織等級<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles list --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure></p>
-<p>範例輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">---</span><br><span class="line">description: Edit access for App Versions</span><br><span class="line">etag: BwVxLgrnawQ=</span><br><span class="line">name: projects/[PROJECT_ID]/roles/editor</span><br><span class="line">title: Role Editor</span><br><span class="line">---</span><br><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLg18IQg=</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure></p>
-<p>若要列出已刪除的角色, 你可以使用 <code>--show-deleted</code> 旗標<br>執行下面的 <code>gcloud</code> 指令來列出預定義的角色<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles list</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>執行以下 <code>gcloud</code> 指令來使用旗標建立一個新的角色</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles create viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--title <span class="hljs-string">"Role Viewer"</span> --description <span class="hljs-string">"Custom role description."</span> \</span><br><span class="line">--permissions compute.instances.get,compute.instances.list --stage ALPHA</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Created role [viewer].</span><br><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVs4PYHqYI=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
+<h2 id="列出自定義角色"><a href="#列出自定義角色" class="headerlink" title="列出自定義角色"></a>列出自定義角色</h2><p>執行以下指令來列出自定義角色, 指定專案等級或是組織等級</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles list --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure>
+
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">---</span><br><span class="line">description: Edit access for App Versions</span><br><span class="line">etag: BwVxLgrnawQ=</span><br><span class="line">name: projects/[PROJECT_ID]/roles/editor</span><br><span class="line">title: Role Editor</span><br><span class="line">---</span><br><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLg18IQg=</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure>
+
+<p>若要列出已刪除的角色, 你可以使用 <code>--show-deleted</code> 旗標<br>執行下面的 <code>gcloud</code> 指令來列出預定義的角色</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles list</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="編輯一個現存的自定義角色"><a href="#編輯一個現存的自定義角色" class="headerlink" title="編輯一個現存的自定義角色"></a>編輯一個現存的自定義角色</h2><p>更新資源的 metadata 的一個常用模式, 例如更新一個自訂義角色, 會先讀他目前的狀態, 在本地更新資料, 然後送出更改後的資料來複寫。 如果兩個或以上的動作同時發生, 可能會造成衝突</p>
 <p>例如, 如果兩個專案的擁有者在同一時間試圖對一個角色做修改, 某些改變可能會失敗</p>
 <p>Cloud IAM 在自定義角色中使用 <code>etag</code> 屬性來解決這個問題。 這個屬性被使用來核對這個自定義角色從上次請求之後是否被更改過了。 當你使用 etag 對 Cloud IAM 送出一個請求, Cloud IAM 會比較請求中以及目前的 etag 值, 唯有 etag 值吻合了, 變更才會被寫入</p>
@@ -510,17 +592,37 @@
 </ul>
 <p>當更新一個自定義角色時你必須指定指令的作用範圍, 是組織等級的還是專案等級的, 使用 <code>--organization [ORGANIZATION_ID]</code> 或 <code>--project [PROJECT_ID]</code> 旗標。 下面的範例都是建立一個專案等級的自定義角色</p>
 <p><code>describe</code> 指令會返回角色的定義, 包含可獨特辨識角色目前版本的 etag 值。 當更新角色定義時, etag 值必須被提供, 以確保同時變更的請求不會互相複寫</p>
-<p><br><br><br><br><br></p>
-<h2 id="使用-YAML-檔案來更新自定義角色"><a href="#使用-YAML-檔案來更新自定義角色" class="headerlink" title="使用 YAML 檔案來更新自定義角色"></a>使用 YAML 檔案來更新自定義角色</h2><p>執行以下的 <code>gcloud</code> 指令來取得目前的角色定義, 將 <code>[ROLE_ID]</code> 替換成 editor<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles describe [ROLE_ID] --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure></p>
-<p><code>describe</code> 指令會返回以下輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: [ROLE_DESCRIPTION]</span><br><span class="line">etag: [ETAG_VALUE]</span><br><span class="line">includedPermissions:</span><br><span class="line">- [PERMISSION_1]</span><br><span class="line">- [PERMISSION_2]</span><br><span class="line">name: [ROLE_ID]</span><br><span class="line">stage: [LAUNCH_STAGE]</span><br><span class="line">title: [ROLE_TITLE]</span><br></pre></td></tr></table></figure></p>
+<br>
+<br>
+<br>
+
+<h2 id="使用-YAML-檔案來更新自定義角色"><a href="#使用-YAML-檔案來更新自定義角色" class="headerlink" title="使用 YAML 檔案來更新自定義角色"></a>使用 YAML 檔案來更新自定義角色</h2><p>執行以下的 <code>gcloud</code> 指令來取得目前的角色定義, 將 <code>[ROLE_ID]</code> 替換成 editor</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles describe [ROLE_ID] --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure>
+
+<p><code>describe</code> 指令會返回以下輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: [ROLE_DESCRIPTION]</span><br><span class="line">etag: [ETAG_VALUE]</span><br><span class="line">includedPermissions:</span><br><span class="line">- [PERMISSION_1]</span><br><span class="line">- [PERMISSION_2]</span><br><span class="line">name: [ROLE_ID]</span><br><span class="line">stage: [LAUNCH_STAGE]</span><br><span class="line">title: [ROLE_TITLE]</span><br></pre></td></tr></table></figure>
+
 <p>你將使用輸出的值來建立一個新的 YAML 檔案。 從這個指令中複製輸出</p>
-<p>使用你的編輯器建立一個 <code>new-role-definition.yaml</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim new-role-definition.yaml</span><br></pre></td></tr></table></figure></p>
-<p>將上面輸出的值貼上, 然後在 <code>includedPermissions</code> 下面增加兩個權限：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.get</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.list</span></span><br></pre></td></tr></table></figure></p>
-<p>現在你的 YAML 檔看起來應該如下：<br><figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">description:</span> <span class="hljs-string">Edit</span> <span class="hljs-string">access</span> <span class="hljs-string">for</span> <span class="hljs-string">App</span> <span class="hljs-string">Versions</span></span><br><span class="line"><span class="hljs-attr">etag:</span> <span class="hljs-string">BwVxIAbRq_I=</span></span><br><span class="line"><span class="hljs-attr">includedPermissions:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.create</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.delete</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.get</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.list</span></span><br><span class="line"><span class="hljs-attr">name:</span> <span class="hljs-string">projects/[PROJECT_ID]/roles/editor</span></span><br><span class="line"><span class="hljs-attr">stage:</span> <span class="hljs-string">ALPHA</span></span><br><span class="line"><span class="hljs-attr">title:</span> <span class="hljs-string">Role</span> <span class="hljs-string">Editor</span></span><br></pre></td></tr></table></figure></p>
+<p>使用你的編輯器建立一個 <code>new-role-definition.yaml</code> </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim new-role-definition.yaml</span><br></pre></td></tr></table></figure>
+
+<p>將上面輸出的值貼上, 然後在 <code>includedPermissions</code> 下面增加兩個權限：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.get</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.list</span></span><br></pre></td></tr></table></figure>
+
+<p>現在你的 YAML 檔看起來應該如下：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">description:</span> <span class="hljs-string">Edit</span> <span class="hljs-string">access</span> <span class="hljs-string">for</span> <span class="hljs-string">App</span> <span class="hljs-string">Versions</span></span><br><span class="line"><span class="hljs-attr">etag:</span> <span class="hljs-string">BwVxIAbRq_I=</span></span><br><span class="line"><span class="hljs-attr">includedPermissions:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.create</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">appengine.versions.delete</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.get</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-string">storage.buckets.list</span></span><br><span class="line"><span class="hljs-attr">name:</span> <span class="hljs-string">projects/[PROJECT_ID]/roles/editor</span></span><br><span class="line"><span class="hljs-attr">stage:</span> <span class="hljs-string">ALPHA</span></span><br><span class="line"><span class="hljs-attr">title:</span> <span class="hljs-string">Role</span> <span class="hljs-string">Editor</span></span><br></pre></td></tr></table></figure>
+
 <p>儲存並離開檔案</p>
-<p>現在你將使用 <code>update</code> 指令來更新角色。 執行以下的 <code>gcloud</code> 指令, 將 <code>[ROLE_ID]</code> 替換成 <strong>editor:</strong><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles update [ROLE_ID] --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--file new-role-definition.yaml</span><br></pre></td></tr></table></figure></p>
-<p>如果角色成功被更新, 輸出會像以下那樣:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Edit access for App Versions</span><br><span class="line">etag: BwVxIBjfN3M=</span><br><span class="line">includedPermissions:</span><br><span class="line">- appengine.versions.create</span><br><span class="line">- appengine.versions.delete</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/editor</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Editor</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>現在你將使用 <code>update</code> 指令來更新角色。 執行以下的 <code>gcloud</code> 指令, 將 <code>[ROLE_ID]</code> 替換成 <strong>editor:</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles update [ROLE_ID] --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--file new-role-definition.yaml</span><br></pre></td></tr></table></figure>
+
+<p>如果角色成功被更新, 輸出會像以下那樣:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Edit access for App Versions</span><br><span class="line">etag: BwVxIBjfN3M=</span><br><span class="line">includedPermissions:</span><br><span class="line">- appengine.versions.create</span><br><span class="line">- appengine.versions.delete</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/editor</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Editor</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="使用旗標來更新自定義角色"><a href="#使用旗標來更新自定義角色" class="headerlink" title="使用旗標來更新自定義角色"></a>使用旗標來更新自定義角色</h2><p>角色定義更新中, 每部份都有各自對應的旗標。 旗標清單可參考<a href="https://cloud.google.com/sdk/gcloud/reference/iam/roles/update" target="_blank" rel="noopener">文件</a></p>
 <p>你可以使用下面的旗標來增加以及移除權限:</p>
 <ul>
@@ -528,22 +630,47 @@
 <li><code>--remove-permissions</code>: 移除一個或多個, 以逗號分隔的權限</li>
 </ul>
 <p>你也可以指定新的權限來取代掉目前的權限, 使用 <code>--permissions [PERMISSIONS]</code> 旗標以及以逗號來分隔權限</p>
-<p>執行下面的 <code>gcloud</code> 指令, 使用旗標來增加權限到 <strong>viewer</strong> 角色<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles update viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--add-permissions storage.buckets.get,storage.buckets.list</span><br></pre></td></tr></table></figure></p>
-<p>如果角色成功地被更新, 以下的輸出將會返回<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLi4wTvk=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>執行下面的 <code>gcloud</code> 指令, 使用旗標來增加權限到 <strong>viewer</strong> 角色</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles update viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--add-permissions storage.buckets.get,storage.buckets.list</span><br></pre></td></tr></table></figure>
+
+<p>如果角色成功地被更新, 以下的輸出將會返回</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLi4wTvk=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: ALPHA</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="使自定義角色失效"><a href="#使自定義角色失效" class="headerlink" title="使自定義角色失效"></a>使自定義角色失效</h2><p>當角色被無效化, 與之相連的政策也會失效, 就是說權限將會停止被賦予到這個角色, 儘管你賦予了使用者這個角色</p>
 <p>無效化一個現存自定義角色最簡單的方法就是使用 <code>--stage</code> 指標來把它設成 DISABLED</p>
-<p>執行以下的 <code>gcloud</code> 指令來無效化 <strong>viewer</strong> 角色<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles update viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--stage DISABLED</span><br></pre></td></tr></table></figure></p>
-<p>如果角色成功地被更新了, 將會返回以下輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLkIYHrQ=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: DISABLED</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<p>執行以下的 <code>gcloud</code> 指令來無效化 <strong>viewer</strong> 角色</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles update viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span> \</span><br><span class="line">--stage DISABLED</span><br></pre></td></tr></table></figure>
+
+<p>如果角色成功地被更新了, 將會返回以下輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLkIYHrQ=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: DISABLED</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="刪除自定義角色"><a href="#刪除自定義角色" class="headerlink" title="刪除自定義角色"></a>刪除自定義角色</h2><p>使用 <code>gcloud iam roles delete</code> 指令來刪除自定義角色。 一旦角色被刪了, 它就失效了, 無法再被用來與任何政策相對應</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles delete viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure>
-<p>範例輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLkf_epw=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: DISABLED</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure></p>
+
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">description: Custom role description.</span><br><span class="line">etag: BwVxLkf_epw=</span><br><span class="line">includedPermissions:</span><br><span class="line">- compute.instances.get</span><br><span class="line">- compute.instances.list</span><br><span class="line">- storage.buckets.get</span><br><span class="line">- storage.buckets.list</span><br><span class="line">name: projects/[PROJECT_ID]/roles/viewer</span><br><span class="line">stage: DISABLED</span><br><span class="line">title: Role Viewer</span><br></pre></td></tr></table></figure>
+
 <p>在角色被刪除之後, 現存的連結將會保留, 但是是無效的。 角色可以在 7 天內被復原, 要是過了 7 天, 這個角色會進入一個永久刪除程序, 持續 30 天, 所以過了 37 天之後, 這個角色的 ID 又可以被使用了</p>
 <p><strong>注意：</strong> 如果角色被棄用了, 修改 <strong>role.stage</strong> 屬性為 <strong>DEPRECATED</strong>, 然後設定 <code>deprecation_message</code>, 這樣可以讓使用者知道替代角色是哪一個, 或是哪裡可以得到更多資訊</p>
-<p><br><br><br><br><br></p>
-<h2 id="復原自定義角色"><a href="#復原自定義角色" class="headerlink" title="復原自定義角色"></a>復原自定義角色</h2><p>在 7 天內, 你可以復原一個刪除了的角色。 被刪除的角色處於 <strong>DISABLED</strong> 階段, 你可以利用旗標 <code>--stage</code> 來更新它, 讓他再次可用<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles undelete viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
+<h2 id="復原自定義角色"><a href="#復原自定義角色" class="headerlink" title="復原自定義角色"></a>復原自定義角色</h2><p>在 7 天內, 你可以復原一個刪除了的角色。 被刪除的角色處於 <strong>DISABLED</strong> 階段, 你可以利用旗標 <code>--stage</code> 來更新它, 讓他再次可用</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud iam roles undelete viewer --project <span class="hljs-variable">$DEVSHELL_PROJECT_ID</span></span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="恭喜"><a href="#恭喜" class="headerlink" title="恭喜"></a>恭喜</h2><p>你已經完成本教程！</p>
 
     
@@ -622,53 +749,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

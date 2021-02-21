@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Laravel - Database - Migrations - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -306,13 +306,17 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Generating-Migrations"><a href="#Generating-Migrations" class="headerlink" title="Generating Migrations"></a>Generating Migrations</h2><h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:migration create_users_table --create=users</span><br><span class="line"></span><br><span class="line">php artisan make:migration add_votes_to_users_table --table=users</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">// 建立 migration, 並建立且對應 table users</span><br><span class="line">php artisan make:migration create_users_table --create=users</span><br><span class="line"></span><br><span class="line">// 建立 migration, 並指定對應 table 為 users</span><br><span class="line">php artisan make:migration add_votes_to_users_table --table=users</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="Squashing-Migrations"><a href="#Squashing-Migrations" class="headerlink" title="Squashing Migrations"></a>Squashing Migrations</h3><h6 id="以下的-Laravel-example-command-的意思是？-1"><a href="#以下的-Laravel-example-command-的意思是？-1" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
@@ -321,18 +325,24 @@
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">// 將所有的 migrations file 輸出成一個 SQL file</span><br><span class="line">php artisan schema:dump</span><br><span class="line"></span><br><span class="line">// 將所有的 migrations file 輸出成一個 SQL file, 並刪除 migrations file</span><br><span class="line">php artisan schema:dump --prune</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Migration-Structure"><a href="#Migration-Structure" class="headerlink" title="Migration Structure"></a>Migration Structure</h2><h6 id="以下的-Laravel-Example-code-的意思是？"><a href="#以下的-Laravel-Example-code-的意思是？" class="headerlink" title="以下的 Laravel Example code 的意思是？"></a><strong>以下的 Laravel Example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CreateFlightsTable</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Migration</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">up</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Schema::create(<span class="hljs-string">'flights'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">            $table-&gt;id();</span><br><span class="line">            $table-&gt;string(<span class="hljs-string">'name'</span>);</span><br><span class="line">            $table-&gt;string(<span class="hljs-string">'airline'</span>);</span><br><span class="line">            $table-&gt;timestamps();</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">down</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Schema::drop(<span class="hljs-string">'flights'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CreateFlightsTable</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Migration</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// up() 內為 migration 主要執行的動作</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">up</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Schema::create(<span class="hljs-string">'flights'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">            $table-&gt;id();</span><br><span class="line">            $table-&gt;string(<span class="hljs-string">'name'</span>);</span><br><span class="line">            $table-&gt;string(<span class="hljs-string">'airline'</span>);</span><br><span class="line">            $table-&gt;timestamps();</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// down() 內為與 up() 相反的執行動作</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">down</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        Schema::drop(<span class="hljs-string">'flights'</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Running-Migrations"><a href="#Running-Migrations" class="headerlink" title="Running Migrations"></a>Running Migrations</h2><h4 id="Forcing-Migrations-To-Run-In-Production"><a href="#Forcing-Migrations-To-Run-In-Production" class="headerlink" title="Forcing Migrations To Run In Production"></a>Forcing Migrations To Run In Production</h4><h6 id="以下的-Laravel-example-command-的意思是？-2"><a href="#以下的-Laravel-example-command-的意思是？-2" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan migrate --force</span><br></pre></td></tr></table></figure>
@@ -361,13 +371,15 @@
 <li><p><strong>Answer</strong>:<br>回滾所有的 migrations</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Roll-Back-amp-Migrate-Using-A-Single-Command"><a href="#Roll-Back-amp-Migrate-Using-A-Single-Command" class="headerlink" title="Roll Back &amp; Migrate Using A Single Command"></a>Roll Back &amp; Migrate Using A Single Command</h4><h6 id="以下的-Laravel-example-command-的意思是？-6"><a href="#以下的-Laravel-example-command-的意思是？-6" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan migrate:refresh</span><br><span class="line"></span><br><span class="line">// Refresh the database and run all database seeds...</span><br><span class="line">php artisan migrate:refresh --seed</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">// rollback 所有的 migrations, 並且再 migrate 他們</span><br><span class="line">php artisan migrate:refresh</span><br><span class="line"></span><br><span class="line">// rollback 所有的 migrations, 並且再 migrate 他們, 並執行 seed</span><br><span class="line">php artisan migrate:refresh --seed</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="以下的-Laravel-example-command-的意思是？-7"><a href="#以下的-Laravel-example-command-的意思是？-7" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
@@ -377,16 +389,20 @@
 <li><p><strong>Answer</strong>:<br>預設會 rollback 並 migrate 所有的 migrations, –step flag 可以指定 migrations 數量</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Drop-All-Tables-amp-Migrate"><a href="#Drop-All-Tables-amp-Migrate" class="headerlink" title="Drop All Tables &amp; Migrate"></a>Drop All Tables &amp; Migrate</h4><h6 id="以下的-Laravel-example-command-的意思是？-8"><a href="#以下的-Laravel-example-command-的意思是？-8" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan migrate:fresh</span><br><span class="line"></span><br><span class="line">php artisan migrate:fresh --seed</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">// drop 所有的 table, 而並非執行 <span class="hljs-string">"down()"</span> 內的動作, 然後再 migrate</span><br><span class="line">php artisan migrate:fresh</span><br><span class="line">// drop 所有的 table, 而並非執行 <span class="hljs-string">"down()"</span> 內的動作, 然後再 migrate, 並執行 seed</span><br><span class="line">php artisan migrate:fresh --seed</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Tables"><a href="#Tables" class="headerlink" title="Tables"></a>Tables</h2><h3 id="Creating-Tables"><a href="#Creating-Tables" class="headerlink" title="Creating Tables"></a>Creating Tables</h3><h6 id="以下的-Laravel-example-command-的意思是？-9"><a href="#以下的-Laravel-example-command-的意思是？-9" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::create(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;id();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -394,16 +410,19 @@
 <li><p><strong>Answer</strong>:<br>建立一個名為 users 的 table, column 為 id</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Checking-For-Table-Column-Existence"><a href="#Checking-For-Table-Column-Existence" class="headerlink" title="Checking For Table / Column Existence"></a>Checking For Table / Column Existence</h4><h6 id="以下的-Laravel-example-command-的意思是？-10"><a href="#以下的-Laravel-example-command-的意思是？-10" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Schema::hasTable(<span class="hljs-string">'users'</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (Schema::hasColumn(<span class="hljs-string">'users'</span>, <span class="hljs-string">'email'</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 判斷是否有 users 這個 table</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Schema::hasTable(<span class="hljs-string">'users'</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 判斷 users table 中是否有 email 這個 column</span></span><br><span class="line"><span class="hljs-keyword">if</span> (Schema::hasColumn(<span class="hljs-string">'users'</span>, <span class="hljs-string">'email'</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Database-Connection-amp-Table-Options"><a href="#Database-Connection-amp-Table-Options" class="headerlink" title="Database Connection &amp; Table Options"></a>Database Connection &amp; Table Options</h4><h6 id="以下的-Laravel-Migration-example-command-的意思是？"><a href="#以下的-Laravel-Migration-example-command-的意思是？" class="headerlink" title="以下的 Laravel Migration example command 的意思是？"></a><strong>以下的 Laravel Migration example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::connection(<span class="hljs-string">'foo'</span>)-&gt;create(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;id();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -417,9 +436,11 @@
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 指定 table 的 storage engine</span></span><br><span class="line">$table-&gt;engine = <span class="hljs-string">'InnoDB'</span>;</span><br><span class="line"><span class="hljs-comment">// 指定 character set</span></span><br><span class="line">$table-&gt;charset = <span class="hljs-string">'utf8mb4'</span>;</span><br><span class="line"><span class="hljs-comment">// 指定 collation</span></span><br><span class="line">$table-&gt;collation = <span class="hljs-string">'utf8mb4_unicode_ci'</span>;</span><br><span class="line"><span class="hljs-comment">// 建立臨時 table</span></span><br><span class="line">$table-&gt;temporary();</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Renaming-Dropping-Tables"><a href="#Renaming-Dropping-Tables" class="headerlink" title="Renaming / Dropping Tables"></a>Renaming / Dropping Tables</h3><h6 id="以下的-Laravel-Migration-example-command-的意思是？-2"><a href="#以下的-Laravel-Migration-example-command-的意思是？-2" class="headerlink" title="以下的 Laravel Migration example command 的意思是？"></a><strong>以下的 Laravel Migration example command 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::rename($from, $to);</span><br></pre></td></tr></table></figure>
@@ -433,9 +454,12 @@
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// drop users table</span></span><br><span class="line">Schema::drop(<span class="hljs-string">'users'</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 如果 users table 存在, drop it</span></span><br><span class="line">Schema::dropIfExists(<span class="hljs-string">'users'</span>);</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Columns"><a href="#Columns" class="headerlink" title="Columns"></a>Columns</h2><h3 id="Modifying-Columns"><a href="#Modifying-Columns" class="headerlink" title="Modifying Columns"></a>Modifying Columns</h3><h6 id="以下的-Laravel-Migration-example-code-的意思是？"><a href="#以下的-Laravel-Migration-example-code-的意思是？" class="headerlink" title="以下的 Laravel Migration example code 的意思是？"></a><strong>以下的 Laravel Migration example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::table(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;string(<span class="hljs-string">'name'</span>, <span class="hljs-number">50</span>)-&gt;nullable()-&gt;change();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -451,7 +475,8 @@
 </li>
 </ul>
 <h6 id="Laravel-中-支援-rename-enum-欄位嗎？"><a href="#Laravel-中-支援-rename-enum-欄位嗎？" class="headerlink" title="Laravel 中, 支援 rename enum 欄位嗎？"></a><strong>Laravel 中, 支援 rename enum 欄位嗎？</strong></h6><p>不支援</p>
-<p><br></p>
+<br>
+
 <h3 id="Dropping-Columns"><a href="#Dropping-Columns" class="headerlink" title="Dropping Columns"></a>Dropping Columns</h3><h6 id="以下的-Laravel-Migration-example-code-的意思是？-2"><a href="#以下的-Laravel-Migration-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel Migration example code 的意思是？"></a><strong>以下的 Laravel Migration example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::table(<span class="hljs-string">'users'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;dropColumn([<span class="hljs-string">'votes'</span>, <span class="hljs-string">'avatar'</span>, <span class="hljs-string">'location'</span>]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -480,7 +505,9 @@
 <li><p><strong>Answer</strong>:<br>drop <code>created_at</code> 以及 <code>updated_at</code> column</p>
 </li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="Indexes"><a href="#Indexes" class="headerlink" title="Indexes"></a>Indexes</h2><h3 id="Creating-Indexes"><a href="#Creating-Indexes" class="headerlink" title="Creating Indexes"></a>Creating Indexes</h3><h6 id="以下的-Laravel-Migration-example-code-的意思是？-6"><a href="#以下的-Laravel-Migration-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel Migration example code 的意思是？"></a><strong>以下的 Laravel Migration example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$table-&gt;string(<span class="hljs-string">'email'</span>)-&gt;unique();</span><br></pre></td></tr></table></figure>
@@ -492,10 +519,11 @@
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Schema::defaultStringLength(<span class="hljs-number">191</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>指定 migration 產生的 default string length, 所以 MySQL 可以產生索引, 若 MySQL 版本 older than 5.7.7, 需手動指定, 否則可能會出現 <code>&quot;SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes&quot; (SQL: alter table</code>users<code>add unique</code>users_email_unique<code>(</code>email<code>))</code> exception</p>
+<li><p><strong>Answer</strong>:<br>指定 migration 產生的 default string length, 所以 MySQL 可以產生索引, 若 MySQL 版本 older than 5.7.7, 需手動指定, 否則可能會出現 <code>&quot;SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes&quot; (SQL: alter table </code>users<code>add unique</code>users_email_unique<code>(</code>email<code>))</code> exception</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Renaming-Indexes"><a href="#Renaming-Indexes" class="headerlink" title="Renaming Indexes"></a>Renaming Indexes</h3><h6 id="以下的-Laravel-Migration-example-code-的意思是？-8"><a href="#以下的-Laravel-Migration-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel Migration example code 的意思是？"></a><strong>以下的 Laravel Migration example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$table-&gt;renameIndex(<span class="hljs-string">'from'</span>, <span class="hljs-string">'to'</span>)</span><br></pre></td></tr></table></figure>
@@ -503,7 +531,8 @@
 <li><p><strong>Answer</strong>:<br>重新命名 index</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Dropping-Indexes"><a href="#Dropping-Indexes" class="headerlink" title="Dropping Indexes"></a>Dropping Indexes</h3><h6 id="以下的-Laravel-Migration-example-code-的意思是？-9"><a href="#以下的-Laravel-Migration-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel Migration example code 的意思是？"></a><strong>以下的 Laravel Migration example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$table-&gt;dropPrimary(<span class="hljs-string">'users_id_primary'</span>);</span><br></pre></td></tr></table></figure>
@@ -539,7 +568,8 @@
 <li><p><strong>Answer</strong>:<br>geo_state_index</p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="Foreign-Key-Constraints"><a href="#Foreign-Key-Constraints" class="headerlink" title="Foreign Key Constraints"></a>Foreign Key Constraints</h3><h6 id="以下的-Laravel-Migration-example-code-的意思是？-13"><a href="#以下的-Laravel-Migration-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel Migration example code 的意思是？"></a><strong>以下的 Laravel Migration example code 的意思是？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Schema::table(<span class="hljs-string">'posts'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;unsignedBigInteger(<span class="hljs-string">'user_id'</span>);</span><br><span class="line"></span><br><span class="line">    $table-&gt;foreign(<span class="hljs-string">'user_id'</span>)-&gt;references(<span class="hljs-string">'id'</span>)-&gt;on(<span class="hljs-string">'users'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
@@ -605,7 +635,7 @@
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh-tw/laravel-database-pagination/">Laravel - Database - Pagination (未完成)</a>
+            <a href="/zh-tw/laravel-database-pagination/">Laravel - Database - Pagination (官方文件原子化翻譯)</a>
             
         </span>
     </div>
@@ -659,53 +689,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

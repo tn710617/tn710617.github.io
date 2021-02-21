@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>使用MySQL- group by 來整理資料庫 2 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -213,10 +213,12 @@
         <p>哈囉大家好，我是Ray！</p>
 <p>今天想要跟大家分享group by 的更進一步的操作，如何使用group by 配合select 相對應的選項，新建一個表格，並在新表格內將資料重新整理爲我們需要的row and column。</p>
 <a id="more"></a> 
-<p>首先，延續昨天的進度，如下圖所示，我們將降雨量根據天來做分類，那如果說今天我們需要月的降雨量，或者年雨量總和呢？<br>￼<img src="https://i.imgur.com/eFUaYkg.png" alt></p>
+
+<p>首先，延續昨天的進度，如下圖所示，我們將降雨量根據天來做分類，那如果說今天我們需要月的降雨量，或者年雨量總和呢？<br>￼<img src="https://i.imgur.com/eFUaYkg.png"></p>
 <p>請參考以下的code:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">// SELECT後面的year(date)以及month(date)表示SELECT這兩項資料，</span><br><span class="line">// 括號後的year以及month表示顯示出來的欄位名稱，sum表示加總括號內欄位資料的總和,</span><br><span class="line">// 括號內的rainfall爲欄位名稱，括號後的表示顯示出來的欄位名稱，一樣使用group by，</span><br><span class="line">// 使資料以月份以及年分來做顯示，order by 表示依照先後順序由先到後作排列。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$selectQuery = &apos;SELECT year(date) year, month(date) month,</span><br><span class="line"> sum(rainfall) rainfall from rainfall_by_date group by month(date),</span><br><span class="line">  year(date) order by year(date) asc, month(date) asc;&apos;;</span><br><span class="line"></span><br><span class="line">// 向資料庫作select 請求</span><br><span class="line">$selectResult = mysqli_query($dbc, $selectQuery);</span><br><span class="line"></span><br><span class="line">// 使用迴圈來重複請求，直到拿出所有位於$selectResult物件中的所有array</span><br><span class="line">while ($selectRow = mysqli_fetch_array($selectResult))</span><br><span class="line">&#123;</span><br><span class="line">    // 將我們從rainfall_by_date取得的資料insert進新表格rainfall_by_month</span><br><span class="line">    $insertQuery = &apos;INSERT INTO rainfall_by_month (year, month, rainfall) VALUES(&quot;&apos; . $selectRow[&apos;year&apos;] . &apos;&quot;, &quot;&apos; . $selectRow[&apos;month&apos;] . &apos;&quot;, &quot;&apos; . $selectRow[&apos;rainfall&apos;] . &apos;&quot;)&apos;;</span><br><span class="line"></span><br><span class="line">    // 作insert請求</span><br><span class="line">    $insertResult = mysqli_query($dbc, $insertQuery);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>執行以上的script之後，可以得到新的表格，如下：<br>￼<img src="https://i.imgur.com/bsu3U7Q.png" alt></p>
+
+<p>執行以上的script之後，可以得到新的表格，如下：<br>￼<img src="https://i.imgur.com/bsu3U7Q.png"></p>
 
     
     </div>
@@ -290,53 +292,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

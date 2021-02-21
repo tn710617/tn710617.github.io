@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Implement CI with Jenkins on AWS - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -305,105 +305,132 @@
 <li>When specified branch on <code>GitHub</code> is updated, automatically implement <code>git pull</code> on <code>AWS EC2</code> and synchronize with your project on <code>GitHub</code></li>
 </ol>
 <a id="more"></a> 
-<h2 id="Launch-EC2-instance"><a href="#Launch-EC2-instance" class="headerlink" title="Launch EC2 instance"></a>Launch <code>EC2 instance</code></h2><p><img src="https://i.imgur.com/s7UMOz8.png" alt></p>
+
+<h2 id="Launch-EC2-instance"><a href="#Launch-EC2-instance" class="headerlink" title="Launch EC2 instance"></a>Launch <code>EC2 instance</code></h2><p><img src="https://i.imgur.com/s7UMOz8.png"></p>
 <h2 id="Connect-toAWS-EC2-with-SSH"><a href="#Connect-toAWS-EC2-with-SSH" class="headerlink" title="Connect toAWS EC2 with SSH"></a>Connect to<code>AWS EC2</code> with <code>SSH</code></h2><ul>
-<li>Click <code>connect</code>, and follow the instruction<br><img src="https://i.imgur.com/s7UMOz8.png" alt></li>
+<li>Click <code>connect</code>, and follow the instruction<br><img src="https://i.imgur.com/s7UMOz8.png"></li>
 </ul>
 <h2 id="Amazon-Linux-2-AMI-HVM"><a href="#Amazon-Linux-2-AMI-HVM" class="headerlink" title="Amazon Linux 2 AMI (HVM)"></a>Amazon Linux 2 AMI (HVM)</h2><h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install java-1.8.0</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum update –y</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install jenkins -y</span><br></pre></td></tr></table></figure>
+
 <h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/sysconfig/jenkins</span><br></pre></td></tr></table></figure>
+
 <p>and revise setting as <code>JENKINS_USER=&quot;root&quot;</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service jenkins start</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl <span class="hljs-built_in">enable</span> jenkins.service</span><br></pre></td></tr></table></figure>
+
 <h3 id="Config-Jenkins-on-Browser"><a href="#Config-Jenkins-on-Browser" class="headerlink" title="Config Jenkins on Browser"></a>Config Jenkins on Browser</h3><ul>
-<li>Open the following link on Browser<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://yourPublicDNS:8080</span><br></pre></td></tr></table></figure>
+<li><p>Open the following link on Browser</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://yourPublicDNS:8080</span><br></pre></td></tr></table></figure>
+
 </li>
-</ul>
-<ul>
 <li><p>On server</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /var/lib/jenkins/secrets/initialAdminPassword</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>copy the password and paste it in order to login</p>
 </li>
-<li>install suggested plugins</li>
-<li>Sign up your account</li>
-<li>Save and go ahead</li>
-<li><p>Go to ‘Jenkins management’<br><img src="https://i.imgur.com/yu8D5DQ.png" alt></p>
+<li><p>install suggested plugins</p>
 </li>
-<li><p>Install GitHub integration plugin<br><img src="https://i.imgur.com/1PWndFU.png" alt></p>
+<li><p>Sign up your account</p>
+</li>
+<li><p>Save and go ahead</p>
+</li>
+<li><p>Go to ‘Jenkins management’<br><img src="https://i.imgur.com/yu8D5DQ.png"></p>
+</li>
+<li><p>Install GitHub integration plugin<br><img src="https://i.imgur.com/1PWndFU.png"></p>
 </li>
 <li><p>Start a free style project</p>
 </li>
-<li>Go to configuration</li>
-<li><p>Enter your project url<br><img src="https://i.imgur.com/QPkhPVL.png" alt></p>
+<li><p>Go to configuration</p>
 </li>
-<li><p>Check ‘git’, and enter your Git Repository url<br><img src="https://i.imgur.com/R7mzIHH.png" alt></p>
+<li><p>Enter your project url<br><img src="https://i.imgur.com/QPkhPVL.png"></p>
 </li>
-<li><p>check ‘GitHub hook trigger for GITScm polling’<br><img src="https://i.imgur.com/4jKFUWo.png" alt></p>
+<li><p>Check ‘git’, and enter your Git Repository url<br><img src="https://i.imgur.com/R7mzIHH.png"></p>
+</li>
+<li><p>check ‘GitHub hook trigger for GITScm polling’<br><img src="https://i.imgur.com/4jKFUWo.png"></p>
 </li>
 <li><p>Enter the shell script you like<br>If you install <code>jenkins</code> on the machine where your project is installed:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh -i /root/.ssh/yourKey.pem ec2-user@127.0.0.1 <span class="hljs-string">"cd /var/www/html/yourProjectName;git reset @^ --hard;git pull;/usr/local/bin/composer install;php artisan migrate --force;"</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><img src="https://i.imgur.com/3ZkH6ij.png" alt></p>
+<p><img src="https://i.imgur.com/3ZkH6ij.png"></p>
 <h3 id="Config-GitHub"><a href="#Config-GitHub" class="headerlink" title="Config GitHub"></a>Config GitHub</h3><ul>
 <li>Go to GitHub-&gt;setting</li>
 <li>build the webhook as follows:</li>
 </ul>
-<p><img src="https://i.imgur.com/CCLKHnK.png" alt></p>
+<p><img src="https://i.imgur.com/CCLKHnK.png"></p>
 <h2 id="Amazon-Linux-AMI-2018-03-0-HVM"><a href="#Amazon-Linux-AMI-2018-03-0-HVM" class="headerlink" title="Amazon Linux AMI 2018.03.0 (HVM)"></a>Amazon Linux AMI 2018.03.0 (HVM)</h2><h3 id="Install-1"><a href="#Install-1" class="headerlink" title="Install"></a>Install</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum update –y</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum remove java-1.7.0-openjdk</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install java-1.8.0</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat/jenkins.repo</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo yum install jenkins -y</span><br></pre></td></tr></table></figure>
+
 <h3 id="Config-1"><a href="#Config-1" class="headerlink" title="Config"></a>Config</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/sysconfig/jenkins</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>Revise setting as <code>JENKINS_USER=&quot;root&quot;</code></li>
 </ul>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service jenkins start</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>Set automatic startup when Server reboot<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo chkconfig jenkins on</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="Config-Jenkins-on-Browser-1"><a href="#Config-Jenkins-on-Browser-1" class="headerlink" title="Config Jenkins on Browser"></a>Config Jenkins on Browser</h3><ul>
-<li>Open the following link on Browser<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://yourPublicDNS:8080</span><br></pre></td></tr></table></figure>
+<li><p>Open the following link on Browser</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">http://yourPublicDNS:8080</span><br></pre></td></tr></table></figure>
+
 </li>
-</ul>
-<ul>
 <li><p>On server</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo cat /var/lib/jenkins/secrets/initialAdminPassword</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>copy the password and paste it in order to login</p>
 </li>
-<li>install suggested plugins</li>
-<li>Sign up your account</li>
-<li>Save and go ahead</li>
-<li><p>Go to ‘Jenkins management’<br><img src="https://i.imgur.com/yu8D5DQ.png" alt></p>
+<li><p>install suggested plugins</p>
 </li>
-<li><p>Install GitHub integration plugin<br><img src="https://i.imgur.com/1PWndFU.png" alt></p>
+<li><p>Sign up your account</p>
+</li>
+<li><p>Save and go ahead</p>
+</li>
+<li><p>Go to ‘Jenkins management’<br><img src="https://i.imgur.com/yu8D5DQ.png"></p>
+</li>
+<li><p>Install GitHub integration plugin<br><img src="https://i.imgur.com/1PWndFU.png"></p>
 </li>
 <li><p>Start a free style project</p>
 </li>
-<li>Go to configuration</li>
-<li><p>Enter your project url<br><img src="https://i.imgur.com/QPkhPVL.png" alt></p>
+<li><p>Go to configuration</p>
 </li>
-<li><p>Check ‘git’, and enter your Git Repository url<br><img src="https://i.imgur.com/R7mzIHH.png" alt></p>
+<li><p>Enter your project url<br><img src="https://i.imgur.com/QPkhPVL.png"></p>
 </li>
-<li><p>check ‘GitHub hook trigger for GITScm polling’<br><img src="https://i.imgur.com/4jKFUWo.png" alt></p>
+<li><p>Check ‘git’, and enter your Git Repository url<br><img src="https://i.imgur.com/R7mzIHH.png"></p>
+</li>
+<li><p>check ‘GitHub hook trigger for GITScm polling’<br><img src="https://i.imgur.com/4jKFUWo.png"></p>
 </li>
 <li><p>Enter the shell script you like<br>If you install <code>jenkins</code> on the machine where your project is installed:</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ssh -i /root/.ssh/yourKey.pem ec2-user@127.0.0.1 <span class="hljs-string">"cd /var/www/html/yourProjectName;git reset @^ --hard;git pull;/usr/local/bin/composer install;php artisan migrate --force;"</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><img src="https://i.imgur.com/3ZkH6ij.png" alt></p>
+<p><img src="https://i.imgur.com/3ZkH6ij.png"></p>
 <h3 id="Config-GitHub-1"><a href="#Config-GitHub-1" class="headerlink" title="Config GitHub"></a>Config GitHub</h3><ul>
 <li>Go to GitHub-&gt;setting</li>
 <li>build the webhook as follows:</li>
 </ul>
-<p><img src="https://i.imgur.com/CCLKHnK.png" alt></p>
+<p><img src="https://i.imgur.com/CCLKHnK.png"></p>
 
     
     </div>
@@ -481,53 +508,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

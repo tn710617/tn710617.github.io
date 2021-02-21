@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Implement Laravel Queue with AWS SQS - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -273,53 +273,60 @@
 </ol>
 <p>So why do we need to use <code>queue</code>?<br>When we execute some jobs that require longer time, like sending Emails, or uploading photos or videos, let users to wait until the jobs are completed is just not so practical.<br>So when users request some time consuming jobs, we need to use <code>queue</code> to line them, and execute them on the background, and so the users could be released from current request immediately.</p>
 <a id="more"></a>
+
 <h2 id="Apply-AWS-SQS-service"><a href="#Apply-AWS-SQS-service" class="headerlink" title="Apply AWS SQS service"></a>Apply <code>AWS SQS</code> service</h2><ul>
 <li>Firstly, you need an <code>AWS</code> account</li>
 <li>Apply <a href="https://aws.amazon.com/tw/sqs/" target="_blank" rel="noopener">SQS</a> on <code>AWS</code></li>
 <li>Refer to <a href="https://aws.amazon.com/tw/getting-started/tutorials/send-messages-distributed-applications/" target="_blank" rel="noopener">official document</a> to complete the setting.</li>
-<li>Keep the information below for further usage.<br><img src="https://i.imgur.com/VrVkwsw.jpg" alt></li>
+<li>Keep the information below for further usage.<br><img src="https://i.imgur.com/VrVkwsw.jpg"></li>
 </ul>
 <ul>
-<li><p>On up-right corner, click your account, and choose <code>My Security Credentials</code><br><img src="https://i.imgur.com/f2zuy6H.png" alt></p>
+<li><p>On up-right corner, click your account, and choose <code>My Security Credentials</code><br><img src="https://i.imgur.com/f2zuy6H.png"></p>
 </li>
-<li><p>Click <code>Users</code> to create a new user<br><img src="https://i.imgur.com/3zYdRI1.png" alt></p>
+<li><p>Click <code>Users</code> to create a new user<br><img src="https://i.imgur.com/3zYdRI1.png"></p>
 </li>
 </ul>
-<p><img src="https://i.imgur.com/jjP4ziY.png" alt></p>
+<p><img src="https://i.imgur.com/jjP4ziY.png"></p>
 <ul>
-<li><p>Give user id, and check <code>Programmic access</code>, and next<br><img src="https://i.imgur.com/EP46ucW.png" alt></p>
+<li><p>Give user id, and check <code>Programmic access</code>, and next<br><img src="https://i.imgur.com/EP46ucW.png"></p>
 </li>
-<li><p>Click <code>Create group</code> as photo below<br><img src="https://i.imgur.com/MrMq1W0.png" alt></p>
+<li><p>Click <code>Create group</code> as photo below<br><img src="https://i.imgur.com/MrMq1W0.png"></p>
 </li>
-<li><p>Add the user we just created into this newly created group<br><img src="https://i.imgur.com/hIB3eIG.png" alt></p>
+<li><p>Add the user we just created into this newly created group<br><img src="https://i.imgur.com/hIB3eIG.png"></p>
 </li>
-<li><p>Then <code>Add tags</code> is optional, you could skip it<br><img src="https://i.imgur.com/Hj718a5.png" alt></p>
+<li><p>Then <code>Add tags</code> is optional, you could skip it<br><img src="https://i.imgur.com/Hj718a5.png"></p>
 </li>
 <li><p>Now we have <code>Access key ID</code> and <code>Secret access key</code>. If you are afraid of forgetting them, you could download them. By the way, <code>Secret access key</code> will only be accessible this time, you will need to reproduce it if you forget it.</p>
 </li>
 </ul>
-<p><img src="https://i.imgur.com/R1SYkpy.png" alt></p>
+<p><img src="https://i.imgur.com/R1SYkpy.png"></p>
 <h2 id="Implement-Laravel-Queue"><a href="#Implement-Laravel-Queue" class="headerlink" title="Implement Laravel Queue"></a>Implement <code>Laravel Queue</code></h2><h3 id="Configure-AWS-SQS"><a href="#Configure-AWS-SQS" class="headerlink" title="Configure AWS SQS"></a>Configure <code>AWS SQS</code></h3><ul>
-<li>The following operation is referred to <a href="https://laravel.com/docs/5.8/queues" target="_blank" rel="noopener">official document</a></li>
+<li><p>The following operation is referred to <a href="https://laravel.com/docs/5.8/queues" target="_blank" rel="noopener">official document</a></p>
+</li>
 <li><p>Install <code>AWS</code> official SDK as referred in <a href="https://docs.aws.amazon.com/en_us/sdk-for-php/v3/developer-guide/getting-started_installation.html" target="_blank" rel="noopener">official document</a>，under the repository:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">composer require aws/aws-sdk-php</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Configure <code>.env</code> file</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">QUEUE_CONNECTION=sqs</span><br><span class="line">SQS_KEY=theKeyWeGotAbove</span><br><span class="line">SQS_SECRET=theSecretKeyWeGotAbove</span><br><span class="line">SQS_QUEUE=testSQS</span><br><span class="line">SQS_REGION=ap-northeast-1</span><br><span class="line">SQS_PREFIX=theURLAboveWithoutQueueName</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="Create-jobs"><a href="#Create-jobs" class="headerlink" title="Create jobs"></a>Create <code>jobs</code></h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:job ProcessPodcast</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>job</code> example:<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace App\Jobs;</span><br><span class="line"></span><br><span class="line">use App\Helpers;</span><br><span class="line">use Illuminate\Bus\Queueable;</span><br><span class="line">use Illuminate\Queue\SerializesModels;</span><br><span class="line">use Illuminate\Queue\InteractsWithQueue;</span><br><span class="line">use Illuminate\Contracts\Queue\ShouldQueue;</span><br><span class="line">use Illuminate\Foundation\Bus\Dispatchable;</span><br><span class="line"></span><br><span class="line">class SendMailWhenOrderPlaced implements ShouldQueue</span><br><span class="line">&#123;</span><br><span class="line">    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;</span><br><span class="line"></span><br><span class="line">    protected $job;</span><br><span class="line">    </span><br><span class="line">    // The maximum attempts of this job</span><br><span class="line">    public $tries = 5;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Create a new job instance.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function __construct($order, $FB_email, $Local_email)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;order = $order;</span><br><span class="line">        $this-&gt;FB_email = $FB_email;</span><br><span class="line">        $this-&gt;Local_email = $Local_email;</span><br><span class="line">        $this-&gt;job = Helpers::mailWhenOrderPlaced($order, $FB_email, $Local_email);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Execute the job.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function handle()</span><br><span class="line">    &#123;</span><br><span class="line">        return $this-&gt;job;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p>The example above is to execute a function of sending Email called <code>mailWhenOrderPlaced</code> with <code>queue</code> in Ray’s project.</p>
 <h3 id="Use-dispatch"><a href="#Use-dispatch" class="headerlink" title="Use dispatch"></a>Use <code>dispatch</code></h3><ul>
 <li>Wherever we want to execute this <code>job</code>, we use <code>dispatch</code><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">SendMailWhenOrderPlaced::dispatch($order, $FB_email, $Local_email);</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="Execute-queue"><a href="#Execute-queue" class="headerlink" title="Execute queue"></a>Execute <code>queue</code></h3><ul>
 <li>Under the project<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan queue:work</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h3 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h3><ul>
@@ -403,53 +410,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

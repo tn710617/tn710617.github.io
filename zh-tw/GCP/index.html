@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>gcloud CLI 用法 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -318,8 +318,13 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇記錄 gcloud CLI 用法<br><a id="more"></a></p>
-<p><br><br><br><br><br></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇記錄 gcloud CLI 用法</p>
+<a id="more"></a>
+
+<br>
+<br>
+<br>
+
 <h2 id="compute"><a href="#compute" class="headerlink" title="compute"></a>compute</h2><h3 id="instance"><a href="#instance" class="headerlink" title="instance"></a>instance</h3><ul>
 <li><p>建立一台虛擬機</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create example-instance-1 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=10GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=example-instance-1,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure>
@@ -347,9 +352,12 @@
 </li>
 <li><p>移除或新增執行個體 ssh 金鑰</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances add-metadata instanceName --metadata-from-file ssh-keys=fileName</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p>指令如上，以下是 fileName 的格式<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[USERNAME_2]:ssh-rsa [EXISTING_KEY_VALUE_2] [USERNAME_2]</span><br><span class="line">[USERNAME_3]:ssh-rsa [NEW_KEY_VALUE] [USERNAME_3]</span><br></pre></td></tr></table></figure></p>
+<p>指令如上，以下是 fileName 的格式</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[USERNAME_2]:ssh-rsa [EXISTING_KEY_VALUE_2] [USERNAME_2]</span><br><span class="line">[USERNAME_3]:ssh-rsa [NEW_KEY_VALUE] [USERNAME_3]</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>為 instance 增加 <code>tags</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances add-tags instanceName \</span><br><span class="line">--tags tag1,tag2,tag3...</span><br></pre></td></tr></table></figure>
@@ -359,34 +367,44 @@
 </li>
 <li><p>允許全專案公開 SSH 金鑰</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances add-metadata [INSTANCE_NAME] --metadata block-project-ssh-keys=FALSE</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="firewall-rules"><a href="#firewall-rules" class="headerlink" title="firewall-rules"></a>firewall-rules</h3><ul>
 <li>增加防火牆規則<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create firewallRuleName --allow tcp:50005,port2,port3 --target-tags targetTags</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <p><a href="https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/" target="_blank" rel="noopener">文件連結</a></p>
-<p><br></p>
+<br>
+
 <h3 id="images"><a href="#images" class="headerlink" title="images"></a>images</h3><ul>
 <li><p>查詢可用的 images 相關資訊</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute images list</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>從現有的 disk 創立 image</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute images create shadowsocks \</span><br><span class="line">--<span class="hljs-built_in">source</span>-disk <span class="hljs-built_in">test</span>-shadowsock \</span><br><span class="line">--<span class="hljs-built_in">source</span>-disk-zone asia-east1<span class="hljs-_">-a</span> \</span><br><span class="line">--family ubuntu-1804-lts</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="project"><a href="#project" class="headerlink" title="project"></a>project</h3><ul>
 <li><p>查詢全專案公開 ssh 金鑰並且顯示 5 行資料</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute project-info describe | grep -A 5 ssh-keys</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>移除或新增全專案公開 ssh 金鑰</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute project-info add-metadata --metadata-from-file ssh-keys=fileName</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p>指令如上，以下是 fileName 的格式<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[USERNAME_2]:ssh-rsa [EXISTING_KEY_VALUE_2] [USERNAME_2]</span><br><span class="line">[USERNAME_3]:ssh-rsa [NEW_KEY_VALUE] [USERNAME_3]</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
+<p>指令如上，以下是 fileName 的格式</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">[USERNAME_2]:ssh-rsa [EXISTING_KEY_VALUE_2] [USERNAME_2]</span><br><span class="line">[USERNAME_3]:ssh-rsa [NEW_KEY_VALUE] [USERNAME_3]</span><br></pre></td></tr></table></figure>
+
+<br>
+
 <h3 id="addresses"><a href="#addresses" class="headerlink" title="addresses"></a>addresses</h3><ul>
 <li><p>將現有 VM 使用的 IP 轉為靜態</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses create addressName \</span><br><span class="line">--addresses IP \</span><br><span class="line">--region regionName</span><br></pre></td></tr></table></figure>
@@ -396,27 +414,37 @@
 </li>
 <li><p>刪除 IP</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses delete ip1 ip2 ip3</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="regions"><a href="#regions" class="headerlink" title="regions"></a>regions</h3><ul>
 <li>取得 regions 列表<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute regions list</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h3 id="backend-service"><a href="#backend-service" class="headerlink" title="backend-service"></a>backend-service</h3><ul>
 <li>更新 draining-time-out<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services update [BACKEND_SERVICE] \</span><br><span class="line">    --connection-draining-timeout [CONNECTION_TIMEOUT_SECS]</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
 <h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><h3 id="record-sets"><a href="#record-sets" class="headerlink" title="record-sets"></a>record-sets</h3><h4 id="顯示區域的當前-DNS-紀錄"><a href="#顯示區域的當前-DNS-紀錄" class="headerlink" title="顯示區域的當前 DNS 紀錄"></a>顯示區域的當前 <code>DNS</code> 紀錄</h4><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud dns record-sets list --zone=<span class="hljs-string">"myzonename"</span></span><br></pre></td></tr></table></figure>
+
 <p>此指令會以含有前 100 筆記錄的資源記錄集，輸出 JSON 回應。您可以指定下列額外參數：</p>
 <ul>
 <li>limit：要列出的記錄集數目上限。</li>
 <li>name：只列出含有這個確切網域名稱的記錄集。</li>
 <li>type：只列出這個類型的記錄。如果有這類記錄，則必須同時使用 –name 參數。</li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="新增-A-record"><a href="#新增-A-record" class="headerlink" title="新增 A record"></a>新增 A record</h4><ul>
 <li><p>開始 transaction</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud dns record-sets transaction start --z zoneName</span><br></pre></td></tr></table></figure>
@@ -432,10 +460,14 @@
 </li>
 <li><p>執行</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud dns record-sets transaction execute -z <span class="hljs-string">'zoneName'</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br></p>
-<h3 id="managed-zones"><a href="#managed-zones" class="headerlink" title="managed-zones"></a>managed-zones</h3><p>列出所有 zone 列表<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud dns managed-zones list</span><br></pre></td></tr></table></figure></p>
+<br>
+
+<h3 id="managed-zones"><a href="#managed-zones" class="headerlink" title="managed-zones"></a>managed-zones</h3><p>列出所有 zone 列表</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud dns managed-zones list</span><br></pre></td></tr></table></figure>
+
 <h2 id="config"><a href="#config" class="headerlink" title="config"></a>config</h2><ul>
 <li><p>切斷 project</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> projectID</span><br></pre></td></tr></table></figure>
@@ -445,32 +477,68 @@
 </li>
 <li><p>取得 config 的 account 的值</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config get-value account</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p><br><br><br><br><br></p>
-<h2 id="projects"><a href="#projects" class="headerlink" title="projects"></a>projects</h2><p>取得 project list<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud projects list</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<br>
+<br>
+<br>
+
+<h2 id="projects"><a href="#projects" class="headerlink" title="projects"></a>projects</h2><p>取得 project list</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud projects list</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="gsutil"><a href="#gsutil" class="headerlink" title="gsutil"></a>gsutil</h2><p>Cloud Storage</p>
-<p><br></p>
-<h3 id="mb"><a href="#mb" class="headerlink" title="mb"></a>mb</h3><p>建立儲存區, 命名規格請<a href="https://tn710617.github.io/zh-tw/cloudStorageQwikStartCLISDK/#more">參考</a><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil mb gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
-<h3 id="cp"><a href="#cp" class="headerlink" title="cp"></a>cp</h3><p>上傳檔案<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil cp ada.jpg gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure></p>
-<p>下載檔案<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil cp -r ada.jpg gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure></p>
+<br>
+
+<h3 id="mb"><a href="#mb" class="headerlink" title="mb"></a>mb</h3><p>建立儲存區, 命名規格請<a href="https://tn710617.github.io/zh-tw/cloudStorageQwikStartCLISDK/#more">參考</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil mb gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="cp"><a href="#cp" class="headerlink" title="cp"></a>cp</h3><p>上傳檔案</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil cp ada.jpg gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure>
+
+<p>下載檔案</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil cp -r ada.jpg gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure>
+
 <p><code>-r</code>: recursive</p>
-<p>複製檔案<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil cp gs://YOUR-BUCKET-NAME/ada.jpg gs://YOUR-BUCKET-NAME/image-folder/</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
-<h3 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h3><p>列出物件<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil ls gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure></p>
-<p>列出物件細節<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil ls -l gs://YOUR-BUCKET-NAME/ada.jpg</span><br></pre></td></tr></table></figure></p>
+<p>複製檔案</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil cp gs://YOUR-BUCKET-NAME/ada.jpg gs://YOUR-BUCKET-NAME/image-folder/</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h3><p>列出物件</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil ls gs://YOUR-BUCKET-NAME</span><br></pre></td></tr></table></figure>
+
+<p>列出物件細節</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil ls -l gs://YOUR-BUCKET-NAME/ada.jpg</span><br></pre></td></tr></table></figure>
+
 <p><code>-l</code>: list</p>
-<p><br></p>
-<h3 id="acl"><a href="#acl" class="headerlink" title="acl"></a>acl</h3><p>增加公開存取權限<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil acl ch -u AllUsers:R gs://YOUR-BUCKET-NAME/fileName</span><br></pre></td></tr></table></figure></p>
-<p>移除公開存取權限<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil acl ch -d AllUsers gs://YOUR-BUCKET-NAME/fileName</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
-<h3 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h3><p>刪除物件<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil rm gs://YOUR-BUCKET-NAME/fileName</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br><br><br></p>
+<br>
+
+<h3 id="acl"><a href="#acl" class="headerlink" title="acl"></a>acl</h3><p>增加公開存取權限</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil acl ch -u AllUsers:R gs://YOUR-BUCKET-NAME/fileName</span><br></pre></td></tr></table></figure>
+
+<p>移除公開存取權限</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil acl ch -d AllUsers gs://YOUR-BUCKET-NAME/fileName</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h3><p>刪除物件</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gsutil rm gs://YOUR-BUCKET-NAME/fileName</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
 <h2 id="container"><a href="#container" class="headerlink" title="container"></a>container</h2><h3 id="cluster"><a href="#cluster" class="headerlink" title="cluster"></a>cluster</h3><ul>
 <li><p>建立集群, 並且限定集群內 instance 可存取的 API 範圍</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters create jenkins-cd \</span><br><span class="line">--num-nodes 3 \</span><br><span class="line">--machine-type n1-standard-2 \</span><br><span class="line">--scopes <span class="hljs-string">"https://www.googleapis.com/auth/source.read_write,cloud-platform"</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>–num-nodes</strong>: 集群含有三台機器, 最少三台</li>
 <li><strong>–machine-type</strong>: 機器類型</li>
@@ -551,53 +619,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

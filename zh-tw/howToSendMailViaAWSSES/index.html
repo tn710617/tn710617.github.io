@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>怎麼在 Laravel 中, 利用 AWS SES 發郵件? - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="申請 AWS SES(simple Email Service) 服務 建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key 到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證">
+<meta name="description" content="# 前言你好, 我是不學會死的後端工程師, Ray 本篇記錄如何使用 Laravel 與 AWS SES 來發送 email 版本: Laravel 8">
 <meta name="keywords" content="Laravel,AWS SES,Ngrok,Laravel Mail">
 <meta property="og:type" content="article">
 <meta property="og:title" content="怎麼在 Laravel 中, 利用 AWS SES 發郵件?">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/howToSendMailViaAWSSES/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="申請 AWS SES(simple Email Service) 服務 建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key 到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證">
+<meta property="og:description" content="# 前言你好, 我是不學會死的後端工程師, Ray 本篇記錄如何使用 Laravel 與 AWS SES 來發送 email 版本: Laravel 8">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:image" content="https://i.imgur.com/3OGCOLF.png">
-<meta property="og:image" content="https://i.imgur.com/n4EI4kF.png">
-<meta property="og:updated_time" content="2020-02-07T12:06:04.636Z">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eQZt8Qtmt97rdSICTkRvdvJESqxOJHUXcLG7DtL7HQNpAFZzYejPbfoDXT1Usof40VdZ6MLzIeW6Um-wblaqqN0pUFMH0N88zwBfq4hF6E9bbLFZEluKnAJC1H2TG0APLdjBOLCmc31vwh0HuUYKERuA=w2938-h1426-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cmwAqY3xAoqcCutAvLUXIhBQu8izCjFyZJt6CFvCRS4ffkraEP-EtDCpPQApliFE4Ia3X5rQekGoy4PMpZzLtJmWSw2n4AU-LtTXpMBg9RLGuRtqQYD9kXO4X8xSxsO3KD6FVm1vyBQteDoZviEJIVWw=w1632-h302-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dfeiv6JVf8I9F7EK4P2FCLOYqNlplIofudpA4pISPimMd_fxN_MqCwBYySsFM0Lt808iilyrDA8OeH_bXR9JV_-t75aC9rLSfhNiAkQNWS8hIQlYd7DuIu8Z-96nRHDJ2eudjyJfRhMdoXPE9pL9Axgw=w2938-h406-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fUeoew7Mg_h4ghoT2ysikhQ-Ca1d7tLLLJlNmND9EULP_uyY-ByRlvO7d7x98WwQwkh_lbMBt4PMlbIkl7o_Ma8tUNuMS5ouxvap3iylsyKdUWMFZVbI1bveE613Nia4t7pq2XnQxQYl7KMjJVpZadEQ=w1986-h890-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eHP1M7mdFnlElzw8W5eQbUpiIeOC26ugK-vhv5NCAo9u0lzgStJ8s8W-ME1kaZeE84aqKNAoKpkZQfOQrrIalQc8Lz0JeKM4AnnnbM-tNx0KIZJjMNAN6aBKSD3gRn3J8hgPfRZ0hqgiqaEZVghPOclw=w1986-h1002-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cFrJcJ-P12Z7zkHR4Qd1sfliATkm7HLn5yeg89WEDL49Bfq38WqSfiET3QX7lPLXoAB2ilzmfvurh5zHkgTORCPHx1Yr44EbUXIuOzryYuV6tPRf0rf2vNsr-J-PUbv0rsRhRJJqyOFZwKZy9KG0sYSA=w1770-h382-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3erKAF4A3AafugpX6Jniq4OE_LSeg4pS1C83HHcFsnVZh_XR5dumZNJMPn21CL5xfUrYcthLk1nLVUZJqKQ3VSCCofsSxIhLFxmcJIy0rzzv4_07dsfu3_G7SdbTeamHI6w3wnrP_M95ujXkSWLtiriWQ=w1466-h1068-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fHzXhi8jhTX1xaE1wTV2MtNJRqEDWV55Ol152pZx3te3eViqL0JOnIIIEUApA8vm2viqWxGw54QuH21MGSnqDnA7WkzmUMGMrAHN09R6kdxnD59mfl08AzDJsPUVlR-jg8fL_CQj_FuOC5TQKqfUOEUg=w1466-h1224-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cqWKej8bepW0czEolWF1rVoS912pGH_EaIwTnoO8DMgaR40PMqTVgGfpQpvctgW1vpw2UT5rx5XIFB93cb4AIlRk0GTZPbZmbQQSpnI--VrUCi71Zm1O_kKsRraztUWgas7smZJAxk1ve5sf8edkCBnQ=w1466-h1030-no?authuser=0">
+<meta property="og:updated_time" content="2021-01-26T13:12:54.767Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="怎麼在 Laravel 中, 利用 AWS SES 發郵件?">
-<meta name="twitter:description" content="申請 AWS SES(simple Email Service) 服務 建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key 到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證">
-<meta name="twitter:image" content="https://i.imgur.com/3OGCOLF.png">
+<meta name="twitter:description" content="# 前言你好, 我是不學會死的後端工程師, Ray 本篇記錄如何使用 Laravel 與 AWS SES 來發送 email 版本: Laravel 8">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eQZt8Qtmt97rdSICTkRvdvJESqxOJHUXcLG7DtL7HQNpAFZzYejPbfoDXT1Usof40VdZ6MLzIeW6Um-wblaqqN0pUFMH0N88zwBfq4hF6E9bbLFZEluKnAJC1H2TG0APLdjBOLCmc31vwh0HuUYKERuA=w2938-h1426-no?authuser=0">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -33,21 +40,28 @@
 
 
 
-    <meta name="description" content="申請 AWS SES(simple Email Service) 服務 建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key 到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證">
+    <meta name="description" content="# 前言你好, 我是不學會死的後端工程師, Ray 本篇記錄如何使用 Laravel 與 AWS SES 來發送 email 版本: Laravel 8">
 <meta name="keywords" content="Laravel,AWS SES,Ngrok,Laravel Mail">
 <meta property="og:type" content="article">
 <meta property="og:title" content="怎麼在 Laravel 中, 利用 AWS SES 發郵件?">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/howToSendMailViaAWSSES/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="申請 AWS SES(simple Email Service) 服務 建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key 到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證">
+<meta property="og:description" content="# 前言你好, 我是不學會死的後端工程師, Ray 本篇記錄如何使用 Laravel 與 AWS SES 來發送 email 版本: Laravel 8">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:image" content="https://i.imgur.com/3OGCOLF.png">
-<meta property="og:image" content="https://i.imgur.com/n4EI4kF.png">
-<meta property="og:updated_time" content="2020-02-07T12:06:04.636Z">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eQZt8Qtmt97rdSICTkRvdvJESqxOJHUXcLG7DtL7HQNpAFZzYejPbfoDXT1Usof40VdZ6MLzIeW6Um-wblaqqN0pUFMH0N88zwBfq4hF6E9bbLFZEluKnAJC1H2TG0APLdjBOLCmc31vwh0HuUYKERuA=w2938-h1426-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cmwAqY3xAoqcCutAvLUXIhBQu8izCjFyZJt6CFvCRS4ffkraEP-EtDCpPQApliFE4Ia3X5rQekGoy4PMpZzLtJmWSw2n4AU-LtTXpMBg9RLGuRtqQYD9kXO4X8xSxsO3KD6FVm1vyBQteDoZviEJIVWw=w1632-h302-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dfeiv6JVf8I9F7EK4P2FCLOYqNlplIofudpA4pISPimMd_fxN_MqCwBYySsFM0Lt808iilyrDA8OeH_bXR9JV_-t75aC9rLSfhNiAkQNWS8hIQlYd7DuIu8Z-96nRHDJ2eudjyJfRhMdoXPE9pL9Axgw=w2938-h406-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fUeoew7Mg_h4ghoT2ysikhQ-Ca1d7tLLLJlNmND9EULP_uyY-ByRlvO7d7x98WwQwkh_lbMBt4PMlbIkl7o_Ma8tUNuMS5ouxvap3iylsyKdUWMFZVbI1bveE613Nia4t7pq2XnQxQYl7KMjJVpZadEQ=w1986-h890-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eHP1M7mdFnlElzw8W5eQbUpiIeOC26ugK-vhv5NCAo9u0lzgStJ8s8W-ME1kaZeE84aqKNAoKpkZQfOQrrIalQc8Lz0JeKM4AnnnbM-tNx0KIZJjMNAN6aBKSD3gRn3J8hgPfRZ0hqgiqaEZVghPOclw=w1986-h1002-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cFrJcJ-P12Z7zkHR4Qd1sfliATkm7HLn5yeg89WEDL49Bfq38WqSfiET3QX7lPLXoAB2ilzmfvurh5zHkgTORCPHx1Yr44EbUXIuOzryYuV6tPRf0rf2vNsr-J-PUbv0rsRhRJJqyOFZwKZy9KG0sYSA=w1770-h382-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3erKAF4A3AafugpX6Jniq4OE_LSeg4pS1C83HHcFsnVZh_XR5dumZNJMPn21CL5xfUrYcthLk1nLVUZJqKQ3VSCCofsSxIhLFxmcJIy0rzzv4_07dsfu3_G7SdbTeamHI6w3wnrP_M95ujXkSWLtiriWQ=w1466-h1068-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fHzXhi8jhTX1xaE1wTV2MtNJRqEDWV55Ol152pZx3te3eViqL0JOnIIIEUApA8vm2viqWxGw54QuH21MGSnqDnA7WkzmUMGMrAHN09R6kdxnD59mfl08AzDJsPUVlR-jg8fL_CQj_FuOC5TQKqfUOEUg=w1466-h1224-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cqWKej8bepW0czEolWF1rVoS912pGH_EaIwTnoO8DMgaR40PMqTVgGfpQpvctgW1vpw2UT5rx5XIFB93cb4AIlRk0GTZPbZmbQQSpnI--VrUCi71Zm1O_kKsRraztUWgas7smZJAxk1ve5sf8edkCBnQ=w1466-h1030-no?authuser=0">
+<meta property="og:updated_time" content="2021-01-26T13:12:54.767Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="怎麼在 Laravel 中, 利用 AWS SES 發郵件?">
-<meta name="twitter:description" content="申請 AWS SES(simple Email Service) 服務 建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key 到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證">
-<meta name="twitter:image" content="https://i.imgur.com/3OGCOLF.png">
+<meta name="twitter:description" content="# 前言你好, 我是不學會死的後端工程師, Ray 本篇記錄如何使用 Laravel 與 AWS SES 來發送 email 版本: Laravel 8">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eQZt8Qtmt97rdSICTkRvdvJESqxOJHUXcLG7DtL7HQNpAFZzYejPbfoDXT1Usof40VdZ6MLzIeW6Um-wblaqqN0pUFMH0N88zwBfq4hF6E9bbLFZEluKnAJC1H2TG0APLdjBOLCmc31vwh0HuUYKERuA=w2938-h1426-no?authuser=0">
 
 
 
@@ -144,6 +158,60 @@
                 <div class="navbar-dropdown is-right">
                     
                     
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#申請-SES-Simple-Email-Service-服務">2&nbsp;&nbsp;<b># 申請 SES (Simple Email Service) 服務</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#驗證-Email">3&nbsp;&nbsp;<b># 驗證 Email</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立擁有-SES-權限的-IAM-User">4&nbsp;&nbsp;<b># 建立擁有 SES 權限的 IAM User</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#申請移出沙盒">5&nbsp;&nbsp;<b># 申請移出沙盒</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-專案">6&nbsp;&nbsp;<b># Laravel 專案</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#套件安裝">6.1&nbsp;&nbsp;# 套件安裝</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#env-設定">6.2&nbsp;&nbsp;# .env 設定</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試">7&nbsp;&nbsp;<b># 測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#碰到的問題">8&nbsp;&nbsp;<b># 碰到的問題</b></a>
+                    
                 </div>
             </div>
             
@@ -192,7 +260,7 @@
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
-            <time datetime="2019-02-06T07:24:19.000Z" itemprop="datePublished">2月 6 2019</time>
+            <time datetime="2021-01-26T07:24:19.000Z" itemprop="datePublished">1月 26 2021</time>
         </span>
         
         <span class="column is-narrow article-category">
@@ -204,55 +272,67 @@
         <span class="column is-narrow">
             
             
-            5 分钟 讀完 (大概 817 字)
+            6 分钟 讀完 (大概 955 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <ol>
-<li>申請 AWS SES(simple Email Service) 服務</li>
-<li>建立一個使用者, 並建立政策 (SES full access), 取得 Access key 跟 Secret key</li>
-<li>到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證</li>
-</ol>
-<a id="more"></a> 
-<p><img src="https://i.imgur.com/3OGCOLF.png" alt></p>
-<ol start="4">
-<li><p>Google AWS support center, 提交‘移出沙盒’申請, 約24小時內會解封。否則寄信數量跟頻率都會被很大程度上限制住, 且任何收件人都必須要經過AWS驗證。<br><img src="https://i.imgur.com/n4EI4kF.png" alt></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>你好, 我是不學會死的後端工程師, Ray</p>
+<p>本篇記錄如何使用 Laravel 與 AWS SES 來發送 email</p>
+<p>版本: Laravel 8</p>
+<a id="more"></a>
+
+<br>
+
+<h2 id="申請-SES-Simple-Email-Service-服務"><a href="#申請-SES-Simple-Email-Service-服務" class="headerlink" title="# 申請 SES (Simple Email Service) 服務"></a># 申請 SES (Simple Email Service) 服務</h2><p><img src="https://lh3.googleusercontent.com/pw/ACtC-3eQZt8Qtmt97rdSICTkRvdvJESqxOJHUXcLG7DtL7HQNpAFZzYejPbfoDXT1Usof40VdZ6MLzIeW6Um-wblaqqN0pUFMH0N88zwBfq4hF6E9bbLFZEluKnAJC1H2TG0APLdjBOLCmc31vwh0HuUYKERuA=w2938-h1426-no?authuser=0"></p>
+<br>
+
+<h2 id="驗證-Email"><a href="#驗證-Email" class="headerlink" title="# 驗證 Email"></a># 驗證 Email</h2><p>SES Service 在剛使用時, 會處於 SandBox 狀態, 在此狀態下, 除了會有每日發送 email 數量以及頻率的限制之外, 所有收件方都必須經過驗證, 因此先將自己的信箱輸入, 接著會收到確認信, 點擊確認後該信箱就可以作為之後測試用了</p>
+<p>到 AWS SES 主控台, 左方 Email Addresses, 然後進去點選 verify a new email address 進行驗證<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cmwAqY3xAoqcCutAvLUXIhBQu8izCjFyZJt6CFvCRS4ffkraEP-EtDCpPQApliFE4Ia3X5rQekGoy4PMpZzLtJmWSw2n4AU-LtTXpMBg9RLGuRtqQYD9kXO4X8xSxsO3KD6FVm1vyBQteDoZviEJIVWw=w1632-h302-no?authuser=0"></p>
+<br>
+
+<h2 id="建立擁有-SES-權限的-IAM-User"><a href="#建立擁有-SES-權限的-IAM-User" class="headerlink" title="# 建立擁有 SES 權限的 IAM User"></a># 建立擁有 SES 權限的 IAM User</h2><p>要使用 Laravel 存取 SES 服務, 必須要有相對應的身份以及權限才行, 這樣 AWS 才知道你是誰, <del>用超過才可以跟你收錢</del><br>所以需要建立一個擁有 (SES Full Access) 的 IAM 使用者</p>
+<ul>
+<li><strong>新增使用者</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dfeiv6JVf8I9F7EK4P2FCLOYqNlplIofudpA4pISPimMd_fxN_MqCwBYySsFM0Lt808iilyrDA8OeH_bXR9JV_-t75aC9rLSfhNiAkQNWS8hIQlYd7DuIu8Z-96nRHDJ2eudjyJfRhMdoXPE9pL9Axgw=w2938-h406-no?authuser=0"></li>
+</ul>
+<ul>
+<li><p><strong>命名使用者, 並只勾選程式設計方式存取即可, 因為該 IAM User 並不需要登入</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fUeoew7Mg_h4ghoT2ysikhQ-Ca1d7tLLLJlNmND9EULP_uyY-ByRlvO7d7x98WwQwkh_lbMBt4PMlbIkl7o_Ma8tUNuMS5ouxvap3iylsyKdUWMFZVbI1bveE613Nia4t7pq2XnQxQYl7KMjJVpZadEQ=w1986-h890-no?authuser=0"></p>
 </li>
-<li><p>開立一個 Laravel 專案</p>
+<li><p><strong>從現有政策中, 賦予該 IAM User SES Full Access</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eHP1M7mdFnlElzw8W5eQbUpiIeOC26ugK-vhv5NCAo9u0lzgStJ8s8W-ME1kaZeE84aqKNAoKpkZQfOQrrIalQc8Lz0JeKM4AnnnbM-tNx0KIZJjMNAN6aBKSD3gRn3J8hgPfRZ0hqgiqaEZVghPOclw=w1986-h1002-no?authuser=0"></p>
 </li>
-<li>輸入 <code>composer require guzzlehttp/guzzle</code>, 安裝套件</li>
-<li>安裝AWS SDK <code>composer require aws/aws-sdk-php</code></li>
-<li>到 <code>config/mail.php</code> 中, 將 driver 選項相對的 env 參數改成 <code>ses</code></li>
-<li><p>到 <code>config/services.php</code> 中, 進行以下配置</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&apos;ses&apos; =&gt; [</span><br><span class="line">    &apos;key&apos; =&gt; &apos;your-ses-key&apos;,</span><br><span class="line">    &apos;secret&apos; =&gt; &apos;your-ses-secret&apos;,</span><br><span class="line">    &apos;region&apos; =&gt; &apos;ses-region&apos;,  // e.g. us-east-1</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<li><p><strong>在建立 User 後, 下載 Access ID 以及 Access Secret, 之後設定 Laravel env 檔時會用到</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cFrJcJ-P12Z7zkHR4Qd1sfliATkm7HLn5yeg89WEDL49Bfq38WqSfiET3QX7lPLXoAB2ilzmfvurh5zHkgTORCPHx1Yr44EbUXIuOzryYuV6tPRf0rf2vNsr-J-PUbv0rsRhRJJqyOFZwKZy9KG0sYSA=w1770-h382-no?authuser=0"></p>
 </li>
-<li><p>以上參數在 env 的配置, 大概如下：</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">MAIL_DRIVER=ses</span><br><span class="line">MAIL_FROM_ADDRESS=your-mail-address</span><br><span class="line">MAIL_FROM_NAME=BuyBuyGo</span><br><span class="line">SES_KEY=your-ses-key</span><br><span class="line">SES_SECRET=your-ses-secret</span><br><span class="line">SES_REGION=us-west-2</span><br></pre></td></tr></table></figure>
+</ul>
+<br>
+
+<h2 id="申請移出沙盒"><a href="#申請移出沙盒" class="headerlink" title="# 申請移出沙盒"></a># 申請移出沙盒</h2><p>提交‘移出沙盒’申請, 約24小時內會解封。否則寄信數量跟頻率都會被很大程度上限制住, 且任何收件人都必須要經過AWS驗證。</p>
+<ul>
+<li><p><strong>在沙盒內時, 各方面會受到限制</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3erKAF4A3AafugpX6Jniq4OE_LSeg4pS1C83HHcFsnVZh_XR5dumZNJMPn21CL5xfUrYcthLk1nLVUZJqKQ3VSCCofsSxIhLFxmcJIy0rzzv4_07dsfu3_G7SdbTeamHI6w3wnrP_M95ujXkSWLtiriWQ=w1466-h1068-no?authuser=0"></p>
 </li>
-<li><p>建立 Maiiables class, <code>php artisan make:mail OrderCreated --markdown=emails.orders.created</code></p>
+<li><p><strong>申請移出沙盒, 不過需要經過審查, 有越來越嚴格的趨向 QQ</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fHzXhi8jhTX1xaE1wTV2MtNJRqEDWV55Ol152pZx3te3eViqL0JOnIIIEUApA8vm2viqWxGw54QuH21MGSnqDnA7WkzmUMGMrAHN09R6kdxnD59mfl08AzDJsPUVlR-jg8fL_CQj_FuOC5TQKqfUOEUg=w1466-h1224-no?authuser=0"></p>
 </li>
-<li><p>到 <code>OrderCreated</code> 中, 建立 build 檔案, 大略如下:</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">namespace App\Mail;</span><br><span class="line"></span><br><span class="line">use Illuminate\Bus\Queueable;</span><br><span class="line">use Illuminate\Mail\Mailable;</span><br><span class="line">use Illuminate\Queue\SerializesModels;</span><br><span class="line">use Illuminate\Contracts\Queue\ShouldQueue;</span><br><span class="line"></span><br><span class="line">class OrderShipped extends Mailable</span><br><span class="line">&#123;</span><br><span class="line">    use Queueable, SerializesModels;</span><br><span class="line"></span><br><span class="line">    protected $order;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Create a new message instance.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function __construct($order)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;order = $order;</span><br><span class="line">        //</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Build the message.</span><br><span class="line">     *</span><br><span class="line">     * @return $this</span><br><span class="line">     */</span><br><span class="line">    public function build()</span><br><span class="line">    &#123;</span><br><span class="line">        return $this-&gt;markdown(&apos;emails.orders.created&apos;)</span><br><span class="line">            -&gt;with([</span><br><span class="line">                &apos;buyer&apos;            =&gt; $this-&gt;order-&gt;user-&gt;name,</span><br><span class="line">                &apos;order&apos;            =&gt; $this-&gt;order-&gt;name,</span><br><span class="line">                &apos;item_name&apos;        =&gt; $this-&gt;order-&gt;item_name,</span><br><span class="line">                &apos;item_description&apos; =&gt; $this-&gt;order-&gt;item_description,</span><br><span class="line">                &apos;quantity&apos;         =&gt; $this-&gt;order-&gt;quantity,</span><br><span class="line">                &apos;total_amount&apos;     =&gt; $this-&gt;order-&gt;total_amount,</span><br><span class="line">                &apos;unit_price&apos;       =&gt; $this-&gt;order-&gt;unit_price,</span><br><span class="line">                &apos;expiry_time&apos;      =&gt; $this-&gt;order-&gt;expiry_time,</span><br><span class="line">            ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<li><p><strong>若審核成功, 會變成 Production Enabled 的狀態</strong><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cqWKej8bepW0czEolWF1rVoS912pGH_EaIwTnoO8DMgaR40PMqTVgGfpQpvctgW1vpw2UT5rx5XIFB93cb4AIlRk0GTZPbZmbQQSpnI--VrUCi71Zm1O_kKsRraztUWgas7smZJAxk1ve5sf8edkCBnQ=w1466-h1030-no?authuser=0"></p>
 </li>
-<li><p>到 <code>created.blade</code> 當中做版面客制, 大略如下：</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">@component(&apos;mail::message&apos;)</span><br><span class="line"># Dear &#123;&#123; $buyer &#125;&#125;</span><br><span class="line">Thanks for your patronage!</span><br><span class="line"></span><br><span class="line">- Order: &#123;&#123;$order&#125;&#125;</span><br><span class="line">- Item: &#123;&#123;$item_name&#125;&#125;</span><br><span class="line">- Item description: &#123;&#123;$item_description&#125;&#125;</span><br><span class="line">- Quantity: &#123;&#123;$quantity&#125;&#125;</span><br><span class="line">- Unit price: &#123;&#123;$unit_price&#125;&#125;</span><br><span class="line">- Amount: &#123;&#123;$total_amount&#125;&#125;</span><br><span class="line"></span><br><span class="line">## Kindly make this payment before &lt;span style=&quot;color: red&quot;&gt;&#123;&#123;$expiry_time&#125;&#125;&lt;/span&gt;</span><br><span class="line"></span><br><span class="line">&lt;hr&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line">## If you have any question, feel free to contact us</span><br><span class="line"></span><br><span class="line">@component(&apos;mail::button&apos;, [&apos;url&apos; =&gt; &apos;https://tn710617.github.io/&apos;])</span><br><span class="line">Contact Us</span><br><span class="line">@endcomponent</span><br><span class="line"></span><br><span class="line">Thanks,&lt;br&gt;</span><br><span class="line">&#123;&#123; config(&apos;app.name&apos;) &#125;&#125;</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在任何你想要發這封mail的地方, 使用 <code>mail</code> 來寄信, 大略如下：</p>
-<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Mail::to($buyer-&gt;email)-&gt;send(new OrderCreated($order));</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>至此, 應該可以成功寄信了！</p>
-</li>
-<li><p>你以為結束了嗎？ 呵呵, 是快結束了啦！ 不過呢, 還有一件事情非常重要！<br>上面的部分大概花了我一天, 然後我遇到一個未解的謎題, 又被搞了一天。<br>身為一個 backend programmer, 如果遇到需要接金流的話, 我都是用 ngrok 來測試。<br>這次遇到的問題很奇怪, 當我收到金流服務商的回饋時, 我必須要去做一些事, 自 controller 收到 request 之後所做的任何 function 都沒有問題, 資料庫的 CRUD 也都正常, 可偏偏只要執行到這一行寄 mail 的, 就給我報錯！！ 錯誤訊息如下：</p>
+</ul>
+<br>
+
+<h2 id="Laravel-專案"><a href="#Laravel-專案" class="headerlink" title="# Laravel 專案"></a># Laravel 專案</h2><h3 id="套件安裝"><a href="#套件安裝" class="headerlink" title="# 套件安裝"></a># 套件安裝</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer require guzzlehttp/guzzle</span><br><span class="line">composer require aws/aws-sdk-php</span><br></pre></td></tr></table></figure>
+
+<h3 id="env-設定"><a href="#env-設定" class="headerlink" title="# .env 設定"></a># .env 設定</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">MAIL_MAILER=ses</span><br><span class="line">MAIL_HOST=smtp.mailtrap.io</span><br><span class="line">MAIL_PORT=2525</span><br><span class="line">MAIL_USERNAME=null</span><br><span class="line">MAIL_PASSWORD=null</span><br><span class="line">MAIL_ENCRYPTION=null</span><br><span class="line">MAIL_FROM_ADDRESS=發送方信箱</span><br><span class="line">MAIL_FROM_NAME=&quot;$&#123;APP_NAME&#125;&quot;</span><br><span class="line"></span><br><span class="line">AWS_ACCESS_KEY_ID=yourAwsAccessId</span><br><span class="line">AWS_SECRET_ACCESS_KEY=yourAwsAccessSecret</span><br><span class="line">AWS_DEFAULT_REGION=yourAwsDefaultRegion</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="測試"><a href="#測試" class="headerlink" title="# 測試"></a># 測試</h2><p>這邊採用 <code>php artisan tinker</code> 來測試</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan tinker;</span><br><span class="line"></span><br><span class="line">// 輸入</span><br><span class="line">Mail::send(&apos;welcome&apos;, [], function($message) &#123;</span><br><span class="line">    $message-&gt;to(&apos;receiverEmail&apos;)-&gt;subject(&apos;Testing mails&apos;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="碰到的問題"><a href="#碰到的問題" class="headerlink" title="# 碰到的問題"></a># 碰到的問題</h2><p>當串接金流時, 使用 ngrok 來測試, 在收到金流服務商的 callback 時, 只要執行到發送 mail 的地方就報錯, 錯誤訊息如下：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&quot;message&quot;: &quot;Expected response code 250 but got code \&quot;530\&quot;, with message \&quot;530 5.7.1 Authentication required\r\n\&quot;&quot;,</span><br><span class="line">&quot;exception&quot;: &quot;Swift_TransportException&quot;,</span><br><span class="line">&quot;file&quot;: &quot;/Users/ray/code/FacebookOptimizedSellingSystem/vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/AbstractSmtpTransport.php&quot;,</span><br><span class="line">&quot;line&quot;: 457,</span><br><span class="line">&quot;trace&quot;: [</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以下省略一千行…</p>
-<p>在經過超級無敵疲勞的 Debug 之後, 終於發現問題…</p>
-<p>只要使用 <code>valet share</code>, 就不會有這個問題<br>只要是用 <code>php artisan serve --port=yourPort</code>, 然後 <code>ngrok http yourPort</code>, 這樣就會遇到我說的這個問題。</p>
-<p>雖然最後問題解決了, 但說實在的我還是不知道為什麼…</p>
-<p>如果有大大知道這是什麼原因, 還請麻煩來信幫我解惑一下！感激不盡！</p>
+
+<p>後來使用 <code>valet share</code>, 就不會有這個問題, 原本是使用 <code>php artisan serve --port=myPort</code>, 然後 <code>ngrok http myport</code></p>
+<p>雖然最後問題解決了, 但原因未明, 若有高人知曉, 希望可以給個學習機會。</p>
 
     
     </div>
@@ -273,12 +353,12 @@
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/zh-tw/taskSchedulingInLaravel/">使用 Laravel 任務排程</a>
+            <a href="/zh-tw/laravel-digging-deeper-mail/">Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh-tw/howToConfigureGit/">如何設置Git的個人資訊？</a>
+            <a href="/zh-tw/laravel-deploayment/">Laravel - 部署</a>
             
         </span>
     </div>
@@ -332,53 +412,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

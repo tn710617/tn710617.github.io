@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>在 PayPal 的 IPN 方式中，提交多個商品 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -238,12 +238,14 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這篇文章將分享，當我們使用 PayPal 的 IPN 結帳方式時，如何提交多個商品，每個商品擁有各自的名稱，價格，以及數量。<br><a id="more"></a><br>本文章是我從<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside#methodtwo" target="_blank" rel="noopener">官網</a> 複製下來的, 因為我不知道未來什麼時候會用到，而且我實在懶得再去找一次。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這篇文章將分享，當我們使用 PayPal 的 IPN 結帳方式時，如何提交多個商品，每個商品擁有各自的名稱，價格，以及數量。</p>
+<a id="more"></a>
+<p>本文章是我從<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside#methodtwo" target="_blank" rel="noopener">官網</a> 複製下來的, 因為我不知道未來什麼時候會用到，而且我實在懶得再去找一次。</p>
 <h2 id="本文開始"><a href="#本文開始" class="headerlink" title="本文開始"></a>本文開始</h2><p>有些網站開發人員可能希望將PayPal付款處理集成到他們自己的第三方購物車上，而不是標準的PayPal購物車上。請使用以下說明為您的買家提供PayPal付款，以便他們在您的第三方購物車上添加購置物品後結賬時使用。</p>
 <p>將您的第三方購物車與PayPal的付款流程集成目前有兩種方法。第一種方法是傳遞購物車付款總額，而不是單個物品金額。第二種方法是將所選物品詳情傳遞給PayPal，而不是總購物車數量。提示：按下述步驟粘貼必需的變量到PayPal時，可能需要在您的網站上執行某些腳本。</p>
 <ul>
-<li><a href="#方法1-將總購物車數量傳遞給PayPal">方法 1. 將總購物車數量傳遞給PayPal</a></li>
-<li><a href="#方法2-將單個物品傳遞給PayPal">方法 2. 將單個物品傳遞給PayPal</a></li>
+<li><a href="#%E6%96%B9%E6%B3%951-%E5%B0%87%E7%B8%BD%E8%B3%BC%E7%89%A9%E8%BB%8A%E6%95%B8%E9%87%8F%E5%82%B3%E9%81%9E%E7%B5%A6PayPal">方法 1. 將總購物車數量傳遞給PayPal</a></li>
+<li><a href="#%E6%96%B9%E6%B3%952-%E5%B0%87%E5%96%AE%E5%80%8B%E7%89%A9%E5%93%81%E5%82%B3%E9%81%9E%E7%B5%A6PayPal">方法 2. 將單個物品傳遞給PayPal</a></li>
 </ul>
 <h2 id="方法1-將總購物車數量傳遞給PayPal"><a href="#方法1-將總購物車數量傳遞給PayPal" class="headerlink" title="方法1. 將總購物車數量傳遞給PayPal"></a>方法1. 將總購物車數量傳遞給PayPal</h2><p>如果願意，您可以累加整個購物車，將總數量傳遞給PayPal的立即購買按鈕代碼（也就是說，您需要粘貼整個購物車的單一名稱及其物品總價款，與購買單件物品一樣）。</p>
 <p>該方法有一個不足之處，您的買家將無法查看其購物車中的單個物品。此外，您不能修改我們的變量名稱，也不能添加您自己的變量名稱。</p>
@@ -256,8 +258,7 @@
 <th>值</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>business</td>
 <td>您的PayPal賬戶上的電子郵件地址</td>
 </tr>
@@ -277,10 +278,10 @@
 <td>image</td>
 <td>按鈕圖片，您的買家按此按鈕開始PayPal付款程序。您可以將src 更換為圖片URL，以使用您自己的圖片</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>這就是說，您粘貼到PayPal的最短必需代碼應如下：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;form action=&quot;https://www.paypal.com/cgi-bin/webscr&quot; method=&quot;post&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_xclick&quot;&gt; </span><br><span class="line">&lt;input type=&quot; hidden&quot; name=&quot;business&quot; value=&quot;you@youremail.com&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;item_name&quot; value=&quot;Item Name&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;currency_code&quot; value= &quot;USD&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;amount&quot; value=&quot;0.00&quot;&gt; </span><br><span class="line">&lt;input type=&quot;image&quot; src=&quot;http://www.paypal.com/zh_XC/i/btn/x- click-but01.gif&quot; name=&quot;submit&quot; alt=&quot;Make payments with PayPal - it&apos;s fast, free and secure!&quot;&gt; </span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+
 <p>PayPal提供附加變量，用於自定義您的Form Post。所有可用變量如下（變量名稱必須用小寫）：</p>
 <h4 id="可用變量"><a href="#可用變量" class="headerlink" title="可用變量"></a>可用變量</h4><table>
 <thead>
@@ -289,8 +290,7 @@
 <th>值</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>business</td>
 <td>您的PayPal賬戶上的電子郵件地址</td>
 </tr>
@@ -382,15 +382,16 @@
 <td>cs</td>
 <td>設置您的付款頁面的背景色。如果設為”1”，背景色將為黑色。該變量為可選項；如果省略或設為”0”，背景色將為白色</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <ul>
 <li>擴展變量</li>
 </ul>
 <p>PayPal允許您粘貼擴展變量，條件是將改變以下”cmd”值：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_xclick&quot;&gt;</span><br></pre></td></tr></table></figure>
+
 <p>到：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_ext-enter&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;redirect_cmd&quot; value=&quot;_xclick&quot;&gt;</span><br></pre></td></tr></table></figure>
+
 <p>通過上述”cmd” 值修改，您還可使用以下變量：</p>
 <h4 id="擴展變量"><a href="#擴展變量" class="headerlink" title="擴展變量"></a>擴展變量</h4><table>
 <thead>
@@ -399,8 +400,7 @@
 <th>值</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>email</td>
 <td>客戶的電子郵件地址</td>
 </tr>
@@ -448,76 +448,98 @@
 <td>day_phone_b</td>
 <td>客戶白天聯繫電話號碼前三位</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>提示：若要更改“用戶信息”中的默認運費和手續費設置，請轉至您的用戶信息，編輯您的運費計算，然後點擊“允許採用基於交易的運費”複選框。</p>
 <h2 id="方法2-將單個物品傳遞給PayPal"><a href="#方法2-將單個物品傳遞給PayPal" class="headerlink" title="方法2. 將單個物品傳遞給PayPal"></a>方法2. 將單個物品傳遞給PayPal</h2><p>如果您的第三方購物車可設置成向PayPal傳遞單個物品，有關物品的信息將加入買家和賣家的記錄日誌和系統通知中。要加入該物品的信息，您需要將HTML 格式元素粘貼至PayPal購物車流程的新版本。該過程與#1 節“將總購物車數量傳遞給PayPal”描述的非常相似，不同之處在於：</p>
 <ol>
 <li>將”cmd”變量設置到”_cart”<br>更換必要的HTML行</li>
 </ol>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_xclick&quot;&gt;</span><br></pre></td></tr></table></figure>
-<p>與<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_cart&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+
+<p>與</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_cart&quot;&gt;</span><br></pre></td></tr></table></figure>
+
 <ol start="2">
 <li>添加稱為”upload”的新變量</li>
 </ol>
 <p>在&lt;表格&gt;和&lt;/表格&gt;標籤之間新增以下行：</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;upload&quot; value=&quot;1&quot;&gt;</span><br></pre></td></tr></table></figure>
+
 <ol start="3">
 <li>定義物品明細<br>對於以下各特定物品參數，定義與通過您的合作商購物車購買的各物品對應的一組新值。將”_x”附加到變量名稱，其中x是物品號碼，從1開始，每加入一物品增加一。</li>
 </ol>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">姓名</th>
+<th align="center">姓名</th>
 <th>值</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center">item_name_x</td>
+<tbody><tr>
+<td align="center">item_name_x</td>
 <td>（物品#x 需要）購物車中物品#x 的名稱。必須是字母數字字符，最多為127 個字符</td>
 </tr>
 <tr>
-<td style="text-align:center">item_number_x</td>
+<td align="center">item_number_x</td>
 <td>與購物車中物品#x 關聯的可選傳遞變量。必須是字母數字字符，最多為127 個字符</td>
 </tr>
 <tr>
-<td style="text-align:center">amount_x</td>
+<td align="center">amount_x</td>
 <td>（物品#x 需要）物品#x 的價格</td>
 </tr>
 <tr>
-<td style="text-align:center">shipping_x</td>
+<td align="center">shipping_x</td>
 <td>運送物品#x 的第一件（數量1）的成本</td>
 </tr>
 <tr>
-<td style="text-align:center">shipping2_x</td>
+<td align="center">shipping2_x</td>
 <td>每增加一件運送物品#x（數量2 或更多）所需的運送成本</td>
 </tr>
 <tr>
-<td style="text-align:center">handling_x</td>
+<td align="center">handling_x</td>
 <td>物品#x 的處理成本</td>
 </tr>
 <tr>
-<td style="text-align:center">on0_x</td>
+<td align="center">on0_x</td>
 <td>物品#x 的第一選項欄名稱。最多64 個字符</td>
 </tr>
 <tr>
-<td style="text-align:center">os0_x</td>
+<td align="center">os0_x</td>
 <td>物品#x 的第一組選項值。最多200 個字符。”on0_x” 必須定義，以便識別”os0_x”。</td>
 </tr>
 <tr>
-<td style="text-align:center">on1_x</td>
+<td align="center">on1_x</td>
 <td>物品#x 的第二選項欄名稱。最多64 個字符</td>
 </tr>
 <tr>
-<td style="text-align:center">os1_x</td>
+<td align="center">os1_x</td>
 <td>物品#x 的第二組選項值。最多200 個字符。”on1_x” 必須定義，以便識別”os1_x”。</td>
 </tr>
-</tbody>
-</table>
-<ol start="4">
-<li>為購物車中每件物品重複此設定<br>為您的買家購物車中的各物品加入以上表格中的一組必需的變量和任何選項變量。購物車中的第一物品必須用以”_1”結束的參數定義，如”item_name_1”、”amount_1”等。同樣，第二物品應用變量”item_name_2”、”amount_2”等命名。提示：”_x”值必須以一為單位按序遞增，以便識別。如果從item #1跳到item #3而不定義item #2，則第三個物品會被忽略。<br>要指定幣種：所有貨幣變量（金額、運費、運費2、手續費、稅款）將以粘貼在付款上的”currency_code”變量指定的幣種顯示。因為其不是隨物品不同的，無需向變量名稱附加”_x”。如果沒有粘貼”currency_code”變量，我們將假定所有貨幣變量值為美元。<br>查閱以下信息後如有其他技術問題，請訪問我們的開發者支持網頁。欲知有關購物車代碼或以下變量的其他信息，請查看網站付款標準版集成指南。    </li>
-</ol>
+<tr>
+<td align="center"></td>
+<td></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td></td>
+</tr>
+<tr>
+<td align="center">4. 為購物車中每件物品重複此設定</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">為您的買家購物車中的各物品加入以上表格中的一組必需的變量和任何選項變量。購物車中的第一物品必須用以”_1”結束的參數定義，如”item_name_1”、”amount_1”等。同樣，第二物品應用變量”item_name_2”、”amount_2”等命名。提示：”_x”值必須以一為單位按序遞增，以便識別。如果從item #1跳到item #3而不定義item #2，則第三個物品會被忽略。</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">要指定幣種：所有貨幣變量（金額、運費、運費2、手續費、稅款）將以粘貼在付款上的”currency_code”變量指定的幣種顯示。因為其不是隨物品不同的，無需向變量名稱附加”_x”。如果沒有粘貼”currency_code”變量，我們將假定所有貨幣變量值為美元。</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">查閱以下信息後如有其他技術問題，請訪問我們的開發者支持網頁。欲知有關購物車代碼或以下變量的其他信息，請查看網站付款標準版集成指南。</td>
+<td></td>
+</tr>
+</tbody></table>
 
     
     </div>
@@ -595,53 +617,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

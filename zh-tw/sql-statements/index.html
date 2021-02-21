@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>SQL - Statements - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -272,7 +272,10 @@
     
         <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本篇主要為細讀官方文件後, 整理為 Q&amp;A 的原子化翻譯筆記</p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="Data-Definition-Statements"><a href="#Data-Definition-Statements" class="headerlink" title="Data Definition Statements"></a>Data Definition Statements</h2><h3 id="CREATE-INDEX-Statement"><a href="#CREATE-INDEX-Statement" class="headerlink" title="# CREATE INDEX Statement"></a># CREATE INDEX Statement</h3><h4 id="Column-Prefix-Key-Parts"><a href="#Column-Prefix-Key-Parts" class="headerlink" title="# Column Prefix Key Parts"></a># Column Prefix Key Parts</h4><h6 id="MySQL-中-CREATE-INDEX-可以建立-primary-key-index-嗎？"><a href="#MySQL-中-CREATE-INDEX-可以建立-primary-key-index-嗎？" class="headerlink" title="MySQL 中, CREATE INDEX 可以建立 primary key index 嗎？"></a><strong>MySQL 中, CREATE INDEX 可以建立 primary key index 嗎？</strong></h6><p>不行</p>
 <h6 id="以下的-MySQL-example-code-的意思是"><a href="#以下的-MySQL-example-code-的意思是" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
@@ -305,7 +308,8 @@
 <h6 id="MySQL-中-在什麼情況下-prefixed-index-在效能上不會差正常-index-太多？"><a href="#MySQL-中-在什麼情況下-prefixed-index-在效能上不會差正常-index-太多？" class="headerlink" title="MySQL 中, 在什麼情況下, prefixed index 在效能上不會差正常 index 太多？"></a><strong>MySQL 中, 在什麼情況下, prefixed index 在效能上不會差正常 index 太多？</strong></h6><p>當欄位內容的 prefix 長度字串都不一樣時, 比如說, prefix 為 10, 那如果每個 row 的 column value 前十個字都不同的話, 其實效能上跟一般 index 是差不多的</p>
 <h6 id="MySQL-中-在什麼情況下-適合使用-prefixed-index"><a href="#MySQL-中-在什麼情況下-適合使用-prefixed-index" class="headerlink" title="MySQL 中, 在什麼情況下, 適合使用 prefixed index?"></a><strong>MySQL 中, 在什麼情況下, 適合使用 prefixed index?</strong></h6><p>當這個 column value 前面 prefix 長度的字串幾乎都不同時</p>
 <h6 id="MySQL-中-prefix-index-有什麼優點？"><a href="#MySQL-中-prefix-index-有什麼優點？" class="headerlink" title="MySQL 中, prefix index 有什麼優點？"></a><strong>MySQL 中, prefix index 有什麼優點？</strong></h6><p>可以節省 disk space, 以及提升 insert 效能</p>
-<p><br></p>
+<br>
+
 <h4 id="Functional-Key-Parts"><a href="#Functional-Key-Parts" class="headerlink" title="# Functional Key Parts"></a># Functional Key Parts</h4><h6 id="以下的-MySQL-example-code-的意思是-1"><a href="#以下的-MySQL-example-code-的意思是-1" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE t1 (</span><br><span class="line">  col1 VARCHAR(10),</span><br><span class="line">  col2 VARCHAR(20),</span><br><span class="line">  INDEX (col1, col2(10))</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
@@ -319,6 +323,7 @@
 </li>
 <li><p><strong>Answer</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">## 建立 INDEX with function key parts, 只儲存 expression 不儲存 column value</span><br><span class="line">CREATE TABLE t1 (col1 INT, col2 INT, INDEX func_index ((ABS(col1))));</span><br><span class="line">CREATE INDEX idx1 ON t1 ((col1 + col2));</span><br><span class="line">## multi functional key pars 也可同時包含 functional 以及 nonfunctional</span><br><span class="line">CREATE INDEX idx2 ON t1 ((col1 + col2), (col1 - col2), col1);</span><br><span class="line">ALTER TABLE t1 ADD INDEX ((col1 * 40) DESC);</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 <h6 id="以下的-MySQL-example-code-是正確的嗎-如果不是-為什麼？"><a href="#以下的-MySQL-example-code-是正確的嗎-如果不是-為什麼？" class="headerlink" title="以下的 MySQL example code 是正確的嗎? 如果不是, 為什麼？"></a><strong>以下的 MySQL example code 是正確的嗎? 如果不是, 為什麼？</strong></h6><ul>
@@ -374,45 +379,49 @@
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE employees (</span><br><span class="line">  data JSON,</span><br><span class="line">  INDEX idx ((CAST(data-&gt;&gt;&quot;$.name&quot; AS CHAR(30)) COLLATE utf8mb4_bin))</span><br><span class="line">);</span><br><span class="line">INSERT INTO employees VALUES</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;james&quot;, &quot;salary&quot;: 9000 &#125;&apos;),</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;James&quot;, &quot;salary&quot;: 10000 &#125;&apos;),</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;Mary&quot;, &quot;salary&quot;: 12000 &#125;&apos;),</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;Peter&quot;, &quot;salary&quot;: 8000 &#125;&apos;);</span><br><span class="line">SELECT * FROM employees WHERE data-&gt;&gt;&apos;$.name&apos; = &apos;James&apos;;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>雖然特別使用 COLLATE 將 collation 轉為 utf8mb4_bin, 與 where clause 中的相同, 但因為 collation bin, 所以會是 case-sensitive<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3f_JE79Vf6JcymZ_aVOz7UATCYhq1GBufxd0B0QvB9xKJiMflAU7j4_WY7KA3Zl10pUFtQKtVVvvIrts8tP1xyfW8msb8siPtrd52sDid0-8nl_5Gj_3dzXuNXPUSia2no1NYfx0dFKOnoJQjC-ZVl1Vg=w602-h178-no?authuser=2" alt></p>
+<li><p><strong>Answer</strong>:<br>雖然特別使用 COLLATE 將 collation 轉為 utf8mb4_bin, 與 where clause 中的相同, 但因為 collation bin, 所以會是 case-sensitive<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3f_JE79Vf6JcymZ_aVOz7UATCYhq1GBufxd0B0QvB9xKJiMflAU7j4_WY7KA3Zl10pUFtQKtVVvvIrts8tP1xyfW8msb8siPtrd52sDid0-8nl_5Gj_3dzXuNXPUSia2no1NYfx0dFKOnoJQjC-ZVl1Vg=w602-h178-no?authuser=2"></p>
 </li>
 </ul>
 <h6 id="以下的-MySQL-example-code-會輸出哪些-records-為什麼？-1"><a href="#以下的-MySQL-example-code-會輸出哪些-records-為什麼？-1" class="headerlink" title="以下的 MySQL example code 會輸出哪些 records, 為什麼？"></a><strong>以下的 MySQL example code 會輸出哪些 records, 為什麼？</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE employees (</span><br><span class="line">  data JSON,</span><br><span class="line">  INDEX idx ((CAST(data-&gt;&gt;&quot;$.name&quot; AS CHAR(30))))</span><br><span class="line">);</span><br><span class="line">INSERT INTO employees VALUES</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;james&quot;, &quot;salary&quot;: 9000 &#125;&apos;),</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;James&quot;, &quot;salary&quot;: 10000 &#125;&apos;),</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;Mary&quot;, &quot;salary&quot;: 12000 &#125;&apos;),</span><br><span class="line">  (&apos;&#123; &quot;name&quot;: &quot;Peter&quot;, &quot;salary&quot;: 8000 &#125;&apos;);</span><br><span class="line">SELECT * FROM employees WHERE CAST(data-&gt;&gt;&apos;$.name&apos; AS CHAR(30)) = &apos;James&apos;;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>index 跟 where clause 的 collation 都是 CAST() 輸出的 utf8mb4_0900_ai_ci, 所以結果會是 case-insensitive<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cGHgv9Q2t7bXrzw-QLK4YaZefOKjn-D8if4SzfNSYpVRCKYqLLdxaQFhouSkTCzuGEVmm4PzSo83dFfscfWw9Mq7oXVty7zn0GeSignQprjh6itsFc1OXmK05PJfxUMX_SoRDf__kSab9iQVcidcgfdQ=w604-h230-no?authuser=2" alt></p>
+<li><p><strong>Answer</strong>:<br>index 跟 where clause 的 collation 都是 CAST() 輸出的 utf8mb4_0900_ai_ci, 所以結果會是 case-insensitive<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cGHgv9Q2t7bXrzw-QLK4YaZefOKjn-D8if4SzfNSYpVRCKYqLLdxaQFhouSkTCzuGEVmm4PzSo83dFfscfWw9Mq7oXVty7zn0GeSignQprjh6itsFc1OXmK05PJfxUMX_SoRDf__kSab9iQVcidcgfdQ=w604-h230-no?authuser=2"></p>
 </li>
 </ul>
 <h6 id="以下的-MySQL-example-code-的意思是-3"><a href="#以下的-MySQL-example-code-的意思是-3" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
 <li><p><strong>Example1</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE employees (</span><br><span class="line">  data JSON,</span><br><span class="line">  generated_col VARCHAR(30) AS (CAST(data-&gt;&gt;&apos;$.name&apos; AS CHAR(30)))</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">INSERT INTO employees (data)</span><br><span class="line">VALUES (&apos;&#123;&quot;name&quot;: &quot;james&quot;&#125;&apos;), (&apos;&#123;&quot;name&quot;: &quot;James&quot;&#125;&apos;);</span><br><span class="line"></span><br><span class="line">SELECT * FROM employees WHERE data-&gt;&gt;&apos;$.name&apos; = &apos;James&apos;;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Output of example1</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cGihLym9234j9-rTdNp18xGCpngWZCC-WAq4bVHrCCrUCjWpxgzJevNv24F2M45hFsn6pUY_XILSbKma99pe67VM-SLIf4m8MVIrJw31xQ2PoDSrHSTwOKO1Fec6VGVv0QrPjW8XmUBwA0_GX0YspoBQ=w582-h178-no?authuser=2" alt></p>
+<li><p><strong>Output of example1</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3cGihLym9234j9-rTdNp18xGCpngWZCC-WAq4bVHrCCrUCjWpxgzJevNv24F2M45hFsn6pUY_XILSbKma99pe67VM-SLIf4m8MVIrJw31xQ2PoDSrHSTwOKO1Fec6VGVv0QrPjW8XmUBwA0_GX0YspoBQ=w582-h178-no?authuser=2"></p>
 </li>
 <li><p><strong>Example2</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ALTER TABLE employees ADD INDEX idx (generated_col);</span><br><span class="line"></span><br><span class="line">SELECT * FROM employees WHERE data-&gt;&gt;&apos;$.name&apos; = &apos;James&apos;;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Output of example2</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fA3RaIj582alMYvtJki2HQAjsvhsmeXLrAtH-h9IQScOY5J_gZQmOU37i572HmJftWdGFS1M284SRpOeeJRWbZRC93KK7V-imqaOqJldz-4cBNll10oVUyA-YUmkuhLZGD8AE6duV6y56z31P2LxOwzg=w582-h224-no?authuser=2" alt></p>
+<li><p><strong>Output of example2</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fA3RaIj582alMYvtJki2HQAjsvhsmeXLrAtH-h9IQScOY5J_gZQmOU37i572HmJftWdGFS1M284SRpOeeJRWbZRC93KK7V-imqaOqJldz-4cBNll10oVUyA-YUmkuhLZGD8AE6duV6y56z31P2LxOwzg=w582-h224-no?authuser=2"></p>
 </li>
-<li><strong>Answer</strong>:<br>example 1 中, 就算沒有 CAST(), generated_col 也是吃 column 的 default collation, 然而, 因為沒有 INDEX, <code>JSON_UNQUOTE</code> 輸出的 string 的 collation 一律為 utf8mb4_bin, 所以結果會是 case-sensitive<br>example 2 中, 如上面提到, generated_col 的 collation 為 column 預設的 collation, 假設為 <code>utf8mb4_0900_ai_ci</code>, 因為有新增了 INDEX, 所以會使用到 generated column 的 collation, 因此會變成 case-insensitive, 但這視乎 generated_col 的 collation, 如果我們在建立這個 column 時便指定 collation 為 utfmb4_bin, 那結果會是 case-sensitive</li>
+<li><p><strong>Answer</strong>:<br>example 1 中, 就算沒有 CAST(), generated_col 也是吃 column 的 default collation, 然而, 因為沒有 INDEX, <code>JSON_UNQUOTE</code> 輸出的 string 的 collation 一律為 utf8mb4_bin, 所以結果會是 case-sensitive<br>example 2 中, 如上面提到, generated_col 的 collation 為 column 預設的 collation, 假設為 <code>utf8mb4_0900_ai_ci</code>, 因為有新增了 INDEX, 所以會使用到 generated column 的 collation, 因此會變成 case-insensitive, 但這視乎 generated_col 的 collation, 如果我們在建立這個 column 時便指定 collation 為 utfmb4_bin, 那結果會是 case-sensitive</p>
+</li>
 </ul>
-<p><br></p>
+<br>
+
 <h4 id="Unique-Indexes"><a href="#Unique-Indexes" class="headerlink" title="# Unique Indexes"></a># Unique Indexes</h4><h6 id="MySQL-中-UNIQUE-INDEX-value-可以重複嗎？"><a href="#MySQL-中-UNIQUE-INDEX-value-可以重複嗎？" class="headerlink" title="MySQL 中, UNIQUE INDEX value 可以重複嗎？"></a><strong>MySQL 中, UNIQUE INDEX value 可以重複嗎？</strong></h6><p>  不行</p>
 <h6 id="MySQL-中-UNIQUE-INDEX-允許-NULL-value-嗎？"><a href="#MySQL-中-UNIQUE-INDEX-允許-NULL-value-嗎？" class="headerlink" title="MySQL 中, UNIQUE INDEX 允許 NULL value 嗎？"></a><strong>MySQL 中, UNIQUE INDEX 允許 NULL value 嗎？</strong></h6><p>  如果該 column 是 nullable, 是允許的</p>
 <h6 id="MySQL-中-如果-PRIMARY-KEY-存在-但-PRIMARY-KEY-INDEX-並不含有-single-integer-column-rowid-可被使用嗎？"><a href="#MySQL-中-如果-PRIMARY-KEY-存在-但-PRIMARY-KEY-INDEX-並不含有-single-integer-column-rowid-可被使用嗎？" class="headerlink" title="MySQL 中, 如果 PRIMARY_KEY 存在, 但 PRIMARY_KEY INDEX 並不含有 single integer column, _rowid 可被使用嗎？"></a><strong>MySQL 中, 如果 PRIMARY_KEY 存在, 但 PRIMARY_KEY INDEX 並不含有 single integer column, <code>_rowid</code> 可被使用嗎？</strong></h6><ul>
 <li><strong>Answer</strong>:<br>不可</li>
-<li><strong>Illustration</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eWbXLZd5myS905KMYWupQzNsCPvIZGlOZyHulZC4Nqm9szKSzpMgdLl7LQ6Gz7h8gQI2CTONow9_OJpeotOyw6kWSj048LDyswiPF8mJpJ1W4DT9y6kGOGj-alv9dKawLUn4wVh1f7YBSbQ8gAVRdcjA=w1334-h448-no?authuser=2" alt><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fSU-m6IkDw_Nn-oE8fKFX5gcuDyn_6t2d7avrymq_ggfe6g2LEqCdcNlAjzOJGVTumuqj8vXan_249d8RoUXtRtUZ4SkFYzH0tuNSlcDhEVvpSK8WNLPYVg7I8ce_9zVq8vsiWaHC0q2lWbwErBm3xxQ=w1424-h122-no?authuser=2" alt></li>
+<li><strong>Illustration</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eWbXLZd5myS905KMYWupQzNsCPvIZGlOZyHulZC4Nqm9szKSzpMgdLl7LQ6Gz7h8gQI2CTONow9_OJpeotOyw6kWSj048LDyswiPF8mJpJ1W4DT9y6kGOGj-alv9dKawLUn4wVh1f7YBSbQ8gAVRdcjA=w1334-h448-no?authuser=2"><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fSU-m6IkDw_Nn-oE8fKFX5gcuDyn_6t2d7avrymq_ggfe6g2LEqCdcNlAjzOJGVTumuqj8vXan_249d8RoUXtRtUZ4SkFYzH0tuNSlcDhEVvpSK8WNLPYVg7I8ce_9zVq8vsiWaHC0q2lWbwErBm3xxQ=w1424-h122-no?authuser=2"></li>
 </ul>
 <h6 id="MySQL-中-如果-PRIMARY-KEY-存在-且-PRIMARY-KEY-INDEX-含有-single-integer-column-rowid-會參照這個-column-嗎？"><a href="#MySQL-中-如果-PRIMARY-KEY-存在-且-PRIMARY-KEY-INDEX-含有-single-integer-column-rowid-會參照這個-column-嗎？" class="headerlink" title="MySQL 中, 如果 PRIMARY_KEY 存在, 且 PRIMARY_KEY INDEX 含有 single integer column, _rowid 會參照這個 column 嗎？"></a><strong>MySQL 中, 如果 PRIMARY_KEY 存在, 且 PRIMARY_KEY INDEX 含有 single integer column, <code>_rowid</code> 會參照這個 column 嗎？</strong></h6><ul>
 <li><strong>Answer</strong>:<br>會</li>
-<li><strong>Illustration</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3ct02nVsxC7aLrwZr0tO-YW5YeJOSn98lNbT7LM3OQkZMuJMZfl1ZR2hlgQTRn0qYkISGMETUbSg1bSXIrNI5-SLp3j6BLCsPBIF5AmMehXtAfOxhUWS48ffEqDYAhWQtMkk5smJjeW7idxVsEcXC2brg=w1742-h550-no?authuser=2" alt><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3e022OAU054MbHN7UEYfcj9jtZ76MM5TyPU553kIU18gy2yDvRXR-SlTyMbaCEzKKsn27tgHKJm6puuj49hmk4FN79Ea666HMNWeBgemYr9dH5lVfY5LABR0H6FoAzo151akg63aI9KFYMNb_qV6z90Kg=w794-h574-no?authuser=2" alt></li>
+<li><strong>Illustration</strong>:<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3ct02nVsxC7aLrwZr0tO-YW5YeJOSn98lNbT7LM3OQkZMuJMZfl1ZR2hlgQTRn0qYkISGMETUbSg1bSXIrNI5-SLp3j6BLCsPBIF5AmMehXtAfOxhUWS48ffEqDYAhWQtMkk5smJjeW7idxVsEcXC2brg=w1742-h550-no?authuser=2"><br><img src="https://lh3.googleusercontent.com/pw/ACtC-3e022OAU054MbHN7UEYfcj9jtZ76MM5TyPU553kIU18gy2yDvRXR-SlTyMbaCEzKKsn27tgHKJm6puuj49hmk4FN79Ea666HMNWeBgemYr9dH5lVfY5LABR0H6FoAzo151akg63aI9KFYMNb_qV6z90Kg=w794-h574-no?authuser=2"></li>
 </ul>
 <h6 id="MySQL-中-如果-FIRST-NOT-NULL-UNIQUE-INDEX-存在-且含有-single-integer-column-rowid-會參照這個-column-嗎？"><a href="#MySQL-中-如果-FIRST-NOT-NULL-UNIQUE-INDEX-存在-且含有-single-integer-column-rowid-會參照這個-column-嗎？" class="headerlink" title="MySQL 中, 如果 FIRST NOT NULL UNIQUE INDEX 存在, 且含有 single integer column, _rowid 會參照這個 column 嗎？"></a><strong>MySQL 中, 如果 FIRST NOT NULL UNIQUE INDEX 存在, 且含有 single integer column, <code>_rowid</code> 會參照這個 column 嗎？</strong></h6><p>  會哦</p>
 <h6 id="MySQL-中-如果-FIRST-NOT-NULL-UNIQUE-INDEX-存在-但不含有-single-integer-column-rowid-可被使用嗎？"><a href="#MySQL-中-如果-FIRST-NOT-NULL-UNIQUE-INDEX-存在-但不含有-single-integer-column-rowid-可被使用嗎？" class="headerlink" title="MySQL 中, 如果 FIRST NOT NULL UNIQUE INDEX 存在, 但不含有 single integer column, _rowid 可被使用嗎？"></a><strong>MySQL 中, 如果 FIRST NOT NULL UNIQUE INDEX 存在, 但不含有 single integer column, <code>_rowid</code> 可被使用嗎？</strong></h6><p>  不能</p>
-<p><br></p>
+<br>
+
 <h4 id="Full-Text-Indexes"><a href="#Full-Text-Indexes" class="headerlink" title="# Full-Text Indexes"></a># Full-Text Indexes</h4><h6 id="MySQL-中-FULLTEXT-INDEX-只可使用在哪些-column-type？"><a href="#MySQL-中-FULLTEXT-INDEX-只可使用在哪些-column-type？" class="headerlink" title="MySQL 中, FULLTEXT INDEX 只可使用在哪些 column type？"></a><strong>MySQL 中, FULLTEXT INDEX 只可使用在哪些 column type？</strong></h6><p>CHAR, VARCHAR, TEXT</p>
-<p><br></p>
+<br>
+
 <h4 id="Multi-Valued-Indexes"><a href="#Multi-Valued-Indexes" class="headerlink" title="# Multi-Valued Indexes"></a># Multi-Valued Indexes</h4><h6 id="MySQL-中-multi-valued-index-跟-normal-index-差異在於？"><a href="#MySQL-中-multi-valued-index-跟-normal-index-差異在於？" class="headerlink" title="MySQL 中, multi-valued index 跟 normal index 差異在於？"></a><strong>MySQL 中, multi-valued index 跟 normal index 差異在於？</strong></h6><p>  <strong>normal index</strong>: 一筆 index value 對應一筆 row data<br>  <strong>multi-valued index</strong>: 多筆 index value 對應一筆 row data</p>
 <h6 id="MySQL-中-multi-valued-index-主要是用在什麼-column-type"><a href="#MySQL-中-multi-valued-index-主要是用在什麼-column-type" class="headerlink" title="MySQL 中, multi-valued index 主要是用在什麼 column type?"></a><strong>MySQL 中, multi-valued index 主要是用在什麼 column type?</strong></h6><p>  JSON column type</p>
 <h5 id="Creating-multi-values-Indexes"><a href="#Creating-multi-values-Indexes" class="headerlink" title="# Creating multi-values Indexes"></a># Creating multi-values Indexes</h5><h6 id="以下的-MySQL-example-code-的意思是-4"><a href="#以下的-MySQL-example-code-的意思是-4" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
@@ -441,32 +450,33 @@
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE customers (</span><br><span class="line">    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,</span><br><span class="line">    modified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</span><br><span class="line">    custinfo JSON</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">ALTER TABLE customers ADD INDEX comp(id, modified,</span><br><span class="line">    (CAST(custinfo-&gt;&apos;$.zipcode&apos; AS UNSIGNED ARRAY)) );</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:<br>建立一個 composite index, 裡面包含 multi-valued INDEX</p>
+<h6 id="MySQL-中-一個-composite-index-可以含有幾個-multi-valued-index"><a href="#MySQL-中-一個-composite-index-可以含有幾個-multi-valued-index" class="headerlink" title="MySQL 中, 一個 composite index 可以含有幾個 multi-valued index?"></a><strong>MySQL 中, 一個 composite index 可以含有幾個 multi-valued index?</strong></h6><p>一個</p>
 </li>
 </ul>
-<h6 id="MySQL-中-一個-composite-index-可以含有幾個-multi-valued-index"><a href="#MySQL-中-一個-composite-index-可以含有幾個-multi-valued-index" class="headerlink" title="MySQL 中, 一個 composite index 可以含有幾個 multi-valued index?"></a><strong>MySQL 中, 一個 composite index 可以含有幾個 multi-valued index?</strong></h6><p>  一個</p>
 <h6 id="MySQL-中-multi-valued-index-在-composite-index-中的順序可以調換嗎？"><a href="#MySQL-中-multi-valued-index-在-composite-index-中的順序可以調換嗎？" class="headerlink" title="MySQL 中, multi-valued index 在 composite index 中的順序可以調換嗎？"></a><strong>MySQL 中, multi-valued index 在 composite index 中的順序可以調換嗎？</strong></h6><p>  可以</p>
 <h6 id="以下的-MySQL-example-code-的意思是-8"><a href="#以下的-MySQL-example-code-的意思是-8" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE customers (</span><br><span class="line">    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,</span><br><span class="line">    modified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</span><br><span class="line">    custinfo JSON,</span><br><span class="line">    INDEX zips( (CAST(custinfo-&gt;&apos;$.zipcode&apos; AS UNSIGNED ARRAY)) )</span><br><span class="line">    );</span><br><span class="line">    </span><br><span class="line">INSERT INTO customers VALUES</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Jack&quot;,&quot;user_id&quot;:37,&quot;zipcode&quot;:[94582,94536]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Jill&quot;,&quot;user_id&quot;:22,&quot;zipcode&quot;:[94568,94507,94582]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Bob&quot;,&quot;user_id&quot;:31,&quot;zipcode&quot;:[94477,94507]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Mary&quot;,&quot;user_id&quot;:72,&quot;zipcode&quot;:[94536]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Ted&quot;,&quot;user_id&quot;:56,&quot;zipcode&quot;:[94507,94582]&#125;&apos;);    </span><br><span class="line"></span><br><span class="line">SELECT * FROM customers WHERE 94507 MEMBER OF(custinfo-&gt;&apos;$.zipcode&apos;);</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>建立 zips multi-valued INDEX, 支援 MEMBER OF function, 取得 94507 有出現在 <code>custinfo-&gt;$.zipcode</code> array 中的 row<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eO4gB1U2qTywxUkHEJkP00Ikv4QSCsi8NyF846gZI7LYS3FtGGsqVporg7lJiFhNBZooxore0i9NoMwb7ClGXJddgEzZT2MIwpubMT7OvGDuJ4tfkPrA7X66c3_eXDWUj_f8_Mq5bjguukVKqrHuAfRA=w1504-h252-no?authuser=2" alt></p>
+<li><p><strong>Answer</strong>:<br>建立 zips multi-valued INDEX, 支援 MEMBER OF function, 取得 94507 有出現在 <code>custinfo-&gt;$.zipcode</code> array 中的 row<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eO4gB1U2qTywxUkHEJkP00Ikv4QSCsi8NyF846gZI7LYS3FtGGsqVporg7lJiFhNBZooxore0i9NoMwb7ClGXJddgEzZT2MIwpubMT7OvGDuJ4tfkPrA7X66c3_eXDWUj_f8_Mq5bjguukVKqrHuAfRA=w1504-h252-no?authuser=2"></p>
 </li>
 </ul>
 <h6 id="以下的-MySQL-example-code-的意思是-9"><a href="#以下的-MySQL-example-code-的意思是-9" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE customers (</span><br><span class="line">    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,</span><br><span class="line">    modified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</span><br><span class="line">    custinfo JSON,</span><br><span class="line">    INDEX zips( (CAST(custinfo-&gt;&apos;$.zipcode&apos; AS UNSIGNED ARRAY)) )</span><br><span class="line">    );</span><br><span class="line">    </span><br><span class="line">INSERT INTO customers VALUES</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Jack&quot;,&quot;user_id&quot;:37,&quot;zipcode&quot;:[94582,94536]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Jill&quot;,&quot;user_id&quot;:22,&quot;zipcode&quot;:[94568,94507,94582]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Bob&quot;,&quot;user_id&quot;:31,&quot;zipcode&quot;:[94477,94507]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Mary&quot;,&quot;user_id&quot;:72,&quot;zipcode&quot;:[94536]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Ted&quot;,&quot;user_id&quot;:56,&quot;zipcode&quot;:[94507,94582]&#125;&apos;);    </span><br><span class="line"></span><br><span class="line">SELECT * FROM customers WHERE JSON_CONTAINS(custinfo-&gt;&apos;$.zipcode&apos;, CAST(&apos;[94507,94582]&apos; AS JSON));</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>建立 zips multi-valued INDEX, 支援 JSON_CONTAINS function, 取得 <code>94507 and 94582</code> 有出現在 <code>custinfo-&gt;$.zipcode</code> array 中的 row<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dHGK7wdMj2Gv-Kugb0OhAYoE6ijK2Wmd57vTjJx8IVO-gELtitHS1cOPJcofg77-Bq6xJIp_VQsCqrCVIZMHLVfLeENVlyt77_qpcM2BUtuwL_DCtr5AxhUf4QzHT3Q59w4FgxJ-SoiMrBQPkdk2uJ9w=w1504-h216-no?authuser=2" alt></p>
+<li><p><strong>Answer</strong>:<br>建立 zips multi-valued INDEX, 支援 JSON_CONTAINS function, 取得 <code>94507 and 94582</code> 有出現在 <code>custinfo-&gt;$.zipcode</code> array 中的 row<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dHGK7wdMj2Gv-Kugb0OhAYoE6ijK2Wmd57vTjJx8IVO-gELtitHS1cOPJcofg77-Bq6xJIp_VQsCqrCVIZMHLVfLeENVlyt77_qpcM2BUtuwL_DCtr5AxhUf4QzHT3Q59w4FgxJ-SoiMrBQPkdk2uJ9w=w1504-h216-no?authuser=2"></p>
 </li>
 </ul>
 <h6 id="以下的-MySQL-example-code-的意思是-10"><a href="#以下的-MySQL-example-code-的意思是-10" class="headerlink" title="以下的 MySQL example code 的意思是?"></a><strong>以下的 MySQL example code 的意思是?</strong></h6><ul>
 <li><p><strong>Example</strong>:</p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CREATE TABLE customers (</span><br><span class="line">    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,</span><br><span class="line">    modified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</span><br><span class="line">    custinfo JSON,</span><br><span class="line">    INDEX zips( (CAST(custinfo-&gt;&apos;$.zipcode&apos; AS UNSIGNED ARRAY)) )</span><br><span class="line">    );</span><br><span class="line">    </span><br><span class="line">INSERT INTO customers VALUES</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Jack&quot;,&quot;user_id&quot;:37,&quot;zipcode&quot;:[94582,94536]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Jill&quot;,&quot;user_id&quot;:22,&quot;zipcode&quot;:[94568,94507,94582]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Bob&quot;,&quot;user_id&quot;:31,&quot;zipcode&quot;:[94477,94507]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Mary&quot;,&quot;user_id&quot;:72,&quot;zipcode&quot;:[94536]&#125;&apos;),</span><br><span class="line">     (NULL, NOW(), &apos;&#123;&quot;user&quot;:&quot;Ted&quot;,&quot;user_id&quot;:56,&quot;zipcode&quot;:[94507,94582]&#125;&apos;);    </span><br><span class="line"></span><br><span class="line">SELECT * FROM customers WHERE JSON_OVERLAPS(custinfo-&gt;&apos;$.zipcode&apos;, CAST(&apos;[94507,94582]&apos; AS JSON));</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>Answer</strong>:<br>建立 zips multi-valued INDEX, 支援 JSON_OVERLAPS function, 取得 <code>94507 or 94582</code> 有出現在 <code>custinfo-&gt;$.zipcode</code> array 中的 row<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eSUe37Q3VFfw_5_CztQ7NWJsPrnwDUAUl-t3zK3KKb1wRs0F7c2g7TSFKnylGvJY7xyDrlt1fpOTk1JxYwAlzUb9xJ3Qpwsi1CitKSLEVrfXQTj2CwjjpEA5RZsK-ZILSk5qg4KCUju6kCXxf9k12tYw=w1504-h294-no?authuser=2" alt></p>
+<li><p><strong>Answer</strong>:<br>建立 zips multi-valued INDEX, 支援 JSON_OVERLAPS function, 取得 <code>94507 or 94582</code> 有出現在 <code>custinfo-&gt;$.zipcode</code> array 中的 row<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eSUe37Q3VFfw_5_CztQ7NWJsPrnwDUAUl-t3zK3KKb1wRs0F7c2g7TSFKnylGvJY7xyDrlt1fpOTk1JxYwAlzUb9xJ3Qpwsi1CitKSLEVrfXQTj2CwjjpEA5RZsK-ZILSk5qg4KCUju6kCXxf9k12tYw=w1504-h294-no?authuser=2"></p>
 </li>
 </ul>
-<p><br></p>
+<br>
+
 <h5 id="Characteristics-of-Multi-Valued-Indexes"><a href="#Characteristics-of-Multi-Valued-Indexes" class="headerlink" title="# Characteristics of Multi-Valued Indexes"></a># Characteristics of Multi-Valued Indexes</h5><h6 id="MySQL-中-什麼是-DML"><a href="#MySQL-中-什麼是-DML" class="headerlink" title="MySQL 中, 什麼是 DML?"></a><strong>MySQL 中, 什麼是 DML?</strong></h6><p>Data Manipulation Language</p>
 <h6 id="MySQL-中-如果-multi-valued-key-part-是一個-empty-array-那會產生相應的-INDEX-嗎"><a href="#MySQL-中-如果-multi-valued-key-part-是一個-empty-array-那會產生相應的-INDEX-嗎" class="headerlink" title="MySQL 中, 如果 multi-valued key part 是一個 empty array, 那會產生相應的 INDEX 嗎?"></a><strong>MySQL 中, 如果 multi-valued key part 是一個 empty array, 那會產生相應的 INDEX 嗎?</strong></h6><p>不會</p>
 <h6 id="MySQL-中-當我使用-multi-valued-INDEX-JSON-可以含有-null-值嗎-如下-example"><a href="#MySQL-中-當我使用-multi-valued-INDEX-JSON-可以含有-null-值嗎-如下-example" class="headerlink" title="MySQL 中, 當我使用 multi-valued INDEX, JSON 可以含有 null 值嗎, 如下 example?"></a><strong>MySQL 中, 當我使用 multi-valued INDEX, JSON 可以含有 null 值嗎, 如下 example?</strong></h6><ul>
@@ -494,7 +504,8 @@
 <h6 id="MySQL-中-multi-valued-index-可使用-CAST-定義為-binary-嗎？"><a href="#MySQL-中-multi-valued-index-可使用-CAST-定義為-binary-嗎？" class="headerlink" title="MySQL 中, multi-valued index 可使用 CAST 定義為 binary 嗎？"></a><strong>MySQL 中, multi-valued index 可使用 CAST 定義為 binary 嗎？</strong></h6><p>  不可</p>
 <h6 id="MySQL-中-multi-valued-index-支援-online-creation-嗎？"><a href="#MySQL-中-multi-valued-index-支援-online-creation-嗎？" class="headerlink" title="MySQL 中, multi-valued index 支援 online creation 嗎？"></a><strong>MySQL 中, multi-valued index 支援 online creation 嗎？</strong></h6><p>  不支援</p>
 <h6 id="MySQL-中-multi-valued-index-只支援哪兩組-character-set-與-collation"><a href="#MySQL-中-multi-valued-index-只支援哪兩組-character-set-與-collation" class="headerlink" title="MySQL 中, multi-valued index 只支援哪兩組 character set 與 collation"></a><strong>MySQL 中, multi-valued index 只支援哪兩組 character set 與 collation</strong></h6><p>  binary character set 與 default binary collation<br>  utf8mb4 character set 與 default utf8mb4_0900_ai_ci collation</p>
-<p><br></p>
+<br>
+
 <h3 id="CREATE-TABLE-Statement"><a href="#CREATE-TABLE-Statement" class="headerlink" title="# CREATE TABLE Statement"></a># CREATE TABLE Statement</h3><h4 id="Secondary-Indexes-and-Generated-Columns"><a href="#Secondary-Indexes-and-Generated-Columns" class="headerlink" title="# Secondary Indexes and Generated Columns"></a># Secondary Indexes and Generated Columns</h4>
     
     </div>
@@ -572,53 +583,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

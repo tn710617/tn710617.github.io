@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>GKE Migrating to Containers - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -332,7 +332,10 @@
     
         <p>容器正在以很快的速度成為軟體應用部署的業界標準。 容器化所帶來的商業以及技術上的好處正在推動很多團隊將他們的應用移到容器內。 本教程會提供一個基礎的示範, 示範如何將一個無狀態的應用, 從 VM 上轉移到 <a href="https://cloud.google.com/kubernetes-engine/" target="_blank" rel="noopener">Kubernetes Engine (GKE)</a>, 本範例示範了應用轉移的過程, 從典型的 VM/OS-based 部署, 到特定的容器化的 os, 再到一個你所知道的容器專用的平台 <a href="https://cloud.google.com/kubernetes-engine/" target="_blank" rel="noopener">GKE</a></p>
 <a id="more"></a>
-<p><br><br><br></p>
+
+<br>
+<br>
+
 <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>容器化部署應用有許多的好處, 像是：</p>
 <ul>
 <li>隔離 - 應用們有各自的 libraries; 各個應用之間不會因為有不同的 libraries 而產生衝突。</li>
@@ -340,7 +343,9 @@
 <li>可攜帶 - 容器含有任何所需的東西, 且不會被 OS 或雲端服務商綁死</li>
 <li>輕量化 - 共享 Kernel, 比完整的 OS 鏡像還要輕量且快速</li>
 </ul>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="學習目標"><a href="#學習目標" class="headerlink" title="學習目標"></a>學習目標</h2><p>這個專案示範了轉移一個名為 <a href="https://github.com/GoogleCloudPlatform/gke-migration-to-containers/blob/master/container/prime-flask-server.py" target="_blank" rel="noopener">Prime-flask</a> 的簡單 Python 應用, 到：</p>
 <ul>
 <li>一台 <a href="https://cloud.google.com/compute/docs/instances/" target="_blank" rel="noopener">虛擬機(Debian VM)</a>, <code>Prime-flask</code> 是被部署在這台機器上的唯一應用, 就好像是傳統的運行在一台實體資料中心上的應用。</li>
@@ -350,14 +355,20 @@
 <p>在完成部署後, 你將會針對最後版本的部署實施一個負載測試, 並且擴縮服務來適應負載</p>
 <p>在教程途中, 如果有遇到什麼錯誤, 可以重新執行失敗的 script, 因為偶而會因為網路連線問題出錯, 重試之後就好了。</p>
 <p>本教程由 GKE Helmsman 工程師建立, 讓你更了解如何轉移到容器。 你可以在<a href="https://github.com/GoogleCloudPlatform/gke-migration-to-containers.git" target="_blank" rel="noopener">這</a>檢視範例, 並且, 我們歡迎任何人貢獻這個專案。</p>
-<p><br><br><br></p>
-<h2 id="架構"><a href="#架構" class="headerlink" title="架構"></a>架構</h2><p><strong>佈局 1</strong>: 運行 Debian 的虛擬機, 應用被直接部署到主機的 OS, 無容器<br><img src="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no" alt></p>
-<p><strong>佈局 2</strong>: 虛擬機運行容器優化的 OS, 應用被部署在容器內<br><img src="https://lh3.googleusercontent.com/YdS1hsjFMRU52tjOS85HRSL3gnxkqy6ST82MqQixoK_H6JkFE08M6NTEp1dU4rSqUIdXsLXsWvmm4efqmkgAVQ7vZeti5pG9tjRCLVTSMfvdXYdSHE0yApBPIt40Pu63hPo11BpXbPdaJ5cWwEUaQ9JPTufG_ZWjMIAAvSLa2Hq4aWprQR0NIZR4SBrbeKAKbweyHpFjx-apgvxROHg9AV9na0xr1r5m9F1XNQDFiE3oI_Z8KH1Tldir01T4nstXNsth4HUUgevXfgJIOassCi3qReR0slEWps-Qujjzbf1bqWjQQEFsavpGQDRSoundIKEuY9XrIL3hmezM6baJARqknxPWJwbNJpvtdIdrjFGN3vs8OsboWtCpAd-lI1G3YfsyQNArH0dr1VD3o8htJ2RlwtYW50G6CtiNijldkaKlGIMf6UlkSbdiLVgWZTDBcOJ5jCntOj_Nd7bjC723F11PJ76G5rqFGc2exUvhNoOWjwucq08c05oIWLAJmKvYq70tpITVvg8-z2RQ8wF9YSdf8soum6QP6Z9kLcpvP_t54Z1Pfme4L523HahHSjtEXy7pvnUS8BBqIXPihHWowENS6uWQ3I5cgc2-J1GSHr26jw11Z7xAaV3X4QHalrLGSW045Elq9WKYXPIMphrMWaNEQdI7ZnE51x5SU1QreA83kFHVXVOriVemTWPax57RJTAcgfcv94hJ7KNU8h1Ce51htK_G48_XJSdGgRDo-5oYA8w_xQ=w670-h320-no" alt></p>
-<p><strong>佈局 3</strong>: Kubernetes Engine (GKE) 平台, 很多容器運行在很多機器上<br><img src="https://lh3.googleusercontent.com/M6BHtKWI3_sOAt-JdqyLFyfWAMdMWB2k88feffNlafTcsXBw1U99DHvpiif2ISaeBBquTn3b0Lr0NZxqzUIKqaQeDq1VlOLpDMj8_QGw9kHShJKMeA2CQ7CXROUAeSH1OcKC4LwrSgMXKLvh0WG-81flNBqEn-2gzvidsuUqgvBHx4I8f-XEN_sdbyB9k6Hc1CkyUZGxzIc1LWiTG1doQr-eHNeDrdFWpbFOb0JCeX3EvumlhM7UxXAenP_cdSc7-q1Vbw1dY_kTTHCLlXd-mqNGsICe6mrsvXp_svmaZU2c_MhN82M54Qy6JSHWYUdqc0s8SXVAqwzlbDidZrd1YJnLli-hTJyz59q8VxelkiCmYlZ_paSeJGrT1bDXZooMwh6tseE4hed4V5O9XFeh5-SbY7AxnSnY_BT3AOBs6xzTPHvqigDGjZu9kuDy4ACFuse67ZEhVn4Pl2x-l-Ss6JxTRn5wds3igx-oghqze0XrBBvH1G7jk6uTtyd9ZsM3aOQI311GTfyRL4ANSen-bE-7qX7jz717bXpzmAmF70nv1d1m9TY8h8N0vmNhRoNN6FMrqmwkVGUpUcf4Y9VZjSziEfvmWuiwpFUx5Rua8csCsILnQqIQFtggT61ttzalSbsxxus8VvxlFy22PkmUv3-qEXPrjyuZQJ2JF5a9AcDEG5ryJvycMaZKI9rcrLExyPqLryCs7NERLo2yJf5b2f_ZhiuMv0D6OtSByIAvC_ZxCWYoBg=w584-h300-no" alt></p>
+<br>
+<br>
+
+<h2 id="架構"><a href="#架構" class="headerlink" title="架構"></a>架構</h2><p><strong>佈局 1</strong>: 運行 Debian 的虛擬機, 應用被直接部署到主機的 OS, 無容器<br><img src="https://lh3.googleusercontent.com/bqMqEu_tDEuA-G_e1dfURP-8bd8TntHlGR5akUqt1YtyJxpVO-gVym9IklhjKxD59Of9P_lyWeLkfSol-i69UpNNcd50sRunGFIji_OdLZyN4bEqposs3-QyksZ-5uK74u-pMnmlxnrPTFUob0cc2EW3q4QOshQVoKMyB7SJQ3Rms3i30FqWgsO28Zj_Z0sVvWK9JOA62Z6LwYuaVz_VWzN2yKz_Q7N74nDBMEPV2nIVyd4jLwUvYXerE9rKxM3rKG0Di87F8xrEmYtunjGhNFIJoG46mx3jRU-QcsVIcsO0_EP6A9UGYBWJ-OlQscW8xrd2jf6PkkFBJ2j_5LQJhg5THutSjVzthfrGR-O5Hiow45Dx9kK5l4c2BGbLegTvdSxeuNG9EFJGHvqQPSWKj8wsg_j3MsOsQ3J4PSlgtSkwVckdceZQEBFdZXmqtykzp8QzSM2ai96REpTh0_Mr52Gh7XSbtSuaGpFQjEKNg6ggROm9cUppVf9Xg7Y5Uy2Yf0C7BBbCTKv09f3aa21k4z9zpnzqAekvCr_C-NSdr9BimceruY_JW1VNQ9EMmk51GJRXQEQGZVCLA2yomoGmSf7jsL48wu3bsTzcUkJ50mebdDnlK0faC9lNUngrEIWaflMpApH4c5BIf9JinRcqnvlvbnRx8ACrssw6X8wd-TV6V9pZmnseMXbrSzrxpy_69AC4gHTEuzdRP5j1rVU1QR4MtVhKpB71TjHsJJQAs46jMMYjeA=w654-h326-no"></p>
+<p><strong>佈局 2</strong>: 虛擬機運行容器優化的 OS, 應用被部署在容器內<br><img src="https://lh3.googleusercontent.com/YdS1hsjFMRU52tjOS85HRSL3gnxkqy6ST82MqQixoK_H6JkFE08M6NTEp1dU4rSqUIdXsLXsWvmm4efqmkgAVQ7vZeti5pG9tjRCLVTSMfvdXYdSHE0yApBPIt40Pu63hPo11BpXbPdaJ5cWwEUaQ9JPTufG_ZWjMIAAvSLa2Hq4aWprQR0NIZR4SBrbeKAKbweyHpFjx-apgvxROHg9AV9na0xr1r5m9F1XNQDFiE3oI_Z8KH1Tldir01T4nstXNsth4HUUgevXfgJIOassCi3qReR0slEWps-Qujjzbf1bqWjQQEFsavpGQDRSoundIKEuY9XrIL3hmezM6baJARqknxPWJwbNJpvtdIdrjFGN3vs8OsboWtCpAd-lI1G3YfsyQNArH0dr1VD3o8htJ2RlwtYW50G6CtiNijldkaKlGIMf6UlkSbdiLVgWZTDBcOJ5jCntOj_Nd7bjC723F11PJ76G5rqFGc2exUvhNoOWjwucq08c05oIWLAJmKvYq70tpITVvg8-z2RQ8wF9YSdf8soum6QP6Z9kLcpvP_t54Z1Pfme4L523HahHSjtEXy7pvnUS8BBqIXPihHWowENS6uWQ3I5cgc2-J1GSHr26jw11Z7xAaV3X4QHalrLGSW045Elq9WKYXPIMphrMWaNEQdI7ZnE51x5SU1QreA83kFHVXVOriVemTWPax57RJTAcgfcv94hJ7KNU8h1Ce51htK_G48_XJSdGgRDo-5oYA8w_xQ=w670-h320-no"></p>
+<p><strong>佈局 3</strong>: Kubernetes Engine (GKE) 平台, 很多容器運行在很多機器上<br><img src="https://lh3.googleusercontent.com/M6BHtKWI3_sOAt-JdqyLFyfWAMdMWB2k88feffNlafTcsXBw1U99DHvpiif2ISaeBBquTn3b0Lr0NZxqzUIKqaQeDq1VlOLpDMj8_QGw9kHShJKMeA2CQ7CXROUAeSH1OcKC4LwrSgMXKLvh0WG-81flNBqEn-2gzvidsuUqgvBHx4I8f-XEN_sdbyB9k6Hc1CkyUZGxzIc1LWiTG1doQr-eHNeDrdFWpbFOb0JCeX3EvumlhM7UxXAenP_cdSc7-q1Vbw1dY_kTTHCLlXd-mqNGsICe6mrsvXp_svmaZU2c_MhN82M54Qy6JSHWYUdqc0s8SXVAqwzlbDidZrd1YJnLli-hTJyz59q8VxelkiCmYlZ_paSeJGrT1bDXZooMwh6tseE4hed4V5O9XFeh5-SbY7AxnSnY_BT3AOBs6xzTPHvqigDGjZu9kuDy4ACFuse67ZEhVn4Pl2x-l-Ss6JxTRn5wds3igx-oghqze0XrBBvH1G7jk6uTtyd9ZsM3aOQI311GTfyRL4ANSen-bE-7qX7jz717bXpzmAmF70nv1d1m9TY8h8N0vmNhRoNN6FMrqmwkVGUpUcf4Y9VZjSziEfvmWuiwpFUx5Rua8csCsILnQqIQFtggT61ttzalSbsxxus8VvxlFy22PkmUv3-qEXPrjyuZQJ2JF5a9AcDEG5ryJvycMaZKI9rcrLExyPqLryCs7NERLo2yJf5b2f_ZhiuMv0D6OtSByIAvC_ZxCWYoBg=w584-h300-no"></p>
 <p>用於此範例的一個簡單的 Python <a href="http://flask.pocoo.org/" target="_blank" rel="noopener">Flask</a> web 應用 (<code>Prime-flask</code>) 已被建立, 並且擁有兩個端點：<br><code>http://&lt;ip&gt;:8080/factorial/</code> 以及 <code>http://&lt;ip&gt;:8080/prime/</code></p>
-<p>使用範例如下：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl http://35.227.149.80:8080/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line"></span><br><span class="line">curl http://35.227.149.80:8080/factorial/10</span><br><span class="line">The factorial of 10 is 3628800</span><br></pre></td></tr></table></figure></p>
+<p>使用範例如下：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl http://35.227.149.80:8080/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line"></span><br><span class="line">curl http://35.227.149.80:8080/factorial/10</span><br><span class="line">The factorial of 10 is 3628800</span><br></pre></td></tr></table></figure>
+
 <p>以及也可用來驗證是否成功部署</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
 <p>詳讀所有的教學。 Labs 是有時間限制的, 而且你不可以停止時間倒數。 倒數計時器在你按下 Start Lab 按鈕後開始倒數, 上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
 <p>Qwiklabs 的手把手環境, 讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程, 而不是在一個模擬或是展示的環境。 我們透過提供你一個全新的、暫時的帳號密碼, 在計時器歸零之前, 你可以用來登入並存取 Google Cloud Platform。</p>
@@ -373,7 +384,7 @@
 <ul>
 <li>按下 <b>Start Lab</b> 按鈕。 如果你需要付費, 會有一個彈出視窗來讓你選擇付費的方式。 在左方你會看到一個面板, 上面有暫時的帳號密碼, 你必須使用這些帳號密碼在此次 lab</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
 <ul>
 <li>複製 <code>username</code>, 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗, 顯示<code>選擇帳號</code>的頁面</li>
 </ul>
@@ -381,7 +392,7 @@
 <ul>
 <li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
 <ul>
 <li>登入頁面開啟, 貼上之前複製的 <code>username</code> 以及 <code>password</code>, 然後貼上</li>
 </ul>
@@ -395,49 +406,89 @@
 </li>
 </ul>
 <p>稍待一些時候, GCP 控制台將會在這個視窗開啟。</p>
-<p><strong>注意：</strong> 按下左上方位於 <code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code>, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務<br><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no" alt></p>
-<p><br></p>
+<p><strong>注意：</strong> 按下左上方位於 <code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code>, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務<br><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+<br>
+
 <h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。 它提供了5GB的 home 資料夾, 並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
 <ul>
 <li>在 <code>GCP 控制台</code>, 右上的工具列,點擊 <code>Open Cloud Shell</code> 按鈕</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
 <ul>
 <li>在打開的對話框裡, 按下 <code>START CLOUD SHELL</code>:</li>
 </ul>
-<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
 <p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
 <p>連結並提供環境會需要一點時間。 當你連結成功, 這代表你已成功獲得授權, 且此專案已被設為你的專案ID, 例如：</p>
-<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
 <p><strong>gcloud</strong> 是 <code>Google Cloud Platform</code> 的 command-line 工具, 他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
-<p>使用這個 command, 你可以列出有效帳戶名稱:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure></p>
-<p>輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure></p>
-<p>範例輸出:<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure></p>
+<p>使用這個 command, 你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
+<p>輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出:</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
 <p>你可以使用以下 command 來列出專案 ID</p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
-<p>輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure></p>
-<p>範例輸出：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure></p>
+
+<p>輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
 <p><code>gcloud</code> 的完整文件可以參閱 <a href="https://cloud.google.com/sdk/gcloud" target="_blank" rel="noopener">Google Cloud gcloud Overview</a></p>
-<p><br><br><br></p>
-<h3 id="安裝-ApacheBench"><a href="#安裝-ApacheBench" class="headerlink" title="安裝 ApacheBench"></a>安裝 ApacheBench</h3><p>現在安裝 ApacheBench:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install apache2-utils</span><br></pre></td></tr></table></figure></p>
+<br>
+<br>
+
+<h3 id="安裝-ApacheBench"><a href="#安裝-ApacheBench" class="headerlink" title="安裝 ApacheBench"></a>安裝 ApacheBench</h3><p>現在安裝 ApacheBench:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install apache2-utils</span><br></pre></td></tr></table></figure>
+
 <p>當被詢問是否繼續是, 輸入 “y”</p>
-<p>驗證安裝是否成功：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ab -V</span><br></pre></td></tr></table></figure></p>
-<p>輸出應如下：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">This is ApacheBench, Version 2.3 &lt;$Revision: 1757674 $&gt;</span><br><span class="line">Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/</span><br><span class="line">Licensed to The Apache Software Foundation,</span><br></pre></td></tr></table></figure></p>
-<p><br><br><br></p>
-<h2 id="建立虛擬環境"><a href="#建立虛擬環境" class="headerlink" title="建立虛擬環境"></a>建立虛擬環境</h2><p>執行以下指令下載並更新套件清單:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure></p>
-<p>Python 虛擬環境是被用來獨立系統內的套件安裝<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install vitualenv</span><br></pre></td></tr></table></figure></p>
+<p>驗證安裝是否成功：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ab -V</span><br></pre></td></tr></table></figure>
+
+<p>輸出應如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">This is ApacheBench, Version 2.3 &lt;$Revision: 1757674 $&gt;</span><br><span class="line">Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/</span><br><span class="line">Licensed to The Apache Software Foundation,</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+
+<h2 id="建立虛擬環境"><a href="#建立虛擬環境" class="headerlink" title="建立虛擬環境"></a>建立虛擬環境</h2><p>執行以下指令下載並更新套件清單:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+
+<p>Python 虛擬環境是被用來獨立系統內的套件安裝</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install vitualenv</span><br></pre></td></tr></table></figure>
+
 <p>如果跳出 [Y/n], 選擇 <code>Y</code>, 然後按 <code>Enter</code></p>
 <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">virtualenv -p python3 venv</span><br></pre></td></tr></table></figure>
-<p>啟動虛擬環境<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">source</span> venv/bin/activate</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
+
+<p>啟動虛擬環境</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">source</span> venv/bin/activate</span><br></pre></td></tr></table></figure>
+
+<br>
+
 <h3 id="複製倉庫"><a href="#複製倉庫" class="headerlink" title="複製倉庫"></a>複製倉庫</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> https://github.com/GoogleCloudPlatform/gke-migration-to-containers.git</span><br></pre></td></tr></table></figure>
-<p>到範例資料夾內：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> gke-migration-to-containers</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
+
+<p>到範例資料夾內：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> gke-migration-to-containers</span><br></pre></td></tr></table></figure>
+
+<br>
+
 <p>設定你的 region 以及 zone<br>特定的 Compute Engine 資源位於 regions 以及 zones, 一個 region 為一個運行你的資源的特定地理位置, 然一個 region 有一或多個 zones</p>
 <p>更多有關 regions 以及 zones 的資訊可以參考 <a href="https://cloud.google.com/compute/docs/regions-zones/" target="_blank" rel="noopener">Regions &amp; Zones documentation</a></p>
-<p>運行以下的指令來設定本教程中的 region 以及 zone (你也可以使用對你來說最佳的 region/zone)<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/region us-central1</span><br><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/zone us-central1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure></p>
-<p><br><br><br></p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>這個專案需要的基礎設施可執行以下指令部署<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make create</span><br></pre></td></tr></table></figure></p>
+<p>運行以下的指令來設定本教程中的 region 以及 zone (你也可以使用對你來說最佳的 region/zone)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/region us-central1</span><br><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/zone us-central1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>這個專案需要的基礎設施可執行以下指令部署</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make create</span><br></pre></td></tr></table></figure>
+
 <p>這個範例的設定大概需要最多 15 分鐘。 如果沒有跳錯的話, 建議持續等待。 不要中斷 <code>make create</code> 的執行。 資源建立的過程中, 你可以從主控台的 <strong>Compute Engine &gt; VM instances</strong> 確認目前進度。</p>
 <p>等待過程中, 可以看一下 <code>create.sh</code> script 的內容, 了解它幫你建立了什麼。</p>
 <p>你可以使用編輯器來檢視 <code>gke-migration-to-containers/scripts/create.sh</code></p>
@@ -448,53 +499,104 @@
 <li>產生 <a href="https://www.terraform.io/" target="_blank" rel="noopener">Terraform</a> 適當的設置</li>
 <li>執行 Terraform, 建立上述的情境</li>
 </ul>
-<p>範例輸出如下：<br>Terraform 建立一個 VM, COS VM, 以及 GKE 叢集：<br><img src="https://lh3.googleusercontent.com/JfcD5StKGc-YrqVNAhIikl4RAAZ8nHEPEOZ3sb8ZAYzD6Xzj1BcKnZKIrWnvDpLBc4Qbx-Bhd4jLpjN4MplYatR4hnbewXS1irxnl-5hoUdJtK_bMpd4QSB_qXvdl2mYY_UsAaMxVsyaXVqYE1EWooY_LEUNx8-7EvzhtC5m38hud3_wecohfiz72DTpPS8LA3znxh875FlwLynvWESnCZijIfGPCY5wnCjqCA9RP3pWMCJp49lsH6FmvPeE0fLwSoG6fhgeL0iXVzzOLCklD3TUjQ1l2EJNIgxji94XK7faC1pr5V6PlprpW59HkSub8qR9rAUG6Vwt6X64EmeK8ZphMNMJrPn6G2hXtn4sKQlPVT_OMzraBL_29SzhAiLFmCJyxN6ngge4-gOSxP1G6zmwp_u7JMkbjoZ2Qu-y6LwfThAPITQJMfMSC_JPK9vfIMHD0aglnMnOYtnJpCpWqFdojk_-7Pcfsjlo0jJkPxMNUu_LEPlEVrnUHQAYffhlqqe2NTIEKJqllfJzASGoQff25kYnOnq5ZQiWc53E0eU6K5y_zNirSkptiNhxE32Epv1kTZsDCbq5Y9wM4jZO8Bn9fFA4uzzb5RitM2-LzByOVmxxLY6k2GE4u1KIgk6D_ivTlNbeALVgM41s8vYqP913XSwmHsUZ0JLzGlK9WhT-6j1K3U6zQIn_XN906uVnT02Id8PdGy5hwJITHPSw4Ya1N9SptXOgl1RePC6RUMKsnI2qkQ=w722-h442-no" alt></p>
-<p>Terraform 輸出顯示在 Debain VM 以及 COS 系統的 (factorial endpoints) 階乘端點：<br><img src="https://lh3.googleusercontent.com/Bhgey8pwJSvT-WvsIsqMNQUoIs9aM7Lrn079rsrmZ0h5v6-Go8lnjFsEXECrmytXsBxs9E4FDAzWGmWy-5ZyDmRnl8pe0JdeE3d-a3prcQl-53NQ7p1SH5eBlRCeXiLtRrXay3e2NmWMys_b3Urc8Xq5Hnqsw3o-_dTYhTxfTRLUxkgVHPCLBCWLFHqAuw-vOHy94PdzLn_qaGV1TrqewJtbFH3HSdSX74iOTrH71-1t01VjE1tUnsMbyuUyzzcQ06Dahlr1pDXMK8a41jofAOatFaPuVqVy_sZ4HWNaqoj4NwT2mAJfl6L9kefVm8rC7Jhlk3DKwNuVFVqClly_2ncMdKzv7KMbLMQzUT8j0H0EwLz6D5kwXnSFyMTB64zRMRY5IFnrD6p9KlgHQnuzZi3vLu_M8NU7KdWa1xptS5c3hKGbmuFY3DIGkJuVctHt_5GwbFvEQhw1rg6-CPCopx56h3upNk9-Ey9LE-s77RHolESAhtxVU4-GHnzlbqrIicW5yDlfGAGPDs7ZKei-8ylrBId0V5gVDLziSqw6qKnXvRXyEmw7Uy8TcwhQ_4ccTkHXI0I_o3NZFEgeZuPQ3rbfi1BVf4Lqx61VClBvI55VBjlu8jT-jWKlFuQh1nfG1eKXxJ6-DN_7T8m0JwDbVIma3SxM8vyOWEA9lJ0sFljASQrjdCzYE9VQlxPodv-Jw5pPSzwOgdd19nQauZ93cSC08qPqZxTrcL00LED0Q0U7NllHCw=w721-h326-no" alt></p>
-<p>Kubernetes 叢集以及 <code>Prime-flask</code> 服務也被啟動：<br><img src="https://lh3.googleusercontent.com/2llYXm0dAjpSXPuIrbspWMJ1y5APVbdFHwSQs-6-UKTrmAsEIJqnYBdYGTaf-9Z-Oj1xp0GcPJ5cQUoCm0LD-20C2o-AhuNLIcVZuoTc74puUIYWZD-BcB9AeRrrFZQl8FXUFzWRvbYq0p5w7yhPbsHbbtQNjR8-WJnph-x5pFRBxRJHSDYu69hXil2hBpKavoi47bB12iAepjQCW_cWOA2NvJti33Q0EpdQxBQP-6BwzxpHVovAfnwj8cJHgImOf_SBVGEwfaDl1h7xt3YcAgB3kL72X0HN4YXN87XXjS7UP3hVCzEgXfl0nAJGFi35XzSBXy6B5ub6Ile6xRrSyTNaa5eC0nK6sRA-yeiVfNQp1TaXVtjAIGa7Juz4zgBGnLnYEoyG1FdIrmeCwMkshGid2vpxcaa7kgosRRTBLMUB3sFf4r9jV1svuC59NK_9hQfOI7hBXp2Iuh1XrR4KBZhQ82hp1VRb42c6NsfnRl1nsq7XI9ojwL5v-kZf-aWcQGSjZ9vQ6MXldNSbbHoP47jXoSq9L5OW39XH0apUImhk-r7WrYRMByTIfyWRBwkcYjmJkqWwAnQoQCENaNeyUyKu27D98oTOl8SbbQjECI6JlFrM9IR2nAreTzkOcsayIYV1IxhdyDQA0RYKWNhMBBTD5oJQ3Ca0YpVDg_5Both_xynsYDArq_SDq-Qex6rNvEnVMowRx-ExAxRY8D-LBwy3Ej_JZIwZYV4g0xZz9zLZMDeLpw=w723-h265-no" alt></p>
+<p>範例輸出如下：<br>Terraform 建立一個 VM, COS VM, 以及 GKE 叢集：<br><img src="https://lh3.googleusercontent.com/JfcD5StKGc-YrqVNAhIikl4RAAZ8nHEPEOZ3sb8ZAYzD6Xzj1BcKnZKIrWnvDpLBc4Qbx-Bhd4jLpjN4MplYatR4hnbewXS1irxnl-5hoUdJtK_bMpd4QSB_qXvdl2mYY_UsAaMxVsyaXVqYE1EWooY_LEUNx8-7EvzhtC5m38hud3_wecohfiz72DTpPS8LA3znxh875FlwLynvWESnCZijIfGPCY5wnCjqCA9RP3pWMCJp49lsH6FmvPeE0fLwSoG6fhgeL0iXVzzOLCklD3TUjQ1l2EJNIgxji94XK7faC1pr5V6PlprpW59HkSub8qR9rAUG6Vwt6X64EmeK8ZphMNMJrPn6G2hXtn4sKQlPVT_OMzraBL_29SzhAiLFmCJyxN6ngge4-gOSxP1G6zmwp_u7JMkbjoZ2Qu-y6LwfThAPITQJMfMSC_JPK9vfIMHD0aglnMnOYtnJpCpWqFdojk_-7Pcfsjlo0jJkPxMNUu_LEPlEVrnUHQAYffhlqqe2NTIEKJqllfJzASGoQff25kYnOnq5ZQiWc53E0eU6K5y_zNirSkptiNhxE32Epv1kTZsDCbq5Y9wM4jZO8Bn9fFA4uzzb5RitM2-LzByOVmxxLY6k2GE4u1KIgk6D_ivTlNbeALVgM41s8vYqP913XSwmHsUZ0JLzGlK9WhT-6j1K3U6zQIn_XN906uVnT02Id8PdGy5hwJITHPSw4Ya1N9SptXOgl1RePC6RUMKsnI2qkQ=w722-h442-no"></p>
+<p>Terraform 輸出顯示在 Debain VM 以及 COS 系統的 (factorial endpoints) 階乘端點：<br><img src="https://lh3.googleusercontent.com/Bhgey8pwJSvT-WvsIsqMNQUoIs9aM7Lrn079rsrmZ0h5v6-Go8lnjFsEXECrmytXsBxs9E4FDAzWGmWy-5ZyDmRnl8pe0JdeE3d-a3prcQl-53NQ7p1SH5eBlRCeXiLtRrXay3e2NmWMys_b3Urc8Xq5Hnqsw3o-_dTYhTxfTRLUxkgVHPCLBCWLFHqAuw-vOHy94PdzLn_qaGV1TrqewJtbFH3HSdSX74iOTrH71-1t01VjE1tUnsMbyuUyzzcQ06Dahlr1pDXMK8a41jofAOatFaPuVqVy_sZ4HWNaqoj4NwT2mAJfl6L9kefVm8rC7Jhlk3DKwNuVFVqClly_2ncMdKzv7KMbLMQzUT8j0H0EwLz6D5kwXnSFyMTB64zRMRY5IFnrD6p9KlgHQnuzZi3vLu_M8NU7KdWa1xptS5c3hKGbmuFY3DIGkJuVctHt_5GwbFvEQhw1rg6-CPCopx56h3upNk9-Ey9LE-s77RHolESAhtxVU4-GHnzlbqrIicW5yDlfGAGPDs7ZKei-8ylrBId0V5gVDLziSqw6qKnXvRXyEmw7Uy8TcwhQ_4ccTkHXI0I_o3NZFEgeZuPQ3rbfi1BVf4Lqx61VClBvI55VBjlu8jT-jWKlFuQh1nfG1eKXxJ6-DN_7T8m0JwDbVIma3SxM8vyOWEA9lJ0sFljASQrjdCzYE9VQlxPodv-Jw5pPSzwOgdd19nQauZ93cSC08qPqZxTrcL00LED0Q0U7NllHCw=w721-h326-no"></p>
+<p>Kubernetes 叢集以及 <code>Prime-flask</code> 服務也被啟動：<br><img src="https://lh3.googleusercontent.com/2llYXm0dAjpSXPuIrbspWMJ1y5APVbdFHwSQs-6-UKTrmAsEIJqnYBdYGTaf-9Z-Oj1xp0GcPJ5cQUoCm0LD-20C2o-AhuNLIcVZuoTc74puUIYWZD-BcB9AeRrrFZQl8FXUFzWRvbYq0p5w7yhPbsHbbtQNjR8-WJnph-x5pFRBxRJHSDYu69hXil2hBpKavoi47bB12iAepjQCW_cWOA2NvJti33Q0EpdQxBQP-6BwzxpHVovAfnwj8cJHgImOf_SBVGEwfaDl1h7xt3YcAgB3kL72X0HN4YXN87XXjS7UP3hVCzEgXfl0nAJGFi35XzSBXy6B5ub6Ile6xRrSyTNaa5eC0nK6sRA-yeiVfNQp1TaXVtjAIGa7Juz4zgBGnLnYEoyG1FdIrmeCwMkshGid2vpxcaa7kgosRRTBLMUB3sFf4r9jV1svuC59NK_9hQfOI7hBXp2Iuh1XrR4KBZhQ82hp1VRb42c6NsfnRl1nsq7XI9ojwL5v-kZf-aWcQGSjZ9vQ6MXldNSbbHoP47jXoSq9L5OW39XH0apUImhk-r7WrYRMByTIfyWRBwkcYjmJkqWwAnQoQCENaNeyUyKu27D98oTOl8SbbQjECI6JlFrM9IR2nAreTzkOcsayIYV1IxhdyDQA0RYKWNhMBBTD5oJQ3Ca0YpVDg_5Both_xynsYDArq_SDq-Qex6rNvEnVMowRx-ExAxRY8D-LBwy3Ej_JZIwZYV4g0xZz9zLZMDeLpw=w723-h265-no"></p>
 <h3 id="測試進度"><a href="#測試進度" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經成功建立基礎設施, 你將獲得一個評價分數。</p>
-<p><img src="https://lh3.googleusercontent.com/ML8F3Ci241HTfpI64TWrPQgcAppp5a6YzLNjT59te0fAQkdQb13F_kFYq6NLymyWkdtSoScnuMSe5UK6pm6a55Uflc0dQ4pDZ2ZBtGnQXh5nRCY4j0eyqYxzS7z2m9UKBwXNchaWdOO8dPKHFUT_wSc1r39yC25Ce0eojZvxQeXrvjF6BN6ZAXCcMTiCfB992trOHMPM9dArBOslk8PV24nvgYeWIAa_jVmMbeixhgXYjf4Zenz9sJGVlhuC5mrz5JIQj5PYSTCqvDns8MLo_cm9bmAcZf9V7ddMWQ3pLNK4s-4_bl7i9TlAs5ecLk5cyLRqRrtxQXFGS69G5EqLZfed_gpgPIoWrv1ZEQza9PGgUawmK98iB-UXxZ6AS7O5crWZZ0NyHSIpEJiAlhxM7toB1h90EFs5ty6Nq1AMzrkbN_FKcE7DliSHrPqdGNwL4RIq5tEPHRYaaRpIsakssqSXpkXSmi_4dCrnj9QiEeMfLMpENIbhFEU7ALe2GAgm-p5ixK_kxwAaB7McSJlJPzrIsJZjfzGZguT8oI2F2IY3QK5k9EcrEbTr68vSM-PnXQQzukugOTJ9WKy0quRmVM6X-OGIh_NSOYL8LcnNTe7K9SFJwE5jq8rqPO8-obTl4dvziHAdHUpdHSZmN_Ke3kNRorHQK1yrcAg0AU5RM0_C_IjSR0rcFKKEqlNru58OgHrxx_evaugjqypsnB_eojII5_dfd31pR5Fd6oioz3qooYyV9g=w1272-h222-no" alt></p>
-<p><br><br><br></p>
+<p><img src="https://lh3.googleusercontent.com/ML8F3Ci241HTfpI64TWrPQgcAppp5a6YzLNjT59te0fAQkdQb13F_kFYq6NLymyWkdtSoScnuMSe5UK6pm6a55Uflc0dQ4pDZ2ZBtGnQXh5nRCY4j0eyqYxzS7z2m9UKBwXNchaWdOO8dPKHFUT_wSc1r39yC25Ce0eojZvxQeXrvjF6BN6ZAXCcMTiCfB992trOHMPM9dArBOslk8PV24nvgYeWIAa_jVmMbeixhgXYjf4Zenz9sJGVlhuC5mrz5JIQj5PYSTCqvDns8MLo_cm9bmAcZf9V7ddMWQ3pLNK4s-4_bl7i9TlAs5ecLk5cyLRqRrtxQXFGS69G5EqLZfed_gpgPIoWrv1ZEQza9PGgUawmK98iB-UXxZ6AS7O5crWZZ0NyHSIpEJiAlhxM7toB1h90EFs5ty6Nq1AMzrkbN_FKcE7DliSHrPqdGNwL4RIq5tEPHRYaaRpIsakssqSXpkXSmi_4dCrnj9QiEeMfLMpENIbhFEU7ALe2GAgm-p5ixK_kxwAaB7McSJlJPzrIsJZjfzGZguT8oI2F2IY3QK5k9EcrEbTr68vSM-PnXQQzukugOTJ9WKy0quRmVM6X-OGIh_NSOYL8LcnNTe7K9SFJwE5jq8rqPO8-obTl4dvziHAdHUpdHSZmN_Ke3kNRorHQK1yrcAg0AU5RM0_C_IjSR0rcFKKEqlNru58OgHrxx_evaugjqypsnB_eojII5_dfd31pR5Fd6oioz3qooYyV9g=w1272-h222-no"></p>
+<br>
+<br>
+
 <h2 id="探索-Prime-Flask-環境"><a href="#探索-Prime-Flask-環境" class="headerlink" title="探索 Prime-Flask 環境"></a>探索 Prime-Flask 環境</h2><p>三個不一樣的環境已經完成設置, Prime-flask app 可以橫跨這些環境, 成為一個在單一虛擬機上運行的容器化應用, 到一個 <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/" target="_blank" rel="noopener">pod</a>, 運行在一個編排容器的平台, 像是 Kubernetes</p>
 <p>一旦你的資源已經準備就緒, 這對你探索系統來說有很大的幫助。</p>
-<p>執行以下指令到 <code>vm-webserver</code> 機器, 在這台機器上, 應用正運行在主機的作業系統<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute ssh vm-webserver --zone us-central1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure></p>
+<p>執行以下指令到 <code>vm-webserver</code> 機器, 在這台機器上, 應用正運行在主機的作業系統</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute ssh vm-webserver --zone us-central1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure>
+
 <p>如果有詢問是否繼續, 輸入 “Y”, 按下 <strong>Enter</strong> 兩次來確認不使用密碼</p>
 <p>這個環境中沒有隔離效果, 攜帶性也不好。 在某種意義上, 這個應用具有整個系統的存取權, 且在一些其他因素下, 可能無法在失敗後自動回復。 若要擴充這個應用可能需要更多台的虛擬機, 而這很可能無法有效地利用資源。</p>
-<p>列出所有程序：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps aux</span><br></pre></td></tr></table></figure></p>
-<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">root       882  0.0  1.1  92824  6716 ?        Ss   18:41   0:00 sshd: user [priv]</span><br><span class="line">user       888  0.0  0.6  92824  4052 ?        S    18:41   0:00 sshd: user@pts/0</span><br><span class="line">user       889  0.0  0.6  19916  3880 pts/0    Ss   18:41   0:00 -bash</span><br><span class="line">user       895  0.0  0.5  38304  3176 pts/0    R+   18:41   0:00 ps aux</span><br><span class="line">apprunn+  7938  0.0  3.3  48840 20328 ?        Ss   Mar19   1:06 /usr/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">apprunn+ 21662  0.0  3.9  69868 24032 ?        S    Mar20   0:05 /usr/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br></pre></td></tr></table></figure></p>
-<p>離開：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure></p>
-<p>執行以下指令到 <code>cos-vm</code> 機器, 在這台機器上你運行著 docker 容器<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute ssh cos-vm --zone us-central1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure></p>
+<p>列出所有程序：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps aux</span><br></pre></td></tr></table></figure>
+
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">root       882  0.0  1.1  92824  6716 ?        Ss   18:41   0:00 sshd: user [priv]</span><br><span class="line">user       888  0.0  0.6  92824  4052 ?        S    18:41   0:00 sshd: user@pts/0</span><br><span class="line">user       889  0.0  0.6  19916  3880 pts/0    Ss   18:41   0:00 -bash</span><br><span class="line">user       895  0.0  0.5  38304  3176 pts/0    R+   18:41   0:00 ps aux</span><br><span class="line">apprunn+  7938  0.0  3.3  48840 20328 ?        Ss   Mar19   1:06 /usr/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">apprunn+ 21662  0.0  3.9  69868 24032 ?        S    Mar20   0:05 /usr/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br></pre></td></tr></table></figure>
+
+<p>離開：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<p>執行以下指令到 <code>cos-vm</code> 機器, 在這台機器上你運行著 docker 容器</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute ssh cos-vm --zone us-central1<span class="hljs-_">-a</span></span><br></pre></td></tr></table></figure>
+
 <p>如果有詢問是否繼續, 輸入 “Y”, 按下 <strong>Enter</strong> 兩次來確認不使用密碼</p>
 <p>COS 是一個優化過的作業系統, 作業系統佔用了很小的空間, 這也是它比較適合運行容器化工作的原因之一。 它是先安裝了 cloud-init 以及 Docker runtime, 而如果有些容器並不需要跑在一些高可靠性的平台的話, 也是很適合跑在這樣的系統。</p>
-<p>你可以在宿主機上運行 <code>ps aux</code> 來檢視運行中的 <code>prime-flask</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps aux</span><br></pre></td></tr></table></figure></p>
-<p>注意到 docker 以及容器的參考資訊：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">root         626  0.0  5.7 496812 34824 ?        Ssl  Mar19   0:14 /usr/bin/docker run --rm --name=flaskservice -p 8080:8080 gcr.io/migration-to-containers/prime-flask:1.0.2</span><br><span class="line">root         719  0.0  0.5 305016  3276 ?        Sl   Mar19   0:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 8080 -container-ip 172.17.0.2 -container-port 8080</span><br><span class="line">root         724  0.0  0.8 614804  5104 ?        Sl   Mar19   0:09 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/mo</span><br><span class="line">chronos      741  0.0  0.0    204     4 ?        Ss   Mar19   0:00 /usr/bin/dumb-init /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">chronos      774  0.0  3.2  21324 19480 ?        Ss   Mar19   1:25 /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">chronos    14376  0.0  4.0  29700 24452 ?        S    Mar20   0:05 /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br></pre></td></tr></table></figure></p>
-<p>並且, 如果你試著列出 python path, 會顯示不存在<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls /usr/<span class="hljs-built_in">local</span>/bin/python</span><br></pre></td></tr></table></figure></p>
-<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ls: cannot access &apos;/usr/local/bin/python&apos;: No such file or directory</span><br></pre></td></tr></table></figure></p>
-<p>Docker 列出容器<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo docker ps</span><br></pre></td></tr></table></figure></p>
-<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CONTAINER ID        IMAGE                                                  COMMAND                  CREATED             STATUS              PORTS                    NAMES</span><br><span class="line">d147963ec3ca        gcr.io/migration-to-containers/prime-flask:1.0.2   &quot;/usr/bin/dumb-init …&quot;   39 hours ago        Up 39 hours         0.0.0.0:8080-&gt;8080/tcp   flaskservice</span><br></pre></td></tr></table></figure></p>
-<p>現在你可以執行以下指令來檢視運行在容器內的程序:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo docker <span class="hljs-built_in">exec</span> -it $(sudo docker ps |awk <span class="hljs-string">'/prime-flask/ &#123;print $1&#125;'</span>) ps aux</span><br></pre></td></tr></table></figure></p>
-<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">PID   USER     TIME  COMMAND</span><br><span class="line">    1 apprunne  0:00 /usr/bin/dumb-init /usr/local/bin/gunicorn --bind 0.0.0.0:</span><br><span class="line">    6 apprunne  1:25 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn -</span><br><span class="line">   17 apprunne  0:05 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn -</span><br><span class="line">   29 apprunne  0:00 ps aux</span><br></pre></td></tr></table></figure></p>
-<p>退出：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure></p>
+<p>你可以在宿主機上運行 <code>ps aux</code> 來檢視運行中的 <code>prime-flask</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps aux</span><br></pre></td></tr></table></figure>
+
+<p>注意到 docker 以及容器的參考資訊：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">root         626  0.0  5.7 496812 34824 ?        Ssl  Mar19   0:14 /usr/bin/docker run --rm --name=flaskservice -p 8080:8080 gcr.io/migration-to-containers/prime-flask:1.0.2</span><br><span class="line">root         719  0.0  0.5 305016  3276 ?        Sl   Mar19   0:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 8080 -container-ip 172.17.0.2 -container-port 8080</span><br><span class="line">root         724  0.0  0.8 614804  5104 ?        Sl   Mar19   0:09 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/mo</span><br><span class="line">chronos      741  0.0  0.0    204     4 ?        Ss   Mar19   0:00 /usr/bin/dumb-init /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">chronos      774  0.0  3.2  21324 19480 ?        Ss   Mar19   1:25 /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">chronos    14376  0.0  4.0  29700 24452 ?        S    Mar20   0:05 /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br></pre></td></tr></table></figure>
+
+<p>並且, 如果你試著列出 python path, 會顯示不存在</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ls /usr/<span class="hljs-built_in">local</span>/bin/python</span><br></pre></td></tr></table></figure>
+
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">ls: cannot access &apos;/usr/local/bin/python&apos;: No such file or directory</span><br></pre></td></tr></table></figure>
+
+<p>Docker 列出容器</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo docker ps</span><br></pre></td></tr></table></figure>
+
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">CONTAINER ID        IMAGE                                                  COMMAND                  CREATED             STATUS              PORTS                    NAMES</span><br><span class="line">d147963ec3ca        gcr.io/migration-to-containers/prime-flask:1.0.2   &quot;/usr/bin/dumb-init …&quot;   39 hours ago        Up 39 hours         0.0.0.0:8080-&gt;8080/tcp   flaskservice</span><br></pre></td></tr></table></figure>
+
+<p>現在你可以執行以下指令來檢視運行在容器內的程序:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo docker <span class="hljs-built_in">exec</span> -it $(sudo docker ps |awk <span class="hljs-string">'/prime-flask/ &#123;print $1&#125;'</span>) ps aux</span><br></pre></td></tr></table></figure>
+
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">PID   USER     TIME  COMMAND</span><br><span class="line">    1 apprunne  0:00 /usr/bin/dumb-init /usr/local/bin/gunicorn --bind 0.0.0.0:</span><br><span class="line">    6 apprunne  1:25 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn -</span><br><span class="line">   17 apprunne  0:05 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn -</span><br><span class="line">   29 apprunne  0:00 ps aux</span><br></pre></td></tr></table></figure>
+
+<p>退出：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure>
+
 <p>接下來, 讓我們到 Kubernetes 環境。 在 Kubernetes 我們可以運行千百個 <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/" target="_blank" rel="noopener">pods</a>, pods 代表容器的群組。 Kubernetes 是現今部署容器的標準。 它提供了高生產力, 可靠性, 以及擴充性。 Kubernetes 讓你的容器有個家, 且當你的容器失敗了, 它會再次重啟它。 你可以使用很多機器來組成一個叢集, 所以你可以讓它橫跨了不同的區域, 確保了可用性, 以及一些對潛在問題的高適應性。</p>
-<p>取得叢集配置：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters get-credentials prime-server-cluster</span><br></pre></td></tr></table></figure></p>
-<p>取得運行在預設命名空間下的 pods<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure></p>
-<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                            READY   STATUS    RESTARTS   AGE</span><br><span class="line">prime-server-6b94cdfc8b-dfckf   1/1     Running   0          2d5h</span><br></pre></td></tr></table></figure></p>
-<p>檢視 pod 內運行著什麼：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">exec</span> $(kubectl get pods -lapp=prime-server -ojsonpath=<span class="hljs-string">'&#123;.items[].metadata.name&#125;'</span>)  -- ps aux</span><br></pre></td></tr></table></figure></p>
-<p>(輸出)<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">PID   USER     TIME  COMMAND</span><br><span class="line">    1 apprunne  0:00 /usr/bin/dumb-init /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">    6 apprunne  1:16 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">    8 apprunne  2:52 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">   19 apprunne  0:00 ps aux</span><br></pre></td></tr></table></figure></p>
+<p>取得叢集配置：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters get-credentials prime-server-cluster</span><br></pre></td></tr></table></figure>
+
+<p>取得運行在預設命名空間下的 pods</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">NAME                            READY   STATUS    RESTARTS   AGE</span><br><span class="line">prime-server-6b94cdfc8b-dfckf   1/1     Running   0          2d5h</span><br></pre></td></tr></table></figure>
+
+<p>檢視 pod 內運行著什麼：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">exec</span> $(kubectl get pods -lapp=prime-server -ojsonpath=<span class="hljs-string">'&#123;.items[].metadata.name&#125;'</span>)  -- ps aux</span><br></pre></td></tr></table></figure>
+
+<p>(輸出)</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">PID   USER     TIME  COMMAND</span><br><span class="line">    1 apprunne  0:00 /usr/bin/dumb-init /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">    6 apprunne  1:16 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">    8 apprunne  2:52 &#123;gunicorn&#125; /usr/local/bin/python /usr/local/bin/gunicorn --bind 0.0.0.0:8080 prime-flask-server</span><br><span class="line">   19 apprunne  0:00 ps aux</span><br></pre></td></tr></table></figure>
+
 <p>如你所見, python 應用目前正運行在容器內。 這個應用無法存取任何主機上的東西, 因為這個容器是被隔離的。 它運行在一個 Linux 命名空間, 且(預設)無法存取檔案, 網路, 或在 VM 上的, 在容器裡的, 或任何地方的其他資源。</p>
-<p><br><br><br></p>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>現在此應用已被部署, 執行以下指令來驗證三種部署:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make validate</span><br></pre></td></tr></table></figure></p>
+<br>
+<br>
+
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>現在此應用已被部署, 執行以下指令來驗證三種部署:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make validate</span><br></pre></td></tr></table></figure>
+
 <p>API 可能會花一些時間完成。 立即執行 <code>make validate</code> 可能會出現錯誤, 但那是因為 instances 還沒有完成初始化。 等個 1 或 2 分鐘然後重試一次應可以解決任何問題。</p>
-<p>一個成功的輸出將如下：<br><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Validating Debian VM Webapp...</span><br><span class="line">Testing endpoint http://35.227.149.80:8080</span><br><span class="line">Endpoint http://35.227.149.80:8080 is responding.</span><br><span class="line">**** http://35.227.149.80:8080/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line">The factorial of 10 is 3628800</span><br><span class="line"></span><br><span class="line">Validating Container OS Webapp...</span><br><span class="line">Testing endpoint http://35.230.123.231:8080</span><br><span class="line">Endpoint http://35.230.123.231:8080 is responding.</span><br><span class="line">**** http://35.230.123.231:8080/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line">The factorial of 10 is 3628800</span><br><span class="line"></span><br><span class="line">Validating Kubernetes Webapp...</span><br><span class="line">Testing endpoint http://35.190.89.136</span><br><span class="line">Endpoint http://35.190.89.136 is responding.</span><br><span class="line">**** http://35.190.89.136/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line">The factorial of 10 is 3628800</span><br></pre></td></tr></table></figure></p>
+<p>一個成功的輸出將如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">Validating Debian VM Webapp...</span><br><span class="line">Testing endpoint http://35.227.149.80:8080</span><br><span class="line">Endpoint http://35.227.149.80:8080 is responding.</span><br><span class="line">**** http://35.227.149.80:8080/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line">The factorial of 10 is 3628800</span><br><span class="line"></span><br><span class="line">Validating Container OS Webapp...</span><br><span class="line">Testing endpoint http://35.230.123.231:8080</span><br><span class="line">Endpoint http://35.230.123.231:8080 is responding.</span><br><span class="line">**** http://35.230.123.231:8080/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line">The factorial of 10 is 3628800</span><br><span class="line"></span><br><span class="line">Validating Kubernetes Webapp...</span><br><span class="line">Testing endpoint http://35.190.89.136</span><br><span class="line">Endpoint http://35.190.89.136 is responding.</span><br><span class="line">**** http://35.190.89.136/prime/10</span><br><span class="line">The sum of all primes less than 10 is 17</span><br><span class="line">The factorial of 10 is 3628800</span><br></pre></td></tr></table></figure>
+
 <p>當然, IP 位址會與你的不同。</p>
-<p><br><br><br></p>
+<br>
+<br>
+
 <h2 id="負載測試"><a href="#負載測試" class="headerlink" title="負載測試"></a>負載測試</h2><p>在 Cloud Shell 點擊 <strong>+</strong> 打開新的 Cloud Shell 視窗。</p>
-<p>執行以下指令, 記得將 <code>[IP_ADDRESS]</code> 替換成從驗證輸出得到的 <strong>IP 位址以及 port</strong>, 注意 Kubernetes 部署運行在 port <code>80</code>, 而其他兩個部署運行在 port <code>8080</code><br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ab -c 120 -t 60  http://&lt;IP_ADDRESS&gt;/prime/10000</span><br></pre></td></tr></table></figure></p>
+<p>執行以下指令, 記得將 <code>[IP_ADDRESS]</code> 替換成從驗證輸出得到的 <strong>IP 位址以及 port</strong>, 注意 Kubernetes 部署運行在 port <code>80</code>, 而其他兩個部署運行在 port <code>8080</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ab -c 120 -t 60  http://&lt;IP_ADDRESS&gt;/prime/10000</span><br></pre></td></tr></table></figure>
+
 <p>ApacheBench(<code>ab</code>) 將在一分鐘內每秒鐘對指定端點發送 120 個併發請求。<br>範例應用的規模並不足以處理這個數量的請求。</p>
-<p>結果可以經由 <code>ab</code> 指令的輸出來確認, 如果你看到一個 <code>Failed requests</code> 的值大於 0, 這表示 server 無法成功回應這個負荷<br><img src="https://lh3.googleusercontent.com/PQ5zHT-ZUm4XptGJJJc8_xMbhYsarDnGEHw2xu1Pr8JZYeM-tfVv9FwNSfVX8NOPc3sbks9HHNUCNSBsZxqIICe4SoBJEZRLg7xZuzOf5Y6ZrAPfHygKxRyXo139aZ-1agFSvOeDYt8fINb0GI6agTfNgTM0-r5AuZGeGd2X1z2ozA8xzWfFcnGrUeKzPt93dYVn0HeYQZl3BV91cWNl1DloQbVMUFCJdRdHYQz13VzlZ3vM_C82ckshIvdy9LdMfitldRUtAWUoqzQ1LMfT11zVhgmsQiY-iXB-SN9foaexI2Qg-VQSepggr8jOMWcWSJEW8VGxyHVCkhbZrn-xEL6h139E51FN2GWTVsov-rGWPWRgLP0dX1_aBEmbMXvRGTHEbAhZ_fTvxzmWc2VjNGCXSbrWBgEFwqwz3nBMt6w_Vyq3qt-MnCDKwTXEjDi-8UuC10ZYz_8JYzqzxvUApVCSReK7y8LuZG4GFEdfrQaLiY9g1LduDTRx2q-ybWBw85D5JnYr2qbnxlwuLbR6TWD1QFlT34mqWkaRDb471udOOrJqtR-mbQDFhTa8_znu4V7eHKPDx1qutzqHZrKIq00AvWTBnvRqLqa_tBz_K-Xbn7euqtKIMDCH28vf98B5GRjSQnaY-XRiyGG7d8GMuBk03B6s0tPJvINAlR32YSSA9MxfLibOuJ1b-fdCqFeM6D3ghVjHcQjM_Yt3_1W3mqtXujyGpM4MoTCkPGq8ZLSXAinrCQ=w723-h541-no" alt></p>
+<p>結果可以經由 <code>ab</code> 指令的輸出來確認, 如果你看到一個 <code>Failed requests</code> 的值大於 0, 這表示 server 無法成功回應這個負荷<br><img src="https://lh3.googleusercontent.com/PQ5zHT-ZUm4XptGJJJc8_xMbhYsarDnGEHw2xu1Pr8JZYeM-tfVv9FwNSfVX8NOPc3sbks9HHNUCNSBsZxqIICe4SoBJEZRLg7xZuzOf5Y6ZrAPfHygKxRyXo139aZ-1agFSvOeDYt8fINb0GI6agTfNgTM0-r5AuZGeGd2X1z2ozA8xzWfFcnGrUeKzPt93dYVn0HeYQZl3BV91cWNl1DloQbVMUFCJdRdHYQz13VzlZ3vM_C82ckshIvdy9LdMfitldRUtAWUoqzQ1LMfT11zVhgmsQiY-iXB-SN9foaexI2Qg-VQSepggr8jOMWcWSJEW8VGxyHVCkhbZrn-xEL6h139E51FN2GWTVsov-rGWPWRgLP0dX1_aBEmbMXvRGTHEbAhZ_fTvxzmWc2VjNGCXSbrWBgEFwqwz3nBMt6w_Vyq3qt-MnCDKwTXEjDi-8UuC10ZYz_8JYzqzxvUApVCSReK7y8LuZG4GFEdfrQaLiY9g1LduDTRx2q-ybWBw85D5JnYr2qbnxlwuLbR6TWD1QFlT34mqWkaRDb471udOOrJqtR-mbQDFhTa8_znu4V7eHKPDx1qutzqHZrKIq00AvWTBnvRqLqa_tBz_K-Xbn7euqtKIMDCH28vf98B5GRjSQnaY-XRiyGG7d8GMuBk03B6s0tPJvINAlR32YSSA9MxfLibOuJ1b-fdCqFeM6D3ghVjHcQjM_Yt3_1W3mqtXujyGpM4MoTCkPGq8ZLSXAinrCQ=w723-h541-no"></p>
 <p><strong>注意</strong>: 能不會三個資源都有錯誤</p>
-<p><br></p>
+<br>
+
 <h3 id="測試進度-1"><a href="#測試進度-1" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經成功地實施負載測試, 你將獲得一個評價分數。</p>
-<p><img src="https://lh3.googleusercontent.com/xFVsHi89jZcAD1AbdE0kCTyVjqXhPX-uIh9C0j9MMgq7HX4qtKbCteyKOmNFGmZbEzdt3bqkI4-k6b1fjRZAA_brr5yZDgCyHiCcgYOuwy71tnSrndbaePBoFU8C3DQ5dAeh6cwV7JIQliSwSQbOaoHch1mX8xmT5rYvTxTKvAsjZZ25Fwx6hzAhKiWC3nfn1fJGzP17jvtjbNhery3IMmTNBYvnKvtTQrI1mrrEGDgEVwI6BD2cuFI_rbmMV84QK5gJ27BEAdsLdK_DIqkv8Re6ZrdBqr1JZcMKniwwYl8A81tsuKjld4CwAlVMOdjNIlJ_23hHt-HYODZhkr-6ymPrpllsA_spcExEJ7bx11c237Xh7Y6WWJI6YdM8cmQ150gqVpBvTxXR5PVSL-y9EKzE4in29HYhPsqDfE_4ZmsD5ifkSSJNO7FK16vmBUmj7z0YX2QSL6qPRHtg5TSy3hx2Kvww6ByLih3EW8Rhm5llxIJ9DiTsuvOIfknhUjzI9vZvb_52us3OduVL0guiJEJuEukNSjpO0ncATCI2eJWERG0hfM9zX3sbBCFXSiDuRBLuz805GVdbhGT3jigWdFsO0RdLAWhmnkXbscLx57_Z1SqMZNx4AmIFiSpkG2a424Th7YcTLkThc5iitYwSwL_Uf-2K7Eu3nCzvTzYIUmb6GreQ6VioPP70J-PgSnWAW5u4J-SnVy3uWCRdv-gZ9LWMVU0tVi0OoKoxnnsXqZMWN69-1Q=w1272-h222-no" alt></p>
+<p><img src="https://lh3.googleusercontent.com/xFVsHi89jZcAD1AbdE0kCTyVjqXhPX-uIh9C0j9MMgq7HX4qtKbCteyKOmNFGmZbEzdt3bqkI4-k6b1fjRZAA_brr5yZDgCyHiCcgYOuwy71tnSrndbaePBoFU8C3DQ5dAeh6cwV7JIQliSwSQbOaoHch1mX8xmT5rYvTxTKvAsjZZ25Fwx6hzAhKiWC3nfn1fJGzP17jvtjbNhery3IMmTNBYvnKvtTQrI1mrrEGDgEVwI6BD2cuFI_rbmMV84QK5gJ27BEAdsLdK_DIqkv8Re6ZrdBqr1JZcMKniwwYl8A81tsuKjld4CwAlVMOdjNIlJ_23hHt-HYODZhkr-6ymPrpllsA_spcExEJ7bx11c237Xh7Y6WWJI6YdM8cmQ150gqVpBvTxXR5PVSL-y9EKzE4in29HYhPsqDfE_4ZmsD5ifkSSJNO7FK16vmBUmj7z0YX2QSL6qPRHtg5TSy3hx2Kvww6ByLih3EW8Rhm5llxIJ9DiTsuvOIfknhUjzI9vZvb_52us3OduVL0guiJEJuEukNSjpO0ncATCI2eJWERG0hfM9zX3sbBCFXSiDuRBLuz805GVdbhGT3jigWdFsO0RdLAWhmnkXbscLx57_Z1SqMZNx4AmIFiSpkG2a424Th7YcTLkThc5iitYwSwL_Uf-2K7Eu3nCzvTzYIUmb6GreQ6VioPP70J-PgSnWAW5u4J-SnVy3uWCRdv-gZ9LWMVU0tVi0OoKoxnnsXqZMWN69-1Q=w1272-h222-no"></p>
 <p>若要確保你的系統可以處理這樣的流量, 可以使用擴充。 在此範例中, 我們將水平的擴充服務</p>
 <p>在 Debian 以及 COS 架構, 水平擴充包含：</p>
 <ul>
@@ -504,16 +606,26 @@
 </ul>
 <p>這是一個複雜的程序, 且不在本範例的範圍內。</p>
 <p>在第三個部署中 (Kubernetes), 這個程序簡單多了</p>
-<p>在你的第一個 Cloud Shell 視窗, 執行以下指令:<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl scale --replicas 3 deployment/prime-server</span><br></pre></td></tr></table></figure></p>
+<p>在你的第一個 Cloud Shell 視窗, 執行以下指令:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl scale --replicas 3 deployment/prime-server</span><br></pre></td></tr></table></figure>
+
 <h3 id="測試進度-2"><a href="#測試進度-2" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你成功地擴充了你的部署, 你將獲得一個評價分數。</p>
-<p><img src="https://lh3.googleusercontent.com/lO1gJXNuKCaEcrfw47Ep7istuueO68QE-5uYxNL_2Sj0-4JEQme9sSSV1n9rj8pSSXKIv3QRtDvn192A-9EvdG0835ngXqq3XYvMKITlLba95NKwVWQQXjHd_LMEB4-PHnLgf8bvuqiRs84AalXa4n3BW2H2joiW5fZ9PRcYmZg8aCL7ZAeVz7txnet9-WLO5LLPrP9CxtNIylfFOpclwnL52cbu8rObzLXnujNJK0sXmC28LauqYZaqgVjuf7Mi3E4zcwYoW5Mr5clF8fxmAO37M9yK1Z1SsBYw7U32x2OXD4d8Ac0F96XWMCGIXHNL-FxyzPEdd8c3pwshAOY7xHRbJx5LOWCHST_q_7UXYxjtPx-TDXs8oe7BoQV0MIJllPlQ7ONuya20i5ktR6msBRzrHb73kq4eMphHD8Nbv_gHy71G87OxJipRu5I7axVEa2Gq7laB8yEMOMqJgVABrE0FLEgFTGsMILtQ0qXB4fxcFTN5Ere6h7EuEFTpQYNaUY2AEyISHREJM2G-MmEMBMbXuiJgqdz_B-bWqqyOvjhJ8KqaS-PfFrdq9fLg7R6f4IeA7fA4QnW4lOQrU3abgqYJJuvUmfyQ9oDdKTLMGN3kwjGjLr_MzAXDfqVZkUaN32Fl0vRktZSO1HHxIcs_MJd5A1rUgCEcAUsAnU3Wt0cvREnESYSjjc9h9bOGdEUN-U1LCtj4BxlLlWtDTnXuY-t3HCcAAhXNdhABP6nNgTXcyKvxMw=w1272-h222-no" alt></p>
-<p>等待 30 秒鐘讓 replicas 初始化, 重新執行以下負載測試：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ab -c 120 -t 60  http://&lt;IP_ADDRESS&gt;/prime/10000</span><br></pre></td></tr></table></figure></p>
-<p>可以注意到, <code>Failed requests</code> 現在是 0, 這代表針對這所有的 10,000+ 請求, server 都有成功回應。<br><img src="https://lh3.googleusercontent.com/dsCBNslNLXheVxxNJKD18wh7WnfWjddNO0cObYOsaIbtIVYkQrcOI8J5XKLUu8Qbmf9h1IC_lnpu70KndH80q9_QS1CwKntOM57SUR5gSeSafzdmQ-6Aechox5ht5iJtn04git9O5_VqHQBdkgD2tgK55wuaCmYokvuGzCm8XzYa7kTrs6RlcrY6Rq6XK0vZCN9zjHmZaxkyi_L2PlqwTlTyI49fMfStOdaqdfw2NdKAYsu21u-9K3k9OF2sC9IIo7_xBOG34SHTVPAwk0wAORRJHCnem2Pqk4RYmQLw7HTqNwZPniwW96pgfX4d_8nJfl-cKEFLzSk4Lnr-NsM3kHJJhrlhnWfAD-d1Vzph7hdHTDkhDa8ey-DTTJjlsjBA3Ghox4qxGuiCKXICMn__pWUvslyqubtqSdcJnSaqlvu2O4oaSdm-OqYMYV2igIJDfwGDTT3WwZu89DtvWpEpEKr5-IHn-j3PMllEGInBPe-ycHODVUqba7iXsaAYHcHe2MX7YrbvwNhbMClFjEG25iuvh58IE2cg3qBLdcufNZvvF1eastQMA9wxPy-arsGfj_QCrUqKD-lZLcGyhWvdCXNH7xazWx74Om8fc61_IiYrPNjYUsTbj0b0ewPSwfIieCsXJR9q4EziF7QfRSwiwLUVDlERk5EI9peEKpxk4UQtxmmK7IVQ4x0lZU1Z9xTVPJkCh6bIzKHfqVglzZShqfAG9gduHvahSV_JySp-RPC-lnstHw=w724-h527-no" alt></p>
-<p><br><br><br></p>
+<p><img src="https://lh3.googleusercontent.com/lO1gJXNuKCaEcrfw47Ep7istuueO68QE-5uYxNL_2Sj0-4JEQme9sSSV1n9rj8pSSXKIv3QRtDvn192A-9EvdG0835ngXqq3XYvMKITlLba95NKwVWQQXjHd_LMEB4-PHnLgf8bvuqiRs84AalXa4n3BW2H2joiW5fZ9PRcYmZg8aCL7ZAeVz7txnet9-WLO5LLPrP9CxtNIylfFOpclwnL52cbu8rObzLXnujNJK0sXmC28LauqYZaqgVjuf7Mi3E4zcwYoW5Mr5clF8fxmAO37M9yK1Z1SsBYw7U32x2OXD4d8Ac0F96XWMCGIXHNL-FxyzPEdd8c3pwshAOY7xHRbJx5LOWCHST_q_7UXYxjtPx-TDXs8oe7BoQV0MIJllPlQ7ONuya20i5ktR6msBRzrHb73kq4eMphHD8Nbv_gHy71G87OxJipRu5I7axVEa2Gq7laB8yEMOMqJgVABrE0FLEgFTGsMILtQ0qXB4fxcFTN5Ere6h7EuEFTpQYNaUY2AEyISHREJM2G-MmEMBMbXuiJgqdz_B-bWqqyOvjhJ8KqaS-PfFrdq9fLg7R6f4IeA7fA4QnW4lOQrU3abgqYJJuvUmfyQ9oDdKTLMGN3kwjGjLr_MzAXDfqVZkUaN32Fl0vRktZSO1HHxIcs_MJd5A1rUgCEcAUsAnU3Wt0cvREnESYSjjc9h9bOGdEUN-U1LCtj4BxlLlWtDTnXuY-t3HCcAAhXNdhABP6nNgTXcyKvxMw=w1272-h222-no"></p>
+<p>等待 30 秒鐘讓 replicas 初始化, 重新執行以下負載測試：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ab -c 120 -t 60  http://&lt;IP_ADDRESS&gt;/prime/10000</span><br></pre></td></tr></table></figure>
+
+<p>可以注意到, <code>Failed requests</code> 現在是 0, 這代表針對這所有的 10,000+ 請求, server 都有成功回應。<br><img src="https://lh3.googleusercontent.com/dsCBNslNLXheVxxNJKD18wh7WnfWjddNO0cObYOsaIbtIVYkQrcOI8J5XKLUu8Qbmf9h1IC_lnpu70KndH80q9_QS1CwKntOM57SUR5gSeSafzdmQ-6Aechox5ht5iJtn04git9O5_VqHQBdkgD2tgK55wuaCmYokvuGzCm8XzYa7kTrs6RlcrY6Rq6XK0vZCN9zjHmZaxkyi_L2PlqwTlTyI49fMfStOdaqdfw2NdKAYsu21u-9K3k9OF2sC9IIo7_xBOG34SHTVPAwk0wAORRJHCnem2Pqk4RYmQLw7HTqNwZPniwW96pgfX4d_8nJfl-cKEFLzSk4Lnr-NsM3kHJJhrlhnWfAD-d1Vzph7hdHTDkhDa8ey-DTTJjlsjBA3Ghox4qxGuiCKXICMn__pWUvslyqubtqSdcJnSaqlvu2O4oaSdm-OqYMYV2igIJDfwGDTT3WwZu89DtvWpEpEKr5-IHn-j3PMllEGInBPe-ycHODVUqba7iXsaAYHcHe2MX7YrbvwNhbMClFjEG25iuvh58IE2cg3qBLdcufNZvvF1eastQMA9wxPy-arsGfj_QCrUqKD-lZLcGyhWvdCXNH7xazWx74Om8fc61_IiYrPNjYUsTbj0b0ewPSwfIieCsXJR9q4EziF7QfRSwiwLUVDlERk5EI9peEKpxk4UQtxmmK7IVQ4x0lZU1Z9xTVPJkCh6bIzKHfqVglzZShqfAG9gduHvahSV_JySp-RPC-lnstHw=w724-h527-no"></p>
+<br>
+<br>
+
 <h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><p>儘管 Qwiklabs 將會清理所有在本教程中提供的資源, 不過也可以學學如何清理你的環境</p>
-<p>在第一個 Cloud Shell 執行以下指令：<br><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make teardown</span><br></pre></td></tr></table></figure></p>
-<p>這將執行 <code>terraform destroy</code>, 它會刪除所有本範例中建立的資源。<br><img src="https://lh3.googleusercontent.com/c_uJeilRMcGbj_rpwceonzU54UBBhBDcnTvEKwNqJ4lfTmvcMuO4I2r8QAwOb25l8WQUxaPQpN3E7iyEabJ5wUN8rsaeC3t-xZ5Hid_Nj0JsUSxHxGyiHhPEhVPIXxdkluXqCazHbVonWabOfDdysQ9wcEjl8URoQ3z7IwWaOImajRq2YqAooErnDS5FGbDfZTOGqpsWqqzv5C6dgODozsfsfNe8XuaG_mmIY0E_BOfo9pHnRSv8CGpAEJerosxUrHEg9hfRUkRMhiPSMlD7jkVFY91tEt3HFndOohiiRTFKN_cI0TjoWZsC0vR7Db8uG2233e9HGQpTC1-xY__dWfO5FRO4wrc5XRtaDkZX69ykHvGR8aLOTIDIqcSQWNHl8djQOd3jUcm_tfaFtjTk9j_HxBmk95asFOe-y84FKmyaA4pFP63JCGeFOBE5P1qa3MSwAnXeZjcIkN3I44mr3C7w3KyQEO_85d5e4qpV7jJ1Bt7iySJ8OEs4xvye6SGY1yQE5xqJK_2xSXvluBEmZGkZon_hLzr4TNdqPPw7WZMYN1QjY-mtFfDXDVulkLHISYQyUm9iclRB7t2s3GFTJBKX5__7mjkaZ09ZkEFRQ6USZK3UdGvqdkboxtB5h7HOjjkECyjRfWt5FzhoM_i0xA6Aq8fcl8d2mxfxR3hmkqE0Ob67o7whMJGqYSWkr3UfrtW9B8629RTNbbRhX1ecDOSCvxIkdhp1MeFuFgj8Huk1nJJ-Gw=w722-h467-no" alt></p>
-<p><br><br><br></p>
+<p>在第一個 Cloud Shell 執行以下指令：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">make teardown</span><br></pre></td></tr></table></figure>
+
+<p>這將執行 <code>terraform destroy</code>, 它會刪除所有本範例中建立的資源。<br><img src="https://lh3.googleusercontent.com/c_uJeilRMcGbj_rpwceonzU54UBBhBDcnTvEKwNqJ4lfTmvcMuO4I2r8QAwOb25l8WQUxaPQpN3E7iyEabJ5wUN8rsaeC3t-xZ5Hid_Nj0JsUSxHxGyiHhPEhVPIXxdkluXqCazHbVonWabOfDdysQ9wcEjl8URoQ3z7IwWaOImajRq2YqAooErnDS5FGbDfZTOGqpsWqqzv5C6dgODozsfsfNe8XuaG_mmIY0E_BOfo9pHnRSv8CGpAEJerosxUrHEg9hfRUkRMhiPSMlD7jkVFY91tEt3HFndOohiiRTFKN_cI0TjoWZsC0vR7Db8uG2233e9HGQpTC1-xY__dWfO5FRO4wrc5XRtaDkZX69ykHvGR8aLOTIDIqcSQWNHl8djQOd3jUcm_tfaFtjTk9j_HxBmk95asFOe-y84FKmyaA4pFP63JCGeFOBE5P1qa3MSwAnXeZjcIkN3I44mr3C7w3KyQEO_85d5e4qpV7jJ1Bt7iySJ8OEs4xvye6SGY1yQE5xqJK_2xSXvluBEmZGkZon_hLzr4TNdqPPw7WZMYN1QjY-mtFfDXDVulkLHISYQyUm9iclRB7t2s3GFTJBKX5__7mjkaZ09ZkEFRQ6USZK3UdGvqdkboxtB5h7HOjjkECyjRfWt5FzhoM_i0xA6Aq8fcl8d2mxfxR3hmkqE0Ob67o7whMJGqYSWkr3UfrtW9B8629RTNbbRhX1ecDOSCvxIkdhp1MeFuFgj8Huk1nJJ-Gw=w722-h467-no"></p>
+<br>
+<br>
+
 <h2 id="恭喜"><a href="#恭喜" class="headerlink" title="恭喜"></a>恭喜</h2><p>你已完成本教程</p>
 
     
@@ -594,53 +706,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 

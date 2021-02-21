@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="has-navbar-fixed-top">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>如何將 CSV 檔, 經由 PHP 導入 MYSQL？ - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -210,11 +210,13 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <p>大家好, 我是 Ray！我將跟大家分享如何使用 PHP 來將 CSV 檔案的內容導入 MySQL 資料庫。<br>首先, 一個 CSV 檔如下：<br><img src="https://i.imgur.com/NTsjE9d.jpg" alt></p>
+        <p>大家好, 我是 Ray！我將跟大家分享如何使用 PHP 來將 CSV 檔案的內容導入 MySQL 資料庫。<br>首先, 一個 CSV 檔如下：<br><img src="https://i.imgur.com/NTsjE9d.jpg"></p>
 <p> 以下爲 PHP 腳本, 請將 csv 的檔案跟腳本放在同一個資料夾內</p>
 <a id="more"></a> 
+
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 連接資料庫</span></span><br><span class="line">$dbc = mysqli_connect(<span class="hljs-string">'Your location'</span>, <span class="hljs-string">'Your MySQL user_name'</span>,</span><br><span class="line"> <span class="hljs-string">'Your MySQL password'</span>, <span class="hljs-string">'Your Database Name'</span>);</span><br><span class="line"><span class="hljs-comment">// 設定編碼爲 utf8</span></span><br><span class="line">mysqli_set_charset($dbc,<span class="hljs-string">"utf8"</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 利用 fopen 功能讀取檔案</span></span><br><span class="line">$handle = fopen(<span class="hljs-string">"The file name.csv"</span>, <span class="hljs-string">"r"</span>);</span><br><span class="line"><span class="hljs-comment">// 設定變數 i, 之後會用到</span></span><br><span class="line">$i=<span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 使用 fgetcsv 功能, 配合 while 迴圈, 可以拿到檔案內的每一行資料</span></span><br><span class="line"><span class="hljs-keyword">while</span> (($data = fgetcsv($handle, <span class="hljs-number">1000</span>, <span class="hljs-string">','</span>)))</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">//如圖片所示, 第一行是行的名稱, 我們不想要將這行導入資料庫, 所以我們設定條件句, </span></span><br><span class="line">    <span class="hljs-comment">//當變數 i 爲 0 正是跑到第一行, 進入條件句內, 變數 i 變爲 1, 並且 continue 使迴圈將之後的 code 都跳掉, </span></span><br><span class="line">    <span class="hljs-comment">//直接回到迴圈的最上面在開始跑, 此時變數i已經是1, 所以將不會在進到條件句中。如此一來我們就完成我們的目標, </span></span><br><span class="line">    <span class="hljs-comment">//只跳掉第一行。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span>($i == <span class="hljs-number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        $i++;</span><br><span class="line">        <span class="hljs-keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 如 csv 的圖片所示, 降雨量那一行中有出現非數字的 NaN 字串, </span></span><br><span class="line">    <span class="hljs-comment">// 但我們又想要將這一行的屬性設爲 float 或 decimal 方便之後若有需要用到計算。</span></span><br><span class="line">    <span class="hljs-comment">// 要避免資料匯入出錯, 我們必須將非數字的字串轉換爲數字, </span></span><br><span class="line">    <span class="hljs-comment">// 因此利用條件句, 當 $data array 裏面的當三項爲 NaN 時, 替換爲0</span></span><br><span class="line">    <span class="hljs-keyword">if</span>($data[<span class="hljs-number">2</span>] == <span class="hljs-string">'NaN'</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        $data[<span class="hljs-number">2</span>] = <span class="hljs-number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 最後, 將資料導入資料庫</span></span><br><span class="line">    $query = <span class="hljs-string">'INSERT INTO rainfall (district, date, rainfall)</span></span><br><span class="line"><span class="hljs-string">VALUES ("'</span>.$data[<span class="hljs-number">0</span>] . <span class="hljs-string">'", "'</span> . $data[<span class="hljs-number">1</span>] . <span class="hljs-string">'", "'</span> . $data[<span class="hljs-number">2</span>].<span class="hljs-string">'")'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">echo</span> $query;</span><br><span class="line">    $result = mysqli_query($dbc, $query);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> ($result == <span class="hljs-keyword">false</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-keyword">echo</span> <span class="hljs-string">'Error description &lt;br/&gt;'</span> . mysqli_error($dbc);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>最後, 在終端機中執行該腳本, php -f 腳本名稱, 完成！<br><img src="https://i.imgur.com/jiQ5zuW.jpg" alt></p>
+
+<p>最後, 在終端機中執行該腳本, php -f 腳本名稱, 完成！<br><img src="https://i.imgur.com/jiQ5zuW.jpg"></p>
 
     
     </div>
@@ -233,7 +235,7 @@
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/zh-tw/gitInit/">Git-從哪裡開始？</a>
+            <a href="/zh-tw/howToImportChineseIntoDatabaseWithoutGarble/">如何經由 PHP 導入中文到 MySQL 而不會出現亂碼？</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-next">
@@ -290,53 +292,64 @@
             <div class="column is-hidden-mobile"></div>
 
             
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
             
-                       <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
-                           
-                           <i class="fab fa-github"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
-                           
-                           <i class="fab fa-medium"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
-                           
-                           <i class="fab fa-linkedin"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
-                           
-                           <i class="fab fa-facebook"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
-                           
-                           <i class="far fa-address-card"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
-                           
-                           <i class="far fa-envelope"></i>
-                           
-                       </a>
-                          
-                       <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
-                           
-                           <i class="fab fa-skype"></i>
-                           
-                       </a>
-                          
-                       
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
         </div>
     </div>
 </footer>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
 
