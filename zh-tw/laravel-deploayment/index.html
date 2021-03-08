@@ -13,7 +13,7 @@
 <meta property="og:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
-<meta property="og:updated_time" content="2021-02-01T13:42:54.638Z">
+<meta property="og:updated_time" content="2021-03-05T15:00:10.042Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 部署">
 <meta name="twitter:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
@@ -41,7 +41,7 @@
 <meta property="og:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/G4OzdqM.png">
-<meta property="og:updated_time" content="2021-02-01T13:42:54.638Z">
+<meta property="og:updated_time" content="2021-03-05T15:00:10.042Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - 部署">
 <meta name="twitter:description" content="# Introduction記錄一些 Laravel 部署的相關設定以及步驟">
@@ -308,7 +308,15 @@
                     
                     
                     
-                    <a class="navbar-item" href="#變更-php-fpm-child-process-user-umask">9.6&nbsp;&nbsp;# 變更 php-fpm child process user umask</a>
+                    <a class="navbar-item" href="#變更-php-fpm-sock-owner-以及權限">9.6&nbsp;&nbsp;# 變更 php-fpm sock owner 以及權限</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#開機自動建立-var-run-php">9.7&nbsp;&nbsp;# 開機自動建立 /var/run/php</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#變更-php-fpm-child-process-user-umask">9.8&nbsp;&nbsp;# 變更 php-fpm child process user umask</a>
                     
                     
                     <hr class="navbar-divider">
@@ -668,7 +676,7 @@
         <span class="column is-narrow">
             
             
-            12 分钟 讀完 (大概 1830 字)
+            13 分钟 讀完 (大概 1901 字)
         </span>
         
     </div>
@@ -762,14 +770,42 @@
 
 <h3 id="開機自動啟動或不自動啟動-PHP-FPM"><a href="#開機自動啟動或不自動啟動-PHP-FPM" class="headerlink" title="# 開機自動啟動或不自動啟動 PHP-FPM"></a># 開機自動啟動或不自動啟動 PHP-FPM</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl enable php-fpm</span><br><span class="line">sudo systemctl disable php-fpm</span><br></pre></td></tr></table></figure>
 
-<h3 id="若要變更-Listen-port-9000-到-socket"><a href="#若要變更-Listen-port-9000-到-socket" class="headerlink" title="# 若要變更 Listen port 9000 到 socket"></a># 若要變更 Listen port 9000 到 socket</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
-
+<h3 id="若要變更-Listen-port-9000-到-socket"><a href="#若要變更-Listen-port-9000-到-socket" class="headerlink" title="# 若要變更 Listen port 9000 到 socket"></a># 若要變更 Listen port 9000 到 socket</h3><ul>
+<li><p><strong>編輯</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>內容</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">; listen = 127.0.0.1:9000</span><br><span class="line">listen = /var/run/php/php7.4-fpm.sock</span><br></pre></td></tr></table></figure>
 
-<h3 id="變更-php-fpm-child-process-user"><a href="#變更-php-fpm-child-process-user" class="headerlink" title="# 變更 php-fpm child process user"></a># 變更 php-fpm child process user</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
-
+</li>
+</ul>
+<h3 id="變更-php-fpm-child-process-user"><a href="#變更-php-fpm-child-process-user" class="headerlink" title="# 變更 php-fpm child process user"></a># 變更 php-fpm child process user</h3><ul>
+<li><p><strong>編輯</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>內容</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">user = php</span><br><span class="line">group = php</span><br></pre></td></tr></table></figure>
 
+</li>
+</ul>
+<h3 id="變更-php-fpm-sock-owner-以及權限"><a href="#變更-php-fpm-sock-owner-以及權限" class="headerlink" title="# 變更 php-fpm sock owner 以及權限"></a># 變更 php-fpm sock owner 以及權限</h3><ul>
+<li><p><strong>編輯</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>內容</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">listen.owner = yourPreferredOwner</span><br><span class="line">listen.group = yourPreferredGroup</span><br><span class="line">listen.mode = 0660</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="開機自動建立-var-run-php"><a href="#開機自動建立-var-run-php" class="headerlink" title="# 開機自動建立 /var/run/php"></a># 開機自動建立 /var/run/php</h3><ul>
+<li><p><strong>編輯</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo vim /usr/lib/tmpfiles.d/yourPreferredDaemonName.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>內容</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">#Type Path            Mode UID      GID    Age Argument</span><br><span class="line">d     /run/mydaemon   0755 myuser myuser   -   -</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
 <h3 id="變更-php-fpm-child-process-user-umask"><a href="#變更-php-fpm-child-process-user-umask" class="headerlink" title="# 變更 php-fpm child process user umask"></a># 變更 php-fpm child process user umask</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl edit php-fpm.service</span><br></pre></td></tr></table></figure>
 
 <p>系統會自動在 <code>/etc/systemd/system/php-fpm.service.d</code> 生成一個新的 override.conf 檔, 任何在此檔內的設定都會優先使用<br>也可修改 <code>/lib/systemd/system/php-fpm.service</code> 檔案, 不過如果系統更新, 可能會覆蓋掉這個設定</p>
