@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2021-03-29T07:43:20.839Z">
+<meta property="og:updated_time" content="2021-04-01T00:48:41.450Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Testing - Mocking">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2021-03-29T07:43:20.839Z">
+<meta property="og:updated_time" content="2021-04-01T00:48:41.450Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - Testing - Mocking">
 <meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -186,6 +186,40 @@
                     
                     <a class="navbar-item" href="#HTTP-Fake">5&nbsp;&nbsp;<b># HTTP Fake</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Mail-Fake">6&nbsp;&nbsp;<b># Mail Fake</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Notification-Fake">7&nbsp;&nbsp;<b># Notification Fake</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#On-Demand-Notifications">7.1.1&nbsp;&nbsp;# On-Demand Notifications</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Queue-Fake">8&nbsp;&nbsp;<b># Queue Fake</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Job-Chains-1">8.1&nbsp;&nbsp;# Job Chains</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Storage-Fake">8.2&nbsp;&nbsp;# Storage Fake</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Interacting-With-Time">8.3&nbsp;&nbsp;# Interacting With Time</a>
+                    
                 </div>
             </div>
             
@@ -246,7 +280,7 @@
         <span class="column is-narrow">
             
             
-            8 分钟 讀完 (大概 1272 字)
+            16 分钟 讀完 (大概 2343 字)
         </span>
         
     </div>
@@ -377,7 +411,137 @@
 </ul>
 <br>
 
-<h2 id="HTTP-Fake"><a href="#HTTP-Fake" class="headerlink" title="# HTTP Fake"></a># HTTP Fake</h2>
+<h2 id="HTTP-Fake"><a href="#HTTP-Fake" class="headerlink" title="# HTTP Fake"></a># HTTP Fake</h2><p>可參考 <a href="https://tn710617.github.io/zh-tw/laravel-digging-deeper-http-client/#Testing">Fake HTTP Client</a></p>
+<br>
+
+<h2 id="Mail-Fake"><a href="#Mail-Fake" class="headerlink" title="# Mail Fake"></a># Mail Fake</h2><h6 id="以下的-Laravel-testing-example-code-的意思是？-5"><a href="#以下的-Laravel-testing-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_orders_can_be_shipped</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Mail::fake();</span><br><span class="line"></span><br><span class="line">    Mail::assertNothingSent();</span><br><span class="line"></span><br><span class="line">    Mail::assertSent(OrderShipped::class);</span><br><span class="line"></span><br><span class="line">    Mail::assertSent(OrderShipped::class, <span class="hljs-number">2</span>);</span><br><span class="line"></span><br><span class="line">    Mail::assertNotSent(AnotherMailable::class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Mail::fake(), 模擬 mail 寄出 testing, 實際上不會真的寄出<br>assert 沒有任何 mailable 被送出<br>assert 指定的 mailable 被發送<br>assert 指定的 mailable 被發送兩次<br>assert 指定的 mailable 沒有被送出</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-6"><a href="#以下的-Laravel-testing-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::assertQueued(OrderShipped::class);</span><br><span class="line"></span><br><span class="line">Mail::assertNotQueued(OrderShipped::class);</span><br><span class="line"></span><br><span class="line">Mail::assertNothingQueued();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當要測試用 queue 發送的 mailable 時, 使用 assertQueued()<br>assert OrderShipped mailable 由 queue 發送<br>assert OrderShipped mailable 沒有由 queue 發送<br>assert 沒有任何 mailable 經由 queue 被發送</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-7"><a href="#以下的-Laravel-testing-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::assertSent(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(OrderShipped $mail)</span> <span class="hljs-title">use</span> <span class="hljs-params">($order)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $mail-&gt;order-&gt;id === $order-&gt;id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>assertSent 以及 assertNotSent 也可帶入 closure, 判斷是否有通過 closure 內條件的 mailable 被發送</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-8"><a href="#以下的-Laravel-testing-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Mail::assertSent(OrderShipped::class, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($mail)</span> <span class="hljs-title">use</span> <span class="hljs-params">($user)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $mail-&gt;hasTo($user-&gt;email) &amp;&amp;</span><br><span class="line">           $mail-&gt;hasCc(<span class="hljs-string">'...'</span>) &amp;&amp;</span><br><span class="line">           $mail-&gt;hasBcc(<span class="hljs-string">'...'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>除了 assert 指定 mailable 被送出外, 還可以 assert<br>寄給誰<br>cc 給誰<br>bcc 給誰</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Notification-Fake"><a href="#Notification-Fake" class="headerlink" title="# Notification Fake"></a># Notification Fake</h2><h6 id="以下的-Laravel-testing-example-code-的意思是？-9"><a href="#以下的-Laravel-testing-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_orders_can_be_shipped</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Notification::fake();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Perform order shipping...</span></span><br><span class="line"></span><br><span class="line">    Notification::assertNothingSent();</span><br><span class="line"></span><br><span class="line">    Notification::assertSentTo(</span><br><span class="line">        [$user], OrderShipped::class</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    Notification::assertNotSentTo(</span><br><span class="line">        [$user], AnotherNotification::class</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Notification::fake()<br>斷言沒有任何 notification sent<br>斷言指定的 notification sent to a given user<br>斷言指定的 notification not sent to a given user</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-10"><a href="#以下的-Laravel-testing-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Notification::assertSentTo(</span><br><span class="line">    $user,</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(OrderShipped $notification, $channels)</span> <span class="hljs-title">use</span> <span class="hljs-params">($order)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $notification-&gt;order-&gt;id === $order-&gt;id;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>assertSentTo 可帶入 closure, 若有符合 closure 內條件的 mailable sent, 則 assertion 成立</p>
+</li>
+</ul>
+<br>
+
+<h4 id="On-Demand-Notifications"><a href="#On-Demand-Notifications" class="headerlink" title="# On-Demand Notifications"></a># On-Demand Notifications</h4><h6 id="以下的-Laravel-testing-example-code-的意思是？-11"><a href="#以下的-Laravel-testing-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Notifications</span>\<span class="hljs-title">AnonymousNotifiable</span>;</span><br><span class="line"></span><br><span class="line">Notification::assertSentTo(</span><br><span class="line">    <span class="hljs-keyword">new</span> AnonymousNotifiable, OrderShipped::class</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當測試 On-Demand notification 時, 原本帶入 user 的 arg1, 改帶入 AnonymousNotifiable instance</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-12"><a href="#以下的-Laravel-testing-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Notification::assertSentTo(</span><br><span class="line">    <span class="hljs-keyword">new</span> AnonymousNotifiable,</span><br><span class="line">    OrderShipped::class,</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($notification, $channels, $notifiable)</span> <span class="hljs-title">use</span> <span class="hljs-params">($user)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $notifiable-&gt;routes[<span class="hljs-string">'mail'</span>] === $user-&gt;email;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當測試 on-demand notification 時, 可帶入 closure, assert 實際上發送的 mail 與指定 user 的 mail 相同</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Queue-Fake"><a href="#Queue-Fake" class="headerlink" title="# Queue Fake"></a># Queue Fake</h2><h6 id="以下的-Laravel-testing-example-code-的意思是？-13"><a href="#以下的-Laravel-testing-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_orders_can_be_shipped</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Queue::fake();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Perform order shipping...</span></span><br><span class="line"></span><br><span class="line">    Queue::assertNothingPushed();</span><br><span class="line"></span><br><span class="line">    Queue::assertPushedOn(<span class="hljs-string">'queue-name'</span>, ShipOrder::class);</span><br><span class="line"></span><br><span class="line">    Queue::assertPushed(ShipOrder::class, <span class="hljs-number">2</span>);</span><br><span class="line"></span><br><span class="line">    Queue::assertNotPushed(AnotherJob::class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>fake queue facade, 所以不會真的把 job push 到 queue 當中<br>assert 沒有任何 job 被 push<br>assert ShipOrder job 被 push 到 queue-name<br>assert ShipOrder job 被 push 兩次<br>assert AnotherJob 沒有被 push</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-14"><a href="#以下的-Laravel-testing-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Queue::assertPushed(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(ShipOrder $job)</span> <span class="hljs-title">use</span> <span class="hljs-params">($order)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> $job-&gt;order-&gt;id === $order-&gt;id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可 pass closure 到 assertPushed(), assertNotPushed(), 更明確的斷言是哪些 job 被 push 或沒被 push</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Job-Chains-1"><a href="#Job-Chains-1" class="headerlink" title="# Job Chains"></a># Job Chains</h3><h6 id="以下的-Laravel-testing-example-code-的意思是？-15"><a href="#以下的-Laravel-testing-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Queue::assertPushedWithChain(ShipOrder::class, [</span><br><span class="line">    RecordShipment::class,</span><br><span class="line">    UpdateInventory::class</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>斷言哪些 queue 被 queue chained, arg1 為第一個 job, arg2 為其餘的 jobs</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-16"><a href="#以下的-Laravel-testing-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Queue::assertPushedWithChain(ShipOrder::class, [</span><br><span class="line">    <span class="hljs-keyword">new</span> RecordShipment,</span><br><span class="line">    <span class="hljs-keyword">new</span> UpdateInventory,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>assertPushedWithChain() 可 pass class name, 也可 pass instance</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-17"><a href="#以下的-Laravel-testing-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Queue::assertPushedWithoutChain(ShipOrder::class);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 assertPushedWithoutChain() 來斷言 ShipOrder job 沒有被 chained</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Storage-Fake"><a href="#Storage-Fake" class="headerlink" title="# Storage Fake"></a># Storage Fake</h3><h6 id="以下的-Laravel-testing-example-code-的意思是？-18"><a href="#以下的-Laravel-testing-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_albums_can_be_uploaded</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    Storage::fake(<span class="hljs-string">'photos'</span>);</span><br><span class="line"></span><br><span class="line">    $response = <span class="hljs-keyword">$this</span>-&gt;json(<span class="hljs-string">'POST'</span>, <span class="hljs-string">'/photos'</span>, [</span><br><span class="line">        UploadedFile::fake()-&gt;image(<span class="hljs-string">'photo1.jpg'</span>),</span><br><span class="line">        UploadedFile::fake()-&gt;image(<span class="hljs-string">'photo2.jpg'</span>)</span><br><span class="line">    ]);</span><br><span class="line"></span><br><span class="line">    Storage::disk(<span class="hljs-string">'photos'</span>)-&gt;assertExists(<span class="hljs-string">'photo1.jpg'</span>);</span><br><span class="line">    Storage::disk(<span class="hljs-string">'photos'</span>)-&gt;assertExists([<span class="hljs-string">'photo1.jpg'</span>, <span class="hljs-string">'photo2.jpg'</span>]);</span><br><span class="line"></span><br><span class="line">    Storage::disk(<span class="hljs-string">'photos'</span>)-&gt;assertMissing(<span class="hljs-string">'missing.jpg'</span>);</span><br><span class="line">    Storage::disk(<span class="hljs-string">'photos'</span>)-&gt;assertMissing([<span class="hljs-string">'missing.jpg'</span>, <span class="hljs-string">'non-existing.jpg'</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 Storage fake() 一個 fake disk<br>產生 fake image<br>斷言 fake disk photos 存在某些檔案<br>斷言 fake disk photos 不存在某些檔案</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-testing-example-code-的意思是？-19"><a href="#以下的-Laravel-testing-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$response = <span class="hljs-keyword">$this</span>-&gt;json(<span class="hljs-string">'POST'</span>, <span class="hljs-string">'/photos'</span>, [</span><br><span class="line">    UploadedFile::fake()-&gt;image(<span class="hljs-string">'photo1.jpg'</span>),</span><br><span class="line">    UploadedFile::persistentFake()-&gt;image(<span class="hljs-string">'photo2.jpg'</span>)</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>使用 fake 時, 該 fake file 會在 testing 結束後從 temp dir 中被刪除<br>若要保留, 可使用 persistentFake()</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Interacting-With-Time"><a href="#Interacting-With-Time" class="headerlink" title="# Interacting With Time"></a># Interacting With Time</h3><h6 id="以下的-Laravel-testing-example-code-的意思是？-20"><a href="#以下的-Laravel-testing-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel testing example code 的意思是？"></a><strong>以下的 Laravel testing example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testTimeCanBeManipulated</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;milliseconds();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;seconds();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;minutes();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;hours();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;days();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;weeks();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;years();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">-5</span>)-&gt;hours();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travelTo(now()-&gt;subHours(<span class="hljs-number">6</span>));</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travelBack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testTimeCanBeManipulated</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// Travel into the future...</span></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;milliseconds();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;seconds();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;minutes();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;hours();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;days();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;weeks();</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">5</span>)-&gt;years();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Travel into the past...</span></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travel(<span class="hljs-number">-5</span>)-&gt;hours();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Travel to an explicit time...</span></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travelTo(now()-&gt;subHours(<span class="hljs-number">6</span>));</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Return back to the present time...</span></span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;travelBack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>可使用 travel() method, 定義當前時間以方便測試</p>
+
     
     </div>
     
@@ -393,7 +557,9 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-packages-telescope/">Laravel - Package - Telescope</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">

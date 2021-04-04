@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>Laravel - Package - Telescope - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Documentation,Laravel Telescope">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Package - Telescope">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-packages-telescope/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2021-04-03T09:44:52.450Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Package - Telescope">
+<meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-packages-telescope/" rel="alternate" hreflang="en">
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta name="keywords" content="Laravel,Laravel Documentation,Laravel Telescope">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Package - Telescope">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-packages-telescope/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2021-04-03T09:44:52.450Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel - Package - Telescope">
+<meta name="twitter:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item " href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item " href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item " href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item " href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item " href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Installation">2&nbsp;&nbsp;<b># Installation</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？">2.1.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-1">2.1.2&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuration">2.2&nbsp;&nbsp;# Configuration</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-2">2.2.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Data-Pruning">2.3&nbsp;&nbsp;# Data Pruning</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-3">2.3.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-4">2.3.2&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-5">2.3.3&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Filtering">3&nbsp;&nbsp;<b># Filtering</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-6">3.1.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Batches">3.2&nbsp;&nbsp;# Batches</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-7">3.2.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-8">3.2.2&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Available-Watchers">4&nbsp;&nbsp;<b># Available Watchers</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-9">4.1.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-Telescope-example-code-的意思是？">4.1.2&nbsp;&nbsp;以下的 Laravel Telescope example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Batch-Watcher">4.2&nbsp;&nbsp;# Batch Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Batch-Watcher-紀錄了什麼？">4.2.1&nbsp;&nbsp;Laravel Telescope 的 Batch Watcher 紀錄了什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cache-Watcher">4.3&nbsp;&nbsp;# Cache Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Cache-Watcher-紀錄了什麼？">4.3.1&nbsp;&nbsp;Laravel Telescope 的 Cache Watcher 紀錄了什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Command-Watcher">4.4&nbsp;&nbsp;# Command Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Command-Watcher-紀錄了什麼？">4.4.1&nbsp;&nbsp;Laravel Telescope 的 Command Watcher 紀錄了什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-Telescope-example-code-的意思是？-1">4.4.2&nbsp;&nbsp;以下的 Laravel Telescope example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Dump-Watcher">4.5&nbsp;&nbsp;# Dump Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Dump-Watcher-紀錄了什麼？">4.5.1&nbsp;&nbsp;Laravel Telescope 的 Dump Watcher 紀錄了什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Event-Watcher">4.6&nbsp;&nbsp;# Event Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Event-Watcher-紀錄了什麼？">4.6.1&nbsp;&nbsp;Laravel Telescope 的 Event Watcher 紀錄了什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Exception-Watcher">4.7&nbsp;&nbsp;# Exception Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Exception-Watcher-紀錄了什麼？">4.7.1&nbsp;&nbsp;Laravel Telescope 的 Exception Watcher 紀錄了什麼？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Gate-Watcher">4.8&nbsp;&nbsp;# Gate Watcher</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-Telescope-的-Gate-Watcher-紀錄了什麼？">4.8.1&nbsp;&nbsp;Laravel Telescope 的 Gate Watcher 紀錄了什麼？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#修改成-JWT-驗證">5&nbsp;&nbsp;<b># 修改成 JWT 驗證</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#新增-Admin-model-migration">5.1&nbsp;&nbsp;# 新增 Admin model, migration</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#修改-Admin-model">5.2&nbsp;&nbsp;# 修改 Admin model</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#新增-Admins-guard-Admins-provider">5.3&nbsp;&nbsp;# 新增 Admins guard, Admins provider</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#新增-middleware">5.4&nbsp;&nbsp;# 新增 middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#修改-Telescope-config">5.5&nbsp;&nbsp;# 修改 Telescope config</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#修改-TelescopeServiceProvider">5.6&nbsp;&nbsp;# 修改 TelescopeServiceProvider</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#建立-Admin-login-API">5.7&nbsp;&nbsp;# 建立 Admin login API</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#在資料庫中新增帳號密碼">5.8&nbsp;&nbsp;# 在資料庫中新增帳號密碼</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#登入以取得-token">5.9&nbsp;&nbsp;# 登入以取得 token</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試">5.10&nbsp;&nbsp;# 測試</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-packages-telescope/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-packages-telescope/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Package - Telescope
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-04-01T00:43:41.000Z" itemprop="datePublished">4月 1 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            8 分钟 讀完 (大概 1206 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<a id="more"></a>
+
+<br>
+
+<h2 id="Installation"><a href="#Installation" class="headerlink" title="# Installation"></a># Installation</h2><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">composer <span class="hljs-keyword">require</span> laravel/telescope</span><br><span class="line"></span><br><span class="line">php artisan telescope:install</span><br><span class="line"></span><br><span class="line">php artisan migrate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>安裝 telescope 套件<br>安裝相關 UI<br>migrate 資料庫</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">// terminal</span></span><br><span class="line">composer <span class="hljs-keyword">require</span> laravel/telescope --dev</span><br><span class="line"></span><br><span class="line">php artisan telescope:install</span><br><span class="line"></span><br><span class="line">php artisan migrate</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// AppServiceProvider</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">$this</span>-&gt;app-&gt;environment(<span class="hljs-string">'local'</span>)) &#123;</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;app-&gt;register(\Laravel\Telescope\TelescopeServiceProvider::class);</span><br><span class="line">        <span class="hljs-keyword">$this</span>-&gt;app-&gt;register(TelescopeServiceProvider::class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// composer.json</span></span><br><span class="line"><span class="hljs-string">"extra"</span>: &#123;</span><br><span class="line">    <span class="hljs-string">"laravel"</span>: &#123;</span><br><span class="line">        <span class="hljs-string">"dont-discover"</span>: [</span><br><span class="line">            <span class="hljs-string">"laravel/telescope"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>若只要安裝 telescope 在 dev<br>要從 config/app.php 當中移除 telescope service provider<br>在 AppServiceProvider 中另行註冊<br>修改 composer.json 避免 auto-discover</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="# Configuration"></a># Configuration</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'enabled'</span> =&gt; env(<span class="hljs-string">'TELESCOPE_ENABLED'</span>, <span class="hljs-keyword">true</span>),</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可使用 env 來決定是否 enable Telescope<br>更多設定可參考 config/telescope.php</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Data-Pruning"><a href="#Data-Pruning" class="headerlink" title="# Data Pruning"></a># Data Pruning</h3><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$schedule-&gt;command(<span class="hljs-string">'telescope:prune'</span>)-&gt;daily();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>定義一個 scheduled task, 每天清空 telescope 的紀錄</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">$schedule-&gt;command(<span class="hljs-string">'telescope:prune --hours=48'</span>)-&gt;daily();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>定義一個 scheduled task, 每天清空 telescope 48 小時前的紀錄</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="hljs-string">"scripts"</span>: &#123;</span><br><span class="line">        <span class="hljs-string">"post-update-cmd"</span>: [</span><br><span class="line">            <span class="hljs-string">"@php artisan telescope:publish --ansi"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當更新 Laravel Telescope 後, 務必要 re-publish Telescope’s asserts, 可以寫在 composer.json 中, 以免忘記</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Filtering"><a href="#Filtering" class="headerlink" title="# Filtering"></a># Filtering</h2><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;hideSensitiveRequestDetails();</span><br><span class="line"></span><br><span class="line">    Telescope::filter(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(IncomingEntry $entry)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">$this</span>-&gt;app-&gt;environment(<span class="hljs-string">'local'</span>)) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> $entry-&gt;isReportableException() ||</span><br><span class="line">            $entry-&gt;isFailedJob() ||</span><br><span class="line">            $entry-&gt;isScheduledTask() ||</span><br><span class="line">            $entry-&gt;hasMonitoredTag();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>TelescopeServiceProvider 中的 Telescope::filter(), 可以定義哪些要 record, 哪些不要<br>在 local env 下會 record 所有紀錄, 其他 env 會 record failed job, reportable exception, scheduled task, 以及 monitored tag, 可自定義</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Batches"><a href="#Batches" class="headerlink" title="# Batches"></a># Batches</h3><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Collection</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;hideSensitiveRequestDetails();</span><br><span class="line"></span><br><span class="line">    Telescope::filterBatch(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(Collection $entries)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">$this</span>-&gt;app-&gt;environment(<span class="hljs-string">'local'</span>)) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> $entries-&gt;contains(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($entry)</span> </span>&#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> $entry-&gt;isReportableException() ||</span><br><span class="line">                $entry-&gt;isFailedJob() ||</span><br><span class="line">                $entry-&gt;isScheduledTask() ||</span><br><span class="line">                $entry-&gt;hasMonitoredTag();</span><br><span class="line">            &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>filter 只可 filter 單筆資料, 假如今天有一個 request 出了一個 exception, 而我想將該次 request 的所有資料都記錄下來, 那就可以使用 filterBatch</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">$this</span>-&gt;hideSensitiveRequestDetails();</span><br><span class="line"></span><br><span class="line">    Telescope::tag(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(IncomingEntry $entry)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $entry-&gt;type === <span class="hljs-string">'request'</span></span><br><span class="line">                    ? [<span class="hljs-string">'status:'</span>.$entry-&gt;content[<span class="hljs-string">'response_status'</span>]]</span><br><span class="line">                    : [];</span><br><span class="line">    &#125;);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>當使用 Telescope 時, 一般會自動為 entry 加上預設的 tag, 但若要自己加入 tag, 可在 TelescopeServiceProvider 的 register() 中, 使用 tag method, tag method 接受一個 closure, closure 回傳的 tag 會被 telescope 一起 attach 到該 entry</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Available-Watchers"><a href="#Available-Watchers" class="headerlink" title="# Available Watchers"></a># Available Watchers</h2><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'watchers'</span> =&gt; [</span><br><span class="line">    Watchers\CacheWatcher::class =&gt; <span class="hljs-keyword">true</span>,</span><br><span class="line">    Watchers\CommandWatcher::class =&gt; <span class="hljs-keyword">true</span>,</span><br><span class="line">    ...</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>在 config/telescope 中, 可在 watchers array 指定哪些 watcher 要打開, 每個 watcher 都針對 Laravel 的一個模組, 像是 Cache, Command, Queue 等等</p>
+</li>
+</ul>
+<h6 id="以下的-Laravel-Telescope-example-code-的意思是？"><a href="#以下的-Laravel-Telescope-example-code-的意思是？" class="headerlink" title="以下的 Laravel Telescope example code 的意思是？"></a><strong>以下的 Laravel Telescope example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'watchers'</span> =&gt; [</span><br><span class="line">    Watchers\QueryWatcher::class =&gt; [</span><br><span class="line">        <span class="hljs-string">'enabled'</span> =&gt; env(<span class="hljs-string">'TELESCOPE_QUERY_WATCHER'</span>, <span class="hljs-keyword">true</span>),</span><br><span class="line">        <span class="hljs-string">'slow'</span> =&gt; <span class="hljs-number">100</span>,</span><br><span class="line">    ],</span><br><span class="line">    ...</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>Telescope 中, 有些 watcher 提供額外選項</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Batch-Watcher"><a href="#Batch-Watcher" class="headerlink" title="# Batch Watcher"></a># Batch Watcher</h3><h6 id="Laravel-Telescope-的-Batch-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Batch-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Batch Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Batch Watcher 紀錄了什麼？</strong></h6><p>batch watcher 紀錄了 Laravel Queue Batch 的資料</p>
+<br>
+
+<h3 id="Cache-Watcher"><a href="#Cache-Watcher" class="headerlink" title="# Cache Watcher"></a># Cache Watcher</h3><h6 id="Laravel-Telescope-的-Cache-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Cache-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Cache Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Cache Watcher 紀錄了什麼？</strong></h6><p>當 cache key 被 hit, missed, updated, 或 forgotten, 會被記錄下來</p>
+<br>
+
+<h3 id="Command-Watcher"><a href="#Command-Watcher" class="headerlink" title="# Command Watcher"></a># Command Watcher</h3><h6 id="Laravel-Telescope-的-Command-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Command-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Command Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Command Watcher 紀錄了什麼？</strong></h6><p>command 的 arguments, options, exit code, output</p>
+<h6 id="以下的-Laravel-Telescope-example-code-的意思是？-1"><a href="#以下的-Laravel-Telescope-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel Telescope example code 的意思是？"></a><strong>以下的 Laravel Telescope example code 的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">'watchers'</span> =&gt; [</span><br><span class="line">    Watchers\CommandWatcher::class =&gt; [</span><br><span class="line">        <span class="hljs-string">'enabled'</span> =&gt; env(<span class="hljs-string">'TELESCOPE_COMMAND_WATCHER'</span>, <span class="hljs-keyword">true</span>),</span><br><span class="line">        <span class="hljs-string">'ignore'</span> =&gt; [<span class="hljs-string">'key:generate'</span>],</span><br><span class="line">    ],</span><br><span class="line">    ...</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:<br>可在 config 中, 指定哪一些 command 不要被 record</p>
+</li>
+</ul>
+<br>
+
+<h3 id="Dump-Watcher"><a href="#Dump-Watcher" class="headerlink" title="# Dump Watcher"></a># Dump Watcher</h3><h6 id="Laravel-Telescope-的-Dump-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Dump-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Dump Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Dump Watcher 紀錄了什麼？</strong></h6><p>紀錄 dump 資訊</p>
+<br>
+
+<h3 id="Event-Watcher"><a href="#Event-Watcher" class="headerlink" title="# Event Watcher"></a># Event Watcher</h3><h6 id="Laravel-Telescope-的-Event-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Event-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Event Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Event Watcher 紀錄了什麼？</strong></h6><p>會紀錄 event 的 listener, payload, 以及 broadcast data, 但 Laravel 內部的 event 會被 ignore</p>
+<br>
+
+<h3 id="Exception-Watcher"><a href="#Exception-Watcher" class="headerlink" title="# Exception Watcher"></a># Exception Watcher</h3><h6 id="Laravel-Telescope-的-Exception-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Exception-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Exception Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Exception Watcher 紀錄了什麼？</strong></h6><p>紀錄了 exception 的 data 以及 stack trace</p>
+<br>
+
+<h3 id="Gate-Watcher"><a href="#Gate-Watcher" class="headerlink" title="# Gate Watcher"></a># Gate Watcher</h3><h6 id="Laravel-Telescope-的-Gate-Watcher-紀錄了什麼？"><a href="#Laravel-Telescope-的-Gate-Watcher-紀錄了什麼？" class="headerlink" title="Laravel Telescope 的 Gate Watcher 紀錄了什麼？"></a><strong>Laravel Telescope 的 Gate Watcher 紀錄了什麼？</strong></h6><br>
+
+<h2 id="修改成-JWT-驗證"><a href="#修改成-JWT-驗證" class="headerlink" title="# 修改成 JWT 驗證"></a># 修改成 JWT 驗證</h2><h3 id="新增-Admin-model-migration"><a href="#新增-Admin-model-migration" class="headerlink" title="# 新增 Admin model, migration"></a># 新增 Admin model, migration</h3><figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:model Admin -m</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改-Admin-model"><a href="#修改-Admin-model" class="headerlink" title="# 修改 Admin model"></a># 修改 Admin model</h3><p>需 extend authenticatable, implement JWTSubject<br>JWT 部分可參考 <a href="https://jwt-auth.readthedocs.io/en/develop/quick-start/" target="_blank" rel="noopener">文件</a></p>
+<h3 id="新增-Admins-guard-Admins-provider"><a href="#新增-Admins-guard-Admins-provider" class="headerlink" title="# 新增 Admins guard, Admins provider"></a># 新增 Admins guard, Admins provider</h3><p>JWT 部分可參考 <a href="https://jwt-auth.readthedocs.io/en/develop/quick-start/" target="_blank" rel="noopener">文件</a></p>
+<h3 id="新增-middleware"><a href="#新增-middleware" class="headerlink" title="# 新增 middleware"></a># 新增 middleware</h3><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span><span class="hljs-params">(Request $request, Closure $next)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    $response = $next($request);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> ($request-&gt;route()-&gt;getName() != <span class="hljs-string">'telescope'</span>) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> ($request-&gt;cookie(<span class="hljs-string">'token'</span>)) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">empty</span>($token = $request-&gt;input(<span class="hljs-string">'token'</span>))) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> $response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    $payload = JWTAuth::setToken($token)-&gt;getPayload();</span><br><span class="line">    $exp = $payload-&gt;get(<span class="hljs-string">'exp'</span>);</span><br><span class="line">    $minutes = floor(($exp - time()) / <span class="hljs-number">60</span>);</span><br><span class="line"></span><br><span class="line">    $response = $next($request);</span><br><span class="line">    $response-&gt;withCookie(cookie(<span class="hljs-string">'token'</span>, $token, $minutes));</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> $response;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改-Telescope-config"><a href="#修改-Telescope-config" class="headerlink" title="# 修改 Telescope config"></a># 修改 Telescope config</h3><p>加上剛剛建立的 middleware, 並且將 ‘web’ 改成 auth middleware 並指定 guard</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">    &apos;middleware&apos; =&gt; [</span><br><span class="line">//        &apos;web&apos;,</span><br><span class="line">        \App\Http\Middleware\AppendTokenForTelescope::class,</span><br><span class="line">        &apos;auth:admins&apos;,</span><br><span class="line">        Authorize::class,</span><br><span class="line">    ],</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改-TelescopeServiceProvider"><a href="#修改-TelescopeServiceProvider" class="headerlink" title="# 修改 TelescopeServiceProvider"></a># 修改 TelescopeServiceProvider</h3><p>這邊可自訂規則</p>
+<figure class="highlight plain hljs"><table><tr><td class="code"><pre><span class="line">protected function gate()</span><br><span class="line">&#123;</span><br><span class="line">    Gate::define(&apos;viewTelescope&apos;, function (UserInterface $user) &#123;</span><br><span class="line">        return $user-&gt;isAdmin();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立-Admin-login-API"><a href="#建立-Admin-login-API" class="headerlink" title="# 建立 Admin login API"></a># 建立 Admin login API</h3><h3 id="在資料庫中新增帳號密碼"><a href="#在資料庫中新增帳號密碼" class="headerlink" title="# 在資料庫中新增帳號密碼"></a># 在資料庫中新增帳號密碼</h3><h3 id="登入以取得-token"><a href="#登入以取得-token" class="headerlink" title="# 登入以取得 token"></a># 登入以取得 token</h3><h3 id="測試"><a href="#測試" class="headerlink" title="# 測試"></a># 測試</h3><p>輸入 <a href="https://projectname/telescope?token=yourToken" target="_blank" rel="noopener">https://projectName/telescope?token=yourToken</a><br>在 production 環境也可存取 Telescope</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Telescope/">#Laravel Telescope</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-testing-mocking/">Laravel - Testing - Mocking</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons" async="async"></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-packages-telescope/';
+        this.page.identifier = 'zh-tw/laravel-packages-telescope/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2021 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+                <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+                <script>
+                    if (window.mermaid) {
+                        mermaid.initialize({theme: 'default'});
+                    }
+                </script>
+            
+
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
