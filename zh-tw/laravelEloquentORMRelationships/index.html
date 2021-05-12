@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2021-03-20T01:11:02.698Z">
+<meta property="og:updated_time" content="2021-04-27T11:49:08.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -38,7 +38,7 @@
 <meta property="og:site_name" content="Learn or Die">
 <meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2021-03-20T01:11:02.698Z">
+<meta property="og:updated_time" content="2021-04-27T11:49:08.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Laravel - EloquentORM - Relationships">
 <meta name="twitter:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;amp;A 的方式記錄下來, 加速學習以及查詢。">
@@ -346,6 +346,12 @@
                     
                     <a class="navbar-item" href="#Touching-Parent-Timestamps">7&nbsp;&nbsp;<b># Touching Parent Timestamps</b></a>
                     
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Additional">8&nbsp;&nbsp;<b># Additional</b></a>
+                    
                 </div>
             </div>
             
@@ -406,7 +412,7 @@
         <span class="column is-narrow">
             
             
-            1 小时 讀完 (大概 8223 字)
+            1 小时 讀完 (大概 8316 字)
         </span>
         
     </div>
@@ -1158,6 +1164,17 @@
 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="hljs-title">App</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Comment</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> $touches = [<span class="hljs-string">'post'</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">post</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">$this</span>-&gt;belongsTo(<span class="hljs-string">'App\Post'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>Answer</strong>:<br>使用 $touches property, 這樣當我更新 pivot table 時, 也會一併的更新 Post model 中的 timestamp</p>
+</li>
+</ul>
+<br>
+
+<h2 id="Additional"><a href="#Additional" class="headerlink" title="# Additional"></a># Additional</h2><h6 id="解釋以下的-Laravel-example"><a href="#解釋以下的-Laravel-example" class="headerlink" title="解釋以下的 Laravel example"></a><strong>解釋以下的 Laravel example</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeOf</span><span class="hljs-params">(Builder $query, ...$models)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($models <span class="hljs-keyword">as</span> $model) &#123;</span><br><span class="line">            <span class="hljs-comment">/** <span class="hljs-doctag">@var</span> $model Model */</span></span><br><span class="line">            $query-&gt;where($model-&gt;getForeignKey(), $model-&gt;getKey());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">    <span class="hljs-comment">// 可帶入多個 model</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeOf</span><span class="hljs-params">(Builder $query, ...$models)</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// loop 每個 model</span></span><br><span class="line">        <span class="hljs-keyword">foreach</span> ($models <span class="hljs-keyword">as</span> $model) &#123;</span><br><span class="line">            <span class="hljs-comment">/** <span class="hljs-doctag">@var</span> $model Model */</span></span><br><span class="line">            <span class="hljs-comment">// 取得該 model 的 `foreign key name`, 以及 `primary key value`</span></span><br><span class="line">            <span class="hljs-comment">// 所以可以在目標 model 使用其他 model 為條件來 query</span></span><br><span class="line">            $query-&gt;where($model-&gt;getForeignKey(), $model-&gt;getKey());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 
