@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - The Basics - Responses (官方文件原子化翻譯) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Responses (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-the-basics-responses/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-03-06T02:42:52.000Z">
+<meta property="article:modified_time" content="2020-12-06T08:52:08.094Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Responses">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-the-basics-responses/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Responses (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-the-basics-responses/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-03-06T02:42:52.000Z">
+<meta property="article:modified_time" content="2020-12-06T08:52:08.094Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Responses">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Creating-Responses">2&nbsp;&nbsp;<b># Creating Responses</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Strings-amp-Arrays">2.1&nbsp;&nbsp;# Strings &amp;amp;amp; Arrays</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Response-Objects">2.2&nbsp;&nbsp;# Response Objects</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Attaching-Headers-To-Responses">2.3&nbsp;&nbsp;# Attaching Headers To Responses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cache-Control-Middleware">2.4&nbsp;&nbsp;# Cache Control Middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Attaching-Cookies-To-Responses">2.5&nbsp;&nbsp;# Attaching Cookies To Responses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cookies-amp-Encryption">2.6&nbsp;&nbsp;# Cookies &amp;amp;amp; Encryption</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Redirects">3&nbsp;&nbsp;<b># Redirects</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redirecting-To-Named-Routes">3.1&nbsp;&nbsp;# Redirecting To Named Routes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Populating-Parameters-Via-Eloquent-Models">3.1.1&nbsp;&nbsp;# Populating Parameters Via Eloquent Models</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redirecting-To-Controller-Actions">3.2&nbsp;&nbsp;# Redirecting To Controller Actions</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redirecting-To-External-Domains">3.3&nbsp;&nbsp;# Redirecting To External Domains</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redirecting-With-Flashed-Session-Data">3.4&nbsp;&nbsp;# Redirecting With Flashed Session Data</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Other-Responses-Types">4&nbsp;&nbsp;<b># Other Responses Types</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#View-Responses">4.1&nbsp;&nbsp;# View Responses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#JSON-Responses">4.2&nbsp;&nbsp;# JSON Responses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#File-Downloads">4.3&nbsp;&nbsp;# File Downloads</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Streamed-Downloads">4.3.1&nbsp;&nbsp;# Streamed Downloads</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#File-Responses">4.4&nbsp;&nbsp;# File Responses</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Response-Macros">5&nbsp;&nbsp;<b># Response Macros</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-the-basics-responses/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-the-basics-responses/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - The Basics - Responses (官方文件原子化翻譯)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-03-06T02:42:52.000Z" itemprop="datePublished">3月 6 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            11 分钟 讀完 (大概 1575 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Creating-Responses"><a href="#Creating-Responses" class="headerlink" title="# Creating Responses"></a># Creating Responses</h2><h3 id="Strings-amp-Arrays"><a href="#Strings-amp-Arrays" class="headerlink" title="# Strings &amp; Arrays"></a># Strings &amp; Arrays</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Hello World&#x27;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當收到 <code>&#39;example.com/&#39;</code> 的 GET request 時, return string <code>&#39;Hello World&#39;</code></li>
+</ul>
+<h6 id="以下的-Laravel-範例回以什麼格式-return"><a href="#以下的-Laravel-範例回以什麼格式-return" class="headerlink" title="以下的 Laravel 範例回以什麼格式 return?"></a><strong>以下的 Laravel 範例回以什麼格式 return?</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>JSON</li>
+</ul>
+<h6 id="Laravel-中-如果我-return-一個-Eloquent-collection-最終會以什麼格式-return"><a href="#Laravel-中-如果我-return-一個-Eloquent-collection-最終會以什麼格式-return" class="headerlink" title="Laravel 中, 如果我 return 一個 Eloquent collection, 最終會以什麼格式 return?"></a><strong>Laravel 中, 如果我 return 一個 Eloquent collection, 最終會以什麼格式 return?</strong></h6><p>JSON</p>
+<br>
+
+<h3 id="Response-Objects"><a href="#Response-Objects" class="headerlink" title="# Response Objects"></a># Response Objects</h3><h6 id="以下的-Laravel-example-的意思是？"><a href="#以下的-Laravel-example-的意思是？" class="headerlink" title="以下的 Laravel example 的意思是？"></a><strong>以下的 Laravel example 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;home&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(<span class="hljs-string">&#x27;Hello World&#x27;</span>, <span class="hljs-number">200</span>)</span><br><span class="line">                  -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;Content-Type&#x27;</span>, <span class="hljs-string">&#x27;text/plain&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;home&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">// return stirng &#x27;Hello World&#x27;, status code 為 200</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(<span class="hljs-string">&#x27;Hello World&#x27;</span>, <span class="hljs-number">200</span>)</span><br><span class="line">                    <span class="hljs-comment">// header Content-type 為 text/plain</span></span><br><span class="line">                  -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;Content-Type&#x27;</span>, <span class="hljs-string">&#x27;text/plain&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Attaching-Headers-To-Responses"><a href="#Attaching-Headers-To-Responses" class="headerlink" title="# Attaching Headers To Responses"></a># Attaching Headers To Responses</h3><h6 id="Laravel-中-attach-header-有哪兩種方式？"><a href="#Laravel-中-attach-header-有哪兩種方式？" class="headerlink" title="Laravel 中, attach header 有哪兩種方式？"></a><strong>Laravel 中, attach header 有哪兩種方式？</strong></h6><ul>
+<li>chain header method</li>
+<li>withHeaders method</li>
+</ul>
+<h6 id="解釋以下的-Laravel-範例"><a href="#解釋以下的-Laravel-範例" class="headerlink" title="解釋以下的 Laravel 範例"></a><strong>解釋以下的 Laravel 範例</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(<span class="hljs-variable">$content</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;Content-Type&#x27;</span>, <span class="hljs-variable">$type</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;X-Header-One&#x27;</span>, <span class="hljs-string">&#x27;Header Value&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;X-Header-Two&#x27;</span>, <span class="hljs-string">&#x27;Header Value&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>利用 header chain 的方式 attach 多個 header</li>
+</ul>
+<h6 id="解釋以下的-Laravel-範例-1"><a href="#解釋以下的-Laravel-範例-1" class="headerlink" title="解釋以下的 Laravel 範例"></a><strong>解釋以下的 Laravel 範例</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(<span class="hljs-variable">$content</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">withHeaders</span>([</span><br><span class="line">                <span class="hljs-string">&#x27;Content-Type&#x27;</span> =&gt; <span class="hljs-variable">$type</span>,</span><br><span class="line">                <span class="hljs-string">&#x27;X-Header-One&#x27;</span> =&gt; <span class="hljs-string">&#x27;Header Value&#x27;</span>,</span><br><span class="line">                <span class="hljs-string">&#x27;X-Header-Two&#x27;</span> =&gt; <span class="hljs-string">&#x27;Header Value&#x27;</span>,</span><br><span class="line">            ]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 withHeaders method 的方式 attach 一個 array</li>
+</ul>
+<br>
+
+<h3 id="Cache-Control-Middleware"><a href="#Cache-Control-Middleware" class="headerlink" title="# Cache Control Middleware"></a># Cache Control Middleware</h3><h6 id="Laravel-中-如果我要快速地針對特定-route-設定-Cache-Control-header-那我可以使用哪個-middleware"><a href="#Laravel-中-如果我要快速地針對特定-route-設定-Cache-Control-header-那我可以使用哪個-middleware" class="headerlink" title="Laravel 中, 如果我要快速地針對特定 route 設定 Cache-Control header, 那我可以使用哪個 middleware?"></a><strong>Laravel 中, 如果我要快速地針對特定 route 設定 <code>Cache-Control</code> header, 那我可以使用哪個 middleware?</strong></h6><p><em>cache.headers</em> middleware</p>
+<h6 id="解釋下面的-Laravel-example"><a href="#解釋下面的-Laravel-example" class="headerlink" title="解釋下面的 Laravel example"></a><strong>解釋下面的 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;cache.headers:public;max_age=2628000;etag&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;privacy&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;terms&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用 cache.header middleware 來對特定 route 做 Cache-Controel, 語法可參考 </span></span><br><span class="line"><span class="hljs-comment">// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control</span></span><br><span class="line"><span class="hljs-comment">// etag 會針對 response 內容做一個 MD5 hash 以做為識別器</span></span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;cache.headers:public;max_age=2628000;etag&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;privacy&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;terms&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Attaching-Cookies-To-Responses"><a href="#Attaching-Cookies-To-Responses" class="headerlink" title="# Attaching Cookies To Responses"></a># Attaching Cookies To Responses</h3><p>同 <a href="https://tn710617.github.io/zh-tw/laravel-the-basics-requests/#Attaching-Cookies-To-Responses">Requests Documentation</a></p>
+<br>
+
+<h3 id="Cookies-amp-Encryption"><a href="#Cookies-amp-Encryption" class="headerlink" title="# Cookies &amp; Encryption"></a># Cookies &amp; Encryption</h3><h6 id="以下位於-EncryptCookies-middleware-的-Laravel-example-code-的意思是？"><a href="#以下位於-EncryptCookies-middleware-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 EncryptCookies middleware 的 Laravel example code 的意思是？"></a><strong>以下位於 EncryptCookies middleware 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$except</span> = [</span><br><span class="line">    <span class="hljs-string">&#x27;cookie_name&#x27;</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 預設會對 cookie encrypt 以及 sign, 所以他們無法被 client 修改或讀取, 如果要取消這個動作, 可以在 <code>&#39;EncryptCookies&#39;</code> middleware 中的 $except property 加入 cookie name</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Redirects"><a href="#Redirects" class="headerlink" title="# Redirects"></a># Redirects</h2><h6 id="Laravel-中-redirect-responses-是哪一個-class-的-instance"><a href="#Laravel-中-redirect-responses-是哪一個-class-的-instance" class="headerlink" title="Laravel 中, redirect responses 是哪一個 class 的 instance?"></a><strong>Laravel 中, redirect responses 是哪一個 class 的 instance?</strong></h6><p><code>Illuminate\Http\RedirectResponse</code></p>
+<h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;dashboard&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>(<span class="hljs-string">&#x27;home/dashboard&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 <code>&#39;dashboard&#39;</code> 的 GET request redirect 到 <code>&#39;home/dashboard&#39;</code> 這個 route</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">post</span>(<span class="hljs-string">&#x27;user/profile&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">// Validate the request...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">back</span>()-&gt;<span class="title function_ invoke__">withInput</span>();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>redirect 回上一個位置, 帶著 input</li>
+</ul>
+<br>
+
+<h3 id="Redirecting-To-Named-Routes"><a href="#Redirecting-To-Named-Routes" class="headerlink" title="# Redirecting To Named Routes"></a># Redirecting To Named Routes</h3><h6 id="Laravel-中-當我使用-redirect-method-without-no-parameters-會-return-哪一個-class-的-instance"><a href="#Laravel-中-當我使用-redirect-method-without-no-parameters-會-return-哪一個-class-的-instance" class="headerlink" title="Laravel 中, 當我使用 redirect method without no parameters, 會 return 哪一個 class 的 instance?"></a><strong>Laravel 中, 當我使用 redirect method without no parameters, 會 return 哪一個 class 的 instance?</strong></h6><p><code>Illuminate\Routing\Redirector</code></p>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>()-&gt;<span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;login&#x27;</span>, [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>redirect 到名為 <code>&#39;login&#39;</code> 的 route, 並帶著 parameter <code>[&#39;id&#39; =&gt; 1]</code></li>
+</ul>
+<br>
+
+<h4 id="Populating-Parameters-Via-Eloquent-Models"><a href="#Populating-Parameters-Via-Eloquent-Models" class="headerlink" title="# Populating Parameters Via Eloquent Models"></a># Populating Parameters Via Eloquent Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// For a route with the following URI: profile/&#123;id&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>()-&gt;<span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;profile&#x27;</span>, [<span class="hljs-variable">$user</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果要導向的 route 有著 <code>&#123;id&#125;</code> url parameter, 可以直接 pass model 過去, id 會自動被取出</li>
+</ul>
+<br>
+
+<h3 id="Redirecting-To-Controller-Actions"><a href="#Redirecting-To-Controller-Actions" class="headerlink" title="# Redirecting To Controller Actions"></a># Redirecting To Controller Actions</h3><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>()-&gt;<span class="title function_ invoke__">action</span>(<span class="hljs-string">&#x27;HomeController@index&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>redirect 到一個 controller 名為 <em>HomeController@index</em></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>()-&gt;<span class="title function_ invoke__">action</span>(</span><br><span class="line">    <span class="hljs-string">&#x27;UserController@profile&#x27;</span>, [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">1</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>帶著 parameter 並 redirect 到 UserController@profile</li>
+</ul>
+<br>
+
+<h3 id="Redirecting-To-External-Domains"><a href="#Redirecting-To-External-Domains" class="headerlink" title="# Redirecting To External Domains"></a># Redirecting To External Domains</h3><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>()-&gt;<span class="title function_ invoke__">away</span>(<span class="hljs-string">&#x27;https://www.google.com&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>redirect 到一個非 route 範圍內的 url</li>
+</ul>
+<br>
+
+<h3 id="Redirecting-With-Flashed-Session-Data"><a href="#Redirecting-With-Flashed-Session-Data" class="headerlink" title="# Redirecting With Flashed Session Data"></a># Redirecting With Flashed Session Data</h3><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">post</span>(<span class="hljs-string">&#x27;user/profile&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">// Update the user&#x27;s profile...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>(<span class="hljs-string">&#x27;dashboard&#x27;</span>)-&gt;<span class="title function_ invoke__">with</span>(<span class="hljs-string">&#x27;status&#x27;</span>, <span class="hljs-string">&#x27;Profile updated!&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>處理完 POST request 後, redirect 到 <code>&#39;dashboard&#39;</code> route, 並將 message 存到 session 帶過去</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example code</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">post</span>(<span class="hljs-string">&#x27;user/profile&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">// Update the user&#x27;s profile...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>(<span class="hljs-string">&#x27;dashboard&#x27;</span>)-&gt;<span class="title function_ invoke__">with</span>(<span class="hljs-string">&#x27;status&#x27;</span>, <span class="hljs-string">&#x27;Profile updated!&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Example blade</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">@<span class="hljs-keyword">if</span> (<span class="title function_ invoke__">session</span>(<span class="hljs-string">&#x27;status&#x27;</span>))</span><br><span class="line">    &lt;div <span class="hljs-class"><span class="hljs-keyword">class</span>=&quot;<span class="hljs-title">alert</span> <span class="hljs-title">alert</span>-<span class="hljs-title">success</span>&quot;&gt;</span></span><br><span class="line"><span class="hljs-class">        </span>&#123;&#123; <span class="title function_ invoke__">session</span>(<span class="hljs-string">&#x27;status&#x27;</span>) &#125;&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">@<span class="hljs-keyword">endif</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>redirect 到 dashboard route, 將 status 存到 session 並帶過去, 在 blade page 中拿出 session</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Other-Responses-Types"><a href="#Other-Responses-Types" class="headerlink" title="# Other Responses Types"></a># Other Responses Types</h2><h6 id="Laravel-中-當-response-helper-被呼叫並且不帶任何參數時-會回傳哪一個-class"><a href="#Laravel-中-當-response-helper-被呼叫並且不帶任何參數時-會回傳哪一個-class" class="headerlink" title="Laravel 中, 當 response helper 被呼叫並且不帶任何參數時, 會回傳哪一個 class?"></a><strong>Laravel 中, 當 <em>response</em> helper 被呼叫並且不帶任何參數時, 會回傳哪一個 class?</strong></h6><p><code>Illuminate\Contracts\Routing\ResponseFactory</code></p>
+<h3 id="View-Responses"><a href="#View-Responses" class="headerlink" title="# View Responses"></a># View Responses</h3><h6 id="解釋以下-Laravel-example"><a href="#解釋以下-Laravel-example" class="headerlink" title="解釋以下 Laravel example"></a><strong>解釋以下 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()</span><br><span class="line">            -&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;hello&#x27;</span>, <span class="hljs-variable">$data</span>, <span class="hljs-number">200</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;Content-Type&#x27;</span>, <span class="hljs-variable">$type</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用 response global helper</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()</span><br><span class="line">            <span class="hljs-comment">// return view, customized status code</span></span><br><span class="line">            -&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;hello&#x27;</span>, <span class="hljs-variable">$data</span>, <span class="hljs-number">200</span>)</span><br><span class="line">            <span class="hljs-comment">// return header</span></span><br><span class="line">            -&gt;<span class="title function_ invoke__">header</span>(<span class="hljs-string">&#x27;Content-Type&#x27;</span>, <span class="hljs-variable">$type</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="JSON-Responses"><a href="#JSON-Responses" class="headerlink" title="# JSON Responses"></a># JSON Responses</h3><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$array</span> = [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Abigail&#x27;</span>, <span class="hljs-string">&#x27;state&#x27;</span> =&gt; <span class="hljs-string">&#x27;CA&#x27;</span>];</span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">json</span>(<span class="hljs-variable">$array</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 $array 變成 json 並回傳</li>
+</ul>
+<h6 id="解釋以下-Laravel-example-1"><a href="#解釋以下-Laravel-example-1" class="headerlink" title="解釋以下 Laravel example"></a><strong>解釋以下 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()</span><br><span class="line">            -&gt;<span class="title function_ invoke__">json</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Abigail&#x27;</span>, <span class="hljs-string">&#x27;state&#x27;</span> =&gt; <span class="hljs-string">&#x27;CA&#x27;</span>])</span><br><span class="line">            -&gt;<span class="title function_ invoke__">withCallback</span>(<span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">input</span>(<span class="hljs-string">&#x27;callback&#x27;</span>));</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 JSONP response</li>
+</ul>
+<br>
+
+<h3 id="File-Downloads"><a href="#File-Downloads" class="headerlink" title="# File Downloads"></a># File Downloads</h3><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">download</span>(<span class="hljs-variable">$pathToFile</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>直接觸發瀏覽器下載這個檔案</li>
+</ul>
+<h6 id="解釋以下的-Laravel-example"><a href="#解釋以下的-Laravel-example" class="headerlink" title="解釋以下的 Laravel example"></a><strong>解釋以下的 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">download</span>(<span class="hljs-variable">$pathToFile</span>, <span class="hljs-variable">$name</span>, <span class="hljs-variable">$headers</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>讓瀏覽器下載檔案, 指定使用者方看到的檔案名稱, 並且指定 header</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">download</span>(<span class="hljs-variable">$pathToFile</span>)-&gt;<span class="title function_ invoke__">deleteFileAfterSend</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>觸發瀏覽器下載一個檔案, 下載完畢後, server 端刪除此檔案</li>
+</ul>
+<br>
+
+<h4 id="Streamed-Downloads"><a href="#Streamed-Downloads" class="headerlink" title="# Streamed Downloads"></a># Streamed Downloads</h4><h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">streamDownload</span>(function () &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> <span class="title class_">GitHub</span>::<span class="title function_ invoke__">api</span>(<span class="hljs-string">&#x27;repo&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">contents</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">readme</span>(<span class="hljs-string">&#x27;laravel&#x27;</span>, <span class="hljs-string">&#x27;laravel&#x27;</span>)[<span class="hljs-string">&#x27;contents&#x27;</span>];</span><br><span class="line">&#125;, <span class="hljs-string">&#x27;laravel-readme.md&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>觸發使用者瀏覽器直接下載檔案, 但分批讀取檔案, 避免檔案的讀取將記憶體吃光</li>
+</ul>
+<br>
+
+<h3 id="File-Responses"><a href="#File-Responses" class="headerlink" title="# File Responses"></a># File Responses</h3><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">file</span>(<span class="hljs-variable">$pathToFile</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>觸發瀏覽器開啟一個檔案, 而不是下載</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Response-Macros"><a href="#Response-Macros" class="headerlink" title="# Response Macros"></a># Response Macros</h2><h6 id="Laravel-中-如果我想要自己建一個-service-provider-那我可以建立在哪一個資料夾中？"><a href="#Laravel-中-如果我想要自己建一個-service-provider-那我可以建立在哪一個資料夾中？" class="headerlink" title="Laravel 中, 如果我想要自己建一個 service provider, 那我可以建立在哪一個資料夾中？"></a><strong>Laravel 中, 如果我想要自己建一個 service provider, 那我可以建立在哪一個資料夾中？</strong></h6><p><code>app/Providers</code></p>
+<h6 id="解釋以下-Laravel-example-2"><a href="#解釋以下-Laravel-example-2" class="headerlink" title="解釋以下 Laravel example"></a><strong>解釋以下 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ResponseMacroServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title class_">Response</span>::<span class="title function_ invoke__">macro</span>(<span class="hljs-string">&#x27;caps&#x27;</span>, function (<span class="hljs-variable">$value</span>) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="title class_">Response</span>::<span class="title function_ invoke__">make</span>(<span class="title function_ invoke__">strtoupper</span>(<span class="hljs-variable">$value</span>));</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 在 App/Providers 資料夾下, 建立一個檔案, 並指定好 namespace</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 會用到 Facades\Response</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 自定義的 class 需 extends 內建 ServiceProvider</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ResponseMacroServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">     <span class="hljs-comment">// 在 boot method 中</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 使用 macro method 來定義名為 caps 的 response</span></span><br><span class="line">        <span class="title class_">Response</span>::<span class="title function_ invoke__">macro</span>(<span class="hljs-string">&#x27;caps&#x27;</span>, function (<span class="hljs-variable">$value</span>) &#123;</span><br><span class="line">            <span class="hljs-comment">// 該 response 的邏輯</span></span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="title class_">Response</span>::<span class="title function_ invoke__">make</span>(<span class="title function_ invoke__">strtoupper</span>(<span class="hljs-variable">$value</span>));</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Response</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ResponseMacroServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title class_">Response</span>::<span class="title function_ invoke__">macro</span>(<span class="hljs-string">&#x27;caps&#x27;</span>, function (<span class="hljs-variable">$value</span>) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="title class_">Response</span>::<span class="title function_ invoke__">make</span>(<span class="title function_ invoke__">strtoupper</span>(<span class="hljs-variable">$value</span>));</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">caps</span>(<span class="hljs-string">&#x27;foo&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用自定義的 ‘caps’ response, 將 response 的 value 轉大寫</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Responses/">#Laravel Responses</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-the-basics-url-generation/">Laravel - The Basics - URL Generation (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-the-basics-views/">Laravel - The Basics - Views (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-the-basics-responses/';
+        this.page.identifier = 'zh-tw/laravel-the-basics-responses/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

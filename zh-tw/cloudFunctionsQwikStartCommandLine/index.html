@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Cloud Functions 初探 - Command Line - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud Functions 初探 - Command Line">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudFunctionsQwikStartCommandLine/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/CE9SuwwIw1O48F6RA288UUAXUStdoafXsPwELn-iL0mhjqP146mEsiMaBgaAIdJfs9_6vm5F2cZDRy3h5GEESXYsoY9cxrG_Srjexb3dPO3Gurdv9GjfbBfDvjkG8PAvSPWRu5xAI1BmhAKad8zVwRe-OrEUzj8qT0R_zD6zpTHhTSdkFHuL97Pp-WUC4UrLiSHK5UHe0UDKOXeCC5VxwaftOQSR9ERhpnvaZ1mnmCzKsIsMrU_W-hB4f-McpwlUhKaYlmexlxjd89YV5opTgVO7Js_1TfL4T8w8LyMF7UW-65D__QkgIqwd6BWVrgBfWxQJDXNAp7ur0Umf3jjoGGCdiZWwO7cS8jBsSY3TRMxDeiBXII9Zkp88riynI0gAg-srbdpYHp8R5hl1WctFm5fXKbDhwustSwtuWe3XWx8FIh-FQ9Frzv9e8enBuMkcMqWYJ51Bawe5Qo2ETanFjZZOCQnZ_otjX0ljXmQOaW9XlwmXV121cgnMId2gqbzKHJTBaEgFgBe7qa0hvVkj62a28nZ5f-gzG4SpDfJabVGxZJQPqBdrf9gW9SLXoYvWQXwc8kQ4tTBIplPODeN66v_RDyafor_0bseaox38CPt-V4WCUOyeqS2i384mZmLh5ZKfnUTnkk0FBUdk6kulQnm6hpjyAo9cD85_2koEZSP0vv8fSfBBmnk=w245-h185-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/k9RZ2JfEvVoQI4GmViQIQkMuOB5zKjguylOw7zruBXtywCf1gehnRGIiGM_g03GLpYndjhKfBORJy17KrgJQhGIiGKFS3rnmDyOH9L_3Ceez5DZ9siTNygcr0Y0haMosPwp4ECnY-aboRmlf9lAAX-3xZ7iO8cZnkLG4hiJ_ccd2dPGIZm13BPCbdN3Iw89CRxUacIptviOF0v2CJRlX0UhP-D_tvpYZo6u8I9wci9xK81zCB4LYRL22Abzg8phSZmULMEkPL6xdLpEDg2qh_GBAgooPhiIIOa1i2eGDPFn7j8cRhkMFy5mqVx7BwWgJyyjlXp7AWHgB_-9cIOu-COK4CUCV_Q_2mKaA9t4Y9C9tDQsAgoZj_L5jE3Tm4bBbo031oLxI9cYzhkQ53Cx0YcnLv27EOUepheLXB7CYG97XlU7j_huRSc8iO-hlU5hx0bEfXDrGfok9-pOJ3KxAxkYuIewyuuQX9PU70LNjGqqKDxUPIthblXaTXJHIRDFNaGVacr6yJ3UL9dN8KgAcnUzdt8g4joEJxjRJIUq80cHJ77IZWDNhJCbAO2McdP-k46UR0jUjFzk19neeZX7aB11IT38yhFssysnmXygqUGx0P1mgDs7gD6kt3iSNGq7_QcVOXXfQjc1UHvnhWt_oaNhsYaV3xE6sa1KADQdHz2hMq3CtzOXJt-o=w1280-h236-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/iIDgwmOQcz9QR3SVzYljpcbcAbINAfoQ74cNDRwV31LYu_dK8QUPowaKTg_CtYiah1V6hFibYi4VNBxCyUJS5RYw4DyiOmlwtZqIjFJXfOtFAhGWI5hQENBgNpIF8Bbap2f-WrKKHFiso4l3XdIxBGXJ9JnlaFchCfAXnWeisK6XuL4a6nSRcyJJn9zQ9dtZydH2m52qoANufoJtWDmYJ9nTDEcvCkPg9TWgk4TVmgo32nMvffKAfisT480PXmF9RU0D1UbAtde2KdLbCF0mf3j5i-ZZvo0vHEfFLAtFSFi8_zZOpLky-t8KcKTp70wbTG2DUizdo-ucEruWKdgHC_Mf1qYoBGleakcEobvpFMnf2r05ZxLSbIntGCLQ3II3XDyLuC-3i0ZkhuvZzh3ChSInikCnkYCD3Wz-YD7lhKqAIG-pPmieKy6TRBcCD8EgQlWplgbQJc8L-kvzrLYWE2PPhByVvJvRhm8drjWsWwMgVCv1wZZ3GqzvX91gPFUmHd8MD9Kp668Apey5aBFCCQ_v0wd3DPEGLGZuRRZJsDa2H-j9oXFtnTgnNowjbgUVLumi3iFCfxunDcFjaXJueNClX1qnWnGdFrhrpSHNoGsdc0jGyEAawZRJkQfteANIF9BPi3weOFQt82tvpMOMZ2fBQk4ZaYRmA4TPtJZv6YTLDJx5dpukxtc=w1280-h228-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/PHmTKM7H9WmpZPwX3EtU1bDGxTbzyqGcCFQq0KfIi1zF5-VDHFFajENf1sUDm6tm5ZyemXeGC_s6Hh0g5dCD9lafRe_amPlcu0CD-jokya-4AYYfTyJ8AyvUMaWQ-tXqhgy1-KFkvQUO11Sv4lRhxj636Xs9xD7-32eeQjkB8MSPHW3kgkIwVzEnGrFvHHzJSeDFNu-e5qtqac2OswsKKyNmWBWweapruDlIzqP3u0Ip-hwJO82XFtuR-hCpfLVA2TR0FKuz6UkYYcii9gTzPLMKRds-qZY0iWA9DjG3xBcMNtVVZolnfTtRgmtBzk833SZUy9Z_gJIaLt_OtR_jSwfJlvaXv3n2SlstJI7itg-jlAFdKmupLdZYFDJ1AxStOe8Wl_QFnNUmd37AvslQozf_8LXgavxwjDMDPO5gss5hUxOZ0oNOF-UNsuHhRVdMW6hRpjTUCOFks9n0I0ZW_4wvt--WNv_YvlbIfgZzG4LFEMF2R-X45NlO1jJMogAR0ucz_96eHcish87un5lan9WU7AB9eqqbQfPxSSeWkQgFxvBB-wh6pBSWexAoOacEArIvh9mnXbNQjfZLsnFs3moC9d3N9EsvbuMWQn61spx7l-CbZ6TDz1CUe_0tNPNWB5h9Zeo5tVMH68LS0hTlInf1tfjQOW2gudL2N0MYo83uK3DMHKa_m6o=w1272-h312-no">
+<meta property="article:published_time" content="2019-09-30T02:35:49.000Z">
+<meta property="article:modified_time" content="2019-11-04T10:45:24.352Z">
+<meta property="article:author" content="Ray">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/cloudFunctionsQwikStartCommandLine/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud Functions 初探 - Command Line">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudFunctionsQwikStartCommandLine/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/CE9SuwwIw1O48F6RA288UUAXUStdoafXsPwELn-iL0mhjqP146mEsiMaBgaAIdJfs9_6vm5F2cZDRy3h5GEESXYsoY9cxrG_Srjexb3dPO3Gurdv9GjfbBfDvjkG8PAvSPWRu5xAI1BmhAKad8zVwRe-OrEUzj8qT0R_zD6zpTHhTSdkFHuL97Pp-WUC4UrLiSHK5UHe0UDKOXeCC5VxwaftOQSR9ERhpnvaZ1mnmCzKsIsMrU_W-hB4f-McpwlUhKaYlmexlxjd89YV5opTgVO7Js_1TfL4T8w8LyMF7UW-65D__QkgIqwd6BWVrgBfWxQJDXNAp7ur0Umf3jjoGGCdiZWwO7cS8jBsSY3TRMxDeiBXII9Zkp88riynI0gAg-srbdpYHp8R5hl1WctFm5fXKbDhwustSwtuWe3XWx8FIh-FQ9Frzv9e8enBuMkcMqWYJ51Bawe5Qo2ETanFjZZOCQnZ_otjX0ljXmQOaW9XlwmXV121cgnMId2gqbzKHJTBaEgFgBe7qa0hvVkj62a28nZ5f-gzG4SpDfJabVGxZJQPqBdrf9gW9SLXoYvWQXwc8kQ4tTBIplPODeN66v_RDyafor_0bseaox38CPt-V4WCUOyeqS2i384mZmLh5ZKfnUTnkk0FBUdk6kulQnm6hpjyAo9cD85_2koEZSP0vv8fSfBBmnk=w245-h185-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/k9RZ2JfEvVoQI4GmViQIQkMuOB5zKjguylOw7zruBXtywCf1gehnRGIiGM_g03GLpYndjhKfBORJy17KrgJQhGIiGKFS3rnmDyOH9L_3Ceez5DZ9siTNygcr0Y0haMosPwp4ECnY-aboRmlf9lAAX-3xZ7iO8cZnkLG4hiJ_ccd2dPGIZm13BPCbdN3Iw89CRxUacIptviOF0v2CJRlX0UhP-D_tvpYZo6u8I9wci9xK81zCB4LYRL22Abzg8phSZmULMEkPL6xdLpEDg2qh_GBAgooPhiIIOa1i2eGDPFn7j8cRhkMFy5mqVx7BwWgJyyjlXp7AWHgB_-9cIOu-COK4CUCV_Q_2mKaA9t4Y9C9tDQsAgoZj_L5jE3Tm4bBbo031oLxI9cYzhkQ53Cx0YcnLv27EOUepheLXB7CYG97XlU7j_huRSc8iO-hlU5hx0bEfXDrGfok9-pOJ3KxAxkYuIewyuuQX9PU70LNjGqqKDxUPIthblXaTXJHIRDFNaGVacr6yJ3UL9dN8KgAcnUzdt8g4joEJxjRJIUq80cHJ77IZWDNhJCbAO2McdP-k46UR0jUjFzk19neeZX7aB11IT38yhFssysnmXygqUGx0P1mgDs7gD6kt3iSNGq7_QcVOXXfQjc1UHvnhWt_oaNhsYaV3xE6sa1KADQdHz2hMq3CtzOXJt-o=w1280-h236-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/iIDgwmOQcz9QR3SVzYljpcbcAbINAfoQ74cNDRwV31LYu_dK8QUPowaKTg_CtYiah1V6hFibYi4VNBxCyUJS5RYw4DyiOmlwtZqIjFJXfOtFAhGWI5hQENBgNpIF8Bbap2f-WrKKHFiso4l3XdIxBGXJ9JnlaFchCfAXnWeisK6XuL4a6nSRcyJJn9zQ9dtZydH2m52qoANufoJtWDmYJ9nTDEcvCkPg9TWgk4TVmgo32nMvffKAfisT480PXmF9RU0D1UbAtde2KdLbCF0mf3j5i-ZZvo0vHEfFLAtFSFi8_zZOpLky-t8KcKTp70wbTG2DUizdo-ucEruWKdgHC_Mf1qYoBGleakcEobvpFMnf2r05ZxLSbIntGCLQ3II3XDyLuC-3i0ZkhuvZzh3ChSInikCnkYCD3Wz-YD7lhKqAIG-pPmieKy6TRBcCD8EgQlWplgbQJc8L-kvzrLYWE2PPhByVvJvRhm8drjWsWwMgVCv1wZZ3GqzvX91gPFUmHd8MD9Kp668Apey5aBFCCQ_v0wd3DPEGLGZuRRZJsDa2H-j9oXFtnTgnNowjbgUVLumi3iFCfxunDcFjaXJueNClX1qnWnGdFrhrpSHNoGsdc0jGyEAawZRJkQfteANIF9BPi3weOFQt82tvpMOMZ2fBQk4ZaYRmA4TPtJZv6YTLDJx5dpukxtc=w1280-h228-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/PHmTKM7H9WmpZPwX3EtU1bDGxTbzyqGcCFQq0KfIi1zF5-VDHFFajENf1sUDm6tm5ZyemXeGC_s6Hh0g5dCD9lafRe_amPlcu0CD-jokya-4AYYfTyJ8AyvUMaWQ-tXqhgy1-KFkvQUO11Sv4lRhxj636Xs9xD7-32eeQjkB8MSPHW3kgkIwVzEnGrFvHHzJSeDFNu-e5qtqac2OswsKKyNmWBWweapruDlIzqP3u0Ip-hwJO82XFtuR-hCpfLVA2TR0FKuz6UkYYcii9gTzPLMKRds-qZY0iWA9DjG3xBcMNtVVZolnfTtRgmtBzk833SZUy9Z_gJIaLt_OtR_jSwfJlvaXv3n2SlstJI7itg-jlAFdKmupLdZYFDJ1AxStOe8Wl_QFnNUmd37AvslQozf_8LXgavxwjDMDPO5gss5hUxOZ0oNOF-UNsuHhRVdMW6hRpjTUCOFks9n0I0ZW_4wvt--WNv_YvlbIfgZzG4LFEMF2R-X45NlO1jJMogAR0ucz_96eHcish87un5lan9WU7AB9eqqbQfPxSSeWkQgFxvBB-wh6pBSWexAoOacEArIvh9mnXbNQjfZLsnFs3moC9d3N9EsvbuMWQn61spx7l-CbZ6TDz1CUe_0tNPNWB5h9Zeo5tVMH68LS0hTlInf1tfjQOW2gudL2N0MYo83uK3DMHKa_m6o=w1272-h312-no">
+<meta property="article:published_time" content="2019-09-30T02:35:49.000Z">
+<meta property="article:modified_time" content="2019-11-04T10:45:24.352Z">
+<meta property="article:author" content="Ray">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#連結並且延伸雲端服務">2.1&nbsp;&nbsp;連結並且延伸雲端服務</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#事件以及觸發-Events-and-Triggers">2.2&nbsp;&nbsp;事件以及觸發 (Events and Triggers)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#無伺服器">2.3&nbsp;&nbsp;無伺服器</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用情境">2.4&nbsp;&nbsp;使用情境</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">3&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-Google-Cloud-Shell">3.1&nbsp;&nbsp;啟動 Google Cloud Shell</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一個-function">4&nbsp;&nbsp;<b>建立一個 function</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一個-cloud-storage-bucket-儲存區">5&nbsp;&nbsp;<b>建立一個 cloud storage bucket (儲存區)</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度">5.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署你的-function">6&nbsp;&nbsp;<b>部署你的 function</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度-1">6.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試部署上去的-function">7&nbsp;&nbsp;<b>測試部署上去的 function</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#檢視紀錄">8&nbsp;&nbsp;<b>檢視紀錄</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試你的理解">9&nbsp;&nbsp;<b>測試你的理解</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/cloudFunctionsQwikStartCommandLine/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/cloudFunctionsQwikStartCommandLine/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Cloud Functions 初探 - Command Line
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-09-30T02:35:49.000Z" itemprop="datePublished">9月 30 2019</time>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            29 分钟 讀完 (大概 4293 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施或管理任何的伺服器。</p>
+<p>Cloud Functions 由 Javascript 所編寫，並且執行在 Google Cloud Platform 的 Node.js 環境。 你可以讓你的 Cloud Functions 運行在任何的 Node.js 執行階段上，這不只攜帶輕便，而且更讓本地測試非常簡單。</p>
+<span id="more"></span>
+
+<br>
+<br>
+<br>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+<br>
+<br>
+<br>
+
+<h3 id="連結並且延伸雲端服務"><a href="#連結並且延伸雲端服務" class="headerlink" title="連結並且延伸雲端服務"></a>連結並且延伸雲端服務</h3><p>Cloud Functions 提供一個邏輯的連結層，它可以讓你在上面寫代碼來連接並且延伸雲端服務。 監聽並且回應 Cloud Storage 的檔案上傳事件，一個紀錄改變事件，或是 Cloud Pub/Sub 的訊息觸發事件。 Cloud Functions 擴大已經存在的雲端服務，並且允許使用客制的程式邏輯來處理越來越多的使用情境。 Cloud Functions 擁有 Google Service Account credential 的存取權，因此可以無縫接軌大部分的 Google Cloud Platform 服務，像是 Datastore, Cloud Spanner, Cloud Translation API, Cloud Vision API, 以及很多很多其他的服務。 並且，很多的 <a target="_blank" rel="noopener" href="https://cloud.google.com/nodejs/apis">Node.js client libraries</a> 都有支援 Cloud Functions, 這更是簡化了這些服務之間的整合。  </p>
+<br>
+
+<h3 id="事件以及觸發-Events-and-Triggers"><a href="#事件以及觸發-Events-and-Triggers" class="headerlink" title="事件以及觸發 (Events and Triggers)"></a>事件以及觸發 (Events and Triggers)</h3><p>雲端事件是發生在雲端環境的事。 像是資料庫的資料有所改變，檔案被上傳到儲存區，或是一台新的虛擬機背建立。</p>
+<p>不管你是否選擇回應，事件都會發生。 你可以使用 trigger 來建立對一個事件的回應。 Trigger 是一個宣告，對那些你有興趣的特定的或是一連串事件的宣告。 將一個 function 連結到 trigger 讓我們可以捕捉，並且隨著事件的發生有所動作。 更多有關建立 trigger 並且將它與 function 關聯的資訊，請參考 <a target="_blank" rel="noopener" href="https://cloud.google.com/functions/docs/concepts/events-triggers">Events and Triggers</a></p>
+<br>
+
+<h3 id="無伺服器"><a href="#無伺服器" class="headerlink" title="無伺服器"></a>無伺服器</h3><p>Cloud Functions 幫我們拿掉了這些工作，像是伺服器管理，軟體設置，框架更新，作業系統更新。 你只需要專注在代碼的部分，因為 Google 完全地幫你管理軟體以及基礎設施的部分。 再者，資源會隨著事件的回應自動地被提供。 這代表說，你完全不需要做任何事就可以讓一個 function 從一天幾次的調用，到一天好幾百萬次的調用。</p>
+<br>
+
+<h3 id="使用情境"><a href="#使用情境" class="headerlink" title="使用情境"></a>使用情境</h3><p>異步的工作量像是輕量化的 ETL, 或是雲端自動化像是應用被觸發而自動建立，不再需要獨立的伺服器以及開發者的維護。 你只要簡單的部署 Cloud Function 並且和你想要的事件做連結。</p>
+<p>Cloud Functions 的這些細緻的，立即提供的特質讓它非常適合輕量化的 API 以及 webhooks。 再者，當你部署一個 HTTP Function，該 HTTP endpoints 將會自動地被提供，這代表你不再需要像其他服務的複雜設置。 下面的表格列出了一些額外的常用 Cloud Function 的使用情境：</p>
+<p>使用情境 | 敘述<br>— |<br>Data Processing / ETL | 監聽並且回應 <a target="_blank" rel="noopener" href="https://cloud.google.com/storage">Cloud Storage</a> 事件像是當一個檔案被建立，被改變，或是被移除了。 處理圖片，影片編譯，資料驗證及轉換，以及從 Cloud Functions 上觸發任何網路上的服務。<br>Webhooks | 經由簡單的 <a target="_blank" rel="noopener" href="https://cloud.google.com/functions/docs/calling/http">HTTP trigger</a>, 回應那些來自第三方的事件，像是 GitHub, Slack, Stripe, 或是任何可以發 HTTP requests 的來源。<br>輕量化 APIs | 使用輕量化、不緊密相依、快速建立，以及立即可調整大小的邏輯來建構你的應用。 你的 functions 可以被事件驅動或者是直接通過 HTTP/S 觸發<br>可攜式後端 | 使用 Google 專為 App 開發者的可攜式平台, <a target="_blank" rel="noopener" href="https://firebase.google.com/docs/functions/">Firebase</a>, 以及在 Cloud Functions 建構你自己的移動後端。 監聽以及回應來自於 Firebase Analytics, Realtime Database, Authentication, 以及 Storage 的事件。<br>IoT | 想像一個數以萬計的裝置串流資料到 Cloud Pub/Sub, 然後啟動 Cloud Functions 來處理，轉換，並且儲存資料。 Cloud Functions 讓你使用完全無伺服器的方式來做到這些事。</p>
+<p>這個手把手的教程將會教你如何使用 Google Cloud 主控台來建立，部署，並且測試 Cloud Function</p>
+<p><strong>你將會做什麼？</strong></p>
+<ul>
+<li>建立一個 cloud function</li>
+<li>部署並且測試這個 function</li>
+<li>檢視紀錄</li>
+</ul>
+<br>
+<br>
+<br>
+
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><br>
+
+<p><b>在你按下 Start Lab 按鈕之前</b></p>
+<p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Qwiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<p><b>你需要什麼？</b></p>
+<p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><b>備註：</b> 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台，然後開啟命令列工具</p>
+<p><b>如何開始你的 lab ，然後登入 Console?</b></p>
+<ol>
+<li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
+<ol start="2">
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p><b>tip:</b> 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
+<ol start="4">
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ol>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。它提供了5GB的 home 資料夾，並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code> ，右上的工具列，點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
+<ol start="2">
+<li>在打開的對話框裡，按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。當你連結成功，這代表你已成功獲得授權，且此專案已被設為你的專案ID，例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
+<p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具，他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command ,你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
+<p>輸出:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+
+<p>輸出：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
+<p><code>gcloud</code> 的完整文件可以參閱 <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud">Google Cloud gcloud Overview</a></p>
+<br>
+<br>
+<br>
+
+<h2 id="建立一個-function"><a href="#建立一個-function" class="headerlink" title="建立一個 function"></a>建立一個 function</h2><p>首先，你將會建立一個名為 helloWorld 的簡單 function。 這個 function 會寫一段訊息到 Cloud Functions 的紀錄。 它被 cloud function 事件所觸發，並且當這個 function 成功執行完成, 可以執行一個回呼函式</p>
+<p>在本教程中, cloud function 事件會是一個 cloud pub / sub topic 事件。 Cloud Pub / Sub 是一種「發佈/訂閱 (Pub / Sub) 服務」：將訊息傳送者與訊息接收者分離的訊息傳遞服務。 若欲了解更多有關 pub / sub 的資訊，可以參考<a target="_blank" rel="noopener" href="https://cloud.google.com/pubsub/architecture">文件</a></p>
+<p>執行以下指令來建立一個 cloud function:</p>
+<ol>
+<li>在 Cloud Shell 命令列視窗中, 建立一個置放 function 代碼的資料夾</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">mkdir</span> gcf_hello_world</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>移動到 <code>gcf_hello_world</code> 資料夾</li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> gcf_hello_world</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>建立並且打開編輯 <code>index.js</code></li>
+</ol>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim index.js</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p>將以下的代碼複製貼上到 <code>index.js</code></p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Cloud Function.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type">object</span>&#125; event The Cloud Functions event.</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type">function</span>&#125; callback The callback function.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-built_in">exports</span>.<span class="hljs-property">helloWorld</span> = <span class="hljs-keyword">function</span> <span class="title function_">helloWorld</span> (event, callback) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="hljs-string">`My Cloud Function: <span class="hljs-subst">$&#123;<span class="hljs-built_in">JSON</span>.stringify(event.data.message)&#125;</span>`</span>);</span><br><span class="line">  <span class="title function_">callback</span>();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+<li><p>輸入 <code>:wq</code> 儲存並且離開檔案</p>
+</li>
+</ol>
+<br>
+<br>
+<br>
+
+<h2 id="建立一個-cloud-storage-bucket-儲存區"><a href="#建立一個-cloud-storage-bucket-儲存區" class="headerlink" title="建立一個 cloud storage bucket (儲存區)"></a>建立一個 cloud storage bucket (儲存區)</h2><p>使用以下指令來為你的 function 建立一個新的 cloud 儲存區</p>
+<figure class="highlight plaintext hljs"><figcaption><span>cloud</span></figcaption><table><tr><td class="code"><pre><span class="line">gsutil mb -p [PROJECT_ID] gs://[BUCKET_NAME]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>PROJECT_ID</strong> 為此教程中的 GCP Project ID, 如下圖。 如果你沒有使用 Qwiklab, 此 Project ID 為你 GCP 帳號下的 Project ID</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/CE9SuwwIw1O48F6RA288UUAXUStdoafXsPwELn-iL0mhjqP146mEsiMaBgaAIdJfs9_6vm5F2cZDRy3h5GEESXYsoY9cxrG_Srjexb3dPO3Gurdv9GjfbBfDvjkG8PAvSPWRu5xAI1BmhAKad8zVwRe-OrEUzj8qT0R_zD6zpTHhTSdkFHuL97Pp-WUC4UrLiSHK5UHe0UDKOXeCC5VxwaftOQSR9ERhpnvaZ1mnmCzKsIsMrU_W-hB4f-McpwlUhKaYlmexlxjd89YV5opTgVO7Js_1TfL4T8w8LyMF7UW-65D__QkgIqwd6BWVrgBfWxQJDXNAp7ur0Umf3jjoGGCdiZWwO7cS8jBsSY3TRMxDeiBXII9Zkp88riynI0gAg-srbdpYHp8R5hl1WctFm5fXKbDhwustSwtuWe3XWx8FIh-FQ9Frzv9e8enBuMkcMqWYJ51Bawe5Qo2ETanFjZZOCQnZ_otjX0ljXmQOaW9XlwmXV121cgnMId2gqbzKHJTBaEgFgBe7qa0hvVkj62a28nZ5f-gzG4SpDfJabVGxZJQPqBdrf9gW9SLXoYvWQXwc8kQ4tTBIplPODeN66v_RDyafor_0bseaox38CPt-V4WCUOyeqS2i384mZmLh5ZKfnUTnkk0FBUdk6kulQnm6hpjyAo9cD85_2koEZSP0vv8fSfBBmnk=w245-h185-no"></p>
+<ul>
+<li><strong>BUCKET_NAME</strong> 是你給予這個儲存區的名稱。 它必須是獨一無二的名字。</li>
+</ul>
+<br>
+
+<h3 id="測試進度"><a href="#測試進度" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經完成目前的進度，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/k9RZ2JfEvVoQI4GmViQIQkMuOB5zKjguylOw7zruBXtywCf1gehnRGIiGM_g03GLpYndjhKfBORJy17KrgJQhGIiGKFS3rnmDyOH9L_3Ceez5DZ9siTNygcr0Y0haMosPwp4ECnY-aboRmlf9lAAX-3xZ7iO8cZnkLG4hiJ_ccd2dPGIZm13BPCbdN3Iw89CRxUacIptviOF0v2CJRlX0UhP-D_tvpYZo6u8I9wci9xK81zCB4LYRL22Abzg8phSZmULMEkPL6xdLpEDg2qh_GBAgooPhiIIOa1i2eGDPFn7j8cRhkMFy5mqVx7BwWgJyyjlXp7AWHgB_-9cIOu-COK4CUCV_Q_2mKaA9t4Y9C9tDQsAgoZj_L5jE3Tm4bBbo031oLxI9cYzhkQ53Cx0YcnLv27EOUepheLXB7CYG97XlU7j_huRSc8iO-hlU5hx0bEfXDrGfok9-pOJ3KxAxkYuIewyuuQX9PU70LNjGqqKDxUPIthblXaTXJHIRDFNaGVacr6yJ3UL9dN8KgAcnUzdt8g4joEJxjRJIUq80cHJ77IZWDNhJCbAO2McdP-k46UR0jUjFzk19neeZX7aB11IT38yhFssysnmXygqUGx0P1mgDs7gD6kt3iSNGq7_QcVOXXfQjc1UHvnhWt_oaNhsYaV3xE6sa1KADQdHz2hMq3CtzOXJt-o=w1280-h236-no"></p>
+<br>
+<br>
+<br>
+
+<h2 id="部署你的-function"><a href="#部署你的-function" class="headerlink" title="部署你的 function"></a>部署你的 function</h2><p>當部署一個新的 function, 你必須要指令 <code>--trigger-topic</code>, <code>--trigger-bucket</code>, 或 <code>--trigger-http</code>。 當你更新現有的 function 時, 觸發條件不會更改, 除非你有另外指定。</p>
+<p>在本教程中, 你將會設定 <code>hello_world</code> 為 <code>--trigger-topic</code></p>
+<ol>
+<li>部署這個 function, 並使用 pub / sub 為觸發事件, 名稱為 <strong>hello_world</strong>, 將以下的 <code>[BUCKET_NAME]</code> 替換成你的儲存區名稱</li>
+</ol>
+<figure class="highlight plaintext hljs"><figcaption><span>cloud</span></figcaption><table><tr><td class="code"><pre><span class="line">gcloud functions deploy helloWorld \</span><br><span class="line">  --stage-bucket [BUCKET_NAME] \</span><br><span class="line">  --trigger-topic hello_world \</span><br><span class="line">  --runtime nodejs6</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>核對 function 的狀態<figure class="highlight plaintext hljs"><figcaption><span>cloud</span></figcaption><table><tr><td class="code"><pre><span class="line">gcloud functions describe helloWorld</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>狀態 ACTIVE 顯示這個 function 已經被成功部署</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">entryPoint: helloWorld</span><br><span class="line">eventTrigger:</span><br><span class="line">  eventType: providers/cloud.pubsub/eventTypes/topic.publish</span><br><span class="line">  failurePolicy: &#123;&#125;</span><br><span class="line">  resource:</span><br><span class="line">...</span><br><span class="line">status: ACTIVE</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>每一條由這個主題發布的訊息都將觸發這個 function, 訊息內容為輸入的資料</p>
+<br>
+
+<h3 id="測試進度-1"><a href="#測試進度-1" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經完成目前的進度，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/iIDgwmOQcz9QR3SVzYljpcbcAbINAfoQ74cNDRwV31LYu_dK8QUPowaKTg_CtYiah1V6hFibYi4VNBxCyUJS5RYw4DyiOmlwtZqIjFJXfOtFAhGWI5hQENBgNpIF8Bbap2f-WrKKHFiso4l3XdIxBGXJ9JnlaFchCfAXnWeisK6XuL4a6nSRcyJJn9zQ9dtZydH2m52qoANufoJtWDmYJ9nTDEcvCkPg9TWgk4TVmgo32nMvffKAfisT480PXmF9RU0D1UbAtde2KdLbCF0mf3j5i-ZZvo0vHEfFLAtFSFi8_zZOpLky-t8KcKTp70wbTG2DUizdo-ucEruWKdgHC_Mf1qYoBGleakcEobvpFMnf2r05ZxLSbIntGCLQ3II3XDyLuC-3i0ZkhuvZzh3ChSInikCnkYCD3Wz-YD7lhKqAIG-pPmieKy6TRBcCD8EgQlWplgbQJc8L-kvzrLYWE2PPhByVvJvRhm8drjWsWwMgVCv1wZZ3GqzvX91gPFUmHd8MD9Kp668Apey5aBFCCQ_v0wd3DPEGLGZuRRZJsDa2H-j9oXFtnTgnNowjbgUVLumi3iFCfxunDcFjaXJueNClX1qnWnGdFrhrpSHNoGsdc0jGyEAawZRJkQfteANIF9BPi3weOFQt82tvpMOMZ2fBQk4ZaYRmA4TPtJZv6YTLDJx5dpukxtc=w1280-h228-no"></p>
+<br>
+<br>
+<br>
+
+<h2 id="測試部署上去的-function"><a href="#測試部署上去的-function" class="headerlink" title="測試部署上去的 function"></a>測試部署上去的 function</h2><p>在你部署這個 function 上去, 並且知道它的狀態是 active 之後，讓我們來測試看看這個 function 會不會再偵測到事件之後寫一段訊息到 cloud 紀錄</p>
+<p>輸入以下指令來建立一個訊息, 測試這個 function</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">gcloud functions call helloWorld --data &#x27;&#123;&quot;message&quot;:&quot;Hello World!&quot;&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>cloud 工具返回了一個此 function 的 execution ID, 這表示訊息已經被寫到紀錄了</p>
+<p>範例輸出：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">executionId: 3zmhpf7l6j5b</span><br></pre></td></tr></table></figure>
+
+<p>檢視紀錄來確認有這個 execution ID 的訊息記錄</p>
+<br>
+<br>
+<br>
+
+<h2 id="檢視紀錄"><a href="#檢視紀錄" class="headerlink" title="檢視紀錄"></a>檢視紀錄</h2><p>檢視歷史紀錄</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud <span class="hljs-built_in">functions</span> logs <span class="hljs-built_in">read</span> helloWorld</span><br></pre></td></tr></table></figure>
+
+<p>如果 function 成功地被執行, 訊息記錄會被列出，如下：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">LEVEL  NAME        EXECUTION_ID  TIME_UTC                 LOG</span><br><span class="line">D      helloWorld  3zmhpf7l6j5b  2017-12-05 22:17:42.585  Function execution started</span><br><span class="line">I      helloWorld  3zmhpf7l6j5b  2017-12-05 22:17:42.650  My Cloud Function: Hello World!</span><br><span class="line">D      helloWorld  3zmhpf7l6j5b  2017-12-05 22:17:42.666  Function execution took 81 ms, finished with status: &#x27;ok&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>你的應用已經完成部署, 測試, 並且你可以檢視紀錄</p>
+<br>
+<br>
+<br>
+
+
+<h2 id="測試你的理解"><a href="#測試你的理解" class="headerlink" title="測試你的理解"></a>測試你的理解</h2><p>下面有多重選擇的問題來鞏固你對本教程概念的理解，盡你所能的回答吧：</p>
+<p><img src="https://lh3.googleusercontent.com/PHmTKM7H9WmpZPwX3EtU1bDGxTbzyqGcCFQq0KfIi1zF5-VDHFFajENf1sUDm6tm5ZyemXeGC_s6Hh0g5dCD9lafRe_amPlcu0CD-jokya-4AYYfTyJ8AyvUMaWQ-tXqhgy1-KFkvQUO11Sv4lRhxj636Xs9xD7-32eeQjkB8MSPHW3kgkIwVzEnGrFvHHzJSeDFNu-e5qtqac2OswsKKyNmWBWweapruDlIzqP3u0Ip-hwJO82XFtuR-hCpfLVA2TR0FKuz6UkYYcii9gTzPLMKRds-qZY0iWA9DjG3xBcMNtVVZolnfTtRgmtBzk833SZUy9Z_gJIaLt_OtR_jSwfJlvaXv3n2SlstJI7itg-jlAFdKmupLdZYFDJ1AxStOe8Wl_QFnNUmd37AvslQozf_8LXgavxwjDMDPO5gss5hUxOZ0oNOF-UNsuHhRVdMW6hRpjTUCOFks9n0I0ZW_4wvt--WNv_YvlbIfgZzG4LFEMF2R-X45NlO1jJMogAR0ucz_96eHcish87un5lan9WU7AB9eqqbQfPxSSeWkQgFxvBB-wh6pBSWexAoOacEArIvh9mnXbNQjfZLsnFs3moC9d3N9EsvbuMWQn61spx7l-CbZ6TDz1CUe_0tNPNWB5h9Zeo5tVMH68LS0hTlInf1tfjQOW2gudL2N0MYo83uK3DMHKa_m6o=w1272-h312-no"></p>
+<p>答案: <code>true</code></p>
+
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/Linux/">Linux 基礎篇 - 學習筆記</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/markdown/">Markdown 學習筆記</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/cloudFunctionsQwikStartCommandLine/';
+        this.page.identifier = 'zh-tw/cloudFunctionsQwikStartCommandLine/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

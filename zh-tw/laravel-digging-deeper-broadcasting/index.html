@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - Digging Deeper - Broadcasting (官方文件原子化翻譯筆記) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Broadcasting (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-broadcasting/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-03-21T07:52:38.000Z">
+<meta property="article:modified_time" content="2021-03-20T01:02:07.039Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Broadcasting">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-digging-deeper-broadcasting/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Broadcasting (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-broadcasting/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-03-21T07:52:38.000Z">
+<meta property="article:modified_time" content="2021-03-20T01:02:07.039Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Broadcasting">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">2&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuration">2.1&nbsp;&nbsp;# Configuration</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Driver-Prerequisites">2.2&nbsp;&nbsp;# Driver Prerequisites</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Pusher-Channels">2.2.1&nbsp;&nbsp;# Pusher Channels</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redis">2.2.2&nbsp;&nbsp;# Redis</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Socket-IO">2.2.3&nbsp;&nbsp;# Socket.IO</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Concept-Overview">3&nbsp;&nbsp;<b># Concept Overview</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-An-Example-Application">3.1&nbsp;&nbsp;# Using An Example Application</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-ShouldBroadcast-Interface">3.1.1&nbsp;&nbsp;# The ShouldBroadcast Interface</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Authorizing-Channels">3.1.2&nbsp;&nbsp;# Authorizing Channels</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Listening-For-Event-Broadcasts">3.1.3&nbsp;&nbsp;# Listening For Event Broadcasts</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Broadcast-Events">4&nbsp;&nbsp;<b># Defining Broadcast Events</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Broadcast-Name">4.1&nbsp;&nbsp;# Broadcast Name</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Broadcast-Data">4.2&nbsp;&nbsp;# Broadcast Data</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Broadcast-Queue">4.3&nbsp;&nbsp;# Broadcast Queue</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Broadcast-Conditions">4.4&nbsp;&nbsp;# Broadcast Conditions</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Authorizing-Channels-1">5&nbsp;&nbsp;<b># Authorizing Channels</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Authorization-Routes">5.1&nbsp;&nbsp;# Defining Authorization Routes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Authorization-Endpoint">5.1.1&nbsp;&nbsp;# Customizing The Authorization Endpoint</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Authorization-Callbacks">5.2&nbsp;&nbsp;# Defining Authorization Callbacks</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Authorization-Callback-Model-Binding">5.2.1&nbsp;&nbsp;# Authorization Callback Model Binding</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Authorization-Callback-Authentication">5.2.2&nbsp;&nbsp;# Authorization Callback Authentication</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Channel-Classes">5.3&nbsp;&nbsp;# Defining Channel Classes</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Broadcasting-Events">6&nbsp;&nbsp;<b># Broadcasting Events</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Only-To-Others">6.1&nbsp;&nbsp;# Only To Others</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Configuration-1">6.1.1&nbsp;&nbsp;# Configuration</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Receiving-Broadcasts">7&nbsp;&nbsp;<b># Receiving Broadcasts</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Installing-Laravel-Echo">7.1&nbsp;&nbsp;# Installing Laravel Echo</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-An-Existing-Client-Instance">7.1.1&nbsp;&nbsp;# Using An Existing Client Instance</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Listening-For-Events">7.2&nbsp;&nbsp;# Listening For Events</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Leaving-A-Channel">7.3&nbsp;&nbsp;# Leaving A Channel</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Namespaces">7.4&nbsp;&nbsp;# Namespaces</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Presence-Channels">8&nbsp;&nbsp;<b># Presence Channels</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Authorizing-Presence-Channels">8.1&nbsp;&nbsp;# Authorizing Presence Channels</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Joining-Presence-Channels">8.2&nbsp;&nbsp;# Joining Presence Channels</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Broadcasting-To-Presence-Channels">8.3&nbsp;&nbsp;# Broadcasting To Presence Channels</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Client-Events">9&nbsp;&nbsp;<b># Client Events</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Notifications">10&nbsp;&nbsp;<b># Notifications</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-digging-deeper-broadcasting/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-digging-deeper-broadcasting/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Digging Deeper - Broadcasting (官方文件原子化翻譯筆記)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-03-21T07:52:38.000Z" itemprop="datePublished">3月 21 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            26 分钟 讀完 (大概 3825 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><h3 id="Configuration"><a href="#Configuration" class="headerlink" title="# Configuration"></a># Configuration</h3><h6 id="Laravel-中-有關-broadcast-的設定都在哪一個檔案中？"><a href="#Laravel-中-有關-broadcast-的設定都在哪一個檔案中？" class="headerlink" title="Laravel 中, 有關 broadcast 的設定都在哪一個檔案中？"></a><strong>Laravel 中, 有關 broadcast 的設定都在哪一個檔案中？</strong></h6><p><code>config/broadcasting.php</code></p>
+<h6 id="Laravel-中-要啟動-BroadcastServiceProvider-預設要到-哪個檔案-的-哪個-property-去-uncomment-這個-provider"><a href="#Laravel-中-要啟動-BroadcastServiceProvider-預設要到-哪個檔案-的-哪個-property-去-uncomment-這個-provider" class="headerlink" title="Laravel 中, 要啟動 BroadcastServiceProvider, 預設要到 哪個檔案 的 哪個 property 去 uncomment 這個 provider?"></a><strong>Laravel 中, 要啟動 BroadcastServiceProvider, 預設要到 <em>哪個檔案</em> 的 <em>哪個 property</em> 去 uncomment 這個 provider?</strong></h6><p><code>config/app.php</code></p>
+<h6 id="Laravel-Broadcast-中-Laravel-Echo-會存取-session-中的什麼東西？"><a href="#Laravel-Broadcast-中-Laravel-Echo-會存取-session-中的什麼東西？" class="headerlink" title="Laravel Broadcast 中, Laravel Echo 會存取 session 中的什麼東西？"></a><strong>Laravel Broadcast 中, Laravel Echo 會存取 session 中的什麼東西？</strong></h6><p><strong>CSRF token</strong></p>
+<h6 id="Laravel-Broadcast-中-Laravel-Echo-預設會存取-session-當中的-CSRF-token-所以要在-HTML-的哪一個-tag-中載入-csrf-token？"><a href="#Laravel-Broadcast-中-Laravel-Echo-預設會存取-session-當中的-CSRF-token-所以要在-HTML-的哪一個-tag-中載入-csrf-token？" class="headerlink" title="Laravel Broadcast 中, Laravel Echo 預設會存取 session 當中的 CSRF token, 所以要在 HTML 的哪一個 tag 中載入 csrf-token？"></a><strong>Laravel Broadcast 中, Laravel Echo 預設會存取 session 當中的 <em>CSRF token</em>, 所以要在 HTML 的哪一個 tag 中載入 csrf-token？</strong></h6><p><em>meta</em> tag</p>
+<h6 id="Laravel-中-當使用-broadcast-時-以下的-blade-view-example-的意思是？"><a href="#Laravel-中-當使用-broadcast-時-以下的-blade-view-example-的意思是？" class="headerlink" title="Laravel 中, 當使用 broadcast 時, 以下的 blade view example 的意思是？"></a><strong>Laravel 中, 當使用 broadcast 時, 以下的 blade view example 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">&lt;meta name=<span class="hljs-string">&quot;csrf-token&quot;</span> content=<span class="hljs-string">&quot;&#123;&#123; csrf_token() &#125;&#125;&quot;</span>&gt;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel Broadcast 中, 預設 Laravel Echo 會存取 session 當中的 <strong>CSRF token</strong>, 並以此跟 server 驗證, 所以當不是使用 SPA 時, 需在 meta tag 內置入 csrf_token</li>
+</ul>
+<br>
+
+<h3 id="Driver-Prerequisites"><a href="#Driver-Prerequisites" class="headerlink" title="# Driver Prerequisites"></a># Driver Prerequisites</h3><h4 id="Pusher-Channels"><a href="#Pusher-Channels" class="headerlink" title="# Pusher Channels"></a># Pusher Channels</h4><h6 id="Laravel-Broadcast-中-如果是使用-Pusher-Channels-的方式-需要另外安裝-sdk-嗎？"><a href="#Laravel-Broadcast-中-如果是使用-Pusher-Channels-的方式-需要另外安裝-sdk-嗎？" class="headerlink" title="Laravel Broadcast 中, 如果是使用 Pusher Channels 的方式, 需要另外安裝 sdk 嗎？"></a><strong>Laravel Broadcast 中, 如果是使用 <a target="_blank" rel="noopener" href="https://pusher.com/channels">Pusher Channels</a> 的方式, 需要另外安裝 sdk 嗎？</strong></h6><p>需要</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer require pusher/pusher-php-server <span class="hljs-string">&quot;~4.0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="解釋以下的-Laravel-Echo-javascript-code"><a href="#解釋以下的-Laravel-Echo-javascript-code" class="headerlink" title="解釋以下的 Laravel Echo javascript code"></a><strong>解釋以下的 Laravel Echo javascript code</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> <span class="title class_">Echo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;laravel-echo&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Pusher</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pusher-js&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">// 載入 Echo</span></span><br><span class="line"><span class="hljs-keyword">import</span> <span class="title class_">Echo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;laravel-echo&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 載入 pusher-js</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Pusher</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pusher-js&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 定義 echo</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-comment">// channel name</span></span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    <span class="hljs-comment">// channel key</span></span><br><span class="line">    <span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Broadcast-中-若使用-Pusher-Channel-那以下的-env-example-該填入？"><a href="#Laravel-Broadcast-中-若使用-Pusher-Channel-那以下的-env-example-該填入？" class="headerlink" title="Laravel Broadcast 中, 若使用 Pusher Channel, 那以下的 .env example 該填入？"></a><strong>Laravel Broadcast 中, 若使用 Pusher Channel, 那以下的 .env example 該填入？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">BROADCAST_DRIVER=這邊要填什麼？</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">BROADCAST_DRIVER=pusher</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h4 id="Redis"><a href="#Redis" class="headerlink" title="# Redis"></a># Redis</h4><h6 id="Laravel-Broadcast-中-當我使用-Redis-時-可使用哪兩種方式安裝-Redis"><a href="#Laravel-Broadcast-中-當我使用-Redis-時-可使用哪兩種方式安裝-Redis" class="headerlink" title="Laravel Broadcast 中, 當我使用 Redis 時, 可使用哪兩種方式安裝 Redis?"></a><strong>Laravel Broadcast 中, 當我使用 Redis 時, 可使用哪兩種方式安裝 Redis?</strong></h6><ul>
+<li>PECL</li>
+<li>Composer</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-當我使用-Composer-安裝-Redis-時-可以使用哪個-CLI"><a href="#Laravel-Broadcast-中-當我使用-Composer-安裝-Redis-時-可以使用哪個-CLI" class="headerlink" title="Laravel Broadcast 中, 當我使用 Composer 安裝 Redis 時, 可以使用哪個 CLI?"></a><strong>Laravel Broadcast 中, 當我使用 Composer 安裝 Redis 時, 可以使用哪個 CLI?</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer require predis/predis</span><br></pre></td></tr></table></figure>
+
+<h6 id="Laravel-Broadcast-中-如果我使用-Redis-來-Broadcast-那以下的-env-example-當中該填入什麼？"><a href="#Laravel-Broadcast-中-如果我使用-Redis-來-Broadcast-那以下的-env-example-當中該填入什麼？" class="headerlink" title="Laravel Broadcast 中, 如果我使用 Redis 來 Broadcast, 那以下的 .env example 當中該填入什麼？"></a><strong>Laravel Broadcast 中, 如果我使用 Redis 來 Broadcast, 那以下的 .env example 當中該填入什麼？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">BROADCAST_DRIVER=這裡要填什麼</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">BROADCAST_DRIVER=redis</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Broadcast-中-如果我使用-Redis-來-Broadcast-我必須要將-Redis-跟哪一種類型的-server-做配對？"><a href="#Laravel-Broadcast-中-如果我使用-Redis-來-Broadcast-我必須要將-Redis-跟哪一種類型的-server-做配對？" class="headerlink" title="Laravel Broadcast 中, 如果我使用 Redis 來 Broadcast, 我必須要將 Redis 跟哪一種類型的 server 做配對？"></a><strong>Laravel Broadcast 中, 如果我使用 Redis 來 Broadcast, 我必須要將 Redis 跟哪一種類型的 server 做配對？</strong></h6><p>WebSocket</p>
+<h4 id="Socket-IO"><a href="#Socket-IO" class="headerlink" title="# Socket.IO"></a># Socket.IO</h4><h6 id="Laravel-Broadcast-中-如果我使用-Redis-配對-socket-io-server-前端需要安裝什麼？"><a href="#Laravel-Broadcast-中-如果我使用-Redis-配對-socket-io-server-前端需要安裝什麼？" class="headerlink" title="Laravel Broadcast 中, 如果我使用 Redis 配對 socket.io server, 前端需要安裝什麼？"></a><strong>Laravel Broadcast 中, 如果我使用 Redis 配對 socket.io server, 前端需要安裝什麼？</strong></h6><p>Socket.IO Javascript client library</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">npm install --save socket.io-client</span><br></pre></td></tr></table></figure>
+
+<h6 id="Laravel-Broadcast-中-解釋以下-JavaScript-example"><a href="#Laravel-Broadcast-中-解釋以下-JavaScript-example" class="headerlink" title="Laravel Broadcast 中, 解釋以下 JavaScript example"></a><strong>Laravel Broadcast 中, 解釋以下 JavaScript example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> <span class="title class_">Echo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;laravel-echo&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">io</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;socket.io-client&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;socket.io&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">host</span>: <span class="variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">hostname</span> + <span class="hljs-string">&#x27;:6001&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">// import Larave Echo</span></span><br><span class="line"><span class="hljs-keyword">import</span> <span class="title class_">Echo</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;laravel-echo&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// require socket.io-client</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">io</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;socket.io-client&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-comment">// broadcast type</span></span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;socket.io&#x27;</span>,</span><br><span class="line">    <span class="hljs-comment">// host</span></span><br><span class="line">    <span class="hljs-attr">host</span>: <span class="variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">hostname</span> + <span class="hljs-string">&#x27;:6001&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Broadcast-中-如果我使用-Redis-那我安裝什麼-server-在後端？"><a href="#Laravel-Broadcast-中-如果我使用-Redis-那我安裝什麼-server-在後端？" class="headerlink" title="Laravel Broadcast 中, 如果我使用 Redis, 那我安裝什麼 server 在後端？"></a><strong>Laravel Broadcast 中, 如果我使用 Redis, 那我安裝什麼 server 在後端？</strong></h6><p>socket.IO server</p>
+<br>
+<br>
+
+<h2 id="Concept-Overview"><a href="#Concept-Overview" class="headerlink" title="# Concept Overview"></a># Concept Overview</h2><h3 id="Using-An-Example-Application"><a href="#Using-An-Example-Application" class="headerlink" title="# Using An Example Application"></a># Using An Example Application</h3><h4 id="The-ShouldBroadcast-Interface"><a href="#The-ShouldBroadcast-Interface" class="headerlink" title="# The ShouldBroadcast Interface"></a># The <code>ShouldBroadcast</code> Interface</h4><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Events</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ShippingStatusUpdated</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldBroadcast</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$update</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 event class implement ShouldBroadcast</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-以下-broadcastOn-method-的用途是？"><a href="#Laravel-Broadcast-中-以下-broadcastOn-method-的用途是？" class="headerlink" title="Laravel Broadcast 中, 以下 broadcastOn method 的用途是？"></a><strong>Laravel Broadcast 中, 以下 broadcastOn method 的用途是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Get the channels the event should broadcast on.</span></span><br><span class="line"><span class="hljs-comment"> *</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> \Illuminate\Broadcasting\PrivateChannel</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastOn</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="title class_">PrivateChannel</span>(<span class="hljs-string">&#x27;order.&#x27;</span>.<span class="variable language_">$this</span>-&gt;update-&gt;order_id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>Answer</strong>:<br>return 這個 event 需要 broadcast 的 channel</p>
+</li>
+</ul>
+<br>
+
+<h4 id="Authorizing-Channels"><a href="#Authorizing-Channels" class="headerlink" title="# Authorizing Channels"></a># Authorizing Channels</h4><h6 id="解釋以下的-Laravel-example"><a href="#解釋以下的-Laravel-example" class="headerlink" title="解釋以下的 Laravel example"></a><strong>解釋以下的 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;orderId&#125;&#x27;</span>, function (<span class="hljs-variable">$user</span>, <span class="hljs-variable">$orderId</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="title class_">Order</span>::<span class="title function_ invoke__">findOrNew</span>(<span class="hljs-variable">$orderId</span>)-&gt;user_id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Authorize channel, 驗證該 order 的建立者是否為該 user</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;orderId&#125;&#x27;</span>, function (<span class="hljs-variable">$user</span>, <span class="hljs-variable">$orderId</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="title class_">Order</span>::<span class="title function_ invoke__">findOrNew</span>(<span class="hljs-variable">$orderId</span>)-&gt;user_id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Broadcast-中-當我-authorize-channel-時-以下的-closure-的回傳值是什麼？"><a href="#Laravel-Broadcast-中-當我-authorize-channel-時-以下的-closure-的回傳值是什麼？" class="headerlink" title="Laravel Broadcast 中, 當我 authorize channel 時, 以下的 closure 的回傳值是什麼？"></a><strong>Laravel Broadcast 中, 當我 authorize channel 時, 以下的 closure 的回傳值是什麼？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;orderId&#125;&#x27;</span>, function (<span class="hljs-variable">$user</span>, <span class="hljs-variable">$orderId</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">// 這邊要回傳？</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>boolean</li>
+</ul>
+<br>
+
+<h4 id="Listening-For-Event-Broadcasts"><a href="#Listening-For-Event-Broadcasts" class="headerlink" title="# Listening For Event Broadcasts"></a># Listening For Event Broadcasts</h4><h6 id="Laravel-Broadcast-中-解釋以下-JavaScript-example-1"><a href="#Laravel-Broadcast-中-解釋以下-JavaScript-example-1" class="headerlink" title="Laravel Broadcast 中, 解釋以下 JavaScript example"></a><strong>Laravel Broadcast 中, 解釋以下 JavaScript example</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">`order.<span class="hljs-subst">$&#123;orderId&#125;</span>`</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;ShippingStatusUpdated&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="hljs-property">update</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">// 監聽 order.$&#123;orderId&#125; channel 中的 &#x27;ShippingStatusUpdated&#x27; 事件, 並 console.log 名為 update 的 public property</span></span><br><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">`order.<span class="hljs-subst">$&#123;orderId&#125;</span>`</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;ShippingStatusUpdated&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="hljs-property">update</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Defining-Broadcast-Events"><a href="#Defining-Broadcast-Events" class="headerlink" title="# Defining Broadcast Events"></a># Defining Broadcast Events</h2><h6 id="Laravel-Broadcast-中-一個-event-可以被廣播到多個-channel-嗎？"><a href="#Laravel-Broadcast-中-一個-event-可以被廣播到多個-channel-嗎？" class="headerlink" title="Laravel Broadcast 中, 一個 event 可以被廣播到多個 channel 嗎？"></a><strong>Laravel Broadcast 中, 一個 event 可以被廣播到多個 channel 嗎？</strong></h6><p>可以</p>
+<h6 id="Laravel-Broadcast-中-有哪三種-channel-interface"><a href="#Laravel-Broadcast-中-有哪三種-channel-interface" class="headerlink" title="Laravel Broadcast 中, 有哪三種 channel interface?"></a><strong>Laravel Broadcast 中, 有哪三種 channel interface?</strong></h6><ul>
+<li>Channel </li>
+<li>PrivateChannel</li>
+<li>PresenceChannel</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-public-channel-是屬於哪一種-channel-interface"><a href="#Laravel-Broadcast-中-public-channel-是屬於哪一種-channel-interface" class="headerlink" title="Laravel Broadcast 中, public channel 是屬於哪一種 channel interface?"></a><strong>Laravel Broadcast 中, public channel 是屬於哪一種 channel interface?</strong></h6><p>Channel</p>
+<h6 id="Laravel-中-PrivateChannels-以及-PresenceChannels-屬於-private-channel-還是-public-channel"><a href="#Laravel-中-PrivateChannels-以及-PresenceChannels-屬於-private-channel-還是-public-channel" class="headerlink" title="Laravel 中, PrivateChannels 以及 PresenceChannels 屬於 private channel 還是 public channel?"></a><strong>Laravel 中, PrivateChannels 以及 PresenceChannels 屬於 private channel 還是 public channel?</strong></h6><p>private</p>
+<h6 id="Laravel-中-PrivateChannels-以及-PresenceChannels-需要通過-channel-authorization-嗎？"><a href="#Laravel-中-PrivateChannels-以及-PresenceChannels-需要通過-channel-authorization-嗎？" class="headerlink" title="Laravel 中, PrivateChannels 以及 PresenceChannels 需要通過 channel authorization 嗎？"></a><strong>Laravel 中, PrivateChannels 以及 PresenceChannels 需要通過 channel authorization 嗎？</strong></h6><p>需要</p>
+<br>
+
+<h3 id="Broadcast-Name"><a href="#Broadcast-Name" class="headerlink" title="# Broadcast Name"></a># Broadcast Name</h3><h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Events</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Broadcasting</span>\<span class="hljs-title">ShouldBroadcast</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Queue</span>\<span class="hljs-title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ServerCreated</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldBroadcast</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">use</span> <span class="hljs-title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$user</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;user = <span class="hljs-variable">$user</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastAs</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;server.created&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>自定義 event name</li>
+</ul>
+<h6 id="Laravel-中-當我使用-broadcastAs-method-時-那在註冊-listener-時-要注意什麼？"><a href="#Laravel-中-當我使用-broadcastAs-method-時-那在註冊-listener-時-要注意什麼？" class="headerlink" title="Laravel 中, 當我使用 broadcastAs() method 時, 那在註冊 listener 時, 要注意什麼？"></a><strong>Laravel 中, 當我使用 <em>broadcastAs()</em> method 時, 那在註冊 listener 時, 要注意什麼？</strong></h6><p>要在 event name 的前面加一個 <code>.</code></p>
+<h6 id="Laravel-中-當我使用-broadcastAs-method-時-那在註冊-listener-時-要在-event-name-前加個-如下-為何？？"><a href="#Laravel-中-當我使用-broadcastAs-method-時-那在註冊-listener-時-要在-event-name-前加個-如下-為何？？" class="headerlink" title="Laravel 中, 當我使用 broadcastAs() method 時, 那在註冊 listener 時, 要在 event name 前加個 . 如下, 為何？？"></a><strong>Laravel 中, 當我使用 <em>broadcastAs()</em> method 時, 那在註冊 listener 時, 要在 event name 前加個 <code>.</code> 如下, 為何？？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">.<span class="title function_ invoke__">listen</span>(<span class="hljs-string">&#x27;.server.created&#x27;</span>, function (e) &#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>因為加了 <code>.</code> 之後, Echo 就不會自己在前面加上 namespace</li>
+</ul>
+<br>
+
+<h3 id="Broadcast-Data"><a href="#Broadcast-Data" class="headerlink" title="# Broadcast Data"></a># Broadcast Data</h3><h6 id="Laravel-Broadcast-中-當我廣播一個-event-時-預設會將什麼資料帶過去？"><a href="#Laravel-Broadcast-中-當我廣播一個-event-時-預設會將什麼資料帶過去？" class="headerlink" title="Laravel Broadcast 中, 當我廣播一個 event 時, 預設會將什麼資料帶過去？"></a><strong>Laravel Broadcast 中, 當我廣播一個 event 時, 預設會將什麼資料帶過去？</strong></h6><p>該 event 中的所有 public property</p>
+<h6 id="Laravel-Broadcast-中-當我廣播一個-event-時-如果我有一個-public-property-是-User-model-的-instance-那到了前端會變成什麼資料？"><a href="#Laravel-Broadcast-中-當我廣播一個-event-時-如果我有一個-public-property-是-User-model-的-instance-那到了前端會變成什麼資料？" class="headerlink" title="Laravel Broadcast 中, 當我廣播一個 event 時, 如果我有一個 public property 是 User model 的 instance, 那到了前端會變成什麼資料？"></a><strong>Laravel Broadcast 中, 當我廣播一個 event 時, 如果我有一個 public property 是 User model 的 instance, 那到了前端會變成什麼資料？</strong></h6><p>一個 object</p>
+<h6 id="Laravel-Broadcast-中-當我廣播一個-event-時-如果我要控管傳送過去的資料-那我可以使用哪一個-method"><a href="#Laravel-Broadcast-中-當我廣播一個-event-時-如果我要控管傳送過去的資料-那我可以使用哪一個-method" class="headerlink" title="Laravel Broadcast 中, 當我廣播一個 event 時, 如果我要控管傳送過去的資料, 那我可以使用哪一個 method?"></a><strong>Laravel Broadcast 中, 當我廣播一個 event 時, 如果我要控管傳送過去的資料, 那我可以使用哪一個 method?</strong></h6><p><em>broadcastWith()</em> method</p>
+<h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Events</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ServerCreated</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldBroadcast</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">use</span> <span class="hljs-title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$user</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;user = <span class="hljs-variable">$user</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastWith</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="variable language_">$this</span>-&gt;user-&gt;id];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 broadcast 時帶過去的資料 key / value</li>
+</ul>
+<h3 id="Broadcast-Queue"><a href="#Broadcast-Queue" class="headerlink" title="# Broadcast Queue"></a># Broadcast Queue</h3><h6 id="Laravel-中-Broadcast-queue-預設是使用哪一組-queue"><a href="#Laravel-中-Broadcast-queue-預設是使用哪一組-queue" class="headerlink" title="Laravel 中, Broadcast queue 預設是使用哪一組 queue?"></a><strong>Laravel 中, Broadcast queue 預設是使用哪一組 queue?</strong></h6><p>預設於 <em>queue.php</em> 檔案中的 queue</p>
+<h6 id="Laravel-中-如果我想要自定義-broadcast-使用到的-queue-可以在該-event-中新增-哪一個-property"><a href="#Laravel-中-如果我想要自定義-broadcast-使用到的-queue-可以在該-event-中新增-哪一個-property" class="headerlink" title="Laravel 中, 如果我想要自定義 broadcast 使用到的 queue, 可以在該 event 中新增 哪一個 property?"></a><strong>Laravel 中, 如果我想要自定義 broadcast 使用到的 queue, 可以在該 event 中新增 <em>哪一個 property</em>?</strong></h6><p><em>$broadcastQueue</em> property</p>
+<h6 id="Laravel-中-如果我想要使用-sync-queue-而不使用預設的-那請回答以下-example-中的問題"><a href="#Laravel-中-如果我想要使用-sync-queue-而不使用預設的-那請回答以下-example-中的問題" class="headerlink" title="Laravel 中, 如果我想要使用 sync queue, 而不使用預設的, 那請回答以下 example 中的問題"></a><strong>Laravel 中, 如果我想要使用 <em>sync</em> queue, 而不使用預設的, 那請回答以下 example 中的問題</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Broadcasting</span>\<span class="hljs-title">ShouldBroadcastNow</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ShippingStatusUpdated</span> <span class="hljs-keyword">implements</span> 這裡該填入？</span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Contracts</span>\<span class="hljs-title">Broadcasting</span>\<span class="hljs-title">ShouldBroadcastNow</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ShippingStatusUpdated</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ShouldBroadcastNow</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Broadcast-Conditions"><a href="#Broadcast-Conditions" class="headerlink" title="# Broadcast Conditions"></a># Broadcast Conditions</h3><h6 id="Laravel-中-如果我想要當某些條件成立時-我才-broadcast-event-那我可以使用-哪一個-method"><a href="#Laravel-中-如果我想要當某些條件成立時-我才-broadcast-event-那我可以使用-哪一個-method" class="headerlink" title="Laravel 中, 如果我想要當某些條件成立時, 我才 broadcast event, 那我可以使用 哪一個 method ?"></a><strong>Laravel 中, 如果我想要當某些條件成立時, 我才 broadcast event, 那我可以使用 <em>哪一個 method</em> ?</strong></h6><p><em>broadcastWhen()</em> method</p>
+<h6 id="Laravel-中-如果我想要定義-當-value-property-的值大於-100-時-我才-broadcast-event-那請回答以下-example-中的問題"><a href="#Laravel-中-如果我想要定義-當-value-property-的值大於-100-時-我才-broadcast-event-那請回答以下-example-中的問題" class="headerlink" title="Laravel 中, 如果我想要定義, 當 value property 的值大於 100 時, 我才 broadcast event, 那請回答以下 example 中的問題"></a><strong>Laravel 中, 如果我想要定義, 當 <em>value</em> property 的值大於 100 時, 我才 broadcast event, 那請回答以下 example 中的問題</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastWhen</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 這裡該 return？</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastWhen</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="variable language_">$this</span>-&gt;value &gt; <span class="hljs-number">100</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Authorizing-Channels-1"><a href="#Authorizing-Channels-1" class="headerlink" title="# Authorizing Channels"></a># Authorizing Channels</h2><h6 id="Laravel-broadcast-中-private-channel-要被監聽之前-需要經過-Laravel-authorize-嗎？"><a href="#Laravel-broadcast-中-private-channel-要被監聽之前-需要經過-Laravel-authorize-嗎？" class="headerlink" title="Laravel broadcast 中, private channel 要被監聽之前, 需要經過 Laravel authorize 嗎？"></a><strong>Laravel broadcast 中, private channel 要被監聽之前, 需要經過 Laravel authorize 嗎？</strong></h6><p>需要哦</p>
+<h6 id="Laravel-broadcast中-Laravel-Echo-會自動地幫我們發-authorization-request-嗎？"><a href="#Laravel-broadcast中-Laravel-Echo-會自動地幫我們發-authorization-request-嗎？" class="headerlink" title="Laravel broadcast中, Laravel Echo 會自動地幫我們發 authorization request 嗎？"></a><strong>Laravel broadcast中, Laravel Echo 會自動地幫我們發 authorization request 嗎？</strong></h6><p>會哦</p>
+<h3 id="Defining-Authorization-Routes"><a href="#Defining-Authorization-Routes" class="headerlink" title="# Defining Authorization Routes"></a># Defining Authorization Routes</h3><h6 id="Laravel-broadcast-中-哪個-class-的-哪個-method-負責註冊-broadcasting-auth-來處理-authorization-request"><a href="#Laravel-broadcast-中-哪個-class-的-哪個-method-負責註冊-broadcasting-auth-來處理-authorization-request" class="headerlink" title="Laravel broadcast 中, 哪個 class 的 哪個 method 負責註冊 /broadcasting/auth 來處理 authorization request?"></a><strong>Laravel broadcast 中, <em>哪個 class</em> 的 <em>哪個 method</em> 負責註冊 <em>/broadcasting/auth</em> 來處理 authorization request?</strong></h6><ul>
+<li><strong>Broadcast</strong> class</li>
+<li><strong>routes()</strong> method</li>
+</ul>
+<h6 id="Laravel-broadcast-中-當我使用-Broadcast-routes-時-預設會使用哪一個-middleware-group"><a href="#Laravel-broadcast-中-當我使用-Broadcast-routes-時-預設會使用哪一個-middleware-group" class="headerlink" title="Laravel broadcast 中, 當我使用 Broadcast::routes 時, 預設會使用哪一個 middleware group?"></a><strong>Laravel broadcast 中, 當我使用 <code>Broadcast::routes</code> 時, 預設會使用哪一個 middleware group?</strong></h6><p><em>web</em> middleware</p>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">routes</span>([<span class="hljs-string">&#x27;middleare&#x27;</span> =&gt; <span class="hljs-string">&#x27;api&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel Broadcast 預設會使用 web middleware group, 如果要使用 api middleware group 的話, 可在 routes() 中指定</li>
+</ul>
+<br>
+
+<h4 id="Customizing-The-Authorization-Endpoint"><a href="#Customizing-The-Authorization-Endpoint" class="headerlink" title="# Customizing The Authorization Endpoint"></a># Customizing The Authorization Endpoint</h4><h6 id="Laravel-Broadcast-中-Laravel-Echo-預設是使用哪一個-endpoint-來-authorize-channel"><a href="#Laravel-Broadcast-中-Laravel-Echo-預設是使用哪一個-endpoint-來-authorize-channel" class="headerlink" title="Laravel Broadcast 中, Laravel Echo 預設是使用哪一個 endpoint 來 authorize channel?"></a><strong>Laravel Broadcast 中, Laravel Echo 預設是使用哪一個 endpoint 來 authorize channel?</strong></h6><p><code>/broadcasting/auth</code></p>
+<h6 id="Laravel-Broadcast-中-Laravel-Echo-預設使用-broadcasting-auth-endpoint-來-authorize-channel-如果我要自定義為-custom-endpoint-auth-的話-在以下的-example-中可以怎麼做？"><a href="#Laravel-Broadcast-中-Laravel-Echo-預設使用-broadcasting-auth-endpoint-來-authorize-channel-如果我要自定義為-custom-endpoint-auth-的話-在以下的-example-中可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, Laravel Echo 預設使用 /broadcasting/auth endpoint 來 authorize channel, 如果我要自定義為 /custom/endpoint/auth 的話, 在以下的 example 中可以怎麼做？"></a><strong>Laravel Broadcast 中, Laravel Echo 預設使用 <code>/broadcasting/auth</code> endpoint 來 authorize channel, 如果我要自定義為 <code>/custom/endpoint/auth</code> 的話, 在以下的 example 中可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">window.Echo = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    broadcaster: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    key: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">    <span class="hljs-comment">// 這邊該填入？</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">window.Echo = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    broadcaster: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    key: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">    authEndpoint: <span class="hljs-string">&#x27;/custom/endpoint/auth&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h3 id="Defining-Authorization-Callbacks"><a href="#Defining-Authorization-Callbacks" class="headerlink" title="# Defining Authorization Callbacks"></a># Defining Authorization Callbacks</h3><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;channelName&#x27;</span>, Authorization callback);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Broadcast channel, arg1 接受 channel name, arg2 接受驗證 callback</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-Broadcast-channel-method-的-authorization-callback-需-return-什麼？"><a href="#Laravel-Broadcast-中-Broadcast-channel-method-的-authorization-callback-需-return-什麼？" class="headerlink" title="Laravel Broadcast 中, Broadcast::channel method 的 authorization callback 需 return 什麼？"></a><strong>Laravel Broadcast 中, <code>Broadcast::channel</code> method 的 authorization callback 需 return 什麼？</strong></h6><p>boolean</p>
+<h6 id="Laravel-Broadcast-中-Broadcast-channel-method-的-callback-接收哪兩個參數如下-example？"><a href="#Laravel-Broadcast-中-Broadcast-channel-method-的-callback-接收哪兩個參數如下-example？" class="headerlink" title="Laravel Broadcast 中, Broadcast::channel method 的 callback 接收哪兩個參數如下 example？"></a><strong>Laravel Broadcast 中, <code>Broadcast::channel</code> method 的 callback 接收哪兩個參數如下 example？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;orderId&#125;&#x27;</span>, function (這裡是？, 這裡又是？) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="title class_">Order</span>::<span class="title function_ invoke__">findOrNew</span>(<span class="hljs-variable">$orderId</span>)-&gt;user_id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;orderId&#125;&#x27;</span>, function (<span class="hljs-variable">$authenticatedUser</span>, <span class="hljs-variable">$wildcard</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="title class_">Order</span>::<span class="title function_ invoke__">findOrNew</span>(<span class="hljs-variable">$orderId</span>)-&gt;user_id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h4 id="Authorization-Callback-Model-Binding"><a href="#Authorization-Callback-Model-Binding" class="headerlink" title="# Authorization Callback Model Binding"></a># Authorization Callback Model Binding</h4><h6 id="Laravel-Broadcast-中-在以下的-example-如果我想要以-model-binding-的方式-bind-order-我可以怎麼做？"><a href="#Laravel-Broadcast-中-在以下的-example-如果我想要以-model-binding-的方式-bind-order-我可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 在以下的 example 如果我想要以 model binding 的方式 bind $order, 我可以怎麼做？"></a><strong>Laravel Broadcast 中, 在以下的 example 如果我想要以 model binding 的方式 bind $order, 我可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Order</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;order&#125;&#x27;</span>, function (<span class="hljs-variable">$user</span>, 要怎麼做呢？) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="hljs-variable">$order</span>-&gt;user_id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Order</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;order&#125;&#x27;</span>, function (<span class="hljs-variable">$user</span>, Order <span class="hljs-variable">$order</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="hljs-variable">$order</span>-&gt;user_id;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h4 id="Authorization-Callback-Authentication"><a href="#Authorization-Callback-Authentication" class="headerlink" title="# Authorization Callback Authentication"></a># Authorization Callback Authentication</h4><h6 id="Laravel-Broadcast-中-private-以及-presence-channel-是透過什麼來-authenticate-current-user"><a href="#Laravel-Broadcast-中-private-以及-presence-channel-是透過什麼來-authenticate-current-user" class="headerlink" title="Laravel Broadcast 中, private 以及 presence channel 是透過什麼來 authenticate current user?"></a><strong>Laravel Broadcast 中, private 以及 presence channel 是透過什麼來 authenticate current user?</strong></h6><p>Application’s default authentication guard</p>
+<h6 id="Laravel-Broadcast-中-如果-user-authentication-沒過-那-authorization-callback-會被執行嗎"><a href="#Laravel-Broadcast-中-如果-user-authentication-沒過-那-authorization-callback-會被執行嗎" class="headerlink" title="Laravel Broadcast 中, 如果 user authentication 沒過, 那 authorization callback 會被執行嗎?"></a><strong>Laravel Broadcast 中, 如果 user authentication 沒過, 那 authorization callback 會被執行嗎?</strong></h6><p>不會</p>
+<h6 id="Laravel-Broadcast-中-如果我要指定以下-example-中的-guards-假設為-‘web’-以及-‘admin’-可以怎麼做？"><a href="#Laravel-Broadcast-中-如果我要指定以下-example-中的-guards-假設為-‘web’-以及-‘admin’-可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 如果我要指定以下 example 中的 guards, 假設為 ‘web’, 以及 ‘admin’, 可以怎麼做？"></a><strong>Laravel Broadcast 中, 如果我要指定以下 example 中的 guards, 假設為 ‘web’, 以及 ‘admin’, 可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;channel&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">// ...</span></span><br><span class="line">&#125;, 可以怎麼做呢？);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;channel&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">// ...</span></span><br><span class="line">&#125;, [<span class="hljs-string">&#x27;guards&#x27;</span> =&gt; [<span class="hljs-string">&#x27;web&#x27;</span>, <span class="hljs-string">&#x27;admin&#x27;</span>]]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Defining-Channel-Classes"><a href="#Defining-Channel-Classes" class="headerlink" title="# Defining Channel Classes"></a># Defining Channel Classes</h3><h6 id="Laravel-Broadcast-中-如果我們的應用使用了大量不同的-channel-那在-routes-channels-php-檔案中可能被滿滿的-closure-所佔據-所以我們可以使用-CLI-來建立專屬的-channel-class-該怎麼做呢？"><a href="#Laravel-Broadcast-中-如果我們的應用使用了大量不同的-channel-那在-routes-channels-php-檔案中可能被滿滿的-closure-所佔據-所以我們可以使用-CLI-來建立專屬的-channel-class-該怎麼做呢？" class="headerlink" title="Laravel Broadcast 中, 如果我們的應用使用了大量不同的 channel, 那在 routes/channels.php 檔案中可能被滿滿的 closure 所佔據, 所以我們可以使用 CLI 來建立專屬的 channel class, 該怎麼做呢？"></a><strong>Laravel Broadcast 中, 如果我們的應用使用了大量不同的 channel, 那在 <code>routes/channels.php</code> 檔案中可能被滿滿的 closure 所佔據, 所以我們可以使用 CLI 來建立專屬的 channel class, 該怎麼做呢？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:channel ChannelName</span><br></pre></td></tr></table></figure>
+
+<h6 id="Laravel-Broadcast-中-如果我們的應用使用了大量不同的-channel-那在-routes-channels-php-檔案中可能被滿滿的-closure-所佔據-所以我們可以使用-CLI-來建立專屬的-channel-class-建立好的-channel-要在哪裡註冊呢？"><a href="#Laravel-Broadcast-中-如果我們的應用使用了大量不同的-channel-那在-routes-channels-php-檔案中可能被滿滿的-closure-所佔據-所以我們可以使用-CLI-來建立專屬的-channel-class-建立好的-channel-要在哪裡註冊呢？" class="headerlink" title="Laravel Broadcast 中, 如果我們的應用使用了大量不同的 channel, 那在 routes/channels.php 檔案中可能被滿滿的 closure 所佔據, 所以我們可以使用 CLI 來建立專屬的 channel class, 建立好的 channel, 要在哪裡註冊呢？"></a><strong>Laravel Broadcast 中, 如果我們的應用使用了大量不同的 channel, 那在 <code>routes/channels.php</code> 檔案中可能被滿滿的 closure 所佔據, 所以我們可以使用 CLI 來建立專屬的 channel class, 建立好的 channel, 要在哪裡註冊呢？</strong></h6><p><code>routes/channels.php</code></p>
+<h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Broadcasting</span>\<span class="hljs-title">OrderChannel</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;order.&#123;order&#125;&#x27;</span>, <span class="title class_">OrderChannel</span>::<span class="variable language_">class</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將存取 channel order.{order} 的驗證 closure 寫成一個 class OrderChannel</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-如果我們的應用使用了大量不同的-channel-那在-routes-channels-php-檔案中可能被滿滿的-closure-所佔據-所以我們可以使用-CLI-來建立專屬的-channel-class-建立好的-channel-建立好的-channel-class-中-原本我們寫在-closure-中的-authorization-logic-要寫在-channel-class-中的哪個-method-呢？"><a href="#Laravel-Broadcast-中-如果我們的應用使用了大量不同的-channel-那在-routes-channels-php-檔案中可能被滿滿的-closure-所佔據-所以我們可以使用-CLI-來建立專屬的-channel-class-建立好的-channel-建立好的-channel-class-中-原本我們寫在-closure-中的-authorization-logic-要寫在-channel-class-中的哪個-method-呢？" class="headerlink" title="Laravel Broadcast 中, 如果我們的應用使用了大量不同的 channel, 那在 routes/channels.php 檔案中可能被滿滿的 closure 所佔據, 所以我們可以使用 CLI 來建立專屬的 channel class, 建立好的 channel, 建立好的 channel class 中, 原本我們寫在 closure 中的 authorization logic 要寫在 channel class 中的哪個 method 呢？"></a><strong>Laravel Broadcast 中, 如果我們的應用使用了大量不同的 channel, 那在 <code>routes/channels.php</code> 檔案中可能被滿滿的 closure 所佔據, 所以我們可以使用 CLI 來建立專屬的 channel class, 建立好的 channel, 建立好的 channel class 中, 原本我們寫在 closure 中的 authorization logic 要寫在 channel class 中的哪個 method 呢？</strong></h6><p><em>join</em> method</p>
+<h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Broadcasting</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Order</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrderChannel</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">join</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span>, Order <span class="hljs-variable">$order</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;id === <span class="hljs-variable">$order</span>-&gt;user_id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在自定義的 channel class 中, 使用 join method 來定義 authorization logic, 即驗證 authenticated user 是否可存取該 channel 的 logic</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Broadcasting-Events"><a href="#Broadcasting-Events" class="headerlink" title="# Broadcasting Events"></a># Broadcasting Events</h2><h6 id="Laravel-Broadcast-中-如果我要廣播一個-event-的話-可以使用哪兩個-method"><a href="#Laravel-Broadcast-中-如果我要廣播一個-event-的話-可以使用哪兩個-method" class="headerlink" title="Laravel Broadcast 中, 如果我要廣播一個 event 的話, 可以使用哪兩個 method?"></a><strong>Laravel Broadcast 中, 如果我要廣播一個 event 的話, 可以使用哪兩個 method?</strong></h6><ul>
+<li><em>event</em> function</li>
+<li><em>broadcast</em> function</li>
+</ul>
+<h3 id="Only-To-Others"><a href="#Only-To-Others" class="headerlink" title="# Only To Others"></a># Only To Others</h3><h6 id="Laravel-Broadcast-中-如果我要廣播一個-event-我可以使用-event-function-或是-broadcast-function-兩者的差異是？"><a href="#Laravel-Broadcast-中-如果我要廣播一個-event-我可以使用-event-function-或是-broadcast-function-兩者的差異是？" class="headerlink" title="Laravel Broadcast 中, 如果我要廣播一個 event, 我可以使用 event function 或是 broadcast function, 兩者的差異是？"></a><strong>Laravel Broadcast 中, 如果我要廣播一個 event, 我可以使用 <code>event</code> function 或是 <code>broadcast</code> function, 兩者的差異是？</strong></h6><p><em>broadcast</em> function 可以接 <em>toOthers</em> method</p>
+<h6 id="Laravel-Broadcast-中-toOthers-method-的使用情境是？"><a href="#Laravel-Broadcast-中-toOthers-method-的使用情境是？" class="headerlink" title="Laravel Broadcast 中, toOthers method 的使用情境是？"></a><strong>Laravel Broadcast 中, <em>toOthers</em> method 的使用情境是？</strong></h6><p>當 client 發出一個 request, 這個 request 的 response 已經做了一件事, 如果這時候還收到 broadcast, 那就會同一件事情做了兩次</p>
+<h6 id="Laravel-Broadcast-中-toOthers-method-的用途是？"><a href="#Laravel-Broadcast-中-toOthers-method-的用途是？" class="headerlink" title="Laravel Broadcast 中, toOthers method 的用途是？"></a><strong>Laravel Broadcast 中, <em>toOthers</em> method 的用途是？</strong></h6><p>不會 broadcast 該 event 給 authenticated user</p>
+<h6 id="Laravel-Broadcast-中-如果要使用-toOthers-method-的話-必須要-use-哪一個-interface"><a href="#Laravel-Broadcast-中-如果要使用-toOthers-method-的話-必須要-use-哪一個-interface" class="headerlink" title="Laravel Broadcast 中, 如果要使用 toOthers method 的話, 必須要 use 哪一個 interface?"></a><strong>Laravel Broadcast 中, 如果要使用 <em>toOthers</em> method 的話, 必須要 use 哪一個 interface?</strong></h6><p><code>Illuminate\Broadcasting\InteractsWithSockets</code> interface</p>
+<br>
+
+<h4 id="Configuration-1"><a href="#Configuration-1" class="headerlink" title="# Configuration"></a># Configuration</h4><h6 id="Laravel-Broadcast-中-當使用-toOthers-method-時-Laravel-是從哪裡判斷哪一個-connection-不要-broadcast-事件？"><a href="#Laravel-Broadcast-中-當使用-toOthers-method-時-Laravel-是從哪裡判斷哪一個-connection-不要-broadcast-事件？" class="headerlink" title="Laravel Broadcast 中, 當使用 toOthers method 時, Laravel 是從哪裡判斷哪一個 connection 不要 broadcast 事件？"></a><strong>Laravel Broadcast 中, 當使用 <em>toOthers</em> method 時, Laravel 是從哪裡判斷哪一個 connection 不要 broadcast 事件？</strong></h6><p><code>X-Socket-ID</code> header</p>
+<h6 id="Laravel-Broadcast-中-當我使用-Vue-以及-Axios-時-會自動附加哪一個-header-而單純使用-JavaScript-不會附加？"><a href="#Laravel-Broadcast-中-當我使用-Vue-以及-Axios-時-會自動附加哪一個-header-而單純使用-JavaScript-不會附加？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Vue 以及 Axios 時, 會自動附加哪一個 header, 而單純使用 JavaScript 不會附加？"></a><strong>Laravel Broadcast 中, 當我使用 <em>Vue</em> 以及 <em>Axios</em> 時, 會自動附加哪一個 header, 而單純使用 JavaScript 不會附加？</strong></h6><p><code>X-Socket-ID</code> header</p>
+<h6 id="Laravel-Broadcast-中-當我使用-Vue-以及-Axios-時-會自動-X-Socket-ID-header-但使用-JavaScript-時並不會自動附加-這時候可以從哪一個-method-取得-X-Socket-ID"><a href="#Laravel-Broadcast-中-當我使用-Vue-以及-Axios-時-會自動-X-Socket-ID-header-但使用-JavaScript-時並不會自動附加-這時候可以從哪一個-method-取得-X-Socket-ID" class="headerlink" title="Laravel Broadcast 中, 當我使用 Vue 以及 Axios 時, 會自動 X-Socket-ID header, 但使用 JavaScript 時並不會自動附加, 這時候可以從哪一個 method 取得 X-Socket-ID?"></a><strong>Laravel Broadcast 中, 當我使用 <em>Vue</em> 以及 <em>Axios</em> 時, 會自動 <em>X-Socket-ID</em> header, 但使用 JavaScript 時並不會自動附加, 這時候可以從哪一個 method 取得 <em>X-Socket-ID</em>?</strong></h6><p><code>Echo.socketId</code></p>
+<br>
+<br>
+
+<h2 id="Receiving-Broadcasts"><a href="#Receiving-Broadcasts" class="headerlink" title="# Receiving Broadcasts"></a># Receiving Broadcasts</h2><h3 id="Installing-Laravel-Echo"><a href="#Installing-Laravel-Echo" class="headerlink" title="# Installing Laravel Echo"></a># Installing Laravel Echo</h3><h6 id="Laravel-Broadcast-中-如果我要使用-npm-CLI-來安裝-Laravel-Echo-以及-pusher-js-package-時-可以怎麼做？"><a href="#Laravel-Broadcast-中-如果我要使用-npm-CLI-來安裝-Laravel-Echo-以及-pusher-js-package-時-可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 如果我要使用 npm CLI 來安裝 Laravel Echo 以及 pusher-js package 時, 可以怎麼做？"></a><strong>Laravel Broadcast 中, 如果我要使用 npm CLI 來安裝 <em>Laravel Echo</em> 以及 <em>pusher-js</em> package 時, 可以怎麼做？</strong></h6><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">npm install --save laravel-echo pusher-js</span><br></pre></td></tr></table></figure>
+
+<h6 id="Laravel-Broadcast-中-如果我已經安裝好-Laravel-Echo-可以在哪個檔案中建立一個-Echo-instance"><a href="#Laravel-Broadcast-中-如果我已經安裝好-Laravel-Echo-可以在哪個檔案中建立一個-Echo-instance" class="headerlink" title="Laravel Broadcast 中, 如果我已經安裝好 Laravel Echo, 可以在哪個檔案中建立一個 Echo instance?"></a><strong>Laravel Broadcast 中, 如果我已經安裝好 <em>Laravel Echo</em>, 可以在哪個檔案中建立一個 Echo instance?</strong></h6><p><code>resources/js/bootstrap.js</code></p>
+<h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">cluster</span>: <span class="hljs-string">&#x27;eu&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">forceTLS</span>: <span class="hljs-literal">true</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>強制啟動 HTTPS 連線</li>
+</ul>
+<br>
+
+<h4 id="Using-An-Existing-Client-Instance"><a href="#Using-An-Existing-Client-Instance" class="headerlink" title="# Using An Existing Client Instance"></a># Using An Existing Client Instance</h4><h6 id="Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我已經有-Pusher-Channels-或-Socket-io-client-instance-而我想要-Echo-去使用它們-那在以下的-example-中-我可以怎麼做？"><a href="#Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我已經有-Pusher-Channels-或-Socket-io-client-instance-而我想要-Echo-去使用它們-那在以下的-example-中-我可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我已經有 Pusher Channels 或 Socket.io client instance, 而我想要 Echo 去使用它們, 那在以下的 example 中, 我可以怎麼做？"></a><strong>Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我已經有 Pusher Channels 或 Socket.io client instance, 而我想要 Echo 去使用它們, 那在以下的 example 中, 我可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">const</span> <span class="variable constant_">client</span> = <span class="hljs-keyword">require</span>(<span class="hljs-string">&#x27;pusher-js&#x27;</span>);</span><br><span class="line"></span><br><span class="line">window.Echo = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    broadcaster: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    key: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">    <span class="hljs-comment">// 這裡可以使用？</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">const</span> <span class="variable constant_">client</span> = <span class="hljs-keyword">require</span>(<span class="hljs-string">&#x27;pusher-js&#x27;</span>);</span><br><span class="line"></span><br><span class="line">window.Echo = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    broadcaster: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    key: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">    client: client</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Listening-For-Events"><a href="#Listening-For-Events" class="headerlink" title="# Listening For Events"></a># Listening For Events</h3><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">channel</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;OrderShipped&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="hljs-property">order</span>.<span class="hljs-property">name</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>監聽 orders channel, OrderShipped event, listener 的邏輯為 console.log(e.order.name)</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我要監聽一個-event-在下面的-example-中可以怎麼做？"><a href="#Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我要監聽一個-event-在下面的-example-中可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我要監聽一個 event, 在下面的 example 中可以怎麼做？"></a><strong>Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我要監聽一個 event, 在下面的 example 中可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">channel</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .這裡使用哪一個<span class="title function_">method</span>(<span class="hljs-string">&#x27;OrderShipped&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="hljs-property">order</span>.<span class="hljs-property">name</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">channel</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;OrderShipped&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="hljs-property">order</span>.<span class="hljs-property">name</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我要監聽一個-private-channel-在下面的-example-中可以怎麼做？"><a href="#Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我要監聽一個-private-channel-在下面的-example-中可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我要監聽一個 private channel, 在下面的 example 中可以怎麼做？"></a><strong>Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我要監聽一個 private channel, 在下面的 example 中可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.這裡使用哪一個<span class="title function_">mehtod</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event1&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event2&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event3&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event1&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event2&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event3&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我要監聽多個-event-在下面的-example-中可以怎麼做？"><a href="#Laravel-Broadcast-中-當我使用-Laravel-Echo-時-如果我要監聽多個-event-在下面的-example-中可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我要監聽多個 event, 在下面的 example 中可以怎麼做？"></a><strong>Laravel Broadcast 中, 當我使用 Laravel Echo 時, 如果我要監聽多個 event, 在下面的 example 中可以怎麼做？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event1&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event2&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;event3&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Leaving-A-Channel"><a href="#Leaving-A-Channel" class="headerlink" title="# Leaving A Channel"></a># Leaving A Channel</h3><h6 id="Laravel-Broadcast-中-如果我要離開一個-public-channel-order-可以使用-Echo-的哪個-method"><a href="#Laravel-Broadcast-中-如果我要離開一個-public-channel-order-可以使用-Echo-的哪個-method" class="headerlink" title="Laravel Broadcast 中, 如果我要離開一個 public channel order, 可以使用 Echo 的哪個 method?"></a><strong>Laravel Broadcast 中, 如果我要離開一個 public channel <em>order</em>, 可以使用 Echo 的哪個 method?</strong></h6><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">leaveChannel</span>(<span class="hljs-string">&#x27;order&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h6 id="以下的-Laravel-Echo-example-code-的意思是？"><a href="#以下的-Laravel-Echo-example-code-的意思是？" class="headerlink" title="以下的 Laravel-Echo example code 的意思是？"></a><strong>以下的 Laravel-Echo example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">leave</span>(<span class="hljs-string">&#x27;channel&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>離開所有的 channel, 不論是 public, private, 或 presence</li>
+</ul>
+<br>
+
+<h3 id="Namespaces"><a href="#Namespaces" class="headerlink" title="# Namespaces"></a># Namespaces</h3><h6 id="Laravel-Broadcast-中-Laravel-Echo-會自動的附加-namespace-這個-namespace-是？"><a href="#Laravel-Broadcast-中-Laravel-Echo-會自動的附加-namespace-這個-namespace-是？" class="headerlink" title="Laravel Broadcast 中, Laravel Echo 會自動的附加 namespace, 這個 namespace 是？"></a><strong>Laravel Broadcast 中, Laravel Echo 會自動的附加 namespace, 這個 namespace 是？</strong></h6><p><code>App\Events</code></p>
+<h6 id="Laravel-Broadcast-中-Laravel-Echo-會自動的附加-namespace-如果我想要自定義這個-namespace-假設為-App-SpecialEvents-在以下的-example-中-可以怎麼做？"><a href="#Laravel-Broadcast-中-Laravel-Echo-會自動的附加-namespace-如果我想要自定義這個-namespace-假設為-App-SpecialEvents-在以下的-example-中-可以怎麼做？" class="headerlink" title="Laravel Broadcast 中, Laravel Echo 會自動的附加 namespace, 如果我想要自定義這個 namespace, 假設為, App\SpecialEvents 在以下的 example 中, 可以怎麼做？"></a><strong>Laravel Broadcast 中, Laravel Echo 會自動的附加 namespace, 如果我想要自定義這個 namespace, 假設為, <code>App\SpecialEvents</code> 在以下的 example 中, 可以怎麼做？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>Answer</strong>:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="hljs-property">Echo</span> = <span class="hljs-keyword">new</span> <span class="title class_">Echo</span>(&#123;</span><br><span class="line">    <span class="hljs-attr">broadcaster</span>: <span class="hljs-string">&#x27;pusher&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;your-pusher-channels-key&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">namespace</span>: <span class="hljs-string">&#x27;App.SpecialEvents&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">channel</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listen</span>(<span class="hljs-string">&#x27;.App\\SpecialEvents\\Class&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel Echo 會自動的附加 namespace, 如果我想要自定義 listen event class 路徑, 可在前面加個 <code>.</code></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Presence-Channels"><a href="#Presence-Channels" class="headerlink" title="# Presence Channels"></a># Presence Channels</h2><h3 id="Authorizing-Presence-Channels"><a href="#Authorizing-Presence-Channels" class="headerlink" title="# Authorizing Presence Channels"></a># Authorizing Presence Channels</h3><h6 id="Laravel-Broadcast-中-Presence-channel-跟-Private-channel-的差別在於？"><a href="#Laravel-Broadcast-中-Presence-channel-跟-Private-channel-的差別在於？" class="headerlink" title="Laravel Broadcast 中, Presence channel 跟 Private channel 的差別在於？"></a><strong>Laravel Broadcast 中, <code>Presence</code> channel 跟 <code>Private</code> channel 的差別在於？</strong></h6><p><em>Presence</em> channel 可以暴露自己的以及獲得同個 channel 內其他 user 的資訊</p>
+<h6 id="Laravel-Broadcast-中-當我使用-Presence-channel-時-authorization-rule-驗證通過後-需回傳？"><a href="#Laravel-Broadcast-中-當我使用-Presence-channel-時-authorization-rule-驗證通過後-需回傳？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Presence channel 時, authorization rule 驗證通過後, 需回傳？"></a><strong>Laravel Broadcast 中, 當我使用 <em>Presence</em> channel 時, authorization rule 驗證通過後, 需回傳？</strong></h6><p>該 user 的 data</p>
+<h6 id="Laravel-Broadcast-中-當我使用-Presence-channel-時-authorization-rule-驗證如果沒通過-需回傳？"><a href="#Laravel-Broadcast-中-當我使用-Presence-channel-時-authorization-rule-驗證如果沒通過-需回傳？" class="headerlink" title="Laravel Broadcast 中, 當我使用 Presence channel 時, authorization rule 驗證如果沒通過, 需回傳？"></a><strong>Laravel Broadcast 中, 當我使用 <em>Presence</em> channel 時, authorization rule 驗證如果沒通過, 需回傳？</strong></h6><p>false 或 null</p>
+<h6 id="Laravel-Broadcast-中-以下的-example-中的-channel-是-public-private-或-presence"><a href="#Laravel-Broadcast-中-以下的-example-中的-channel-是-public-private-或-presence" class="headerlink" title="Laravel Broadcast 中, 以下的 example 中的 channel 是 public, private, 或 presence?"></a><strong>Laravel Broadcast 中, 以下的 example 中的 channel 是 public, private, 或 presence?</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Broadcast</span>::<span class="title function_ invoke__">channel</span>(<span class="hljs-string">&#x27;chat.&#123;roomId&#125;&#x27;</span>, function (<span class="hljs-variable">$user</span>, <span class="hljs-variable">$roomId</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">canJoinRoom</span>(<span class="hljs-variable">$roomId</span>)) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-variable">$user</span>-&gt;id, <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-variable">$user</span>-&gt;name];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:</li>
+</ul>
+<p><em>Presence</em> channel</p>
+<br>
+
+<h3 id="Joining-Presence-Channels"><a href="#Joining-Presence-Channels" class="headerlink" title="# Joining Presence Channels"></a># Joining Presence Channels</h3><h6 id="以下的-Javascript-example-code-的意思是"><a href="#以下的-Javascript-example-code-的意思是" class="headerlink" title="以下的 Javascript example code 的意思是?"></a><strong>以下的 Javascript example code 的意思是?</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">join</span>(<span class="hljs-string">`chat.<span class="hljs-subst">$&#123;roomId&#125;</span>`</span>)</span><br><span class="line">    .<span class="title function_">here</span>(<span class="hljs-function">(<span class="hljs-params">users</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>加入一個 presence channel</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-以下的-here-method-是在什麼時候執行-closure"><a href="#Laravel-Broadcast-中-以下的-here-method-是在什麼時候執行-closure" class="headerlink" title="Laravel Broadcast 中, 以下的 here method 是在什麼時候執行 closure?"></a><strong>Laravel Broadcast 中, 以下的 here method 是在什麼時候執行 closure?</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">join</span>(<span class="hljs-string">`chat.<span class="hljs-subst">$&#123;roomId&#125;</span>`</span>)</span><br><span class="line">    .<span class="title function_">here</span>(<span class="hljs-function">(<span class="hljs-params">users</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當該使用者成功加入頻道時</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-以下的-example-中的-joining-內的-closure-會在什麼時機點執行？"><a href="#Laravel-Broadcast-中-以下的-example-中的-joining-內的-closure-會在什麼時機點執行？" class="headerlink" title="Laravel Broadcast 中, 以下的 example 中的 joining 內的 closure 會在什麼時機點執行？"></a><strong>Laravel Broadcast 中, 以下的 example 中的 joining 內的 closure 會在什麼時機點執行？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">join</span>(<span class="hljs-string">`chat.<span class="hljs-subst">$&#123;roomId&#125;</span>`</span>)</span><br><span class="line">    .<span class="title function_">joining</span>(<span class="hljs-function">(<span class="hljs-params">user</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(user.<span class="hljs-property">name</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當有新的 user 加入這個 channel 時</li>
+</ul>
+<h6 id="Laravel-Broadcast-中-以下的-example-中的-leaving-內的-closure-會在什麼時機點執行？"><a href="#Laravel-Broadcast-中-以下的-example-中的-leaving-內的-closure-會在什麼時機點執行？" class="headerlink" title="Laravel Broadcast 中, 以下的 example 中的 leaving 內的 closure 會在什麼時機點執行？"></a><strong>Laravel Broadcast 中, 以下的 example 中的 leaving 內的 closure 會在什麼時機點執行？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">join</span>(<span class="hljs-string">`chat.<span class="hljs-subst">$&#123;roomId&#125;</span>`</span>)</span><br><span class="line">    .<span class="title function_">leaving</span>(<span class="hljs-function">(<span class="hljs-params">user</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(user.<span class="hljs-property">name</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當有 user 離開這個 channel 時</li>
+</ul>
+<br>
+
+<h3 id="Broadcasting-To-Presence-Channels"><a href="#Broadcasting-To-Presence-Channels" class="headerlink" title="# Broadcasting To Presence Channels"></a># Broadcasting To Presence Channels</h3><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastOn</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="title class_">PresenceChannel</span>(<span class="hljs-string">&#x27;room.&#x27;</span>.<span class="variable language_">$this</span>-&gt;message-&gt;room_id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在指定的 event 中, 使用 broadcastOn method 來定義該 event 會被 broadcast 到哪個 channel, 使用 PresenceChannel method 來 broadcast 到 presence channel</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">Echo.<span class="title function_ invoke__">join</span>(`chat.$&#123;roomId&#125;`)</span><br><span class="line">    .<span class="title function_ invoke__">here</span>(...)</span><br><span class="line">    .<span class="title function_ invoke__">joining</span>(...)</span><br><span class="line">    .<span class="title function_ invoke__">leaving</span>(...)</span><br><span class="line">    .<span class="title function_ invoke__">listen</span>(<span class="hljs-string">&#x27;NewMessage&#x27;</span>, (e) =&gt; &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>監聽該 channel 中的 <strong>NewMessage</strong> presence event</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Client-Events"><a href="#Client-Events" class="headerlink" title="# Client Events"></a># Client Events</h2><h6 id="Laravel-Broadcast-中-client-event-可以用在什麼情境上？"><a href="#Laravel-Broadcast-中-client-event-可以用在什麼情境上？" class="headerlink" title="Laravel Broadcast 中, client event 可以用在什麼情境上？"></a><strong>Laravel Broadcast 中, client event 可以用在什麼情境上？</strong></h6><p>當使用者在輸入文字的時候, 另一邊的使用者可以看到正在輸入中</p>
+<h6 id="Laravel-Broadcast-中-client-event-的特性是？"><a href="#Laravel-Broadcast-中-client-event-的特性是？" class="headerlink" title="Laravel Broadcast 中, client event 的特性是？"></a><strong>Laravel Broadcast 中, client event 的特性是？</strong></h6><p>client 端可以監聽 client 端的 event, 不需透過 server 端</p>
+<h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">&#x27;chat&#x27;</span>)</span><br><span class="line">    .<span class="title function_">whisper</span>(<span class="hljs-string">&#x27;typing&#x27;</span>, &#123;</span><br><span class="line">        <span class="hljs-attr">name</span>: <span class="variable language_">this</span>.<span class="hljs-property">user</span>.<span class="hljs-property">name</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 Laravel Echo 在 chat private channel 中送出一個 <code>typing</code> client event</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Echo</span>.<span class="title function_">private</span>(<span class="hljs-string">&#x27;chat&#x27;</span>)</span><br><span class="line">    .<span class="title function_">listenForWhisper</span>(<span class="hljs-string">&#x27;typing&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="hljs-property">name</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 Laravel Echo, 監聽 <code>typing</code> client event, 並執行 closure 內的邏輯</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Notifications"><a href="#Notifications" class="headerlink" title="# Notifications"></a># Notifications</h2><p>此章節同 <a target="_blank" rel="noopener" href="https://laravel.com/docs/7.x/notifications#custom-channels">Notification Documentation</a></p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Broadcasting/">#Laravel Broadcasting</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-the-basics-logging/">Laravel - The Basics - Logging (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-the-basics-error-handling/">Laravel - The Basics - Error Handling (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-digging-deeper-broadcasting/';
+        this.page.identifier = 'zh-tw/laravel-digging-deeper-broadcasting/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>取得 Facebook 長期權杖 (long lived token)，以及 永不過期權杖 (never expired token) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言本篇將分享如何利用 Facebook 的圖形 API 測試工具，以及 PHP 來取得長期權杖 (long lived token)，以及永不過期權杖 (never expired token)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="取得 Facebook 長期權杖 (long lived token)，以及 永不過期權杖 (never expired token)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/FacebookLongLivedToken/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言本篇將分享如何利用 Facebook 的圖形 API 測試工具，以及 PHP 來取得長期權杖 (long lived token)，以及永不過期權杖 (never expired token)">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/rDLULBr.png">
+<meta property="og:image" content="https://i.imgur.com/nKqWIVC.png">
+<meta property="og:image" content="https://i.imgur.com/FUpq315.png">
+<meta property="og:image" content="https://i.imgur.com/VHwx9s7.png">
+<meta property="og:image" content="https://i.imgur.com/F9PZY0M.png">
+<meta property="og:image" content="https://i.imgur.com/kkTCOLG.png">
+<meta property="og:image" content="https://i.imgur.com/UqfoabX.png">
+<meta property="article:published_time" content="2019-03-02T06:07:49.000Z">
+<meta property="article:modified_time" content="2019-06-20T01:28:16.985Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Facebook 長期權杖">
+<meta property="article:tag" content="Facebook 永不過期權杖">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/rDLULBr.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/FacebookLongLivedToken/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言本篇將分享如何利用 Facebook 的圖形 API 測試工具，以及 PHP 來取得長期權杖 (long lived token)，以及永不過期權杖 (never expired token)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="取得 Facebook 長期權杖 (long lived token)，以及 永不過期權杖 (never expired token)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/FacebookLongLivedToken/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言本篇將分享如何利用 Facebook 的圖形 API 測試工具，以及 PHP 來取得長期權杖 (long lived token)，以及永不過期權杖 (never expired token)">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/rDLULBr.png">
+<meta property="og:image" content="https://i.imgur.com/nKqWIVC.png">
+<meta property="og:image" content="https://i.imgur.com/FUpq315.png">
+<meta property="og:image" content="https://i.imgur.com/VHwx9s7.png">
+<meta property="og:image" content="https://i.imgur.com/F9PZY0M.png">
+<meta property="og:image" content="https://i.imgur.com/kkTCOLG.png">
+<meta property="og:image" content="https://i.imgur.com/UqfoabX.png">
+<meta property="article:published_time" content="2019-03-02T06:07:49.000Z">
+<meta property="article:modified_time" content="2019-06-20T01:28:16.985Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Facebook 長期權杖">
+<meta property="article:tag" content="Facebook 永不過期權杖">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/rDLULBr.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Facebook-的圖形-API-測試工具">2&nbsp;&nbsp;<b>Facebook 的圖形 API 測試工具</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#長期權杖-long-lived-token">2.1&nbsp;&nbsp;長期權杖 (long lived token)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#永不過期的粉絲專頁權杖">2.2&nbsp;&nbsp;永不過期的粉絲專頁權杖</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#PHP">3&nbsp;&nbsp;<b>PHP</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#長期權杖-long-lived-token-1">3.1&nbsp;&nbsp;長期權杖 (long lived token)</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結語">4&nbsp;&nbsp;<b>結語</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/FacebookLongLivedToken/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/FacebookLongLivedToken/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            取得 Facebook 長期權杖 (long lived token)，以及 永不過期權杖 (never expired token)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-03-02T06:07:49.000Z" itemprop="datePublished">3月 2 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Facebook/">Facebook</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            4 分钟 讀完 (大概 588 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇將分享如何利用 Facebook 的圖形 API 測試工具，以及 PHP 來取得長期權杖 (long lived token)，以及永不過期權杖 (never expired token)</p>
+<span id="more"></span>
+<p>目前正在做一個 Facebook 的直播拍賣優化系統的後端，發現前端的短期 (short lived token) 權杖有效時間只有不到兩個小時，相較於 Android 的三個月，以及 iOS 的兩個月，實在是有夠短。<br>雖然說 code 寫好之後其實也無所謂，但是就想來研究一下如何拿到長期的權杖 (long lived token)</p>
+<h2 id="Facebook-的圖形-API-測試工具"><a href="#Facebook-的圖形-API-測試工具" class="headerlink" title="Facebook 的圖形 API 測試工具"></a>Facebook 的圖形 API 測試工具</h2><h3 id="長期權杖-long-lived-token"><a href="#長期權杖-long-lived-token" class="headerlink" title="長期權杖 (long lived token)"></a>長期權杖 (long lived token)</h3><p>首先，讓我們先用 Facebook 的圖形 API 來拿長期權杖 (long lived token)</p>
+<ul>
+<li><p>測試帳號<br><img src="https://i.imgur.com/rDLULBr.png"></p>
+</li>
+<li><p>取得測試測試帳號權杖<br><img src="https://i.imgur.com/nKqWIVC.png"></p>
+</li>
+<li><p>圖形 API 測試工具<br><img src="https://i.imgur.com/FUpq315.png"></p>
+</li>
+<li><p>輸入剛剛獲得的權杖</p>
+</li>
+<li><p>按下’提交’</p>
+</li>
+<li><p>按下權杖左邊的驚嘆號，並選擇，以存取權杖工具開啟<br><img src="https://i.imgur.com/VHwx9s7.png"></p>
+</li>
+<li><p>點擊左下方的，延伸存取權杖<br><img src="https://i.imgur.com/F9PZY0M.png"></p>
+</li>
+<li><p>得到兩個月的長期權杖 (long lived token)<br><img src="https://i.imgur.com/kkTCOLG.png"></p>
+</li>
+</ul>
+<h3 id="永不過期的粉絲專頁權杖"><a href="#永不過期的粉絲專頁權杖" class="headerlink" title="永不過期的粉絲專頁權杖"></a>永不過期的粉絲專頁權杖</h3><p>接下來，讓我們使用 Facebook 的圖形 API 測試工具來取得永不過期的權杖 (never expired token)</p>
+<ul>
+<li>首先，讓我們登入測試帳號，並申請一個粉絲團</li>
+<li>跟上面的流程完全一模一樣，我們就可以拿到永不過期的權杖 (never expired token)<br><img src="https://i.imgur.com/UqfoabX.png"></li>
+</ul>
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><h3 id="長期權杖-long-lived-token-1"><a href="#長期權杖-long-lived-token-1" class="headerlink" title="長期權杖 (long lived token)"></a>長期權杖 (long lived token)</h3><p>現在讓我們使用 PHP 來透過呼叫 Facebook 的 API 來取得長期權杖 (long lived token)</p>
+<ul>
+<li>使用 PHP 的 function <code>file_get_contents</code>來呼叫 Facebook 的 API<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-built_in">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLongLivedToken</span>(<span class="hljs-params"><span class="hljs-variable">$token</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$url</span> = <span class="hljs-string">&#x27;https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&amp;client_id=yourClientID&amp;client_secret=yourClientSecret&amp;fb_exchange_token=shortLivedToken;</span></span><br><span class="line"><span class="hljs-string">    return json_decode(file_get_contents($url), true);</span></span><br><span class="line"><span class="hljs-string">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li>會得到以下資訊:<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;result&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;response&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">        <span class="hljs-attr">&quot;access_token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;EAAEpKfFACZA8BAGyTFU29VFIlEjhDaUe66eliyWdGQDfVTBUUdFZBZAGeZBEgTEwxgthvdABuzECYi1ahqm8ZCYNRSV9YMnegq7XxCouP1sR8kXMdnNFysGb2IHZBhSB3KENeTZCBzHrFSJ9BJLt9k6xkuWkJsVHnG0KahmFmybKTG6pVaFoZATN&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;expires_in&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5182393</span></span><br><span class="line">    <span class="hljs-punctuation">&#125;</span></span><br><span class="line"><span class="hljs-punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>至於如何利用 PHP 來取得永不過期的粉絲專頁權杖 (never expired token)，似乎需要提升 APP 的權限，這方面需要審查，所以我就暫時無法測試啦。</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Facebook-%E9%95%B7%E6%9C%9F%E6%AC%8A%E6%9D%96/">#Facebook 長期權杖</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Facebook-%E6%B0%B8%E4%B8%8D%E9%81%8E%E6%9C%9F%E6%AC%8A%E6%9D%96/">#Facebook 永不過期權杖</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/submitMultipleItemsInPayPalIPNmethod/">在 PayPal 的 IPN 方式中，提交多個商品</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/buildABilingualBlog/">利用 Hexo 來建立一個 多語系 部落格</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/FacebookLongLivedToken/';
+        this.page.identifier = 'zh-tw/FacebookLongLivedToken/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - The Basics - Routing (官方文件原子化翻譯) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Routing (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravelTheBasicsRouting/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-12-08T20:03:40.000Z">
+<meta property="article:modified_time" content="2021-05-09T03:00:49.643Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Routing">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravelTheBasicsRouting/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Routing (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravelTheBasicsRouting/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-12-08T20:03:40.000Z">
+<meta property="article:modified_time" content="2021-05-09T03:00:49.643Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Routing">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Basic-Routing">2&nbsp;&nbsp;<b># Basic Routing</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Available-Router-Methods">2.1&nbsp;&nbsp;# Available Router Methods</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CSRF-Protection">2.2&nbsp;&nbsp;# CSRF Protection</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redirect-Routes">2.3&nbsp;&nbsp;# Redirect Routes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#View-Routes">2.4&nbsp;&nbsp;# View Routes</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Route-Parameters">3&nbsp;&nbsp;<b># Route Parameters</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Required-Parameters">3.1&nbsp;&nbsp;# Required Parameters</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Optional-Parameters">3.2&nbsp;&nbsp;# Optional Parameters</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Regular-Expression-Constraints">3.3&nbsp;&nbsp;# Regular Expression Constraints</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Global-Constraints">3.3.1&nbsp;&nbsp;# Global Constraints</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Named-Routes">4&nbsp;&nbsp;<b># Named Routes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Route-Groups">5&nbsp;&nbsp;<b># Route Groups</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Middleware">5.1&nbsp;&nbsp;# Middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Namespaces">5.2&nbsp;&nbsp;# Namespaces</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Sub-Domain-Routing">5.3&nbsp;&nbsp;# Sub-Domain Routing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Route-Prefixes">5.4&nbsp;&nbsp;# Route Prefixes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Route-Name-Prefixes">5.5&nbsp;&nbsp;# Route Name Prefixes</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Route-Model-Binding">6&nbsp;&nbsp;<b># Route Model Binding</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Implicit-Binding">6.1&nbsp;&nbsp;# Implicit Binding</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-the-key-Name">6.1.1&nbsp;&nbsp;# Customizing the key Name</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Explicit-Binding">6.2&nbsp;&nbsp;# Explicit Binding</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-The-Resolution-Logic">6.2.1&nbsp;&nbsp;# Customizing The Resolution Logic</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Fallback-Routes">7&nbsp;&nbsp;<b># Fallback Routes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Rate-Limiting">8&nbsp;&nbsp;<b># Rate Limiting</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Dynamic-Rate-Limiting">8.1&nbsp;&nbsp;# Dynamic Rate Limiting</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Distanct-Guest-amp-Authenticated-User-Rate-Limits">8.2&nbsp;&nbsp;# Distanct Guest &amp;amp;amp; Authenticated User Rate Limits</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Form-Method-Spoofing">9&nbsp;&nbsp;<b># Form Method Spoofing</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Accessing-The-Current-Route">9.1&nbsp;&nbsp;# Accessing The Current Route</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Additional">10&nbsp;&nbsp;<b># Additional</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravelTheBasicsRouting/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravelTheBasicsRouting/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - The Basics - Routing (官方文件原子化翻譯)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-12-08T20:03:40.000Z" itemprop="datePublished">12月 9 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            21 分钟 讀完 (大概 3165 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Basic-Routing"><a href="#Basic-Routing" class="headerlink" title="# Basic Routing"></a># Basic Routing</h2><h3 id="Available-Router-Methods"><a href="#Available-Router-Methods" class="headerlink" title="# Available Router Methods"></a># Available Router Methods</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="hljs-keyword">match</span>([<span class="hljs-string">&#x27;get&#x27;</span>, <span class="hljs-string">&#x27;post&#x27;</span>], <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">any</span>(<span class="hljs-string">&#x27;/&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 該 route 可以接收 get 以及 post HTTP method request</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="hljs-keyword">match</span>([<span class="hljs-string">&#x27;get&#x27;</span>, <span class="hljs-string">&#x27;post&#x27;</span>], <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 該 route 可以接收任何 HTTP method 的 request </span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">any</span>(<span class="hljs-string">&#x27;/&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="CSRF-Protection"><a href="#CSRF-Protection" class="headerlink" title="# CSRF Protection"></a># CSRF Protection</h3><h6 id="Laravel-中-哪些-HTTP-method-會有-CSRF-Protection"><a href="#Laravel-中-哪些-HTTP-method-會有-CSRF-Protection" class="headerlink" title="Laravel 中, 哪些 HTTP method 會有 CSRF Protection?"></a><strong>Laravel 中, 哪些 HTTP method 會有 CSRF Protection?</strong></h6><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">POST</span><br><span class="line">PUT</span><br><span class="line">DELETE</span><br></pre></td></tr></table></figure>
+
+<h6 id="Laravel-的-CSRF-Protection-中-是如何將-XSRF-TOKEN-傳給前端的？"><a href="#Laravel-的-CSRF-Protection-中-是如何將-XSRF-TOKEN-傳給前端的？" class="headerlink" title="Laravel 的 CSRF Protection 中, 是如何將 XSRF TOKEN 傳給前端的？"></a><strong>Laravel 的 CSRF Protection 中, 是如何將 XSRF TOKEN 傳給前端的？</strong></h6><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">1. Laravel 把 token 存在 Session 當中</span><br><span class="line">2. 把 Session 對應的 Cookie 傳給前端</span><br><span class="line">3. 前端帶著對應的 Cookie, token 上來</span><br><span class="line">4. Laravel 用 Cookie 找 Session 對應的值, 並驗證前端送來的 token</span><br><span class="line">Laravel =&gt; Cookie, token =&gt; 前端 =&gt; Cookie, token =&gt; Laravel</span><br></pre></td></tr></table></figure>
+
+<h6 id="Laravel-的-CSRF-Protection-中-XSRF-Token-會放在哪裡傳給前端？"><a href="#Laravel-的-CSRF-Protection-中-XSRF-Token-會放在哪裡傳給前端？" class="headerlink" title="Laravel 的 CSRF Protection 中, XSRF Token 會放在哪裡傳給前端？"></a><strong>Laravel 的 CSRF Protection 中, XSRF Token 會放在哪裡傳給前端？</strong></h6><p><code>Cookie</code></p>
+<h6 id="Laravel-的-CSRF-Protection-中-XSRF-Token-會否加密再傳給前端？-會的"><a href="#Laravel-的-CSRF-Protection-中-XSRF-Token-會否加密再傳給前端？-會的" class="headerlink" title="Laravel 的 CSRF Protection 中, XSRF Token 會否加密再傳給前端？ 會的"></a><strong>Laravel 的 CSRF Protection 中, XSRF Token 會否加密再傳給前端？</strong> <code>會的</code></h6><h6 id="Laravel-的-CSRF-Protection-中-後端會傳什麼給前端？"><a href="#Laravel-的-CSRF-Protection-中-後端會傳什麼給前端？" class="headerlink" title="Laravel 的 CSRF Protection 中, 後端會傳什麼給前端？"></a><strong>Laravel 的 CSRF Protection 中, 後端會傳什麼給前端？</strong></h6><p><code>與 Session 相對應的 Cookie 以及寫在 Cookie 內的 token</code></p>
+<h6 id="Laravel-的-CSRF-Protection-中-前端會傳什麼給後端？"><a href="#Laravel-的-CSRF-Protection-中-前端會傳什麼給後端？" class="headerlink" title="Laravel 的 CSRF Protection 中, 前端會傳什麼給後端？"></a><strong>Laravel 的 CSRF Protection 中, 前端會傳什麼給後端？</strong></h6><p><code>後端之前傳來的 Cookie 資訊以及裡頭的 token</code></p>
+<br>
+
+<h3 id="Redirect-Routes"><a href="#Redirect-Routes" class="headerlink" title="# Redirect Routes"></a># Redirect Routes</h3><h6 id="HTTP-轉址中-301-跟-302-差在哪？"><a href="#HTTP-轉址中-301-跟-302-差在哪？" class="headerlink" title="HTTP 轉址中, 301 跟 302 差在哪？"></a><strong>HTTP 轉址中, 301 跟 302 差在哪？</strong></h6><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">301: 永久轉址, 搜尋引擎會把新網址當作唯一 url</span><br><span class="line">302: 暫時轉址, 搜尋引擎會知道這只是暫時的</span><br></pre></td></tr></table></figure>
+
+<h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">redirect</span>(<span class="hljs-string">&#x27;/here&#x27;</span>, <span class="hljs-string">&#x27;/there&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 uri 為 <code>/here</code> 的 request 轉址到 <code>/there</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">redirect</span>(<span class="hljs-string">&#x27;/here&#x27;</span>, <span class="hljs-string">&#x27;/there&#x27;</span>, <span class="hljs-number">301</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 uri 為 <code>/here</code> 的 request 轉址到 <code>/there</code>, 並帶上狀態碼</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">permanentRedirect</span>(<span class="hljs-string">&#x27;/here&#x27;</span>, <span class="hljs-string">&#x27;/there&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 uri 為 <code>/here</code> 的 request 轉址到 <code>/there</code>, 並帶上狀態碼 301</li>
+</ul>
+<br>
+
+<h3 id="View-Routes"><a href="#View-Routes" class="headerlink" title="# View Routes"></a># View Routes</h3><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;/welcome&#x27;</span>, <span class="hljs-string">&#x27;welcome&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>收到 /welcome request, 導向 welcome view page, 帶著參數 <code>[&#39;name&#39; =&gt; &#39;Taylor&#39;]</code> 過去</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Route-Parameters"><a href="#Route-Parameters" class="headerlink" title="# Route Parameters"></a># Route Parameters</h2><h3 id="Required-Parameters"><a href="#Required-Parameters" class="headerlink" title="# Required Parameters"></a># Required Parameters</h3><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;&#x27;</span>, function (<span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;User &#x27;</span>.<span class="hljs-variable">$id</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>假如收到 request <strong>user/2</strong>, 那 $id 便會是 2</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;posts/&#123;post&#125;/comments/&#123;comment&#125;&#x27;</span>, function (<span class="hljs-variable">$postId</span>, <span class="hljs-variable">$commentId</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當收到 request **posts/1/comments/2 時, $postId 為 1, $commentId 為 2, 看順序取值</li>
+</ul>
+<h6 id="Laravel-中-定義-URL-中的參數時-可以用-嗎？-如果不行-那要用什麼"><a href="#Laravel-中-定義-URL-中的參數時-可以用-嗎？-如果不行-那要用什麼" class="headerlink" title="Laravel 中, 定義 URL 中的參數時, 可以用 - 嗎？ 如果不行, 那要用什麼?"></a><strong>Laravel 中, 定義 URL 中的參數時, 可以用 <code>-</code> 嗎？ 如果不行, 那要用什麼?</strong></h6><p>不可<br>可使用 underscore (<code>_</code>)</p>
+<h6 id="Laravel-中-取得從-URL-中定義的參數時-是看名字-還是看順序？"><a href="#Laravel-中-取得從-URL-中定義的參數時-是看名字-還是看順序？" class="headerlink" title="Laravel 中, 取得從 URL 中定義的參數時, 是看名字, 還是看順序？"></a><strong>Laravel 中, 取得從 URL 中定義的參數時, 是看名字, 還是看順序？</strong></h6><p>順序, controller 參數的名字不重要, 隨便亂取都可以, 只看順序</p>
+<h6 id="以下的-Laravel-example-code-中-假設-a-1-b-2-那-dd-的結果是？"><a href="#以下的-Laravel-example-code-中-假設-a-1-b-2-那-dd-的結果是？" class="headerlink" title="以下的 Laravel example code 中, 假設 a = 1, b = 2, 那 dd() 的結果是？"></a><strong>以下的 Laravel example code 中, 假設 a = 1, b = 2, 那 dd() 的結果是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span>(<span class="hljs-params"><span class="hljs-variable">$d</span>, MerchantDepositIndex <span class="hljs-variable">$request</span>, <span class="hljs-variable">$c</span>, DepositManager <span class="hljs-variable">$manager</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">dd</span>(<span class="hljs-variable">$c</span>, <span class="hljs-variable">$d</span>); <span class="hljs-comment">// 結果是？</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">apiResource</span>(<span class="hljs-string">&#x27;deposits/&#123;a&#125;/&#123;b&#125;&#x27;</span>, <span class="hljs-string">&#x27;DepositController&#x27;</span>)-&gt;<span class="title function_ invoke__">only</span>([<span class="hljs-string">&#x27;index&#x27;</span>, <span class="hljs-string">&#x27;show&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>2, 1<br>Laravel 會自動找到參數並按照帶入的順序排列</li>
+</ul>
+<br>
+
+<h3 id="Optional-Parameters"><a href="#Optional-Parameters" class="headerlink" title="# Optional Parameters"></a># Optional Parameters</h3><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;name?&#125;&#x27;</span>, function (<span class="hljs-variable">$name</span> = <span class="hljs-literal">null</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$name</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;name?&#125;&#x27;</span>, function (<span class="hljs-variable">$name</span> = <span class="hljs-string">&#x27;John&#x27;</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$name</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 定義 optional 的 uri parameter, 可定義預設值</span></span><br><span class="line"><span class="hljs-comment">// 若是不使用 `?`, 則一定要帶值, 不可事先定義</span></span><br><span class="line"><span class="hljs-comment">// 若沒帶值, 例如 request 為 &#x27;example.com/user&#x27;, 則 $name = null</span></span><br><span class="line"><span class="hljs-comment">// 若有帶值, 例如 request 為 &#x27;example.com/user/2&#x27;, 則 $name = 2</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;name?&#125;&#x27;</span>, function (<span class="hljs-variable">$name</span> = <span class="hljs-literal">null</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$name</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 若沒帶值, 例如 request 為 &#x27;example.com/user&#x27;, 則 $name = &#x27;John&#x27;</span></span><br><span class="line"><span class="hljs-comment">// 若有帶值, 例如 request 為 &#x27;example.com/user/2&#x27;, 則 $name = 2</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;name?&#125;&#x27;</span>, function (<span class="hljs-variable">$name</span> = <span class="hljs-string">&#x27;John&#x27;</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$name</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Regular-Expression-Constraints"><a href="#Regular-Expression-Constraints" class="headerlink" title="# Regular Expression Constraints"></a># Regular Expression Constraints</h3><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;name&#125;&#x27;</span>, function (<span class="hljs-variable">$name</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;[A-Za-z]+&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;&#x27;</span>, function (<span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;[0-9]+&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;/&#123;name&#125;&#x27;</span>, function (<span class="hljs-variable">$id</span>, <span class="hljs-variable">$name</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">where</span>([<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-string">&#x27;[0-9]+&#x27;</span>, <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;[a-z]+&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>對 url parameter 加上正則的驗證, 格式須符合正則規則</li>
+</ul>
+<br>
+
+<h4 id="Global-Constraints"><a href="#Global-Constraints" class="headerlink" title="# Global Constraints"></a># Global Constraints</h4><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">pattern</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;[0-9]+&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">boot</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 RouteServiceProvider<br>針對 url parameter 定義一個 global 的正則規則, 此規則作用範圍為所有的 url parameter</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;search/&#123;search&#125;&#x27;</span>, function (<span class="hljs-variable">$search</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$search</span>;</span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;search&#x27;</span>, <span class="hljs-string">&#x27;.*&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>允許 <code>&#123;search&#125;</code> url parameter 以任何格式, 像是 <code>/</code> 也允許</li>
+</ul>
+<h6 id="在-Laravel-中-如果我想要定義一個-URL-parameter-這個-parameter-可能是一個-那只有在-URL-的哪一個位置是容許的？"><a href="#在-Laravel-中-如果我想要定義一個-URL-parameter-這個-parameter-可能是一個-那只有在-URL-的哪一個位置是容許的？" class="headerlink" title="在 Laravel 中, 如果我想要定義一個 URL parameter, 這個 parameter 可能是一個 /, 那只有在 URL 的哪一個位置是容許的？"></a><strong>在 Laravel 中, 如果我想要定義一個 URL parameter, 這個 parameter 可能是一個 <code>/</code>, 那只有在 URL 的哪一個位置是容許的？</strong></h6><p><code>最後一個區塊</code></p>
+<br>
+<br>
+
+<h2 id="Named-Routes"><a href="#Named-Routes" class="headerlink" title="# Named Routes"></a># Named Routes</h2><h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/profile&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/profile&#x27;</span>, <span class="hljs-string">&#x27;UserProfileController@show&#x27;</span>)-&gt;<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將該 route 命名為 profile, 之後可以使用, 例如 <code>redirect()-&gt;route(&#39;profile&#39;)</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Generating Redirects...</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>()-&gt;<span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>redirect 到已命名為 name 的 route</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Generating URLs...</span></span><br><span class="line"><span class="hljs-variable">$url</span> = <span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得名為 profile 的 route url</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;/profile&#x27;</span>, function (<span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$url</span> = <span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;profile&#x27;</span>, [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>命名一個 route 為 profile<br>再取得名為 profile 的 route url, 並帶入 id 為 1</li>
+</ul>
+<h6 id="在以下-Laravel-的-route-中-產生的-url-會長怎樣？"><a href="#在以下-Laravel-的-route-中-產生的-url-會長怎樣？" class="headerlink" title="在以下 Laravel 的 route 中, 產生的 url 會長怎樣？"></a><strong>在以下 Laravel 的 route 中, 產生的 url 會長怎樣？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;/profile&#x27;</span>, function (<span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$url</span> = <span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;profile&#x27;</span>, [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;photos&#x27;</span> =&gt; <span class="hljs-string">&#x27;yes&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br><code>/user/1/profile?photos=yes</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;/profile&#x27;</span>, function (<span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;profile&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$url</span> = <span class="title function_ invoke__">route</span>(<span class="hljs-string">&#x27;profile&#x27;</span>, [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;photos&#x27;</span> =&gt; <span class="hljs-string">&#x27;yes&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// /user/1/profile?photos=yes</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>命名為 profile 的 route, 並取得名為 profile 的 route url, 帶入 url parameter id, 因為 photos 並沒有被定義在 route url parameter, 因此在 url 中會以 query 呈現</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Closure</span> <span class="hljs-variable">$next</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">route</span>()-&gt;<span class="title function_ invoke__">named</span>(<span class="hljs-string">&#x27;profile&#x27;</span>)) &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$next</span>(<span class="hljs-variable">$request</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>判斷當前 request 的 route 是否名為 profile</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Route-Groups"><a href="#Route-Groups" class="headerlink" title="# Route Groups"></a># Route Groups</h2><h3 id="Middleware"><a href="#Middleware" class="headerlink" title="# Middleware"></a># Middleware</h3><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>([<span class="hljs-string">&#x27;first&#x27;</span>, <span class="hljs-string">&#x27;second&#x27;</span>])-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/profile&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">// </span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>為複數 route 定義複數 middleware<br>對 example 中的兩個 route 的 request 都將必須通過 ‘first’, ‘second’ 兩個 middleware</li>
+</ul>
+<br>
+
+<h3 id="Namespaces"><a href="#Namespaces" class="headerlink" title="# Namespaces"></a># Namespaces</h3><h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">namespace</span>(<span class="hljs-string">&#x27;Admin&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 namespace ‘Admin’ 套用到 closure 內的所有 controller</li>
+</ul>
+<br>
+
+<h3 id="Sub-Domain-Routing"><a href="#Sub-Domain-Routing" class="headerlink" title="# Sub-Domain Routing"></a># Sub-Domain Routing</h3><h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">domain</span>(<span class="hljs-string">&#x27;&#123;account&#125;.myapp.com&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;user/&#123;id&#125;&#x27;</span>, function (<span class="hljs-variable">$account</span>, <span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>domain 為 {account}.myapp.com 的 request 都會到 example 中的 route, 並且從 domain 取得 account parameter, 以及從 url 中取得 id parameter</li>
+</ul>
+<h6 id="在-Laravel-中-為了確保-sub-domain-routing-可被存取-當我們在定義時-應該先定義-sub-domain-routes-還是-root-domain-routes"><a href="#在-Laravel-中-為了確保-sub-domain-routing-可被存取-當我們在定義時-應該先定義-sub-domain-routes-還是-root-domain-routes" class="headerlink" title="在 Laravel 中, 為了確保 sub-domain routing 可被存取, 當我們在定義時, 應該先定義 sub-domain routes 還是 root domain routes?"></a><strong>在 Laravel 中, 為了確保 sub-domain routing 可被存取, 當我們在定義時, 應該先定義 sub-domain routes 還是 root domain routes?</strong></h6><p><code>sub-domain routes</code></p>
+<br>
+
+<h3 id="Route-Prefixes"><a href="#Route-Prefixes" class="headerlink" title="# Route Prefixes"></a># Route Prefixes</h3><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">prefix</span>(<span class="hljs-string">&#x27;admin&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;users&#x27;</span>, function () &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 prefix ‘admin’ 作用到 group 內的 route, 所以 request 的 url 為 /admin/users</li>
+</ul>
+<h6 id="以下的-Laravel-route-將符合什麼樣的-URL"><a href="#以下的-Laravel-route-將符合什麼樣的-URL" class="headerlink" title="以下的 Laravel route 將符合什麼樣的 URL ?"></a><strong>以下的 Laravel route 將符合什麼樣的 URL ?</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">prefix</span>(<span class="hljs-string">&#x27;admin&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;users&#x27;</span>, function () &#123;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br><code>/admin/users</code></li>
+</ul>
+<h3 id="Route-Name-Prefixes"><a href="#Route-Name-Prefixes" class="headerlink" title="# Route Name Prefixes"></a># Route Name Prefixes</h3><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;admin.&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;users&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;)-&gt;<span class="title function_ invoke__">name</span>(<span class="hljs-string">&#x27;users&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>closure 內的 routes 的 name 都會有 ‘admin.’ 這個前綴, 所以 example 中的 route name 為 ‘admin.users’</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Route-Model-Binding"><a href="#Route-Model-Binding" class="headerlink" title="# Route Model Binding"></a># Route Model Binding</h2><h3 id="Implicit-Binding"><a href="#Implicit-Binding" class="headerlink" title="# Implicit Binding"></a># Implicit Binding</h3><h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;api/users/&#123;user&#125;&#x27;</span>, function (App\User <span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user</span>-&gt;email;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>新增 {user} url parameter, 透過 function() 內的 model binding, 可直接透過 $user 取得 User model, 預設透過 primary_key 取得</li>
+</ul>
+<h6 id="Laravel-中-如果-Model-Binding-沒有找到相對應的-Model-會回傳什麼？"><a href="#Laravel-中-如果-Model-Binding-沒有找到相對應的-Model-會回傳什麼？" class="headerlink" title="Laravel 中, 如果 Model Binding 沒有找到相對應的 Model, 會回傳什麼？?"></a><strong>Laravel 中, 如果 Model Binding 沒有找到相對應的 Model, 會回傳什麼？?</strong></h6><p><code>404</code></p>
+<br>
+
+<h4 id="Customizing-the-key-Name"><a href="#Customizing-the-key-Name" class="headerlink" title="# Customizing the key Name"></a># Customizing the key Name</h4><h6 id="以下的-Laravel-example-code-的意思是？-24"><a href="#以下的-Laravel-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Authenticatable</span>;</span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRouteKeyName</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;slug&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>model binding 中, 預設使用 primary_key 取得 model, 可在 model 中使用 getRouteKeyName() 來定義使用 ‘slug’ column 來取得 model</li>
+</ul>
+<br>
+
+<h3 id="Explicit-Binding"><a href="#Explicit-Binding" class="headerlink" title="# Explicit Binding"></a># Explicit Binding</h3><h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">boot</span>();</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">model</span>(<span class="hljs-string">&#x27;user&#x27;</span>, <span class="title class_">App\User</span>::<span class="variable language_">class</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果不想使用 type-hinted variable 來實現 model binding, 想要經由 url 的 parameter name 來實現 model binding 的話, 可以再 RouteServiceProvider 的 boot method<br>使用 Route class 的 model method 來將 url 中的 ‘user’ parameter 與 ‘App\User’ model 相關聯</li>
+</ul>
+<br>
+
+<h4 id="Customizing-The-Resolution-Logic"><a href="#Customizing-The-Resolution-Logic" class="headerlink" title="# Customizing The Resolution Logic"></a># Customizing The Resolution Logic</h4><h6 id="Laravel-的-model-binding-中-如果我想要定義比單一-column-更複雜的規則-有哪兩種做法？"><a href="#Laravel-的-model-binding-中-如果我想要定義比單一-column-更複雜的規則-有哪兩種做法？" class="headerlink" title="Laravel 的 model binding 中, 如果我想要定義比單一 column 更複雜的規則, 有哪兩種做法？"></a><strong>Laravel 的 model binding 中, 如果我想要定義比單一 column 更複雜的規則, 有哪兩種做法？</strong></h6><ol>
+<li>RouteServiceProvider 增加規則</li>
+<li>在 Model 中定義 method</li>
+</ol>
+<h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Authenticatable</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">resolveRouteBinding</span>(<span class="hljs-params"><span class="hljs-variable">$value</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-variable">$value</span>)-&gt;<span class="title function_ invoke__">firstOrFail</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 model 中定義 model binding 的規則, 比方說, 當我在 controller 使用 model binding, (User $user), 則取得 $User-&gt;where(‘name’, $value)-&gt;firstOrFail() 的 model</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-27"><a href="#以下的-Laravel-example-code-的意思是？-27" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">boot</span>();</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">bind</span>(<span class="hljs-string">&#x27;user&#x27;</span>, function (<span class="hljs-variable">$value</span>) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title class_">App\User</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-variable">$value</span>)-&gt;<span class="title function_ invoke__">firstOrFail</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>預設在 controller method inject model binding 時, 像是 <code>index(User $user)</code>, Laravel 的預設 convention 使用 <code>id</code> 尋找對應 model<br>可在 RouteServiceProvider 的 boot() 定義 model binding 規則, 當 binding 指定的 Model 為 User 時, 會到 User Model 以 where(‘name’, $value)-&gt;firstOrFail() 的方式取得 model</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Fallback-Routes"><a href="#Fallback-Routes" class="headerlink" title="# Fallback Routes"></a># Fallback Routes</h2><h6 id="以下的-Laravel-example-code-的意思是？-28"><a href="#以下的-Laravel-example-code-的意思是？-28" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">fallback</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>預設未找到 route 的 request 會回傳 404, 可透過自定義 fallback route 來定義後續動作</li>
+</ul>
+<h6 id="在-Laravel-中-fallback-route-的位置應該要放在什麼地方？"><a href="#在-Laravel-中-fallback-route-的位置應該要放在什麼地方？" class="headerlink" title="在 Laravel 中, fallback route 的位置應該要放在什麼地方？"></a><strong>在 Laravel 中, fallback route 的位置應該要放在什麼地方？</strong></h6><p><code>最後</code></p>
+<br>
+<br>
+
+<h2 id="Rate-Limiting"><a href="#Rate-Limiting" class="headerlink" title="# Rate Limiting"></a># Rate Limiting</h2><h6 id="以下的-Laravel-example-code-的意思是？-29"><a href="#以下的-Laravel-example-code-的意思是？-29" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;auth:api&#x27;</span>, <span class="hljs-string">&#x27;throttle:60,1&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/user&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 auth:api middleware 來驗證 user, 使用 throttle middleware 來限制 1 分鐘最多可存取 60 次</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-30"><a href="#以下的-Laravel-example-code-的意思是？-30" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;throttle:10|60,1&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 throttle middleware 來限制存取次數, authenticated user 1 分鐘最多可存取 60 次, 而 unauthenticated user 1 分鐘最多存取 10 次</li>
+</ul>
+<br>
+
+<h3 id="Dynamic-Rate-Limiting"><a href="#Dynamic-Rate-Limiting" class="headerlink" title="# Dynamic Rate Limiting"></a># Dynamic Rate Limiting</h3><h6 id="以下的-Laravel-example-code-的意思是？-31"><a href="#以下的-Laravel-example-code-的意思是？-31" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;auth:api&#x27;</span>, <span class="hljs-string">&#x27;throttle:rate_limit,1&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/user&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 auth:api middleware 來驗證 user, 使用 throttle middleware 來動態的限制使用者存取次數<br>rate_limit 代表 authenticated user 在資料庫內的欄位, 須為數字, 代表 1 分鐘內可存取次數的上限</li>
+</ul>
+<br>
+
+<h3 id="Distanct-Guest-amp-Authenticated-User-Rate-Limits"><a href="#Distanct-Guest-amp-Authenticated-User-Rate-Limits" class="headerlink" title="# Distanct Guest &amp; Authenticated User Rate Limits"></a># Distanct Guest &amp; Authenticated User Rate Limits</h3><h6 id="以下的-Laravel-example-code-的意思是？-32"><a href="#以下的-Laravel-example-code-的意思是？-32" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;auth:api&#x27;</span>, <span class="hljs-string">&#x27;throttle:10|rate_limit,1&#x27;</span>)-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/user&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>unauthenticated user 1 分鐘最多訪問 10 次<br>authenticated user 1 分鐘最多訪問次數定義在 user 的 rate_limit column</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Form-Method-Spoofing"><a href="#Form-Method-Spoofing" class="headerlink" title="# Form Method Spoofing"></a># Form Method Spoofing</h2><h6 id="使用-HTML-Form-發-API-時-常常遇到-PUT-PATCH-DELETE-方法不可用-根本的原因是什麼？"><a href="#使用-HTML-Form-發-API-時-常常遇到-PUT-PATCH-DELETE-方法不可用-根本的原因是什麼？" class="headerlink" title="使用 HTML Form 發 API 時, 常常遇到 PUT, PATCH, DELETE 方法不可用, 根本的原因是什麼？"></a><strong>使用 HTML Form 發 API 時, 常常遇到 PUT, PATCH, DELETE 方法不可用, 根本的原因是什麼？</strong></h6><p><code>HTML Forms 不支援以上的 HTTP method</code></p>
+<h6 id="哪幾種-HTTP-method-是不被-HTML-Form-支援的？"><a href="#哪幾種-HTTP-method-是不被-HTML-Form-支援的？" class="headerlink" title="哪幾種 HTTP method 是不被 HTML Form 支援的？"></a><strong>哪幾種 HTTP method 是不被 HTML Form 支援的？</strong></h6><p><code>PUT, PATCH, DELETE</code></p>
+<h6 id="以下的-Laravel-example-code-的意思是？-33"><a href="#以下的-Laravel-example-code-的意思是？-33" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;/foo/bar&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;POST&quot;</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;_method&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;PUT&quot;</span>&gt;</span></span><br><span class="line">    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;_token&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&#123;&#123; csrf_token() &#125;&#125;&quot;</span>&gt;</span></span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>讓 HTML form 可以支援 PUT, PATCH, DELETE 等 HTTP Method</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-34"><a href="#以下的-Laravel-example-code-的意思是？-34" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight html hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;/foo/bar&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;POST&quot;</span>&gt;</span></span><br><span class="line">    @method(&#x27;PUT&#x27;)</span><br><span class="line">    @csrf</span><br><span class="line"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>讓 HTML form 可以支援 PUT, PATCH, DELETE 等 HTTP Method, 使用 blade 的方法來發 PUT method</li>
+</ul>
+<br>
+
+<h3 id="Accessing-The-Current-Route"><a href="#Accessing-The-Current-Route" class="headerlink" title="# Accessing The Current Route"></a># Accessing The Current Route</h3><h6 id="以下的-Laravel-example-code-的意思是？-35"><a href="#以下的-Laravel-example-code-的意思是？-35" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$name</span> = <span class="title class_">\Illuminate\Support\Facades\Route</span>::<span class="title function_ invoke__">currentRouteName</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得當前 route name</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-36"><a href="#以下的-Laravel-example-code-的意思是？-36" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$name</span> = <span class="title class_">\Illuminate\Support\Facades\Route</span>::<span class="title function_ invoke__">current</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得當前的 route object</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-37"><a href="#以下的-Laravel-example-code-的意思是？-37" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$name</span> = <span class="title class_">\Illuminate\Support\Facades\Route</span>::<span class="title function_ invoke__">currentRouteAction</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得當前 request 存取的 controller</li>
+</ul>
+<h6 id="Laravel-中-route-的-action-長什麼樣子？"><a href="#Laravel-中-route-的-action-長什麼樣子？" class="headerlink" title="Laravel 中, route 的 action 長什麼樣子？"></a><strong>Laravel 中, route 的 action 長什麼樣子？</strong></h6><p><code>App\Http\Controllers\Admin\controllerName@controllerMethodName</code></p>
+<h6 id="下面提供所以可以被取得的-route-method"><a href="#下面提供所以可以被取得的-route-method" class="headerlink" title="下面提供所以可以被取得的 route method"></a><strong>下面提供所以可以被取得的 route method</strong></h6><p><a target="_blank" rel="noopener" href="https://laravel.com/api/master/Illuminate/Routing/Router.html">underlyingClass of the Route facade</a><br><a target="_blank" rel="noopener" href="https://laravel.com/api/master/Illuminate/Routing/Route.html">Route instance</a></p>
+<h2 id="Additional"><a href="#Additional" class="headerlink" title="# Additional"></a># Additional</h2><h6 id="以下的-Laravel-example-code-的意思是？-38"><a href="#以下的-Laravel-example-code-的意思是？-38" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">middleware</span>([<span class="hljs-string">&#x27;throttle:uploads&#x27;</span>])-&gt;<span class="title function_ invoke__">group</span>(function () &#123;</span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">post</span>(<span class="hljs-string">&#x27;/audio&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title class_">Route</span>::<span class="title function_ invoke__">post</span>(<span class="hljs-string">&#x27;/video&#x27;</span>, function () &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>attached 在 RouteServiceProvider 定義完成的 rate limiter 到指定的 route group</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-39"><a href="#以下的-Laravel-example-code-的意思是？-39" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">RateLimiter</span>::<span class="hljs-keyword">for</span>(<span class="hljs-string">&#x27;login&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">500</span>),</span><br><span class="line">        <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">3</span>)-&gt;<span class="title function_ invoke__">by</span>(<span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">input</span>(<span class="hljs-string">&#x27;email&#x27;</span>)),</span><br><span class="line">    ];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 configureRateLimiting() 來定義多個 rate limiter, throttle 每分鐘次數, 每分鐘可 500 次, 但同個 mail 每分鐘最多 3 次</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-40"><a href="#以下的-Laravel-example-code-的意思是？-40" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// RouteServiceProvider</span></span><br><span class="line"><span class="title class_">RateLimiter</span>::<span class="hljs-keyword">for</span>(<span class="hljs-string">&#x27;uploads&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">user</span>()</span><br><span class="line">                ? <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">by</span>(<span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">user</span>()-&gt;id)</span><br><span class="line">                : <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">10</span>)-&gt;<span class="title function_ invoke__">by</span>(<span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">ip</span>());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 configureRateLimiting() 來定義一個 rate limiter, throttle 每分鐘次數, authenticated user 每分鐘 100 次, guest per ip 每分鐘 10 次</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-41"><a href="#以下的-Laravel-example-code-的意思是？-41" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// RouteServiceProvider</span></span><br><span class="line"><span class="title class_">RateLimiter</span>::<span class="hljs-keyword">for</span>(<span class="hljs-string">&#x27;uploads&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">user</span>()-&gt;<span class="title function_ invoke__">vipCustomer</span>()</span><br><span class="line">                ? <span class="title class_">Limit</span>::<span class="title function_ invoke__">none</span>()</span><br><span class="line">                : <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">by</span>(<span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">ip</span>());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 configureRateLimiting() 來定義一個 rate limiter, throttle 每分鐘次數, 如果 user 是 vip, 就無限制, 否則每分鐘, <code>每 IP</code> 100 次</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-42"><a href="#以下的-Laravel-example-code-的意思是？-42" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// RouteServiceProvider</span></span><br><span class="line"><span class="title class_">RateLimiter</span>::<span class="hljs-keyword">for</span>(<span class="hljs-string">&#x27;uploads&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">user</span>()-&gt;<span class="title function_ invoke__">vipCustomer</span>()</span><br><span class="line">                ? <span class="title class_">Limit</span>::<span class="title function_ invoke__">none</span>()</span><br><span class="line">                : <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">100</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 configureRateLimiting() 來定義一個 rate limiter, throttle 每分鐘次數, 如果 user 是 vip, 就無限制, 否則每分鐘 100 次</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-43"><a href="#以下的-Laravel-example-code-的意思是？-43" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// RouteServiceProvider</span></span><br><span class="line"><span class="title class_">RateLimiter</span>::<span class="hljs-keyword">for</span>(<span class="hljs-string">&#x27;global&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>) </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">1000</span>)-&gt;<span class="title function_ invoke__">response</span>(function () &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(<span class="hljs-string">&#x27;Custom response...&#x27;</span>, <span class="hljs-number">429</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 configureRateLimiting() 來定義一個 rate limiter, throttle 每分鐘次數, 並定義 response</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-44"><a href="#以下的-Laravel-example-code-的意思是？-44" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// RouteServiceProvider</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configureRateLimiting</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="title class_">RateLimiter</span>::<span class="hljs-keyword">for</span>(<span class="hljs-string">&#x27;global&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>) </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title class_">Limit</span>::<span class="title function_ invoke__">perMinute</span>(<span class="hljs-number">1000</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 configureRateLimiting() 來定義一個 rate limiter,  throttle 每分鐘次數</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Routing/">#Laravel Routing</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravelGettingStartedDeployment/">Laravel - Getting Started - Deployment</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/continuousDeliveryWithJenkinsInKubernetesEngine/">使用 Jenkins 在 Kubernetes Engine 中實作持續交付</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravelTheBasicsRouting/';
+        this.page.identifier = 'zh-tw/laravelTheBasicsRouting/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

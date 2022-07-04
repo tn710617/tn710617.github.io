@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - The Basics - Middleware (官方文件原子化翻譯) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Middleware (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-basics-middleware/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-02-14T02:42:49.000Z">
+<meta property="article:modified_time" content="2020-12-26T01:12:31.383Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel Middleware">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-basics-middleware/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Middleware (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-basics-middleware/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-02-14T02:42:49.000Z">
+<meta property="article:modified_time" content="2020-12-26T01:12:31.383Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel Middleware">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">2&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-哪個地方可以找到所有的-Middleware">2.1.1&nbsp;&nbsp;Laravel 中, 哪個地方可以找到所有的 Middleware?</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Middleware">3&nbsp;&nbsp;<b># Defining Middleware</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-command-example-code-的意思是？">3.1.1&nbsp;&nbsp;以下的 Laravel command example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#請解釋以下的-Laravel-Middleware-example-邏輯">3.1.2&nbsp;&nbsp;請解釋以下的 Laravel Middleware example 邏輯</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#如果-request-沒有通過-middleware-可以到達-route-嗎？">3.1.3&nbsp;&nbsp;如果 request 沒有通過 middleware, 可以到達 route 嗎？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Before-amp-After-Middleware">3.2&nbsp;&nbsp;# Before &amp;amp;amp; After Middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？">3.2.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-1">3.2.2&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Registering-Middleware">4&nbsp;&nbsp;<b># Registering Middleware</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Global-Middleware">4.1&nbsp;&nbsp;# Global Middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#如果我要定義一個-Global-Middleware-也就是每一個-HTTP-request-都會通過它-那我可以在-哪一個檔案-的-哪一個-property-中加入此-middleware">4.1.1&nbsp;&nbsp;如果我要定義一個 Global Middleware, 也就是每一個 HTTP request 都會通過它, 那我可以在 哪一個檔案 的 哪一個 property 中加入此 middleware?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Assigning-Middleware-To-Routes">4.2&nbsp;&nbsp;# Assigning Middleware To Routes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-middleware-register-example-主要用在什麼地方？">4.2.1&nbsp;&nbsp;以下的 Laravel middleware register example 主要用在什麼地方？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-2">4.2.2&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-3">4.2.3&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Middleware-Groups">4.3&nbsp;&nbsp;# Middleware Groups</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-如果我想要註冊一個-Middleware-Group-該-Group-中可以有多個-Middleware-而我只需要-assign-這個-group-就等於一次性的附加內含的所有-middleware-那我可以在-哪一個檔案-中的-哪一個-propery-註冊這個-Middleware-Group">4.3.1&nbsp;&nbsp;Laravel 中, 如果我想要註冊一個 Middleware Group, 該 Group 中可以有多個 Middleware, 而我只需要 assign 這個 group 就等於一次性的附加內含的所有 middleware, 那我可以在 哪一個檔案 中的 哪一個 propery 註冊這個 Middleware Group?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-當我使用-routes-web-php-時-默認會使用哪一個-Middleware-Group">4.3.2&nbsp;&nbsp;Laravel 中, 當我使用 /routes/web.php 時, 默認會使用哪一個 Middleware Group?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Sorting-Middleware">4.4&nbsp;&nbsp;# Sorting Middleware</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-如果我要定義-middleware-執行的順序-我可以在-哪個-檔案定義？">4.4.1&nbsp;&nbsp;Laravel 中, 如果我要定義 middleware 執行的順序, 我可以在 哪個 檔案定義？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-如果我要定義-middleware-執行的順序-我可以在-app-Http-Kernel-php-中的哪個-property-定義？">4.4.2&nbsp;&nbsp;Laravel 中, 如果我要定義 middleware 執行的順序, 我可以在 app/Http/Kernel.php 中的哪個 property 定義？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Middleware-Parameters">5&nbsp;&nbsp;<b># Middleware Parameters</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-4">5.1.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-5">5.1.2&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Terminable-Middleware">6&nbsp;&nbsp;<b># Terminable Middleware</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-example-code-的意思是？-6">6.1.1&nbsp;&nbsp;以下的 Laravel example code 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-當我定義好一個-middleware-之後-有哪幾種註冊方式？">6.1.2&nbsp;&nbsp;Laravel 中, 當我定義好一個 middleware 之後, 有哪幾種註冊方式？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Laravel-中-當我呼叫-middleware-的-terminate-method-預設會取得原本的那一個-middleware-instance-還是一個新的-instance">6.1.3&nbsp;&nbsp;Laravel 中, 當我呼叫 middleware 的 terminate method, 預設會取得原本的那一個 middleware instance 還是一個新的 instance?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Laravel-程式碼的意思是？">6.1.4&nbsp;&nbsp;以下的 Laravel 程式碼的意思是？</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-basics-middleware/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-basics-middleware/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - The Basics - Middleware (官方文件原子化翻譯)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-02-14T02:42:49.000Z" itemprop="datePublished">2月 14 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            7 分钟 讀完 (大概 1063 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><h6 id="Laravel-中-哪個地方可以找到所有的-Middleware"><a href="#Laravel-中-哪個地方可以找到所有的-Middleware" class="headerlink" title="Laravel 中, 哪個地方可以找到所有的 Middleware?"></a><strong>Laravel 中, 哪個地方可以找到所有的 Middleware?</strong></h6><p><code>app/Http/Middleware</code> 資料夾</p>
+<br>
+<br>
+
+<h2 id="Defining-Middleware"><a href="#Defining-Middleware" class="headerlink" title="# Defining Middleware"></a># Defining Middleware</h2><h6 id="以下的-Laravel-command-example-code-的意思是？"><a href="#以下的-Laravel-command-example-code-的意思是？" class="headerlink" title="以下的 Laravel command example code 的意思是？"></a><strong>以下的 Laravel command example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:middleware MiddewareName</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 CLI 建立一個 middleware</li>
+</ul>
+<h6 id="請解釋以下的-Laravel-Middleware-example-邏輯"><a href="#請解釋以下的-Laravel-Middleware-example-邏輯" class="headerlink" title="請解釋以下的 Laravel Middleware example 邏輯"></a><strong>請解釋以下的 Laravel Middleware example 邏輯</strong></h6><ul>
+<li><strong>Example</strong><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Http</span>\<span class="title class_">Middleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Closure</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CheckAge</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Closure</span> <span class="hljs-variable">$next</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$request</span>-&gt;age &lt;= <span class="hljs-number">200</span>) &#123;</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="title function_ invoke__">redirect</span>(<span class="hljs-string">&#x27;home&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$next</span>(<span class="hljs-variable">$request</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果 age 小於 200, 重導到 <em>home</em> route 去<br>如果 age 大於 200, 通過此 middleware</li>
+</ul>
+<h6 id="如果-request-沒有通過-middleware-可以到達-route-嗎？"><a href="#如果-request-沒有通過-middleware-可以到達-route-嗎？" class="headerlink" title="如果 request 沒有通過 middleware, 可以到達 route 嗎？"></a><strong>如果 request 沒有通過 middleware, 可以到達 route 嗎？</strong></h6><p>不行</p>
+<h3 id="Before-amp-After-Middleware"><a href="#Before-amp-After-Middleware" class="headerlink" title="# Before &amp; After Middleware"></a># Before &amp; After Middleware</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Http</span>\<span class="title class_">Middleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Closure</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AfterMiddleware</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Closure</span> <span class="hljs-variable">$next</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="hljs-variable">$next</span>(<span class="hljs-variable">$request</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// Perform action</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$response</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義一個 middleware, 先取得 $response, 因此 $request 會先由 $next pass 到 controller, 因此順序上會先執行 Controller 的邏輯, 在執行 middleware 的邏輯</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Http</span>\<span class="title class_">Middleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Closure</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BeforeMiddleware</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Closure</span> <span class="hljs-variable">$next</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Perform action</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$next</span>(<span class="hljs-variable">$request</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義一個 middleware, 順序上會先執行 middleware 邏輯, 再由 $next method 將 $request 帶過去 Controller 那</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Registering-Middleware"><a href="#Registering-Middleware" class="headerlink" title="# Registering Middleware"></a># Registering Middleware</h2><h3 id="Global-Middleware"><a href="#Global-Middleware" class="headerlink" title="# Global Middleware"></a># Global Middleware</h3><h6 id="如果我要定義一個-Global-Middleware-也就是每一個-HTTP-request-都會通過它-那我可以在-哪一個檔案-的-哪一個-property-中加入此-middleware"><a href="#如果我要定義一個-Global-Middleware-也就是每一個-HTTP-request-都會通過它-那我可以在-哪一個檔案-的-哪一個-property-中加入此-middleware" class="headerlink" title="如果我要定義一個 Global Middleware, 也就是每一個 HTTP request 都會通過它, 那我可以在 哪一個檔案 的 哪一個 property 中加入此 middleware?"></a><strong>如果我要定義一個 Global Middleware, 也就是每一個 HTTP request 都會通過它, 那我可以在 <code>哪一個檔案</code> 的 <code>哪一個 property</code> 中加入此 middleware?</strong></h6><ul>
+<li><code>app/Http/Kernel.php</code></li>
+<li><code>$middleware</code></li>
+</ul>
+<br>
+
+<h3 id="Assigning-Middleware-To-Routes"><a href="#Assigning-Middleware-To-Routes" class="headerlink" title="# Assigning Middleware To Routes"></a># Assigning Middleware To Routes</h3><h6 id="以下的-Laravel-middleware-register-example-主要用在什麼地方？"><a href="#以下的-Laravel-middleware-register-example-主要用在什麼地方？" class="headerlink" title="以下的 Laravel middleware register example 主要用在什麼地方？"></a><strong>以下的 Laravel middleware register example 主要用在什麼地方？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// Within App\Http\Kernel Class...</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$routeMiddleware</span> = [</span><br><span class="line">    <span class="hljs-string">&#x27;auth&#x27;</span> =&gt; <span class="title class_">\App\Http\Middleware\Authenticate</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;auth.basic&#x27;</span> =&gt; <span class="title class_">\Illuminate\Auth\Middleware\AuthenticateWithBasicAuth</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;bindings&#x27;</span> =&gt; <span class="title class_">\Illuminate\Routing\Middleware\SubstituteBindings</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;cache.headers&#x27;</span> =&gt; <span class="title class_">\Illuminate\Http\Middleware\SetCacheHeaders</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;can&#x27;</span> =&gt; <span class="title class_">\Illuminate\Auth\Middleware\Authorize</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;guest&#x27;</span> =&gt; <span class="title class_">\App\Http\Middleware\RedirectIfAuthenticated</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;signed&#x27;</span> =&gt; <span class="title class_">\Illuminate\Routing\Middleware\ValidateSignature</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;throttle&#x27;</span> =&gt; <span class="title class_">\Illuminate\Routing\Middleware\ThrottleRequests</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;verified&#x27;</span> =&gt; <span class="title class_">\Illuminate\Auth\Middleware\EnsureEmailIsVerified</span>::<span class="variable language_">class</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>註冊在 $routeMiddleware property 中的 middleware, 可視專案需求使用在特定的 route 上</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;first&#x27;</span>, <span class="hljs-string">&#x27;second&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在這個 route 使用 ‘first’, ‘second’ 兩個 middleware</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Middleware</span>\<span class="hljs-title">CheckAge</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;admin/profile&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">middleware</span>(<span class="title class_">CheckAge</span>::<span class="variable language_">class</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>以 class name 的方式給這個 route 指派一個 middleware, 任何經過此 route 的 request 都會經過此 middleware</li>
+</ul>
+<br>
+
+<h3 id="Middleware-Groups"><a href="#Middleware-Groups" class="headerlink" title="# Middleware Groups"></a># Middleware Groups</h3><h6 id="Laravel-中-如果我想要註冊一個-Middleware-Group-該-Group-中可以有多個-Middleware-而我只需要-assign-這個-group-就等於一次性的附加內含的所有-middleware-那我可以在-哪一個檔案-中的-哪一個-propery-註冊這個-Middleware-Group"><a href="#Laravel-中-如果我想要註冊一個-Middleware-Group-該-Group-中可以有多個-Middleware-而我只需要-assign-這個-group-就等於一次性的附加內含的所有-middleware-那我可以在-哪一個檔案-中的-哪一個-propery-註冊這個-Middleware-Group" class="headerlink" title="Laravel 中, 如果我想要註冊一個 Middleware Group, 該 Group 中可以有多個 Middleware, 而我只需要 assign 這個 group 就等於一次性的附加內含的所有 middleware, 那我可以在 哪一個檔案 中的 哪一個 propery 註冊這個 Middleware Group?"></a><strong>Laravel 中, 如果我想要註冊一個 Middleware Group, 該 Group 中可以有多個 Middleware, 而我只需要 assign 這個 group 就等於一次性的附加內含的所有 middleware, 那我可以在 <code>哪一個檔案</code> 中的 <code>哪一個 propery</code> 註冊這個 Middleware Group?</strong></h6><ul>
+<li><code>app\Http\Kernel.php</code></li>
+<li><code>$middlewareGroups</code></li>
+</ul>
+<h6 id="Laravel-中-當我使用-routes-web-php-時-默認會使用哪一個-Middleware-Group"><a href="#Laravel-中-當我使用-routes-web-php-時-默認會使用哪一個-Middleware-Group" class="headerlink" title="Laravel 中, 當我使用 /routes/web.php 時, 默認會使用哪一個 Middleware Group?"></a><strong>Laravel 中, 當我使用 /routes/web.php 時, 默認會使用哪一個 Middleware Group?</strong></h6><p>web</p>
+<br>
+
+<h3 id="Sorting-Middleware"><a href="#Sorting-Middleware" class="headerlink" title="# Sorting Middleware"></a># Sorting Middleware</h3><h6 id="Laravel-中-如果我要定義-middleware-執行的順序-我可以在-哪個-檔案定義？"><a href="#Laravel-中-如果我要定義-middleware-執行的順序-我可以在-哪個-檔案定義？" class="headerlink" title="Laravel 中, 如果我要定義 middleware 執行的順序, 我可以在 哪個 檔案定義？"></a><strong>Laravel 中, 如果我要定義 middleware 執行的順序, 我可以在 <code>哪個</code> 檔案定義？</strong></h6><p><code>app/Http/Kernel.php</code></p>
+<h6 id="Laravel-中-如果我要定義-middleware-執行的順序-我可以在-app-Http-Kernel-php-中的哪個-property-定義？"><a href="#Laravel-中-如果我要定義-middleware-執行的順序-我可以在-app-Http-Kernel-php-中的哪個-property-定義？" class="headerlink" title="Laravel 中, 如果我要定義 middleware 執行的順序, 我可以在 app/Http/Kernel.php 中的哪個 property 定義？"></a><strong>Laravel 中, 如果我要定義 middleware 執行的順序, 我可以在 <code>app/Http/Kernel.php</code> 中的哪個 property 定義？</strong></h6><p><code>$middlewarePriority</code></p>
+<br>
+<br>
+
+<h2 id="Middleware-Parameters"><a href="#Middleware-Parameters" class="headerlink" title="# Middleware Parameters"></a># Middleware Parameters</h2><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Http</span>\<span class="title class_">Middleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Closure</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CheckRole</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Closure</span> <span class="hljs-variable">$next</span>, <span class="hljs-variable">$role</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span> (! <span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">user</span>()-&gt;<span class="title function_ invoke__">hasRole</span>(<span class="hljs-variable">$role</span>)) &#123;</span><br><span class="line">            <span class="hljs-comment">// Redirect...</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$next</span>(<span class="hljs-variable">$request</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從外部帶入 $role parameter 來供 middleware 使用</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">put</span>(<span class="hljs-string">&#x27;post/&#123;id&#125;&#x27;</span>, function (<span class="hljs-variable">$id</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">middleware</span>(<span class="hljs-string">&#x27;role:editor,author&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 editor 以及 author 以 role middleware 參數的形式帶入</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Terminable-Middleware"><a href="#Terminable-Middleware" class="headerlink" title="# Terminable Middleware"></a># Terminable Middleware</h2><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">Illuminate</span>\<span class="title class_">Session</span>\<span class="title class_">Middleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Closure</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">StartSession</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Closure</span> <span class="hljs-variable">$next</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$next</span>(<span class="hljs-variable">$request</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">terminate</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-variable">$response</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Do something here</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 StartSession middleware 當中, 定義了 terminate method, 當 return response 之後, 會執行 terminate method 當中的邏輯</li>
+</ul>
+<h6 id="Laravel-中-當我定義好一個-middleware-之後-有哪幾種註冊方式？"><a href="#Laravel-中-當我定義好一個-middleware-之後-有哪幾種註冊方式？" class="headerlink" title="Laravel 中, 當我定義好一個 middleware 之後, 有哪幾種註冊方式？"></a><strong>Laravel 中, 當我定義好一個 middleware 之後, 有哪幾種註冊方式？</strong></h6><ul>
+<li>global 註冊</li>
+<li>route 註冊</li>
+<li>middleware group 註冊</li>
+</ul>
+<h6 id="Laravel-中-當我呼叫-middleware-的-terminate-method-預設會取得原本的那一個-middleware-instance-還是一個新的-instance"><a href="#Laravel-中-當我呼叫-middleware-的-terminate-method-預設會取得原本的那一個-middleware-instance-還是一個新的-instance" class="headerlink" title="Laravel 中, 當我呼叫 middleware 的 terminate method, 預設會取得原本的那一個 middleware instance 還是一個新的 instance?"></a><strong>Laravel 中, 當我呼叫 middleware 的 terminate method, 預設會取得原本的那一個 middleware instance 還是一個新的 instance?</strong></h6><p>新的</p>
+<h6 id="以下的-Laravel-程式碼的意思是？"><a href="#以下的-Laravel-程式碼的意思是？" class="headerlink" title="以下的 Laravel 程式碼的意思是？"></a><strong>以下的 Laravel 程式碼的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Middleware</span>\<span class="hljs-title">TerminableMiddleware</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">singleton</span>(<span class="title class_">TerminableMiddleware</span>::<span class="variable language_">class</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 AppServiceProvider 的 register method 中使用 singleton method, 這樣一來, 每次的 terminate method 都會取得同一個 middleware instance</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Middleware/">#Laravel Middleware</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravelTheBasicsValidation/">Laravel - The Basics - Validation (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/managingDeploymentsUsingKubernetesEngine/">使用 GCP Kubernetes Engine 來管理部署</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-basics-middleware/';
+        this.page.identifier = 'zh-tw/laravel-basics-middleware/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

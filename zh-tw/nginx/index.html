@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>NGINX 學習筆記 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NGINX 學習筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/nginx/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-09-28T08:53:56.000Z">
+<meta property="article:modified_time" content="2021-04-18T06:28:44.136Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="NGINX">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/nginx/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NGINX 學習筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/nginx/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言這是我的 NGINX 學習筆記，看什麼學什麼記什麼！">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-09-28T08:53:56.000Z">
+<meta property="article:modified_time" content="2021-04-18T06:28:44.136Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="NGINX">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#安裝">2&nbsp;&nbsp;<b>安裝</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立新的設定檔">3&nbsp;&nbsp;<b>建立新的設定檔</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#啟用設定檔">4&nbsp;&nbsp;<b>啟用設定檔</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#複製到-enabled-資料夾">4.1&nbsp;&nbsp;複製到 enabled 資料夾</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟用">4.2&nbsp;&nbsp;啟用</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#location">5&nbsp;&nbsp;<b>location</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#語法">5.1&nbsp;&nbsp;語法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#範例">5.2&nbsp;&nbsp;範例</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#alias-與-root">6&nbsp;&nbsp;<b>alias 與 root</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#alias">6.1&nbsp;&nbsp;alias</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#root">6.2&nbsp;&nbsp;root</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#總結">6.3&nbsp;&nbsp;總結</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署-vue-專案">7&nbsp;&nbsp;<b>部署 vue 專案</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Build">7.1&nbsp;&nbsp;Build</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#config">7.2&nbsp;&nbsp;config</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#upstream">8&nbsp;&nbsp;<b>upstream</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#語法-1">8.1&nbsp;&nbsp;語法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#範例-1">8.2&nbsp;&nbsp;範例</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#詳解">8.3&nbsp;&nbsp;詳解</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#PHP-FPM">9&nbsp;&nbsp;<b>PHP-FPM</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#fast">9.1&nbsp;&nbsp;fast</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">10&nbsp;&nbsp;<b>Questions and Answers</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Nginx-configuration-example-的意思是？">10.1.1&nbsp;&nbsp;以下的 Nginx configuration example 的意思是？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Nginx-中-何時可能會用到-proxy-set-header">10.1.2&nbsp;&nbsp;Nginx 中, 何時可能會用到 proxy_set_header?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Nginx-設定的意思是？">10.1.3&nbsp;&nbsp;以下的 Nginx 設定的意思是？</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#NGINX-Cookbook">11&nbsp;&nbsp;<b>NGINX Cookbook</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/nginx/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/nginx/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            NGINX 學習筆記
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-09-28T08:53:56.000Z" itemprop="datePublished">9月 28 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            30 分钟 讀完 (大概 4559 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這是我的 <strong>NGINX</strong> 學習筆記，看什麼學什麼記什麼！</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-get install nginx</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+
+<h2 id="建立新的設定檔"><a href="#建立新的設定檔" class="headerlink" title="建立新的設定檔"></a>建立新的設定檔</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/nginx/sites-available/configName</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line"><span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line"><span class="hljs-attribute">server_name</span> yourServerName;</span><br><span class="line"><span class="hljs-attribute">access_log</span> /locationYouPrefer;</span><br><span class="line"><span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;</span><br><span class="line"><span class="hljs-attribute">ssl_certificate</span> /location/fullchain.pem;</span><br><span class="line"><span class="hljs-attribute">ssl_certificate_key</span> /location/privkey.pem;</span><br><span class="line">   </span><br><span class="line"><span class="hljs-section">location</span> /<span class="hljs-section">upstream</span> &#123;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> Host www.tu8686.com;</span><br><span class="line"><span class="hljs-attribute">set</span> <span class="hljs-variable">$upstream_url</span> <span class="hljs-number">210.209.13.49:80</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_pass</span> http://<span class="hljs-variable">$upstream_url</span>;</span><br><span class="line"><span class="hljs-attribute">add_header</span> Q-Status <span class="hljs-variable">$upstream_cache_status</span>;</span><br><span class="line">break;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">location</span> / &#123;</span><br><span class="line"><span class="hljs-attribute">proxy_pass_header</span> Server;</span><br><span class="line"><span class="hljs-attribute">proxy_redirect</span> <span class="hljs-literal">off</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_set_header</span> X-Scheme <span class="hljs-variable">$scheme</span>;</span><br><span class="line"><span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:50005;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>proxy_pass_header</code>: 若回應 request 時, header 有設定了, 那告訴 NGINX 不要更改設定的 header, 若要加 header 需使用 via, 例如 <a target="_blank" rel="noopener" href="https://lh3.googleusercontent.com/qfRZmu-bkGWNmgmsyxojw6Js6weD29jiuPoiQAIm_qvDUE9xTczLpLPIBYEbNeVCNmkDUFOcJqrAKBsIbcaCAlmgzJggH2l5WM7X3XCnrq1oKFXTIBTVCdTVzMjDupjxXt3BrMJwguQvkDcMy3j11SJyJ2-CKzZ6W_rdpQM10a6iLSKHTJzdrGhttq0Fm96AeoXCpqMWG0ZxJ6TYjpc_X4NCe-For9UYldB297Lqzl8eJnyASItIVciGDlHz5iqnyA_PKcbI-krLfTO-r966WiRHuWV9QJHAGSlwj7UhOS689z_Yq2MWmG5YryAFqDJCOl-nfvOI-lh0oFMlzcSgntJqSarTkQfTg3_qstfHYsAYWsrdbxpONwnzwl7oZ_7SvodN0iXEyG8dnyFDdTSOKa7Aqd8_0kzutkKTnetmVVYwHoYVYQzp3mHpJGZHpRFGBIlA-3_oSEp8j_2WE6aWECDblSOJuM9D-Wg4kMh6wxVS8P88HVDbDumsEaAiQIWGOAj_P0U7cizmCLCgP5D94xHF9SN7mfZpFv5-Ubmh_tJqIs7yj_6UanRO0__6pXPjWdx-Hp3F2G2DHVPFSKJ7OD3XRh_E9XrrqQYnWUWLMdB6U50zm6dAOTiBrRMnd_x-qzB7LOUxA6EZdpErsHsraF4rCDBjjikWqb8t-b1wVauVTZ29yBA3LGM=w1140-h718-no">範例圖片</a></li>
+<li><code>server_name</code>: request 的 header 中的 server 需符合</li>
+<li><code>access_log</code>: log 的位置</li>
+<li><code>location</code>: 符合 server 後, 改搜尋相對應的 location</li>
+<li><code>proxy_redirect</code>: 重新導向</li>
+<li><code>proxy_set_header</code>: 設定 header 值</li>
+<li><code>proxy_pass</code>: 將 request 導向指定的位置</li>
+<li><code>proxy_set_header</code>: set host</li>
+<li><code>set $upstream_url</code>: set $upstream_url </li>
+<li><code>add_header</code>: add header </li>
+<li><code>break</code>: 終止目前的 rewrite 規則。 如果有規則是被指定在目前的 location 內的，繼續將此 location 的 request 處理完畢。</li>
+</ul>
+<br>
+
+<h2 id="啟用設定檔"><a href="#啟用設定檔" class="headerlink" title="啟用設定檔"></a>啟用設定檔</h2><h3 id="複製到-enabled-資料夾"><a href="#複製到-enabled-資料夾" class="headerlink" title="複製到 enabled 資料夾"></a>複製到 enabled 資料夾</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">ln</span> -s /etc/nginx/sites-available/yourConfig /etc/nginx/sites-enabled</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="啟用"><a href="#啟用" class="headerlink" title="啟用"></a>啟用</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemctl restart nginx.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="location"><a href="#location" class="headerlink" title="location"></a>location</h2><p><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_core_module.html#location">參考官方文件</a></p>
+<h3 id="語法"><a href="#語法" class="headerlink" title="語法"></a>語法</h3><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">Syntax:	location [ = | ~ | ~* | ^~ ] uri &#123; ... &#125;</span><br><span class="line">location @name &#123; ... &#125;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>規則搜尋分為以下兩種方式</p>
+<ul>
+<li>正則搜尋 (regular expression)<ul>
+<li><code>~*</code>: 不區分大小寫</li>
+<li><code>~</code>: 區分大小寫</li>
+</ul>
+</li>
+<li>前綴字串 (prefix string)</li>
+</ul>
+</li>
+<li><p>規則搜尋順序：<br>使用前綴字串搜尋 &rarr; 搜尋到符合最長的 url, 並且記下結果 &rarr; 依照設定檔中的順序， 使用正則規則搜尋 &rarr; 如果正則規則有搜尋到符合的，會立即停止搜尋，因此正則順序至關重要 &rarr; 如果正則沒有搜尋到符合的，會採用使用前綴字串搜尋到的</p>
+</li>
+<li><p>在一些不區分大小寫的系統中，像是 macOS 或是 Cygwin, 前綴字串規則會無視大小寫</p>
+</li>
+<li><p>正則規則可以捕捉一些變數，在其他的規則中使用</p>
+</li>
+<li><p>如果最長的前綴字串規則有 <code>^~</code>, 那就不會再使用正則規則搜尋</p>
+</li>
+<li><p>前綴規則有 <code>=</code>, 代表字串須完全符合，如果有找到，搜尋終止。 例如，如果 “/“ 請求很頻繁，那麼可以定義 “location = /“, 這樣可以加速請求處理</p>
+</li>
+<li><p>在版本 0.7.1 到 0.8.41 中，如果請求符合前綴規則，就算沒有加上 <code>=</code>, 或者 <code>^~</code>, 搜尋也會立即停止</p>
+</li>
+</ul>
+<br>
+
+<h3 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h3><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">location = / &#123;</span><br><span class="line">    [ configuration A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    [ configuration B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location /documents/ &#123;</span><br><span class="line">    [ configuration C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location ^~ /images/ &#123;</span><br><span class="line">    [ configuration D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location ~* \.(gif|jpg|jpeg)$ &#123;</span><br><span class="line">    [ configuration E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>請求 <code>/</code> 將會符合 <strong>A</strong></li>
+<li>請求 <code>/index.html</code> 將會符合 <strong>B</strong></li>
+<li>請求 <code>/documents/document.html</code> 將會符合 <strong>C</strong></li>
+<li>請求 <code>/images/1.gif</code> 將會符合 <strong>D</strong></li>
+<li>請求 <code>/documents/1.jpg</code> 將會符合 <strong>E</strong></li>
+<li>請求 <code>@name</code>: 只用於內部重新導向，不用於正常使用, 例如：<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /img/ &#123;</span><br><span class="line">        <span class="hljs-attribute">not_found</span> <span class="hljs-number">404</span> <span class="hljs-variable">@not_found</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-section">location</span> <span class="hljs-variable">@not_found</span> &#123;</span><br><span class="line">        <span class="hljs-comment"># 规则</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h2 id="alias-與-root"><a href="#alias-與-root" class="headerlink" title="alias 與 root"></a>alias 與 root</h2><h3 id="alias"><a href="#alias" class="headerlink" title="alias"></a>alias</h3><p><a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#alias">參考文件</a><br>定義特定 location 的替換。 舉例來說, 看看下面的設定</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /i/ &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果請求是 <strong>/i/top.git</strong> 的話, 檔案 <strong>/data/w3/images/top.git</strong> 將會被送出</p>
+<p>路徑可以包含變數, 除了 <strong>$document_root</strong> 以及 <strong>$realpath_root</strong> 之外</p>
+<p>如果 alias 被使用在正則定義的 location 之內, 那 alias 必須要參考正則捕捉到的條件, 範例如下：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> <span class="hljs-regexp">~ ^/users/(.+\.(?:gif|jpe?g|png))$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/<span class="hljs-variable">$1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>當 location 的值跟 alias 的最後一個資料夾的值相同, 像下面這樣：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /images/ &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那會建議使用 root</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /images/ &#123;</span><br><span class="line">    <span class="hljs-attribute">root</span> /data/w3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="root"><a href="#root" class="headerlink" title="root"></a>root</h3><p><a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#root">參考文件</a><br>設定 root 的資料夾位置為請求路徑, 例如以下範例：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /i/ &#123;</span><br><span class="line">    <span class="hljs-attribute">root</span> /data/w3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>/data/w3/i/top.git</strong> 檔案將會被送出, 以回應 <strong>/i/top.git</strong> 請求</p>
+<p>路徑可以包含變數, 除了 <strong>$document_root</strong> 以及 <strong>$realpath_root</strong> 之外</p>
+<br>
+
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><ul>
+<li><strong>alias 會取代 location</strong> <code>成為新的請求資源路徑</code></li>
+<li><strong>root + location 的值</strong> = <code>請求資源路徑</code></li>
+</ul>
+<br>
+
+<h2 id="部署-vue-專案"><a href="#部署-vue-專案" class="headerlink" title="部署 vue 專案"></a>部署 vue 專案</h2><h3 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h3><p><code>npm run build</code>, 看 script 怎麼寫, 這邊只管部署</p>
+<br>
+
+<h3 id="config"><a href="#config" class="headerlink" title="config"></a>config</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">        <span class="hljs-comment"># Listen port 號</span></span><br><span class="line">        <span class="hljs-attribute">listen</span>       <span class="hljs-number">8080</span>;</span><br><span class="line">        <span class="hljs-comment"># Server name</span></span><br><span class="line">        <span class="hljs-attribute">server_name</span>  localhost;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># Log 位置</span></span><br><span class="line">        <span class="hljs-attribute">access_log</span>  logs/host.access.log;</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment"># root 位置, 可以參考上面的 root 詳解</span></span><br><span class="line">        <span class="hljs-attribute">root</span>   /Users/rainy/Desktop/MyWork/Work/website/dist;</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment"># 預設檔案</span></span><br><span class="line">        <span class="hljs-attribute">index</span> index.html index.htm;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-section">location</span> / &#123;</span><br><span class="line">            <span class="hljs-comment"># try to find $uri, and then $uri/, and if they both are not found, go for @router</span></span><br><span class="line">            <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ <span class="hljs-variable">@router</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="hljs-comment"># If the path is found, go for index file below</span></span><br><span class="line">            <span class="hljs-attribute">index</span>  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-section">location</span> <span class="hljs-variable">@router</span> &#123;</span><br><span class="line">            <span class="hljs-comment"># rewite whatever to /index.html</span></span><br><span class="line">            </span><br><span class="line">            <span class="hljs-comment"># 不管 request 是什麼, 都 rewrite 到 /index.html, 並且執行 last, last 代表說, 結束這一次的 rewrite 規則, 並且使用 rewrite 後的結果重新對 server 發一次請求</span></span><br><span class="line">            <span class="hljs-attribute">rewrite</span><span class="hljs-regexp"> ^.*$</span> /index.html <span class="hljs-literal">last</span>;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="upstream"><a href="#upstream" class="headerlink" title="upstream"></a>upstream</h2><h3 id="語法-1"><a href="#語法-1" class="headerlink" title="語法"></a>語法</h3><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">Syntax:	upstream name &#123; ... &#125;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	http</span><br></pre></td></tr></table></figure>
+<br>
+
+<h3 id="範例-1"><a href="#範例-1" class="headerlink" title="範例"></a>範例</h3><figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">upstream</span> backend &#123;</span><br><span class="line">    <span class="hljs-attribute">server</span> backend1.example.com weight=<span class="hljs-number">5</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> <span class="hljs-number">127.0.0.1:8080</span>       max_fails=<span class="hljs-number">3</span> fail_timeout=<span class="hljs-number">30s</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> unix:/tmp/backend3;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server</span> backup1.example.com  backup;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-section">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">proxy_pass</span> http://backend;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="詳解"><a href="#詳解" class="headerlink" title="詳解"></a>詳解</h3><p>定義多個 server, server 可以 listen 不同的 port 號, TCP 以及 UNIX-domain socket 可以混用<br>預設的話, 會採用權重輪詢分配請求到不同的 server, 以上面的範例來看, 每 7 個 request 中, 5 個會被分配到 <code>backend1.example.com</code> (weight=5), 2 個分別到 <code>127.0.0.1:8080</code> 以及 <code>unix:/tmp/backend3</code><br>如果在溝通途中有錯誤, 請求會被分派到下一個 server, 直到出現成功回應的 server 。 如果裡面都沒有可以成功回應的, 那客戶端會收到最後一個 server 的回應 (backup)</p>
+<br>
+
+<h2 id="PHP-FPM"><a href="#PHP-FPM" class="headerlink" title="PHP-FPM"></a>PHP-FPM</h2><h3 id="fast"><a href="#fast" class="headerlink" title="fast"></a>fast</h3><ul>
+<li>請求網址為 <code>http://lemp.test/test.php/foo/bar.php?v=1</code></li>
+<li>各項資訊如下:<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">array (</span><br><span class="line">  &#x27;USER&#x27; =&gt; &#x27;www-data&#x27;,</span><br><span class="line">  &#x27;HOME&#x27; =&gt; &#x27;/var/www&#x27;,</span><br><span class="line">  &#x27;FCGI_ROLE&#x27; =&gt; &#x27;RESPONDER&#x27;,</span><br><span class="line">  &#x27;QUERY_STRING&#x27; =&gt; &#x27;v=1&#x27;,</span><br><span class="line">  &#x27;REQUEST_METHOD&#x27; =&gt; &#x27;GET&#x27;,</span><br><span class="line">  &#x27;CONTENT_TYPE&#x27; =&gt; &#x27;&#x27;,</span><br><span class="line">  &#x27;CONTENT_LENGTH&#x27; =&gt; &#x27;&#x27;,</span><br><span class="line">  &#x27;SCRIPT_FILENAME&#x27; =&gt; &#x27;/var/www/test.php&#x27;,</span><br><span class="line">  &#x27;SCRIPT_NAME&#x27; =&gt; &#x27;/test.php&#x27;,</span><br><span class="line">  &#x27;PATH_INFO&#x27; =&gt; &#x27;/foo/bar.php&#x27;,</span><br><span class="line">  &#x27;REQUEST_URI&#x27; =&gt; &#x27;/test.php/foo/bar.php?v=1&#x27;,</span><br><span class="line">  &#x27;DOCUMENT_URI&#x27; =&gt; &#x27;/test.php/foo/bar.php&#x27;,</span><br><span class="line">  &#x27;DOCUMENT_ROOT&#x27; =&gt; &#x27;/var/www&#x27;,</span><br><span class="line">  &#x27;SERVER_PROTOCOL&#x27; =&gt; &#x27;HTTP/1.1&#x27;,</span><br><span class="line">  &#x27;GATEWAY_INTERFACE&#x27; =&gt; &#x27;CGI/1.1&#x27;,</span><br><span class="line">  &#x27;SERVER_SOFTWARE&#x27; =&gt; &#x27;nginx/1.4.0&#x27;,</span><br><span class="line">  &#x27;REMOTE_ADDR&#x27; =&gt; &#x27;192.168.56.1&#x27;,</span><br><span class="line">  &#x27;REMOTE_PORT&#x27; =&gt; &#x27;44644&#x27;,</span><br><span class="line">  &#x27;SERVER_ADDR&#x27; =&gt; &#x27;192.168.56.3&#x27;,</span><br><span class="line">  &#x27;SERVER_PORT&#x27; =&gt; &#x27;80&#x27;,</span><br><span class="line">  &#x27;SERVER_NAME&#x27; =&gt; &#x27;&#x27;,</span><br><span class="line">  &#x27;HTTPS&#x27; =&gt; &#x27;&#x27;,</span><br><span class="line">  &#x27;REDIRECT_STATUS&#x27; =&gt; &#x27;200&#x27;,</span><br><span class="line">  &#x27;HTTP_HOST&#x27; =&gt; &#x27;lemp.test&#x27;,</span><br><span class="line">  &#x27;HTTP_USER_AGENT&#x27; =&gt; &#x27;Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:20.0) Gecko/20100101 Firefox/20.0&#x27;,</span><br><span class="line">  &#x27;HTTP_ACCEPT&#x27; =&gt; &#x27;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&#x27;,</span><br><span class="line">  &#x27;HTTP_ACCEPT_LANGUAGE&#x27; =&gt; &#x27;en-US,en;q=0.5&#x27;,</span><br><span class="line">  &#x27;HTTP_ACCEPT_ENCODING&#x27; =&gt; &#x27;gzip, deflate&#x27;,</span><br><span class="line">  &#x27;HTTP_CONNECTION&#x27; =&gt; &#x27;keep-alive&#x27;,</span><br><span class="line">  &#x27;PHP_SELF&#x27; =&gt; &#x27;/test.php/foo/bar.php&#x27;,</span><br><span class="line">  &#x27;REQUEST_TIME&#x27; =&gt; 1367829847,</span><br><span class="line">)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="Questions and Answers"></a>Questions and Answers</h2><h6 id="以下的-Nginx-configuration-example-的意思是？"><a href="#以下的-Nginx-configuration-example-的意思是？" class="headerlink" title="以下的 Nginx configuration example 的意思是？"></a><strong>以下的 Nginx configuration example 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">proxy_http_version</span> <span class="hljs-number">1</span>.<span class="hljs-number">1</span>;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 http version 設定為 1.1, 預設為 1.0<br>1.0 是不會開啟 keep-alive feature 在 proxy server 跟 backend 的</li>
+</ul>
+<h6 id="Nginx-中-何時可能會用到-proxy-set-header"><a href="#Nginx-中-何時可能會用到-proxy-set-header" class="headerlink" title="Nginx 中, 何時可能會用到 proxy_set_header?"></a><strong>Nginx 中, 何時可能會用到 proxy_set_header?</strong></h6><p>當我想要使用預設的 variable 來設定 header 時, 例如取得 $remote_addr</p>
+<h6 id="以下的-Nginx-設定的意思是？"><a href="#以下的-Nginx-設定的意思是？" class="headerlink" title="以下的 Nginx 設定的意思是？"></a><strong>以下的 Nginx 設定的意思是？</strong></h6><ul>
+<li><p><strong>Example</strong>:</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line">    <span class="hljs-attribute">underscores_in_headers</span> <span class="hljs-literal">on</span>;</span><br><span class="line">    <span class="hljs-section">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">if</span> (<span class="hljs-variable">$http_custom_header</span> = ray) &#123;</span><br><span class="line">            <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:3000;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>Answer</strong>:<br>使用 custom variable, 會自動 assign request header name <code>custom_header</code>title column collection 的 value 到 $http_custom_header 這個變數中, 所以如果我在 request header 使用 <code>custom_header</code>: <code>ray</code> 的話, 就會 pass 到 <strong><a target="_blank" rel="noopener" href="http://127.0.0.1:3000/">http://127.0.0.1:3000</a>;</strong><br>參考 <a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers">Nginx document</a></p>
+</li>
+<li><p><strong>以下的設定中, <code>location ~ \.php$</code> 中, 最終帶過去的 fastcgi_param 是什麼？</strong> $query_string, 原本的 $request_method 跟 $document_root, $fastcgi_script_name 會處於未設定</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># server context</span></span><br><span class="line"><span class="hljs-attribute">root</span> /var/www/html;</span><br><span class="line"></span><br><span class="line"><span class="hljs-attribute">fastcgi_param</span> REQUEST_METHOD <span class="hljs-variable">$request_method</span>;</span><br><span class="line"><span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$document_root</span><span class="hljs-variable">$fastcgi_script_name</span>;</span><br><span class="line"><span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">location</span> /scripts &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> QUERY_STRING <span class="hljs-variable">$query_string</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> <span class="hljs-number">127.0.0.1:9000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>在以下的設定中, 如果使用 PHP-FPM 的話, 最終傳出的 fastcgi_param TEST 跟 DOCUMENT_ROOT 是？</strong> three, override</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># server context</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-section">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> REQUEST_METHOD <span class="hljs-variable">$request_method</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$request_uri</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> DOCUMENT_ROOT initial;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> DOCUMENT_ROOT override;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> TEST one;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> TEST two;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> TEST three;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> <span class="hljs-number">127.0.0.1:9000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>不同的 FastCGI 處理器的作用方式依樣嗎？</strong> 不同哦</p>
+</li>
+<li><p><strong>因為不同的 FastCGI 處理器行為不同, 所以宣告 fastcgi_param 時, 建議宣告幾次？</strong> 1次</p>
+</li>
+<li><p><strong>當我們使用 PHP-FPM, 要 pass fastcgi_params 時, 怎樣可以在不同的 location 中在保留共同變數的同時, 又可以客制新的變數？</strong> 使用 include 共同檔案, 如下：</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attribute">root</span> /var/www/html;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">location</span> /scripts &#123;</span><br><span class="line">    <span class="hljs-attribute">include</span> fastcgi_common;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">include</span> fastcgi_common;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> QUERY_STRING <span class="hljs-variable">$query_string</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> CONTENT_TYPE <span class="hljs-variable">$content_type</span>;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_param</span> CONTENT_LENGTH <span class="hljs-variable">$content_length</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">    <span class="hljs-attribute">fastcgi_pass</span> <span class="hljs-number">127.0.0.1:9000</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>CGI 全寫？</strong> Common Gateway Interface</p>
+</li>
+<li><p><strong>Fast CGI 全寫？</strong> Fast Common Gateway Interface</p>
+</li>
+<li><p><strong>CGI 用途？</strong> 一份協議, 規定要傳哪些數據, 以什麼樣的格式給後端</p>
+</li>
+<li><p><strong>Fast CGI 用途？</strong> 依據 CGI 協議, 將請求以及數據傳給後端這個動作, 每一次都會產生一個程序, Fast CGI 會啟動一個主程序, 並將工作分配給子進程處理, 避免重複的勞動, 提高效率</p>
+</li>
+<li><p><strong>PHP-FPM 全寫?</strong> PHP-Fast CGI Process Manager</p>
+</li>
+<li><p><strong>PHP-FPM 用途?</strong> PHP 針對 FastCGI 的實現</p>
+</li>
+<li><p><strong>如何使用 systemctl 啟動 Nginx</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl start nginx</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何使用 systemctl, 預設開機啟動 NGINX?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl <span class="hljs-built_in">enable</span> nginx</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何使用 systemctl, 停止 nginx?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl stop nginx</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何使用 systemctl, 重啟 nginx?</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl restart nginx</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何使用 systemctl, 重新載入 nginx 配置文件？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl reload nginx</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何測試 nginx 配置？</strong> </p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo nginx -t</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何使用 systemctl, 顯示 nginx 狀態？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo systemctl status nginx</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如何檢查 nginx 版本？</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo nginx -v</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>在 NGINX 中如果我想要從本地帶客製的 header 到 server, 該 header 的 key 有 underscore, 該怎麼解決？</strong></p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">在 NGINX server block 中加入以下設定</span><br><span class="line">underscores_in_headers on;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的規則搜尋, 又區分為哪兩種？</strong></p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">1. 正則搜尋</span><br><span class="line">2. 前贅字串</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的正則搜尋中, <code>~*</code> 代表的意思是？</strong> 不區分大小寫</p>
+</li>
+<li><p><strong>NGINX 中, location 的正則搜尋中, <code>~</code> 代表的意思是？</strong> 區分大小寫</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋的順序？</strong> </p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">1. 使用前綴字串搜尋</span><br><span class="line">2. 搜尋到符合最長的 uri, 記錄下來</span><br><span class="line">3. 依照設定檔中的順序, 使用正則搜尋</span><br><span class="line">4. 若正則有找到, 停止搜尋, 以正則的為主</span><br><span class="line">5. 若正則沒找到, 以前最字串為主</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的規則搜尋的順序, 會先使用哪種規則搜尋?</strong> 前贅字串</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋的順序, 前綴字串搜尋結束後, 會使用什麼規則搜尋?</strong> 正則</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋的順序, 若再找到符合的前綴字串後, 還是使用正則搜尋一次嗎？?</strong> 會</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋的順序, 若正則規則找到符合的, 還會繼續搜尋嗎？</strong> 不會</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋的順序, 若前綴跟正則都有符合的, 以哪種為優先？</strong> 正則</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, macOS 會區分大小寫嗎？</strong> 不會</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 如何捕捉變數？</strong> 使用正則</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, <code>^~</code> 代表什麼意思？</strong> 當使用 <code>^~</code> 的前綴有找到符合的, 不會再使用正則搜尋</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, <code>^~</code> 是用於前綴還是正則？</strong> 前綴</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, <code>=</code> 是用於前綴還是正則？</strong> 前綴</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, <code>=</code> 代表什麼意思？</strong> 前綴須完全符合, 若有找到, 搜尋停止</p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 如果 <code>/</code> 的搜尋非常頻繁, 可以使用什麼樣的規則來加快速度？</strong> <code>= /</code></p>
+</li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 下圖中, 請求 <code>/</code> 會符合哪一個？</strong> A</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> = / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location /documents/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location<span class="hljs-regexp"> ^~</span> /images/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location <span class="hljs-regexp">~* \.(gif|jpg|jpeg)$</span> &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 下圖中, 請求 <code>/index.html</code> 會符合哪一個？</strong> B</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> = / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location /documents/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location<span class="hljs-regexp"> ^~</span> /images/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location <span class="hljs-regexp">~* \.(gif|jpg|jpeg)$</span> &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 下圖中, 請求 <code>documents/document.htm</code> 會符合哪一個？</strong> C</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> = / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location /documents/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location<span class="hljs-regexp"> ^~</span> /images/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location <span class="hljs-regexp">~* \.(gif|jpg|jpeg)$</span> &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 下圖中, 請求 <code>images/1.gif</code> 會符合哪一個？</strong> D</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> = / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> A ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> B ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location /documents/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> C ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location<span class="hljs-regexp"> ^~</span> /images/ &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> D ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location <span class="hljs-regexp">~* \.(gif|jpg|jpeg)$</span> &#123;</span><br><span class="line">    [ <span class="hljs-attribute">configuration</span> E ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, location 的規則搜尋中, 下圖中, 請求 <code>@name</code> 可否用於正常使用？</strong> 不可</p>
+</li>
+</ul>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /img/ &#123;</span><br><span class="line">        <span class="hljs-attribute">not_found</span> <span class="hljs-number">404</span> <span class="hljs-variable">@not_found</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-section">location</span> <span class="hljs-variable">@not_found</span> &#123;</span><br><span class="line">        <span class="hljs-comment"># 规则</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>NGINX 中, alias 與 root 的規則中, 下圖中, 如果請求 <code>/i/top.gif</code> 那哪一個檔案會被送出？</strong> <code>/data/w3/images/top.gif</code></p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /i/ &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 中, alias 與 root 的規則中, 下圖中, 如果像下圖般有使用到變數, 該從哪裡取變數？</strong> location</p>
+</li>
+</ul>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> <span class="hljs-regexp">~ xxx</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/<span class="hljs-variable">$1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>NGINX 中, alias 與 root 的規則中, 如下圖般, 當 location 以及 alias 的最後一個資料夾的值相同時, 建議如何？</strong> <figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /images/ &#123;</span><br><span class="line">    <span class="hljs-attribute">root</span> /data/w3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /images/ &#123;</span><br><span class="line">    <span class="hljs-attribute">alias</span> /data/w3/images/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>NGINX 中, alias 與 root 的規則中, 如下圖般, 如果請求是 <code>/i/top.gif</code>, 哪個檔案會被送出？</strong> <code>/data/w3/i/top.gif</code></li>
+</ul>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">location</span> /i/ &#123;</span><br><span class="line">    <span class="hljs-attribute">root</span> /data/w3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>NGINX 全域變數中, $document_root 是什麼？</strong> 當前請求的文檔根目錄或別名</p>
+</li>
+<li><p><strong>NGINX 全域變數中, 下面的 request url 中, $document_uri 是哪一段？</strong> /test1/test2</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 全域變數中, 下面的 request url 中, $host 是哪一段？</strong> 34.83.35.165</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 全域變數中, $hostname 是什麼？</strong> 主機名稱, 可在 Linux 中設定</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $is_args 是什麼？</strong> 如果請求中有參數，值為“?”，否則為空字符串。</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $limit_rate 是什麼？</strong> 用於設置響應的速度限制，詳見limit_rate。</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $msec 是什麼？</strong> 當前的Unix時間戳(1.3.9, 1.2.6)</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $pipe 是什麼？</strong> 如果請求來自管道通信，值為“p”，否則為“.” </p>
+</li>
+<li><p><strong>NGINX 全域變數中, 下面的 request url 中, $query_string 是哪一段？</strong> test1=123&amp;test2=456</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 全域變數中, $realpath_root 是什麼？</strong> 當前請求的文檔根目錄或別名的真實路徑，會將所有符號連接轉換為真實路徑, 位置同 document_root</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $remote_addr 是什麼？</strong> 客戶端地址</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $remote_port 是什麼？</strong> 客戶端端口</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $request 是什麼？</strong> 代表客戶端的請求地址, 像這樣: <code>POST /test1/test2?test1=123&amp;test2=456 HTTP/1.1</code></p>
+</li>
+<li><p><strong>NGINX 全域變數中, $request_body 是什麼？</strong> 客戶端的請求主體, 此變量可在location中使用，將請求主體通過proxy_pass, fastcgi_pass, uwsgi_pass,和scgi_pass傳遞給下一級的代理服務器。</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $request_filename 是什麼？</strong> 當前連接請求的文件路徑，由root或alias指令與URI請求生成。 <code>/usr/share/nginx/html/test1/test2</code></p>
+</li>
+<li><p><strong>NGINX 全域變數中, $request_length 是什麼？</strong> 請求的長度(包括請求的地址, http請求頭和請求主體) (1.3.12, 1.2.7)</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $request_method 是什麼？</strong> HTTP請求方法，通常為“GET”或“POST”</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $request_time 是什麼？</strong> 處理客戶端請求使用的時間(1.3.9, 1.2.6); 從讀取客戶端的第一個字節開始計時。</p>
+</li>
+<li><p><strong>NGINX 全域變數中, 下面的 request url 中, $request_uri 是哪一段？</strong> <code>/test1/test2?test1=123&amp;test2=456</code><br>這個變量等於包含一些客戶端請求參數的原始URI，它無法修改，請查看$uri更改或重寫URI，不包含主機名，例如：”/cnphp/test.php?arg=freemouse”。</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>NGINX 全域變數中, $scheme 是什麼？</strong> 請求使用的Web協議, “http” 或“https”</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $sent_http_name是什麼？</strong> 可以設置任意http響應頭字段； 變量名中的後半部分“name”可以替換成任意響應頭字段，如需要設置響應頭Content-length，那麼將“－”替換為下劃線，大寫字母替換為小寫，形如：$sent_http_content_length 4096即可。</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $server_addr 是什麼？</strong> 服務器端地址，非外部 IP, 機器在該網域的地址</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $server_port 是什麼？</strong> 服務器端口</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $server_protocol 是什麼？</strong> 服務器的HTTP版本, 通常為“HTTP/1.0” 或“HTTP/1.1”</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $status 是什麼？</strong> HTTP status code</p>
+</li>
+<li><p><strong>NGINX 全域變數中, $time_iso8601 是什麼？</strong> 服務器時間的ISO 8610格式, 如 <code>2019-11-27T14:11:04+00:00</code></p>
+</li>
+<li><p><strong>NGINX 全域變數中, $time_local 是什麼？</strong> 服務器時間（LOG Format 格式) <code>27/Nov/2019:14:11:38 +0000</code></p>
+</li>
+<li><p><strong>NGINX 全域變數中, $uri 是什麼？</strong> 請求中的當前URI(不帶請求參數，參數位於$args)，可以不同於瀏覽器傳遞的$request_uri的值，它可以通過內部重定向，或者使用index指令進行修改，$uri不包含主機名，如”/foo/bar.html”。</p>
+</li>
+<li><p><strong>NGINX 全域變數中, 下面的 request url 中, $uri 是哪一段？</strong> <code>/test1/test2</code></p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">http://34.83.35.165/test1/test2?test1=123&amp;test2=456</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>參考以下的 NGINX 設定, 並思考接下來一連串的問題</strong></p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">upstream</span> backend &#123;</span><br><span class="line">    <span class="hljs-attribute">server</span> backend1.example.com weight=<span class="hljs-number">5</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> <span class="hljs-number">127.0.0.1:8080</span>       max_fails=<span class="hljs-number">3</span> fail_timeout=<span class="hljs-number">30s</span>;</span><br><span class="line">    <span class="hljs-attribute">server</span> unix:/tmp/backend3;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">server</span> backup1.example.com  backup;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-section">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">proxy_pass</span> http://backend;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>以上的 nginx 設定中, 到 <code>/</code> 的請求會被送到哪裡？</strong><br>upstream backend</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 每七個請求中, 會有幾個到 backend1.example.com? 為什麼？</strong><br>5 個<br>因為 weight=5</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 每七個請求中, 會有幾個到 127.0.0.1:8080? 為什麼？</strong><br>1 個<br>因為沒有特別分配權重, 預設平均分配</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 每七個請求中, 會有幾個到 unix:/tmp/backend3 為什麼？</strong><br>1 個<br>因為沒有特別分配權重, 預設平均分配</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 如果送給 server 127.0.0.1:8080 出錯了, 會怎麼樣？</strong><br>送往下一個, 即 unix:/tmp/backend3</p>
+</li>
+<li><p><strong>以上的 nginx 設定中, 如果 upstream 中的 server 都無法服務, 會怎麼樣？</strong><br>送給 backup server, 即 backup1.example.com, 客戶會收到這一個 server 的回應</p>
+</li>
+</ul>
+<br>
+<br>
+<br>
+
+<h2 id="NGINX-Cookbook"><a href="#NGINX-Cookbook" class="headerlink" title="NGINX Cookbook"></a>NGINX Cookbook</h2><ul>
+<li><strong>NGINX 中, root 語法的意思是什麼？</strong><br>將會在 root 所定義的位置中尋找請求中帶過來的 URL 部分</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/NGINX/">#NGINX</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/markdown/">Markdown 學習筆記</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/usingGoogleStackdriverDebugTracesLoggingAndLogpoints/">使用 Google Stackdriver 來除錯, 追蹤, 紀錄 以及部署紀錄點</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/nginx/';
+        this.page.identifier = 'zh-tw/nginx/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

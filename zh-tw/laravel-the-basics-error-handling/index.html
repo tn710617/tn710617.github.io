@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - The Basics - Error Handling (官方文件原子化翻譯筆記) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Error Handling (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-the-basics-error-handling/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0">
+<meta property="article:published_time" content="2020-03-14T13:33:18.000Z">
+<meta property="article:modified_time" content="2020-12-20T02:13:17.621Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Error Handling">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-the-basics-error-handling/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - The Basics - Error Handling (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-the-basics-error-handling/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0">
+<meta property="article:published_time" content="2020-03-14T13:33:18.000Z">
+<meta property="article:modified_time" content="2020-12-20T02:13:17.621Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Error Handling">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Configuration">2&nbsp;&nbsp;<b># Configuration</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#The-Exception-Handler">3&nbsp;&nbsp;<b># The Exception Handler</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Report-Method">3.1&nbsp;&nbsp;# Report Method</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Global-Log-Context">3.1.1&nbsp;&nbsp;# Global Log Context</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-Report-Helper">3.1.2&nbsp;&nbsp;# The Report Helper</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Ignoring-Exceptions-By-Type">3.1.3&nbsp;&nbsp;# Ignoring Exceptions By Type</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Render-Method">4&nbsp;&nbsp;<b># Render Method</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Reportable-amp-Renderable-Exceptions">4.1&nbsp;&nbsp;# Reportable &amp;amp;amp; Renderable Exceptions</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#HTTP-Exceptions">5&nbsp;&nbsp;<b># HTTP Exceptions</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Custom-HTTP-Error-Pages">5.1&nbsp;&nbsp;# Custom HTTP Error Pages</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-the-basics-error-handling/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-the-basics-error-handling/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - The Basics - Error Handling (官方文件原子化翻譯筆記)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-03-14T13:33:18.000Z" itemprop="datePublished">3月 14 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 讀完 (大概 961 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="# Configuration"></a># Configuration</h2><h6 id="Laravel-中-哪個設定會決定當遇到錯誤時-是否印出-stack-of-trace-information？"><a href="#Laravel-中-哪個設定會決定當遇到錯誤時-是否印出-stack-of-trace-information？" class="headerlink" title="Laravel 中, 哪個設定會決定當遇到錯誤時, 是否印出 stack of trace information？"></a><strong>Laravel 中, 哪個設定會決定當遇到錯誤時, 是否印出 stack of trace information？</strong></h6><p><code>config/app.php</code> 中的 <code>APP_DEBUG</code> option</p>
+<br>
+<br>
+
+<h2 id="The-Exception-Handler"><a href="#The-Exception-Handler" class="headerlink" title="# The Exception Handler"></a># The Exception Handler</h2><h3 id="Report-Method"><a href="#Report-Method" class="headerlink" title="# Report Method"></a># Report Method</h3><h6 id="Laravel-中-所有的-exceptions-都是由哪一個-class-所處理？"><a href="#Laravel-中-所有的-exceptions-都是由哪一個-class-所處理？" class="headerlink" title="Laravel 中, 所有的 exceptions 都是由哪一個 class 所處理？"></a><strong>Laravel 中, 所有的 exceptions 都是由哪一個 class 所處理？</strong></h6><p><code>App\Exceptions\Handler</code></p>
+<h6 id="Laravel-中-如果我要-log-exceptions-或傳送到外部服務-可以使用-哪一個-class-的-哪一個-method"><a href="#Laravel-中-如果我要-log-exceptions-或傳送到外部服務-可以使用-哪一個-class-的-哪一個-method" class="headerlink" title="Laravel 中, 如果我要 log exceptions 或傳送到外部服務, 可以使用 哪一個 class 的 哪一個 method"></a><strong>Laravel 中, 如果我要 log exceptions 或傳送到外部服務, 可以使用 <em>哪一個 class</em> 的 <em>哪一個 method</em></strong></h6><ul>
+<li><code>App\Exceptions\Handler</code> class</li>
+<li><code>report</code> method</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">report</span>(<span class="hljs-params"><span class="hljs-built_in">Throwable</span> <span class="hljs-variable">$exception</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$exception</span> <span class="hljs-keyword">instanceof</span> CustomException) &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">report</span>(<span class="hljs-variable">$exception</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果 exception 為自定義的某個 exception, 那就執行特別邏輯, 若否, 則執行預設的 log 邏輯</li>
+</ul>
+<br>
+
+<h4 id="Global-Log-Context"><a href="#Global-Log-Context" class="headerlink" title="# Global Log Context"></a># Global Log Context</h4><h6 id="Laravel-預設會將目前的-user-id-加到-exception-的-log-message-當中-如果我想要增加新的資訊到預設輸出-我可以在-哪個-class-的-哪個-method-定義這件事？"><a href="#Laravel-預設會將目前的-user-id-加到-exception-的-log-message-當中-如果我想要增加新的資訊到預設輸出-我可以在-哪個-class-的-哪個-method-定義這件事？" class="headerlink" title="Laravel 預設會將目前的 user id 加到 exception 的 log message 當中, 如果我想要增加新的資訊到預設輸出, 我可以在 哪個 class 的 哪個 method 定義這件事？"></a><strong>Laravel 預設會將目前的 user id 加到 exception 的 log message 當中, 如果我想要增加新的資訊到預設輸出, 我可以在 <em>哪個 class</em> 的 <em>哪個 method</em> 定義這件事？</strong></h6><ul>
+<li>App\Exceptions\Handler class</li>
+<li>context method</li>
+</ul>
+<h6 id="以下位於-App-Exceptions-Handler-的-Laravel-example-code-的意思是？"><a href="#以下位於-App-Exceptions-Handler-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 App\Exceptions\Handler 的 Laravel example code 的意思是？"></a><strong>以下位於 App\Exceptions\Handler 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">context</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title function_ invoke__">array_merge</span>(<span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">context</span>(), [</span><br><span class="line">        <span class="hljs-string">&#x27;foo&#x27;</span> =&gt; <span class="hljs-string">&#x27;bar&#x27;</span>,</span><br><span class="line">        <span class="hljs-string">&#x27;ray&#x27;</span> =&gt; <span class="hljs-string">&#x27;owner&#x27;</span></span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 <code>[&#39;foo&#39; =&gt; &#39;bar&#39;, &#39;ray&#39; =&gt; &#39;owner&#39;]</code> 加到預設的 context, 即 exception 的 log message 中<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3dTRegf2vh-3X7obBwp_MEMBHCrXnIKoMKBPf3q6MtloYqDRkCnyP39ELfHjwVBsc-zJY1LEtS7PDSfLx1IvBSoq0RdMahvncHquKuh3yfUHzSPoR5_qtnqgNXQenQrFPMFvzfJ-NxxlclCL_MYqZ-iUA=w3828-h174-no?authuser=0"></li>
+</ul>
+<br>
+
+<h4 id="The-Report-Helper"><a href="#The-Report-Helper" class="headerlink" title="# The Report Helper"></a># The <code>Report</code> Helper</h4><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isValid</span>(<span class="hljs-params"><span class="hljs-variable">$value</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">try</span> &#123;</span><br><span class="line">        <span class="hljs-comment">// Validate the value...</span></span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (<span class="hljs-built_in">Throwable</span> <span class="hljs-variable">$e</span>) &#123;</span><br><span class="line">        <span class="title function_ invoke__">report</span>(<span class="hljs-variable">$e</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>catch Throwable error, 將之 report 之後, return false, 原本的行為為 throw($e), 讓 Laravel 預設的 handler 去 render</li>
+</ul>
+<br>
+
+<h4 id="Ignoring-Exceptions-By-Type"><a href="#Ignoring-Exceptions-By-Type" class="headerlink" title="# Ignoring Exceptions By Type"></a># Ignoring Exceptions By Type</h4><h6 id="Laravel-中-解釋以下的-example"><a href="#Laravel-中-解釋以下的-example" class="headerlink" title="Laravel 中, 解釋以下的 example"></a><strong>Laravel 中, 解釋以下的 example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$dontReport</span> = [</span><br><span class="line">    <span class="title class_">\Illuminate\Auth\AuthenticationException</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="title class_">\Illuminate\Auth\Access\AuthorizationException</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="title class_">\Symfony\Component\HttpKernel\Exception\HttpException</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="title class_">\Illuminate\Database\Eloquent\ModelNotFoundException</span>::<span class="variable language_">class</span>,</span><br><span class="line">    <span class="title class_">\Illuminate\Validation\ValidationException</span>::<span class="variable language_">class</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義你不想要記錄到 log file 的 exceptions</li>
+</ul>
+<br>
+
+<h2 id="Render-Method"><a href="#Render-Method" class="headerlink" title="# Render Method"></a># Render Method</h2><h6 id="解釋以下的-Laravel-example"><a href="#解釋以下的-Laravel-example" class="headerlink" title="解釋以下的 Laravel example"></a><strong>解釋以下的 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Throwable</span> <span class="hljs-variable">$exception</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$exception</span> <span class="hljs-keyword">instanceof</span> CustomException) &#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;errors.custom&#x27;</span>, [], <span class="hljs-number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">render</span>(<span class="hljs-variable">$request</span>, <span class="hljs-variable">$exception</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用 render method 來定義 exception 的 response</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"><span class="hljs-variable">$request</span>, <span class="hljs-built_in">Throwable</span> <span class="hljs-variable">$exception</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 如果 exception 為指定的</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$exception</span> <span class="hljs-keyword">instanceof</span> CustomException) &#123;</span><br><span class="line">        <span class="hljs-comment">// 做相對應的客製化 response</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>()-&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;errors.custom&#x27;</span>, [], <span class="hljs-number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 若非指定 exception, 採用預設 response</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">render</span>(<span class="hljs-variable">$request</span>, <span class="hljs-variable">$exception</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Reportable-amp-Renderable-Exceptions"><a href="#Reportable-amp-Renderable-Exceptions" class="headerlink" title="# Reportable &amp; Renderable Exceptions"></a># Reportable &amp; Renderable Exceptions</h3><h6 id="Laravel-中-如果我想要建立客製化的-exception-可以在哪個資料夾內建立？"><a href="#Laravel-中-如果我想要建立客製化的-exception-可以在哪個資料夾內建立？" class="headerlink" title="Laravel 中, 如果我想要建立客製化的 exception, 可以在哪個資料夾內建立？"></a><strong>Laravel 中, 如果我想要建立客製化的 exception, 可以在哪個資料夾內建立？</strong></h6><p><code>app/Exceptions</code></p>
+<h6 id="解釋以下-Laravel-example"><a href="#解釋以下-Laravel-example" class="headerlink" title="解釋以下 Laravel example"></a><strong>解釋以下 Laravel example</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Exceptions</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Exception</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RenderException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Exception</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">report</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"><span class="hljs-variable">$request</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(...);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Exceptions</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Exception</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 使用客製化 exception, 並 extend Exeeption, 另一個方法是在 Exception Handler 中的 render() 使用 type hint catch 指定的 exception</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RenderException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Exception</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 可在 report 內定義該 exception 被 throw 時的行為, 即該 log exception 或是導向外部 service, 預設是 log</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">report</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 可在 render 內定義該 exception 被 throw 時的行為</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"><span class="hljs-variable">$request</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title function_ invoke__">response</span>(...);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="HTTP-Exceptions"><a href="#HTTP-Exceptions" class="headerlink" title="# HTTP Exceptions"></a># HTTP Exceptions</h2><h6 id="Laravel-中-如果我要立即的回傳一個-exception-帶著我指定的-error-code-那我可以使用哪一個-global-helper"><a href="#Laravel-中-如果我要立即的回傳一個-exception-帶著我指定的-error-code-那我可以使用哪一個-global-helper" class="headerlink" title="Laravel 中, 如果我要立即的回傳一個 exception, 帶著我指定的 error code, 那我可以使用哪一個 global helper?"></a><strong>Laravel 中, 如果我要立即的回傳一個 exception, 帶著我指定的 error code, 那我可以使用哪一個 global helper?</strong></h6><p>abort helper</p>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">abort</span>(<span class="hljs-number">403</span>, <span class="hljs-string">&#x27;Unauthorized action.&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>回傳 exception 403, 並帶著 exception message</li>
+</ul>
+<br>
+
+<h3 id="Custom-HTTP-Error-Pages"><a href="#Custom-HTTP-Error-Pages" class="headerlink" title="# Custom HTTP Error Pages"></a># Custom HTTP Error Pages</h3><h6 id="Laravel-中-如果我想要客製化-HTTP-Error-pages-可以將檔案至於哪個資料夾下？"><a href="#Laravel-中-如果我想要客製化-HTTP-Error-pages-可以將檔案至於哪個資料夾下？" class="headerlink" title="Laravel 中, 如果我想要客製化 HTTP Error pages, 可以將檔案至於哪個資料夾下？"></a><strong>Laravel 中, 如果我想要客製化 HTTP Error pages, 可以將檔案至於哪個資料夾下？</strong></h6><p><code>resources/views/errors/</code></p>
+<h6 id="Laravel-中-如果我想要客製化-HTTP-Error-pages-假設我要客製化的-error-code-為-404-那在資料夾-resources-views-errors-中-我的檔案名稱為？"><a href="#Laravel-中-如果我想要客製化-HTTP-Error-pages-假設我要客製化的-error-code-為-404-那在資料夾-resources-views-errors-中-我的檔案名稱為？" class="headerlink" title="Laravel 中, 如果我想要客製化 HTTP Error pages, 假設我要客製化的 error code 為 404, 那在資料夾 resources/views/errors/ 中, 我的檔案名稱為？"></a><strong>Laravel 中, 如果我想要客製化 HTTP Error pages, 假設我要客製化的 error code 為 404, 那在資料夾 <code>resources/views/errors/</code> 中, 我的檔案名稱為？</strong></h6><p><code>404.blade.php</code></p>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">&lt;h2&gt;&#123;&#123; <span class="hljs-variable">$exception</span>-&gt;<span class="title function_ invoke__">getMessage</span>() &#125;&#125;&lt;/h2&gt;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 view 中取出 exception message</li>
+</ul>
+<h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan vendor:publish --tag=laravel-errors</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>會將 vendor 中的 error view publish 到 <code>resources/views</code> 資料夾內, 可以完全自定義</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Error-Handling/">#Laravel Error Handling</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-digging-deeper-broadcasting/">Laravel - Digging Deeper - Broadcasting (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-the-basics-url-generation/">Laravel - The Basics - URL Generation (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-the-basics-error-handling/';
+        this.page.identifier = 'zh-tw/laravel-the-basics-error-handling/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

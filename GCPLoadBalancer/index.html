@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Understand how GCP Load Balancer works and build one - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="IntroductionWhy Load Balancer? It split the traffic of multiple services among multiple machines When one node dies, you still have another one It supports auto-scaling when pre-set benchmark is reach">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Understand how GCP Load Balancer works and build one">
+<meta property="og:url" content="https://tn710617.github.io/GCPLoadBalancer/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="IntroductionWhy Load Balancer? It split the traffic of multiple services among multiple machines When one node dies, you still have another one It supports auto-scaling when pre-set benchmark is reach">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/VxUj5Ru.png">
+<meta property="article:published_time" content="2019-08-04T07:59:29.000Z">
+<meta property="article:modified_time" content="2019-08-25T07:39:01.767Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Google Load Balancers">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/VxUj5Ru.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/zh-tw/GCPLoadBalancer/" rel="alternate"
+          hreflang="zh-TW"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="IntroductionWhy Load Balancer? It split the traffic of multiple services among multiple machines When one node dies, you still have another one It supports auto-scaling when pre-set benchmark is reach">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Understand how GCP Load Balancer works and build one">
+<meta property="og:url" content="https://tn710617.github.io/GCPLoadBalancer/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="IntroductionWhy Load Balancer? It split the traffic of multiple services among multiple machines When one node dies, you still have another one It supports auto-scaling when pre-set benchmark is reach">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/VxUj5Ru.png">
+<meta property="article:published_time" content="2019-08-04T07:59:29.000Z">
+<meta property="article:modified_time" content="2019-08-25T07:39:01.767Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Google Load Balancers">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/VxUj5Ru.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    Learn or Die
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories">Categories</a>
+            
+            <a class="navbar-item "
+               href="/tags">Tags</a>
+            
+            <a class="navbar-item "
+               href="/schedule">Schedule</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+            <a class="navbar-item "
+               href="/japanese">Japanese</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b>Introduction</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Why-Load-Balancer">1.1&nbsp;&nbsp;Why Load Balancer?</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#The-concept-in-Graph-Image-source：-Google-：">1.2&nbsp;&nbsp;The concept in Graph (Image source： Google )：</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Google-Cloud-SDK-Installation">2&nbsp;&nbsp;<b>Google Cloud SDK Installation</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-an-instance">3&nbsp;&nbsp;<b>Create an instance</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Instance-Environment-Installation">4&nbsp;&nbsp;<b>Instance Environment Installation</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-firewall-rules">5&nbsp;&nbsp;<b>Create firewall-rules</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Static-External-IP">6&nbsp;&nbsp;<b>Static External IP</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Instance-group">7&nbsp;&nbsp;<b>Instance group</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Health-check">8&nbsp;&nbsp;<b>Health check</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Backend-service">9&nbsp;&nbsp;<b>Backend service</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#URL-map">10&nbsp;&nbsp;<b>URL map</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Create-a-SSL-certificate">11&nbsp;&nbsp;<b>Create a SSL certificate</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#HTTP-proxy">12&nbsp;&nbsp;<b>HTTP proxy</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#HTTPS-proxy">13&nbsp;&nbsp;<b>HTTPS proxy</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Check-Static-External-IP">14&nbsp;&nbsp;<b>Check Static External IP</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Forwarding-rules">15&nbsp;&nbsp;<b>Forwarding rules</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Conclusion">16&nbsp;&nbsp;<b>Conclusion</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/GCPLoadBalancer/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/GCPLoadBalancer/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Understand how GCP Load Balancer works and build one
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-08-04T07:59:29.000Z" itemprop="datePublished">Aug 4 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            16 minutes read (About 2394 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><h3 id="Why-Load-Balancer"><a href="#Why-Load-Balancer" class="headerlink" title="Why Load Balancer?"></a>Why Load Balancer?</h3><ol>
+<li>It split the traffic of multiple services among multiple machines</li>
+<li>When one node dies, you still have another one</li>
+<li>It supports auto-scaling when pre-set benchmark is reached (Not covered in this article)</li>
+<li>With proper CI / CD and health-check, it could achieve <code>rolling upgrade</code><span id="more"></span></li>
+</ol>
+<ul>
+<li>In this article, we are going to build a unmanaged Load Balancer, the easiest one.</li>
+<li>Detailed explanation for every component<h3 id="The-concept-in-Graph-Image-source：-Google-："><a href="#The-concept-in-Graph-Image-source：-Google-：" class="headerlink" title="The concept in Graph (Image source： Google )："></a>The concept in Graph (Image source： Google )：</h3><img src="https://i.imgur.com/VxUj5Ru.png"></li>
+</ul>
+<ol>
+<li>Users from IPv4 and IPv6 make requests to our service</li>
+<li>The <code>IPv4 and IPv6 forwarding rules</code> lead the request to <code>HTTP(s) proxy</code></li>
+<li>When requests reach <code>HTTP(S) proxy</code>, it will be led to some <code>backend-service</code> according to the <code>url-map</code> we set. For example, the request with domain ‘test1’ would be led to <code>backend-service 1</code>, and ‘test2’ would be led to <code>backend-service 2</code></li>
+<li><code>backend-service</code> consist of <code>instance group</code>. For example, we could specify that <code>backend-service A</code> lead the request to port 8000 of <code>instance group A</code>, and <code>backend-service B</code> lead the request to port 6000 of <code>instance group B</code></li>
+<li><code>instance group</code>, as its name, consist of <code>instance</code>. If we set up <code>instance group</code> and <code>backend-service</code> properly, request will reach <code>backend-service</code>, and be led to designated port of <code>instance</code> via <code>instance group</code> and its balance condition</li>
+<li>Every <code>backend-service</code> could have a <code>health-check</code>, and <code>health-check</code> would periodically prob specified port and get response. If there is no response, or the response is slower than the benchmark we’ve set, then the <code>instacnce</code> will be diagnosed as unhealthy. Request would not be led to unhealthy instance</li>
+<li>If SSL is needed, <code>SSL certificate</code> could be created and added in <code>HTTPS proxy</code></li>
+<li>Let’s get our hands dirty now!</li>
+</ol>
+<h2 id="Google-Cloud-SDK-Installation"><a href="#Google-Cloud-SDK-Installation" class="headerlink" title="Google Cloud SDK Installation"></a>Google Cloud SDK Installation</h2><p>In this article, we are going to use <code>Google Cloud SDK</code> on every section, so before we start, let’s install it first.<br>Installation way varies per your Operating System. We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/install">Official Documentation</a></p>
+<h2 id="Create-an-instance"><a href="#Create-an-instance" class="headerlink" title="Create an instance"></a>Create an instance</h2><ul>
+<li>Build two instances<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create test-01 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=30GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=test-01,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances create test-02 \</span><br><span class="line">--image-project=ubuntu-os-cloud \</span><br><span class="line">--image-family=ubuntu-1804-lts \</span><br><span class="line">--boot-disk-size=30GB \</span><br><span class="line">--boot-disk-type=pd-standard \</span><br><span class="line">--machine-type=f1-micro \</span><br><span class="line">--tags=test-02,http-server,https-server \</span><br><span class="line">--zone=asia-east1-c</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Build two machines, named test-01 and test-02</li>
+<li>Boot-drive capacity is 30 GB</li>
+<li>Pull image from <code>ubuntu-os-cloud</code></li>
+<li>Use <code>ubuntu-1804-lts</code> as version of the image</li>
+<li>The disk-types type is <code>pd-standard</code>, you could also check all disk-types by running <code>gcloud compute disk-types</code></li>
+<li>The machine-types is <code>f1-micro</code>, you could also check all machine-types by running <code>gcloud compute machine-types list</code></li>
+<li>As a identifier of <code>instance</code>, which we are going to use with later when creating <code>firewall-rules</code></li>
+<li><code>zone</code> specify the zone of the <code>instance</code>. Be aware that some resources are limited with <code>zone</code> and <code>region</code></li>
+<li>Reference <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/instances/create">official documentation</a></li>
+</ol>
+<h2 id="Instance-Environment-Installation"><a href="#Instance-Environment-Installation" class="headerlink" title="Instance Environment Installation"></a>Instance Environment Installation</h2><p>The followings are about instance environment. You could simply skip it because it doesn’t have much to do with our subject.</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">apt-get update -y &amp;&amp; apt-get install curl -y &amp;&amp; curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash &amp;&amp; <span class="hljs-built_in">export</span> NVM_DIR=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/.nvm&quot;</span> &amp;&amp; [ -s <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span> ] &amp;&amp; \. <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/nvm.sh&quot;</span> &amp;&amp; [ -s <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/bash_completion&quot;</span> ] &amp;&amp; \. <span class="hljs-string">&quot;<span class="hljs-variable">$NVM_DIR</span>/bash_completion&quot;</span> &amp;&amp; nvm install yourNodeVersion &amp;&amp; apt-get install npm -y &amp;&amp; npm install pm2 -g &amp;&amp; pm2 update &amp;&amp; apt-get install git -y &amp;&amp; apt-get install build-essential</span><br></pre></td></tr></table></figure>
+
+<h2 id="Create-firewall-rules"><a href="#Create-firewall-rules" class="headerlink" title="Create firewall-rules"></a>Create firewall-rules</h2><p>We need to create <code>firewall-rules</code> per the port you use and so request could be led to the instance.</p>
+<p>We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/">official documentation</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create test-01 --allow tcp:123,tcp:456,tcp:789 --target-tags test-01</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create test-02 --allow tcp:123,tcp:456,tcp:789 --target-tags test-02</span><br></pre></td></tr></table></figure>
+
+<h2 id="Static-External-IP"><a href="#Static-External-IP" class="headerlink" title="Static External IP"></a>Static External IP</h2><p>We are going to create a static IP for further usage, we could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create">official documentation</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses create lb-test \</span><br><span class="line">    --ip-version=IPV4 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<h2 id="Instance-group"><a href="#Instance-group" class="headerlink" title="Instance group"></a>Instance group</h2><p><code>Instance group</code> can consist of multiple <code>instance</code>, and it the bulk of <code>backend-service</code>, we could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/instance-groups/managed/create">official documentation</a></p>
+<ul>
+<li><p>With <code>instance group</code>, we could create different <code>backend-service</code> later on <code>Load Balancer</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged create <span class="hljs-built_in">test</span> --description <span class="hljs-string">&#x27;run test project&#x27;</span> --zone asia-east1-c</span><br></pre></td></tr></table></figure></li>
+<li><p>Set named port, which could be used on different <code>backend-service</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged set-named-ports <span class="hljs-built_in">test</span> --named-ports port1:3000,port2:6000,port3:9000,port4:12000,port5:15000 --zone asia-east1-c</span><br></pre></td></tr></table></figure></li>
+<li><p>Add existing <code>instance</code> into <code>instance group</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instance-groups unmanaged add-instances <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instances test-01,test-02 \</span><br><span class="line">    --zone asia-east1-c</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Health-check"><a href="#Health-check" class="headerlink" title="Health check"></a>Health check</h2><p><code>health-check</code> could prob specified port with specified frequency. If there is no response from specified port, <code>health-check</code> would diagnose this port as unhealthy, and <code>backend-service</code> would not send request to unhealthy destination.</p>
+<p> We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/http-health-checks/create?hl=zh-tw">official documentation</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp test-tcp-3000 \</span><br><span class="line">    --description=<span class="hljs-string">&#x27;test tcp 3000&#x27;</span>\</span><br><span class="line">    --port=3000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp test-tcp-6000 \</span><br><span class="line">    --description=<span class="hljs-string">&#x27;test tcp 6000&#x27;</span>\</span><br><span class="line">    --port=6000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp test-tcp-9000 \</span><br><span class="line">    --description=<span class="hljs-string">&#x27;test tcp 9000&#x27;</span>\</span><br><span class="line">    --port=9000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp test-tcp-12000 \</span><br><span class="line">    --description=<span class="hljs-string">&#x27;test tcp 12000&#x27;</span>\</span><br><span class="line">    --port=12000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute health-checks create tcp test-tcp-15000 \</span><br><span class="line">    --description=<span class="hljs-string">&#x27;test tcp 15000&#x27;</span>\</span><br><span class="line">    --port=15000</span><br></pre></td></tr></table></figure>
+
+<h2 id="Backend-service"><a href="#Backend-service" class="headerlink" title="Backend service"></a>Backend service</h2><p>The <code>--port-name</code> here is what we set up above. In this example, different <code>backend-service</code> would send request to different port. <code>instance group</code> has not been mentioned yet? Don’t worry, in next step, we will add <code>instance group</code> into <code>backend-service</code></p>
+<p>Also, <code>health-check</code> will be added into <code>backend-service</code> because <code>backend-service</code> is going to decide which <code>instance</code> the request should be sent to.<br>We could refer to the <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/backend-services/create">official documentation</a></p>
+<ul>
+<li>Build backend-service<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port1 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port1 \</span><br><span class="line">    --health-checks test-tcp-3000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port2 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port2 \</span><br><span class="line">    --health-checks test-tcp-6000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port3 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port3 \</span><br><span class="line">    --health-checks test-tcp-9000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port4 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port4 \</span><br><span class="line">    --health-checks test-tcp-12000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services create backend-service-port5 \</span><br><span class="line">    --protocol http \</span><br><span class="line">    --port-name port5 \</span><br><span class="line">    --health-checks test-tcp-15000 \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<p>Next, we are going to add <code>instance group</code> into the <code>backend-service</code> we just built. Since we’ve designated port when creating <code>backend-service</code>, <code>backend-service</code> would lead requests to the designated port of the <code>instance group</code></p>
+<p>Besides setting which port the request to be sent, we are going to set up the benchmark of <code>instance</code> utilisation. <code>UTILIZATION</code> means the percentage of usage. When it reaches 80%, <code>backend-service</code> would stop sending request to this <code>instance</code></p>
+<p><code>capacity-scaler</code> means <code>1 * 0.8</code>, so if you have multiple <code>backend-service</code> using one <code>instance-group</code>, and you want to keep more utilisation capacity for some other <code>backend-service</code>, then you could give a lower <code>capacity-scaler</code>. So when this <code>backend-service</code> already use <code>capacity-scaler * max-utilization</code>, request from this <code>backend-service</code> would not be sent to this <code>instance-group</code>, which save the utilisation capacity of the <code>instance-group</code> for other <code>backend-service</code></p>
+<p>We could refer to the example below, and also the <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/backend-services/add-backend">official documentation</a></p>
+<ul>
+<li>Add <code>instance group</code> into <code>backend-service</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port1 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port2 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port3 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port4 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute backend-services add-backend backend-service-port5 \</span><br><span class="line">    --balancing-mode UTILIZATION \</span><br><span class="line">    --max-utilization 0.8 \</span><br><span class="line">    --capacity-scaler 1 \</span><br><span class="line">    --instance-group <span class="hljs-built_in">test</span> \</span><br><span class="line">    --instance-group-zone asia-east1-c \</span><br><span class="line">    --global</span><br></pre></td></tr></table></figure>
+
+<h2 id="URL-map"><a href="#URL-map" class="headerlink" title="URL map"></a>URL map</h2><p>We’ve covered <code>backend-service</code> above, and <code>url-map</code> is what leads request to <code>backend-service</code></p>
+<p>Firstly, let’s create a <code>url-map</code>, and specify a default <code>backend-service</code>. It means that if destination is not specified, request would be sent to this default <code>backend-service</code></p>
+<p>We could refer to the example below, also the <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/url-maps/">official documentation</a></p>
+<ul>
+<li>Create a <code>url-map</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps create web-map \</span><br><span class="line">    --default-service backend-service-port1</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>After we created a <code>url-map</code>, and specified a default <code>backend-service</code>, now we could specify more rules with which the request should be led to <code>backend-service</code></p>
+<p>We should use <code>path-matcher</code> to specify the path as example below:</p>
+<p><code>path-matcher</code>: create a <code>path-matcher</code> and specify the rule</p>
+<p><code>new-hosts</code>: The request requesting the host <code>sunday.com.tw</code> is going to be applied for this rule.</p>
+<p>It said that the request requesting <code>sunday.com.tw</code> would be led to <code>backend-service-port1</code></p>
+<p>We could refer to the example below, also the <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/url-maps/add-path-matcher">official documentation</a></p>
+<ul>
+<li>Add <code>path-matcher</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port1 \</span><br><span class="line">   --path-matcher-name pathmap-port1 \</span><br><span class="line">   --new-hosts=sunday.com.tw</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>Here you could find a new component called <code>path-rules</code></p>
+<p>When requested host is <code>monday.com.tw</code>, and the default path is <code>/</code>, the request would be sent to <code>backend-service-port2</code></p>
+<p>When the requested path is <code>happy</code>, like <code>monday.com.tw/happy</code>, the request would be sent to <code>backend-service-port1</code></p>
+<p>When the requested path is <code>unhappy</code>, like <code>monday.com.tw/unhappy</code>, the request would be sent to <code>backend-service-port2</code></p>
+<p>When the requested path is <code>sad</code>, like <code>monday.com.tw/sad</code>, the request would be sent to <code>backend-service-port3</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port2 \</span><br><span class="line">   --path-matcher-name pathmap-port2 \</span><br><span class="line">   --path-rules=/happy=backend-service-port1,/unhappy=backend-service-port2,/sad=backend-service-port3 \</span><br><span class="line">   --new-hosts=monday.com.tw</span><br></pre></td></tr></table></figure>
+
+<p>example same as above, the request to <code>tuesday.com.tw</code> would be sent to <code>backend-service-port3</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute url-maps add-path-matcher web-map \</span><br><span class="line">   --default-service backend-service-port3 \</span><br><span class="line">   --path-matcher-name pathmap-port3 \</span><br><span class="line">   --new-hosts=tuesday.com.tw</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Create-a-SSL-certificate"><a href="#Create-a-SSL-certificate" class="headerlink" title="Create a SSL certificate"></a>Create a SSL certificate</h2><p>In order to let our service support <code>HTTPS</code>, we need to create <code>ssl-certificates</code>. It could be either <code>self-managed</code> or <code>google-managed</code></p>
+<p><code>self-managed</code> means the ssl certificate managed on your own. In the following example, we will use <code>google-managed</code></p>
+<p>We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/ssl-certificates/">official documentation</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud beta compute ssl-certificates create www-ssl-cert \</span><br><span class="line">  --domains sunday.com.tw,monday.com.tw,tuesday.com.tw</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTTP-proxy"><a href="#HTTP-proxy" class="headerlink" title="HTTP proxy"></a>HTTP proxy</h2><p>All the HTTP request will get here, and be sent to <code>backend-service</code> via <code>url-map</code></p>
+<p>We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/target-http-proxies/">official documentation</a></p>
+<ul>
+<li>Create a HTTP proxy<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute target-http-proxies create http-lb-proxy \</span><br><span class="line">    --url-map web-map</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="HTTPS-proxy"><a href="#HTTPS-proxy" class="headerlink" title="HTTPS proxy"></a>HTTPS proxy</h2><p>All the HTTPS request will get here, and be sent to <code>backend-service</code> via <code>url-map</code></p>
+<p>Also, we are going to add the <code>ssl-certificates</code> we just created here so <code>target-https-proxies</code> can support HTTPS</p>
+<p>可參考<a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/target-https-proxies/">官方文件</a><br>We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/target-https-proxies/">official documentation</a></p>
+<ul>
+<li>Create HTTPS proxy<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute target-https-proxies create https-lb-proxy \</span><br><span class="line">--url-map web-map \</span><br><span class="line">--ssl-certificates www-ssl-cert</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Check-Static-External-IP"><a href="#Check-Static-External-IP" class="headerlink" title="Check Static External IP"></a>Check Static External IP</h2><p>List the addresses we’ve created</p>
+<p>We could refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/addresses/create?hl=zh-tw">official documentation</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute addresses list</span><br></pre></td></tr></table></figure>
+
+<h2 id="Forwarding-rules"><a href="#Forwarding-rules" class="headerlink" title="Forwarding rules"></a>Forwarding rules</h2><p>When the requested address and port match the <code>forwarding-rules</code>, lead the request to designated <code>target-http-proxy</code></p>
+<p>Replace the <code>[LB_IP_ADDRESS]</code> below with the static external IP we just created</p>
+<p>We could refer to the <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/forwarding-rules/">official documentation</a></p>
+<ul>
+<li>Create HTTP <code>forwarding-rules</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute forwarding-rules create http-content-rule \</span><br><span class="line">    --address [LB_IP_ADDRESS] \</span><br><span class="line">    --global \</span><br><span class="line">    --target-http-proxy http-lb-proxy \</span><br><span class="line">    --ports 80</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>When the requested address and port match the <code>forwarding-rules</code>, lead the request to designated <code>target-https-proxy</code></p>
+<p>Replace the <code>[LB_IP_ADDRESS]</code> below with the static external IP we just created</p>
+<p>We could refer to the <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud/reference/compute/forwarding-rules/">official documentation</a></p>
+<ul>
+<li>Create HTTPS <code>forwarding-rules</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute forwarding-rules create https-content-rule \</span><br><span class="line">    --address [LB_IP_ADDRESS] \</span><br><span class="line">    --global \</span><br><span class="line">    --target-https-proxy https-lb-proxy \</span><br><span class="line">    --ports 443</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Above-mentioned is the flow of <code>Load Balancer</code> of GCP as follows:<br><code>request</code> =&gt; <code>forwarding-rules</code> =&gt; <code>target-http(s)-proxy</code> =&gt; <code>url-map</code> =&gt; <code>backend-service</code> =&gt; <code>instance-group</code> =&gt; <code>instance</code></p>
+<p>Follow the example above, you should be able to run services on your instance and get, process, respond requests properly.</p>
+<p>I spent quite a lot of time writing this article, hoping it will help whoever in need. If you’ve got here, I would like to thank you for it.</p>
+<p>Finally, if you find this article is helpful, your clap is the best reward to me.</p>
+<p>Also, if you find anything incorrect, feel free to let me know.</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Google-Load-Balancers/">#Google Load Balancers</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/cloudStorageQwikStartConsole/">Cloud Storage:QwikStart-Console</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/mysql/">My learning note on MySQL</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/GCPLoadBalancer/';
+        this.page.identifier = 'GCPLoadBalancer/';
+        
+        this.language = 'en';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

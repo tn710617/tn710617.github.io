@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>PHP-FPM reload 真的有優雅嗎？ - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP-FPM reload 真的有優雅嗎？">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/php-fpm-reload-graceful-or-not/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-11-15T12:10:03.000Z">
+<meta property="article:modified_time" content="2020-11-17T07:51:40.540Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="PHP-FPM">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/php-fpm-reload-graceful-or-not/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP-FPM reload 真的有優雅嗎？">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/php-fpm-reload-graceful-or-not/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言其實這篇文章跟 OPcache 沒什麼太大的關係, 但卻是做這個實驗的根本原因！">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-11-15T12:10:03.000Z">
+<meta property="article:modified_time" content="2020-11-17T07:51:40.540Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="PHP-FPM">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#OPcache">2&nbsp;&nbsp;<b># OPcache</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#PHP-FPM">3&nbsp;&nbsp;<b># PHP-FPM</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Docker-環境測試">4&nbsp;&nbsp;<b># Docker 環境測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#GCP-VM-測試">5&nbsp;&nbsp;<b># GCP VM 測試</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#暴風雨後的曙光？">6&nbsp;&nbsp;<b># 暴風雨後的曙光？</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#窺探-reload-的優雅程度">7&nbsp;&nbsp;<b># 窺探 reload 的優雅程度</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結論">8&nbsp;&nbsp;<b># 結論</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/php-fpm-reload-graceful-or-not/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/php-fpm-reload-graceful-or-not/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            PHP-FPM reload 真的有優雅嗎？
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-11-15T12:10:03.000Z" itemprop="datePublished">11月 15 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 讀完 (大概 1765 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>其實這篇文章跟 <code>OPcache</code> 沒什麼太大的關係, 但卻是做這個實驗的根本原因！</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="OPcache"><a href="#OPcache" class="headerlink" title="# OPcache"></a># OPcache</h2><p><code>OPcache</code> 可以對於 PHP 效能優化有著非常顯著的效果, 而有 cache 就有 clear 的問題。 在每一次更新程式碼後, 都必須 clear 舊的 cache。<br><strong>然而 clear cache 有以下幾種方法:</strong></p>
+<ul>
+<li>特別製作一支 API, 在裡面執行 <code>opcache_reset()</code></li>
+<li>使用套件, 這樣可以透過 CLI 清除 cache, 不過套件具體原理也是跟第一個一樣, 只不過有實作了 CLI 出來</li>
+<li>reload <code>PHP-FPM</code></li>
+</ul>
+<br>
+<br>
+
+<h2 id="PHP-FPM"><a href="#PHP-FPM" class="headerlink" title="# PHP-FPM"></a># PHP-FPM</h2><p><code>PHP-FPM</code> 為 FastCGI Process Manager, 簡單來說, 這個 Manager 也是一個 Process, 而它會 fork 複數的 child FastCGI process  當收到 request 時, 便分派任務給底下的 child process 處理。<br>故事的起源, 都來自於 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/16890855/can-we-reload-one-of-the-php-fpm-pool-without-disturbing-others">這篇 Stack Overflow</a></p>
+<p>文中提到, 如果使用 reload 參數, 便可以 gracefully restart PHP-FPM。 那這又跟今天的故事有什麼關係呢？<br>上面提到三個方法, 毫無疑問 reload <code>PHP-FPM</code> 是最簡單的, 但同時它也有著一個致命的缺點, 那就是當 reload 時, 所有 processed 中的 request 無可避免的都會中斷。 但根據這篇文章描述, 如果可以不中斷的 restart <code>PHP-FPM</code> 的話似乎是個 zero downtime 的最佳解啊！</p>
+<p>高能大大先別噴, 我知道還有 rolling update 這東西, 不過這不在今天的討論範圍內, 乾蝦！</p>
+<p>然而未經過自己實驗的解法, 真要拿到 production 上面用, 我心裡會毛毛的。 於是我 Google 了一下, 果然發現一些不一樣的聲音：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://bugs.php.net/bug.php?id=77934">這裏</a></li>
+<li><a target="_blank" rel="noopener" href="https://serverfault.com/questions/917137/what-does-graceful-reload-actually-mean-with-php-fpm/917142">還有這裡</a></li>
+</ul>
+<p>於是就開始了今天的實驗…</p>
+<br>
+<br>
+
+<h2 id="Docker-環境測試"><a href="#Docker-環境測試" class="headerlink" title="# Docker 環境測試"></a># Docker 環境測試</h2><p>首先我使用了 Docker container 做測試, 我當然不是個空口說白話的人, 附上測試 docker-compose.yaml 檔</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3&quot;</span></span><br><span class="line"><span class="hljs-attr">services:</span></span><br><span class="line">  <span class="hljs-attr">nginx:</span></span><br><span class="line">    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">nginx</span></span><br><span class="line">    <span class="hljs-attr">networks:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-string">app-network</span></span><br><span class="line">    <span class="hljs-attr">ports:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-number">8888</span><span class="hljs-string">:80</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-number">9999</span><span class="hljs-string">:443</span></span><br><span class="line">  <span class="hljs-attr">php74:</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">php:7.4.3-fpm</span></span><br><span class="line">    <span class="hljs-attr">container_name:</span> <span class="hljs-string">php74</span></span><br><span class="line">    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span></span><br><span class="line">    <span class="hljs-attr">networks:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-string">app-network</span></span><br><span class="line"><span class="hljs-attr">networks:</span></span><br><span class="line">  <span class="hljs-attr">app-network:</span></span><br><span class="line">    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span></span><br></pre></td></tr></table></figure>
+
+<p>由於測試過程比較簡單, 我就沒 mount volume 出來了</p>
+<ul>
+<li>首先先進到 php-fpm container <figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker <span class="hljs-built_in">exec</span> -it phpFpmContainerId /bin/bash</span><br></pre></td></tr></table></figure></li>
+<li>緊接著修改 php-fpm 的 config<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /usr/local/etc/php-fpm.conf.default</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>哦哦, 對了如果你跟著照做發現 vim command not found 的話, 記得自己安裝啊哈哈</p>
+<ul>
+<li>然後 reload <code>PHP-FPM</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">kill</span> -usr2 1</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>因為 <code>kill -usr2</code> 是源碼中, 當使用 reload 時所使用的 command, 可以參考 <a target="_blank" rel="noopener" href="https://github.com/php/php-src/blob/49a4e695845bf55e059e7f88e54b1111fe284223/sapi/fpm/init.d.php-fpm.in#L133">源碼</a><br>當然, 也因為在 container 中無法直接使用 <strong>systemctl reload serviceName</strong></p>
+<ul>
+<li><p>接著將 <code>process_control_timeout</code> 改成 30s, 會修改這行是因為預設是 0s, 我修改是為了確認到底有沒有作用</p>
+</li>
+<li><p>然後進到 nginx 的 container, 同上, 換個 container ID 而已, 我就不多加贅述</p>
+</li>
+<li><p>然後改一下 default 的 config, 這不是個好的做法, 我一般習慣在 <code>sites-available</code> 寫好 config, 然後在 soft link 到 <code>site-enabled</code>, 不過只是為了測試就將就啦~</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/nginx/conf.d/default.conf</span><br></pre></td></tr></table></figure></li>
+<li><p>然後使用以下設定</p>
+<figure class="highlight nginx hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-section">server</span> &#123;</span><br><span class="line">    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">index</span> index.php index.html;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">error_log</span>  /var/log/nginx/<span class="hljs-literal">error</span>.log;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">access_log</span> /var/log/nginx/access.log;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-attribute">root</span> /var/www/;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-section">location</span> <span class="hljs-regexp">~ \.php$</span> &#123;</span><br><span class="line">        <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> =<span class="hljs-number">404</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_split_path_info</span><span class="hljs-regexp"> ^(.+\.php)(/.+)$</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_pass</span> php74:<span class="hljs-number">9000</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_index</span> index.php;</span><br><span class="line">        <span class="hljs-attribute">include</span> fastcgi_params;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="hljs-variable">$document_root</span><span class="hljs-variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="hljs-attribute">fastcgi_param</span> PATH_INFO <span class="hljs-variable">$fastcgi_path_info</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-section">location</span> / &#123;</span><br><span class="line">        <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ /index.php?<span class="hljs-variable">$query_string</span>;</span><br><span class="line">        <span class="hljs-attribute">gzip_static</span> <span class="hljs-literal">on</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>再來重啟 nginx</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure></li>
+<li><p>最後, 把以下的 index.php file 複製到上面兩個 container 的 <code>/var/www</code> 目錄下</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">sleep</span>(<span class="hljs-number">60</span>);</span><br><span class="line"><span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Hello World&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>測試的時候到了！ 靠, 我都已經測過了, 還興奮個屁啊!</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl localhost:8888</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>恩恩, 有進入 sleep 的階段</p>
+<ul>
+<li>接著 reload <code>PHP-FPM</code><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">docker <span class="hljs-built_in">exec</span> -it containerId <span class="hljs-built_in">kill</span> -USR2 1</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>結果你會發現, connection 斷開了！斷開了！斷開了！ 因為很震驚, 所以打了三次!</p>
+<br>
+<br>
+
+<h2 id="GCP-VM-測試"><a href="#GCP-VM-測試" class="headerlink" title="# GCP VM 測試"></a># GCP VM 測試</h2><p>不信邪的我, 立馬在 GCP 上面開了一台小 VM 做測試, 方式跟 Docker 大同小異我就不多加贅述了, 結果是<br>還是斷開了!<br>還是斷開了!<br>還是斷開了!</p>
+<p>因為很失望所以要說三次…</p>
+<br>
+<br>
+
+<h2 id="暴風雨後的曙光？"><a href="#暴風雨後的曙光？" class="headerlink" title="# 暴風雨後的曙光？"></a># 暴風雨後的曙光？</h2><p>原本傷心欲絕, 悲憤交加的我, 在前往自我了斷的路上… 想說發個文在 FB 警醒一下世人好了, 以防有跟我一樣想不開的人… 唉, 沒有希望就不會失望啊!</p>
+<p>誰知有個大大給個提醒, <strong>會不會是 PHP 的 <code>sleep()</code> function 的問題？ 或許可以試試 <code>select sleep(30)</code> ?</strong></p>
+<p>此話當如久旱後的甘霖, 讓我放下了手中的菜刀… 想說不然試一試好了, 反正要了斷也不差這些時間, 然後冒險繼續 ing</p>
+<ul>
+<li><p>更新 index.php 內容</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$hostname</span>=<span class="hljs-string">&quot;localhost&quot;</span>;</span><br><span class="line"><span class="hljs-variable">$username</span>=<span class="hljs-string">&quot;test&quot;</span>;</span><br><span class="line"><span class="hljs-variable">$password</span>=<span class="hljs-string">&quot;test&quot;</span>;</span><br><span class="line"><span class="hljs-variable">$dbname</span>=<span class="hljs-string">&quot;test&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$connection</span> = <span class="title function_ invoke__">mysqli_connect</span>(<span class="hljs-variable">$hostname</span>,<span class="hljs-variable">$username</span>, <span class="hljs-variable">$password</span>) <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span> (<span class="hljs-string">&quot;html&gt;script language=&#x27;JavaScript&#x27;&gt;alert(&#x27;無法連線至資料庫！請稍後再重試一次。&#x27;),history.go(-1)/script&gt;/html&gt;&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$query</span> = <span class="hljs-string">&quot;SELECT sleep(10)&quot;</span>;</span><br><span class="line"><span class="hljs-variable">$result</span> = <span class="title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$connection</span>, <span class="hljs-variable">$query</span>);</span><br><span class="line"><span class="hljs-meta">?&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 reload PHP-FPM, 然後抱著破罐子破摔的心情, 再給他發了一次 request</p>
+</li>
+</ul>
+<p><strong>It worked!! It worked!!</strong></p>
+<ul>
+<li>我一邊擦著我喜極而泣的淚水, 嗯…, 還有鼻水, 一邊接著測試, 因為我想要知道 <code>reload 到底有多優雅？</code></li>
+</ul>
+<br>
+<br>
+
+<h2 id="窺探-reload-的優雅程度"><a href="#窺探-reload-的優雅程度" class="headerlink" title="# 窺探 reload 的優雅程度"></a># 窺探 reload 的優雅程度</h2><ul>
+<li>首先, 在發 request 之前, 我先觀察 process 狀態<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ps -ax | grep php-fpm</span><br></pre></td></tr></table></figure></li>
+<li>然後在 request 處理完畢後, 我再觀察一次</li>
+<li>反覆觀察幾次之後, 終於探得 reload 的優雅程度</li>
+<li>蛤？ 你還在這啊？ 那直接看結論吧！</li>
+</ul>
+<br>
+<br>
+
+<h2 id="結論"><a href="#結論" class="headerlink" title="# 結論"></a># 結論</h2><ul>
+<li>文中提到的 timeout 如果比 request 的時間還短, 那 timeout 時間到了, FPM 會強制的殺掉所有 process, 立馬跳 502 給你看</li>
+<li>在下達 reload 之後, PHP-FPM 會逐步的殺掉 process, 如果還沒完成的, PHP-FPM 會等待他們完成, 當然, 最多等待 timeout 的時間</li>
+<li>在所有 reload 之前的 request 都處理完之前, PHP-FPM 不會開啟新的 child process, 那你問我與此同時新的 request 怎麼辦？ 好問題！ PHP-FPM 會 queue 他們, 但不處理</li>
+<li>直到所有的 request 都處理完了, 才會啟動新的 reload 過的 process 開始處理之前 queue 裡的 request</li>
+</ul>
+<p>這種行為算是有某種程度上的優雅, 但也不算很優雅。 雖然可以避免 request 被強制斷開, 但在新的 process 啟動之前, 所有的 request 都是被 queue 住的, 這同時也衍伸一些問題…</p>
+<ul>
+<li>Server 能支援 queue 的 request 最大數量？</li>
+<li>queue 住 request, 這表示在使用者端, 畫面是整個卡住的, 雖不強制關閉, 但算是採用延遲處理</li>
+</ul>
+<p>至此, 本次實驗也告一段落, 也算是得知 PHP-FPM reload 採用得像是 k8s 中的 recreate policy, 而不是 rolling update, 實在不能說沒有 downtime (卡住算不算 downtime?)<br>好啦, 希望本篇文章對你有幫助！ 我們下次見！</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/PHP-FPM/">#PHP-FPM</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/php-insertion-sort-implementation/">Insertion Sort (插入排序法) In PHP</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-documentation/">Laravel - Documentation - 目錄 (官方文件原子化翻譯)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/php-fpm-reload-graceful-or-not/';
+        this.page.identifier = 'zh-tw/php-fpm-reload-graceful-or-not/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

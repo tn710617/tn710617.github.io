@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - Database - Query Builder (官方文件原子化翻譯筆記) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Database - Query Builder (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-database-query-builder/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-07-09T06:17:39.000Z">
+<meta property="article:modified_time" content="2021-01-12T09:10:39.801Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Query Builder">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-database-query-builder/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Database - Query Builder (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-database-query-builder/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-07-09T06:17:39.000Z">
+<meta property="article:modified_time" content="2021-01-12T09:10:39.801Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Query Builder">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-Results">2&nbsp;&nbsp;<b># Retrieving Results</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-All-Rows-From-A-Table">2.1&nbsp;&nbsp;# Retrieving All Rows From A Table</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-A-Single-Row-Column-From-A-Table">2.2&nbsp;&nbsp;# Retrieving A Single Row / Column From A Table</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-A-List-Of-Column-Values">3&nbsp;&nbsp;<b># Retrieving A List Of Column Values</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Chunking-Results">3.1&nbsp;&nbsp;# Chunking Results</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Aggregates">3.2&nbsp;&nbsp;# Aggregates</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Determining-If-Records-Exist">3.2.1&nbsp;&nbsp;# Determining If Records Exist</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Selects">4&nbsp;&nbsp;<b># Selects</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Specifying-A-Select-Clause">4.1.1&nbsp;&nbsp;# Specifying A Select Clause</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Raw-Expressions">5&nbsp;&nbsp;<b># Raw Expressions</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Joins">6&nbsp;&nbsp;<b># Joins</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Inner-Join-Clause">6.1.1&nbsp;&nbsp;# Inner Join Clause</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Left-Join-Right-Join-Clause">6.1.2&nbsp;&nbsp;# Left Join / Right Join Clause</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cross-Join-Clause">6.1.3&nbsp;&nbsp;# Cross Join Clause</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Advanced-Join-Clauses">6.1.4&nbsp;&nbsp;# Advanced Join Clauses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Subquery-Joins">6.1.5&nbsp;&nbsp;# Subquery Joins</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Unions">7&nbsp;&nbsp;<b># Unions</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Where-Clauses">8&nbsp;&nbsp;<b># Where Clauses</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Simple-Where-Clauses">8.1&nbsp;&nbsp;# Simple Where Clauses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Or-Statements">8.1.1&nbsp;&nbsp;# Or Statements</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Or-Statements-1">8.1.2&nbsp;&nbsp;# Or Statements</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Additional-Where-Clauses">8.1.3&nbsp;&nbsp;# Additional Where Clauses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Parameter-Grouping">8.2&nbsp;&nbsp;# Parameter Grouping</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Where-Exists-Clauses">8.3&nbsp;&nbsp;# Where Exists Clauses</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Subquery-Where-Clause">8.4&nbsp;&nbsp;# Subquery Where Clause</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#JSON-Where-Clauses">8.5&nbsp;&nbsp;# JSON Where Clauses</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Ordering-Grouping-Limit-amp-Offset">9&nbsp;&nbsp;<b># Ordering, Grouping, Limit &amp;amp;amp; Offset</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Conditional-Clauses">10&nbsp;&nbsp;<b># Conditional Clauses</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Inserts">11&nbsp;&nbsp;<b># Inserts</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Updates">12&nbsp;&nbsp;<b># Updates</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Updating-JSON-Columns">12.1&nbsp;&nbsp;# Updating JSON Columns</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Increment-amp-Decrement">12.2&nbsp;&nbsp;# Increment &amp;amp;amp; Decrement</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Deletes">13&nbsp;&nbsp;<b># Deletes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Pessimistic-Locking">14&nbsp;&nbsp;<b># Pessimistic Locking</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Debugging">15&nbsp;&nbsp;<b># Debugging</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-database-query-builder/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-database-query-builder/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Database - Query Builder (官方文件原子化翻譯筆記)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-07-09T06:17:39.000Z" itemprop="datePublished">7月 9 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            24 分钟 讀完 (大概 3615 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Retrieving-Results"><a href="#Retrieving-Results" class="headerlink" title="# Retrieving Results"></a># Retrieving Results</h2><h3 id="Retrieving-All-Rows-From-A-Table"><a href="#Retrieving-All-Rows-From-A-Table" class="headerlink" title="# Retrieving All Rows From A Table"></a># Retrieving All Rows From A Table</h3><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Http</span>\<span class="title class_">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">Controllers</span>\<span class="hljs-title">Controller</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">DB</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;user.index&#x27;</span>, [<span class="hljs-string">&#x27;users&#x27;</span> =&gt; <span class="hljs-variable">$users</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 users table 中所有的 records, 並將資料帶到 ‘views/user/index’ page</li>
+</ul>
+<br>
+
+<h3 id="Retrieving-A-Single-Row-Column-From-A-Table"><a href="#Retrieving-A-Single-Row-Column-From-A-Table" class="headerlink" title="# Retrieving A Single Row / Column From A Table"></a># Retrieving A Single Row / Column From A Table</h3><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$email</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;John&#x27;</span>)-&gt;<span class="title function_ invoke__">value</span>(<span class="hljs-string">&#x27;email&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>只取得符合 where(‘name’, ‘John’) 條件的眾多 user model 中, 第一個 model 中的 ‘email’ column 的值</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;John&#x27;</span>)-&gt;<span class="title function_ invoke__">first</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">echo</span> <span class="hljs-variable">$user</span>-&gt;name;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從 Query Builder 的結果, collection of models 中, 回傳第一個 model</li>
+</ul>
+<br>
+
+<h2 id="Retrieving-A-List-Of-Column-Values"><a href="#Retrieving-A-List-Of-Column-Values" class="headerlink" title="# Retrieving A List Of Column Values"></a># Retrieving A List Of Column Values</h2><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$titles</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;roles&#x27;</span>)-&gt;<span class="title function_ invoke__">pluck</span>(<span class="hljs-string">&#x27;title&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$titles</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$title</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$title</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 roles collection 中的 title column data</li>
+</ul>
+<br>
+
+<h3 id="Chunking-Results"><a href="#Chunking-Results" class="headerlink" title="# Chunking Results"></a># Chunking Results</h3><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;id&#x27;</span>)-&gt;<span class="title function_ invoke__">chunk</span>(<span class="hljs-number">100</span>, function (<span class="hljs-variable">$users</span>) &#123;</span><br><span class="line">    <span class="hljs-comment">// Process the records...</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>return false 終止 chunk</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-literal">false</span>)</span><br><span class="line">    -&gt;<span class="title function_ invoke__">chunkById</span>(<span class="hljs-number">100</span>, function (<span class="hljs-variable">$users</span>) &#123;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$users</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">            DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-variable">$user</span>-&gt;id)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">update</span>([<span class="hljs-string">&#x27;active&#x27;</span> =&gt; <span class="hljs-literal">true</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>chunkById 預設會使用 orderBy id, 並且會記住上一個 chunk 的 last id<br>效能上使用 chunkById 更好, 因為 chunk 是採用 offset … limit, 這樣當資料越來越多的時候, 會造成不必要的效能浪費, 而 chunkById 是採用 where id &gt; $lastId, 因為效能上較佳<br>再者, 因為 chunkById 預設會 orderby id, 所以不會有 chunk 跟 chunk 之間因為順序錯亂而丟失 item 的情況</li>
+</ul>
+<br>
+
+<h3 id="Aggregates"><a href="#Aggregates" class="headerlink" title="# Aggregates"></a># Aggregates</h3><h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">count</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 users table 中總共的資料筆數</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$price</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)-&gt;<span class="title function_ invoke__">max</span>(<span class="hljs-string">&#x27;price&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>可得 orders table 中, price column value 最大的那筆資料</li>
+</ul>
+<br>
+
+<h4 id="Determining-If-Records-Exist"><a href="#Determining-If-Records-Exist" class="headerlink" title="# Determining If Records Exist"></a># Determining If Records Exist</h4><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;finalized&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">exists</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">return</span> DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;finalized&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">doesntExist</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>判斷該 model 是否存在, return boolean</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Selects"><a href="#Selects" class="headerlink" title="# Selects"></a># Selects</h2><h4 id="Specifying-A-Select-Clause"><a href="#Specifying-A-Select-Clause" class="headerlink" title="# Specifying A Select Clause"></a># Specifying A Select Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;email as user_email&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>只取得 <code>&#39;name&#39;, &#39;email&#39; as user_email</code> 這兩個欄位</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$query</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;name&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">addSelect</span>(<span class="hljs-string">&#x27;age&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 addSelect(), 在原本既存的 $query 多 select 一個 column</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Raw-Expressions"><a href="#Raw-Expressions" class="headerlink" title="# Raw Expressions"></a># Raw Expressions</h2><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                     -&gt;<span class="title function_ invoke__">select</span>(DB::<span class="title function_ invoke__">raw</span>(<span class="hljs-string">&#x27;count(*) as user_count, status&#x27;</span>))</span><br><span class="line">                     -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;status&#x27;</span>, <span class="hljs-string">&#x27;&lt;&gt;&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">                     -&gt;<span class="title function_ invoke__">groupBy</span>(<span class="hljs-string">&#x27;status&#x27;</span>)</span><br><span class="line">                     -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 DB::row(), 裡頭直接帶入 DB raw 語法</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$orders</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">selectRaw</span>(<span class="hljs-string">&#x27;price * ? as price_with_tax&#x27;</span>, [<span class="hljs-number">1.0825</span>])</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>若要使用 select 的 mysql raw 語法, 可使用 selectRaw() </li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$orders</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereRaw</span>(<span class="hljs-string">&#x27;price &gt; IF(state = &quot;TX&quot;, ?, 100)&#x27;</span>, [<span class="hljs-number">200</span>])</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 MySQL whereRaw expression, <code>price &gt; (如果 state = &quot;TX&quot;, 那就是 200, 否則就是 100)</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是"><a href="#以下的-Laravel-example-code-的意思是" class="headerlink" title="以下的 Laravel example code 的意思是?"></a><strong>以下的 Laravel example code 的意思是?</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$orders</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">orderByRaw</span>(<span class="hljs-string">&#x27;updated_at - created_at DESC&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 orderByRaw 取得 update_at 減掉 created_at 的時間, 再以這個時間排序</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$orders</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;city&#x27;</span>, <span class="hljs-string">&#x27;state&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">groupByRaw</span>(<span class="hljs-string">&#x27;city, state&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>若要使用 raw group by constraint, 可使用 groupByRaw()</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Joins"><a href="#Joins" class="headerlink" title="# Joins"></a># Joins</h2><h4 id="Inner-Join-Clause"><a href="#Inner-Join-Clause" class="headerlink" title="# Inner Join Clause"></a># Inner Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">join</span>(<span class="hljs-string">&#x27;contacts&#x27;</span>, <span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;contacts.user_id&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">join</span>(<span class="hljs-string">&#x27;orders&#x27;</span>, <span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;orders.user_id&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;users.*&#x27;</span>, <span class="hljs-string">&#x27;contacts.phone&#x27;</span>, <span class="hljs-string">&#x27;orders.price&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 join 取得多張 table 資料</li>
+</ul>
+<br>
+
+<h4 id="Left-Join-Right-Join-Clause"><a href="#Left-Join-Right-Join-Clause" class="headerlink" title="# Left Join / Right Join Clause"></a># Left Join / Right Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">leftJoin</span>(<span class="hljs-string">&#x27;posts&#x27;</span>, <span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;posts.user_id&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>leftJoin Posts table, 因為是 left join, 會將 Users table 全部列出, 以及與之相關的 Posts records, 若該 User record 並無相關的 Post record, Post 的 record 會以 null 顯示</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">rightJoin</span>(<span class="hljs-string">&#x27;posts&#x27;</span>, <span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;posts.user_id&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>若要 rightJoin, 可使用 rightJoin(), 會取得 posts table 上所有的欄位, 包括 posts.user_id 為 null 的欄位也會取出</li>
+</ul>
+<br>
+<br>
+
+<h4 id="Cross-Join-Clause"><a href="#Cross-Join-Clause" class="headerlink" title="# Cross Join Clause"></a># Cross Join Clause</h4><h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$sizes</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;sizes&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">crossJoin</span>(<span class="hljs-string">&#x27;colors&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>cross join colors table<br>如果沒有 where constraints, cross join 會回傳兩張表的乘積</li>
+</ul>
+<h4 id="Advanced-Join-Clauses"><a href="#Advanced-Join-Clauses" class="headerlink" title="# Advanced Join Clauses"></a># Advanced Join Clauses</h4><h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">join</span>(<span class="hljs-string">&#x27;contacts&#x27;</span>, function (<span class="hljs-variable">$join</span>) &#123;</span><br><span class="line">            <span class="hljs-variable">$join</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;contacts.user_id&#x27;</span>)-&gt;<span class="title function_ invoke__">orOn</span>(...);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>join contacts table, 在 closure 內可定義比較複雜的 join 條件</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">join</span>(<span class="hljs-string">&#x27;contacts&#x27;</span>, function (<span class="hljs-variable">$join</span>) &#123;</span><br><span class="line">            <span class="hljs-variable">$join</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;contacts.user_id&#x27;</span>)</span><br><span class="line">                 -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;contacts.user_id&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">5</span>);</span><br><span class="line">        &#125;)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>join 並且附加額外的 where clause</li>
+</ul>
+<br>
+
+<h4 id="Subquery-Joins"><a href="#Subquery-Joins" class="headerlink" title="# Subquery Joins"></a># Subquery Joins</h4><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$latestPosts</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;posts&#x27;</span>)</span><br><span class="line">                   -&gt;<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;user_id&#x27;</span>, DB::<span class="title function_ invoke__">raw</span>(<span class="hljs-string">&#x27;MAX(created_at) as last_post_created_at&#x27;</span>))</span><br><span class="line">                   -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;is_published&#x27;</span>, <span class="hljs-literal">true</span>)</span><br><span class="line">                   -&gt;<span class="title function_ invoke__">groupBy</span>(<span class="hljs-string">&#x27;user_id&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">joinSub</span>(<span class="hljs-variable">$latestPosts</span>, <span class="hljs-string">&#x27;latest_posts&#x27;</span>, function (<span class="hljs-variable">$join</span>) &#123;</span><br><span class="line">            <span class="hljs-variable">$join</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="hljs-string">&#x27;users.id&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;latest_posts.user_id&#x27;</span>);</span><br><span class="line">        &#125;)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 joinSub() join $latestPosts 這個 subquery, arg1 為 subquery, arg2 定義 subquery 的 table alias</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Unions"><a href="#Unions" class="headerlink" title="# Unions"></a># Unions</h2><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$first</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">whereNull</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">whereNull</span>(<span class="hljs-string">&#x27;last_name&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">union</span>(<span class="hljs-variable">$first</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 union 一次取出兩個 query 不重複的資料</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Where-Clauses"><a href="#Where-Clauses" class="headerlink" title="# Where Clauses"></a># Where Clauses</h2><h3 id="Simple-Where-Clauses"><a href="#Simple-Where-Clauses" class="headerlink" title="# Simple Where Clauses"></a># Simple Where Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從 users table 當中 query 出 votes column 的值等於 100 的 records</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-1"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-1" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從 users table 當中 query 出 votes column 的值等於 100 的 records</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-2"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-2" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>([</span><br><span class="line">    [<span class="hljs-string">&#x27;status&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;subscribed&#x27;</span>, <span class="hljs-string">&#x27;&lt;&gt;&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>],</span><br><span class="line">])-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>相當於 where(‘status’, ‘=’, ‘1’)-&gt;where(‘subscribed’, ‘&lt;&gt;’, ‘1’)</li>
+</ul>
+<br>
+
+<h4 id="Or-Statements"><a href="#Or-Statements" class="headerlink" title="# Or Statements"></a># Or Statements</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-3"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-3" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">orWhere</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;John&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得第一個 where clause 或 第二個 where clause 的 query 結果, 簡單來說, 誰找到的都算數</li>
+</ul>
+<br>
+
+<h4 id="Or-Statements-1"><a href="#Or-Statements-1" class="headerlink" title="# Or Statements"></a># Or Statements</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-4"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-4" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">orWhere</span>(function(<span class="hljs-variable">$query</span>) &#123;</span><br><span class="line">                <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;Abigail&#x27;</span>)</span><br><span class="line">                      -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">50</span>);</span><br><span class="line">            &#125;)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">get</span>();</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>// SQL: select * from users where votes &gt; 100 or (name = ‘Abigail’ and votes &gt; 50)</li>
+</ul>
+<br>
+
+<h4 id="Additional-Where-Clauses"><a href="#Additional-Where-Clauses" class="headerlink" title="# Additional Where Clauses"></a># Additional Where Clauses</h4><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-5"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-5" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">           -&gt;<span class="title function_ invoke__">whereBetween</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, [<span class="hljs-number">1</span>, <span class="hljs-number">100</span>])</span><br><span class="line">           -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query column votes 介於 1~100 的 records</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-6"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-6" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">whereNotBetween</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, [<span class="hljs-number">1</span>, <span class="hljs-number">100</span>])</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query column votes 不介於 1~100 的 records</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-7"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-7" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">whereIn</span>(<span class="hljs-string">&#x27;id&#x27;</span>, [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query records, 其 id column 的 value 為 array 中其中一個值</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-8"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-8" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">whereNotIn</span>(<span class="hljs-string">&#x27;id&#x27;</span>, [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query records, 其 id column 的 value 不為 array 中的任何一個值</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-9"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-9" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">whereNull</span>(<span class="hljs-string">&#x27;updated_at&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query records, 其 updated_at 的值為 null</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-10"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-10" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">whereNotNull</span>(<span class="hljs-string">&#x27;updated_at&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query records, 其 updated_at 的值不為 null</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-11"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-11" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereDate</span>(<span class="hljs-string">&#x27;created_at&#x27;</span>, <span class="hljs-string">&#x27;2016-12-31&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query records, 其 created_at 的 value 為 date 格式, 且為 ‘2016-12-31’</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-12"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-12" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereMonth</span>(<span class="hljs-string">&#x27;created_at&#x27;</span>, <span class="hljs-string">&#x27;12&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query, 其 created_at column 的 value 轉成 date 格式後, month 須為 12</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-13"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-13" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereDay</span>(<span class="hljs-string">&#x27;created_at&#x27;</span>, <span class="hljs-string">&#x27;31&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query, 其 created_at column 的 value 轉成 date 格式後, day 須為 31</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-14"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-14" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereYear</span>(<span class="hljs-string">&#x27;created_at&#x27;</span>, <span class="hljs-string">&#x27;2016&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query, 其 created_at column 的 value 轉成 date 格式後, year 須為 2016</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-15"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-15" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereTime</span>(<span class="hljs-string">&#x27;created_at&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;11:20:45&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query, 其 created_at column 的 value 轉成 date 格式後, time 須為 ‘11:20:45’</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-16"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-16" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereColumn</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>, <span class="hljs-string">&#x27;last_name&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query, 其 first_name column 的 value 需與 last_name column 的 value 相等</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-17"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-17" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereColumn</span>(<span class="hljs-string">&#x27;updated_at&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-string">&#x27;created_at&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>query, 其 first_name column 的 value 需大於 created_at column value</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-18"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-18" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereColumn</span>([</span><br><span class="line">                    [<span class="hljs-string">&#x27;first_name&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;last_name&#x27;</span>],</span><br><span class="line">                    [<span class="hljs-string">&#x27;updated_at&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-string">&#x27;created_at&#x27;</span>],</span><br><span class="line">                ])-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>一次附加多個 whereColumn clauses</li>
+</ul>
+<br>
+
+<h3 id="Parameter-Grouping"><a href="#Parameter-Grouping" class="headerlink" title="# Parameter Grouping"></a># Parameter Grouping</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-19"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-19" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">           -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;John&#x27;</span>)</span><br><span class="line">           -&gt;<span class="title function_ invoke__">where</span>(function (<span class="hljs-variable">$query</span>) &#123;</span><br><span class="line">               <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)</span><br><span class="line">                     -&gt;<span class="title function_ invoke__">orWhere</span>(<span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-string">&#x27;=&#x27;</span>, <span class="hljs-string">&#x27;Admin&#x27;</span>);</span><br><span class="line">           &#125;)</span><br><span class="line">           -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在一個 where closure 內附加多個 where clauses</li>
+</ul>
+<br>
+
+<h3 id="Where-Exists-Clauses"><a href="#Where-Exists-Clauses" class="headerlink" title="# Where Exists Clauses"></a># Where Exists Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-20"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-20" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">           -&gt;<span class="title function_ invoke__">whereExists</span>(function (<span class="hljs-variable">$query</span>) &#123;</span><br><span class="line">               <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">select</span>(DB::<span class="title function_ invoke__">raw</span>(<span class="hljs-number">1</span>))</span><br><span class="line">                     -&gt;<span class="hljs-keyword">from</span>(<span class="hljs-string">&#x27;orders&#x27;</span>)</span><br><span class="line">                     -&gt;<span class="title function_ invoke__">whereRaw</span>(<span class="hljs-string">&#x27;orders.user_id = users.id&#x27;</span>);</span><br><span class="line">           &#125;)</span><br><span class="line">           -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line"># 如果 select 1 from orders ... 有返回的話, 回傳 select * from users</span><br><span class="line">select * from users</span><br><span class="line">where exists (</span><br><span class="line">    select 1 from orders where orders.user_id = users.id</span><br><span class="line">)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Subquery-Where-Clause"><a href="#Subquery-Where-Clause" class="headerlink" title="# Subquery Where Clause"></a># Subquery Where Clause</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-21"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-21" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">where</span>(function (<span class="hljs-variable">$query</span>) &#123;</span><br><span class="line">    <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;type&#x27;</span>)</span><br><span class="line">        -&gt;<span class="hljs-keyword">from</span>(<span class="hljs-string">&#x27;membership&#x27;</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">whereColumn</span>(<span class="hljs-string">&#x27;user_id&#x27;</span>, <span class="hljs-string">&#x27;users.id&#x27;</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">orderByDesc</span>(<span class="hljs-string">&#x27;start_date&#x27;</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">limit</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;, <span class="hljs-string">&#x27;Pro&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果 subquery 取得的 type === ‘Pro’ 的話, 取得 users, 也就是說, 會取得最新有 membership 的 user</li>
+</ul>
+<br>
+
+<h3 id="JSON-Where-Clauses"><a href="#JSON-Where-Clauses" class="headerlink" title="# JSON Where Clauses"></a># JSON Where Clauses</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-22"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-22" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;options-&gt;language&#x27;</span>, <span class="hljs-string">&#x27;en&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 users, 當其 JSON column options 中的 language key 的 value 為 ‘en’</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-23"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-23" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;preferences-&gt;dining-&gt;meal&#x27;</span>, <span class="hljs-string">&#x27;salad&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 users, 當其 JSON column preferences 中的 dining 中的 meal key 的 value 為 ‘salad’</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-24"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-24" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereJsonContains</span>(<span class="hljs-string">&#x27;options-&gt;languages&#x27;</span>, <span class="hljs-string">&#x27;en&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取 users, 其 options 欄位中的 languages 是一個 array, 其 value 含有 ‘en’</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-25"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-25" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereJsonContains</span>(<span class="hljs-string">&#x27;options-&gt;languages&#x27;</span>, [<span class="hljs-string">&#x27;en&#x27;</span>, <span class="hljs-string">&#x27;de&#x27;</span>])</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取 users, 其 options 欄位中的 languages 是一個 array, 其 values 含有 ‘en’ 以及 ‘de’</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-26"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-26" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">whereJsonLength</span>(<span class="hljs-string">&#x27;options-&gt;languages&#x27;</span>, <span class="hljs-number">0</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取 users, 其 options 欄位中的 languages 是一個 array, 其 length 為 0</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Ordering-Grouping-Limit-amp-Offset"><a href="#Ordering-Grouping-Limit-amp-Offset" class="headerlink" title="# Ordering, Grouping, Limit &amp; Offset"></a># Ordering, Grouping, Limit &amp; Offset</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-27"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-27" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;desc&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;email&#x27;</span>, <span class="hljs-string">&#x27;asc&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取 users, 依據 orderBy 的參數排序指定的欄位以及正序或倒序</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-28"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-28" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">latest</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">first</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>根據 date 做排序, 預設使用 created_at 欄位</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-29"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-29" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$randomUser</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">inRandomOrder</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">first</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用隨機排序</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-30"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-30" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$query</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;name&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$usersOrderedByEmail</span> = <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">reorder</span>(<span class="hljs-string">&#x27;email&#x27;</span>, <span class="hljs-string">&#x27;desc&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>移除現有的 orderBy constraint, 套用新的排序規則</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-31"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-31" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">groupBy</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>, <span class="hljs-string">&#x27;status&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">having</span>(<span class="hljs-string">&#x27;account_id&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>先依據給予的欄位 groupBy record, 在使用 having 篩選出需要的資料, having 在此相當於 where 的作用</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-32"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-32" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">offset</span>(<span class="hljs-number">10</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">limit</span>(<span class="hljs-number">5</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>跳過十筆資料, 然後只取五筆, 也可用 skip 以及 take</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-33"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-33" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">skip</span>(<span class="hljs-number">10</span>)-&gt;<span class="title function_ invoke__">take</span>(<span class="hljs-number">5</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>跳過十筆資料, 然後只取五筆, 也可用 offset 以及 limit</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Conditional-Clauses"><a href="#Conditional-Clauses" class="headerlink" title="# Conditional Clauses"></a># Conditional Clauses</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-34"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-34" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$sortBy</span> = <span class="hljs-literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">when</span>(<span class="hljs-variable">$sortBy</span>, function (<span class="hljs-variable">$query</span>, <span class="hljs-variable">$sortBy</span>) &#123;</span><br><span class="line">                    <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-variable">$sortBy</span>);</span><br><span class="line">                &#125;, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"><span class="hljs-variable">$query</span></span>) </span>&#123;</span><br><span class="line">                    <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;name&#x27;</span>);</span><br><span class="line">                &#125;)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當 when 的第一個 parameter 為 true 時, 方執行第二個 parameter closure, 若第一個 parameter 為 false, 則執行第二個 closure</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Inserts"><a href="#Inserts" class="headerlink" title="# Inserts"></a># Inserts</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-35"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-35" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">insert</span>([</span><br><span class="line">    [<span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;taylor@example.com&#x27;</span>, <span class="hljs-string">&#x27;votes&#x27;</span> =&gt; <span class="hljs-number">0</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;dayle@example.com&#x27;</span>, <span class="hljs-string">&#x27;votes&#x27;</span> =&gt; <span class="hljs-number">0</span>],</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>insert 多個 record 到 users table</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-36"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-36" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">insertOrIgnore</span>([</span><br><span class="line">    [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;taylor@example.com&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;id&#x27;</span> =&gt; <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;dayle@example.com&#x27;</span>],</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 insert 過程中, 如有重複的 record, 自動忽略</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-37"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-37" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$id</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">insertGetId</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;john@example.com&#x27;</span>, <span class="hljs-string">&#x27;votes&#x27;</span> =&gt; <span class="hljs-number">0</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>自動取得 auto-increment ID, 預設欄位名稱為 id, 若要特別指定欄位名稱, 可帶入第二個 parameter</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Updates"><a href="#Updates" class="headerlink" title="# Updates"></a># Updates</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-38"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-38" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$affected</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">              -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">              -&gt;<span class="title function_ invoke__">update</span>([<span class="hljs-string">&#x27;votes&#x27;</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>update 指定 record</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-39"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-39" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">    -&gt;<span class="title function_ invoke__">updateOrInsert</span>(</span><br><span class="line">        [<span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;john@example.com&#x27;</span>, <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;John&#x27;</span>],</span><br><span class="line">        [<span class="hljs-string">&#x27;votes&#x27;</span> =&gt; <span class="hljs-string">&#x27;2&#x27;</span>]</span><br><span class="line">    );</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果 parameter 1 的條件有找到 record 的話, 使用 parameter 2 指定的資料更新該 record, 如果沒找到, 會使用兩個 parameter 的資料來建立一個新的 record</li>
+</ul>
+<br>
+
+<h3 id="Updating-JSON-Columns"><a href="#Updating-JSON-Columns" class="headerlink" title="# Updating JSON Columns"></a># Updating JSON Columns</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-40"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-40" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$affected</span> = DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)</span><br><span class="line">              -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">              -&gt;<span class="title function_ invoke__">update</span>([<span class="hljs-string">&#x27;options-&gt;enabled&#x27;</span> =&gt; <span class="hljs-literal">true</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>更新 JSON Columns</li>
+</ul>
+<br>
+
+<h3 id="Increment-amp-Decrement"><a href="#Increment-amp-Decrement" class="headerlink" title="# Increment &amp; Decrement"></a># Increment &amp; Decrement</h3><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-41"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-41" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">increment</span>(<span class="hljs-string">&#x27;votes&#x27;</span>);</span><br><span class="line"></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">increment</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">decrement</span>(<span class="hljs-string">&#x27;votes&#x27;</span>);</span><br><span class="line"></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">decrement</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">increment</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">1</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;John&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 加 1</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">increment</span>(<span class="hljs-string">&#x27;votes&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 加 5</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">increment</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 減 1</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">decrement</span>(<span class="hljs-string">&#x27;votes&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 直接將 votes column 的 value 減 5</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">decrement</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 除了將 votes column 加 1 之外, 還更新 name column, 更新為 John</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">increment</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-number">1</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;John&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-當我使用-increment-或-decrement-method-時-會觸發-model-event-嗎？"><a href="#Laravel-Query-Builder-當中-當我使用-increment-或-decrement-method-時-會觸發-model-event-嗎？" class="headerlink" title="Laravel Query Builder 當中, 當我使用 increment 或 decrement method 時, 會觸發 model event 嗎？"></a><strong>Laravel Query Builder 當中, 當我使用 increment 或 decrement method 時, 會觸發 model event 嗎？</strong></h6><p>不會</p>
+<br>
+<br>
+
+<h2 id="Deletes"><a href="#Deletes" class="headerlink" title="# Deletes"></a># Deletes</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-42"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-42" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br><span class="line"></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 刪除 users table 中的所有 records</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 刪除 users table 中指定的 records</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-43"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-43" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">truncate</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>刪除所有資料庫的資料, 並且重置 auto-incrementing ID</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Pessimistic-Locking"><a href="#Pessimistic-Locking" class="headerlink" title="# Pessimistic Locking"></a># Pessimistic Locking</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-44"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-44" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">sharedLock</span>()-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>鎖住指定的 rows, 在解除鎖定之前, 這些 rows 無法被 update</li>
+</ul>
+<h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-45"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-45" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">lockForUpdate</span>()-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>鎖住指定的 rows, 在解除鎖定之前, 這些 rows 無法被 update, 也無法被 select</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Debugging"><a href="#Debugging" class="headerlink" title="# Debugging"></a># Debugging</h2><h6 id="Laravel-Query-Builder-當中-以下的-example-意思是？-46"><a href="#Laravel-Query-Builder-當中-以下的-example-意思是？-46" class="headerlink" title="Laravel Query Builder 當中, 以下的 example 意思是？"></a><strong>Laravel Query Builder 當中, 以下的 example 意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">dd</span>();</span><br><span class="line"></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">dump</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 印出 debug information, 並且停止執行該 request</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">dd</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 印出 debug information, 繼續執行該 request</span></span><br><span class="line">DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">dump</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Query-Builder/">#Laravel Query Builder</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-database-pagination/">Laravel - Database - Pagination (官方文件原子化翻譯)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-database-getting-started/">Laravel - Database - Getting Started (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-database-query-builder/';
+        this.page.identifier = 'zh-tw/laravel-database-query-builder/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

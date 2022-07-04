@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - 高併發 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言紀錄一下 5000 RPS 併發的專案架構">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - 高併發">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-high-concurrency/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言紀錄一下 5000 RPS 併發的專案架構">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLW_0x85lI4-BQxnIhxgTugiIJ4cLQa9nlgPhMV5oR0ifW7x8OOOe0e76NTK8mmZ9Mk-r3g8NV5Ym4hfV7czgbOnQHdPpShq1ibU_83mfqarvEGNL9pl7pox7Zx2BJ3drI625KuYhBDTnqrDXRWFaexwcQ=w1226-h1048-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLVYFdLE1hggKbGt702_muoriqU-lBHsmUiJuQ1AysY8jw3pfIV8fCvMerwOIy20-xgBgdY-imwyfOH3f7KubWrXAnk0rnxwJB80i2XiGiWCv8QDvhWDkcCqrOUacO_Dl5zSrLi27khv2g8OobmRIVuULg=w1250-h896-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLVPG__M32yIGaXisXHfHCUxUFbhzZExMdzxWNlPpCWespqbhumLS_vOcPpUNXn8Fss77WwyYIyEjMK7MH-Wz4B7spCI_S6_fRC03arf9SOSNcND7WXdz4vg3lPaCwv20_g0OnTyneVzTvLqeOmAVEQDeQ=w1016-h1662-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLUzKTNrk3ZiKASQrM3P04CHJgTNVfF37CmeqYn3vjzQU5mN_CWrOrPBZPRETLhyvchrUuEFvDR80dWoAaV_y6YhmlxHypIicnnKbH6JmD7BGt44Fpy0tK0t45vvyEHu1rEXetf8M7Z4kEsV4mcrZD-L2g=w1374-h1426-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXZuhHVgWiGdBwtaq3f8MhW2KLgzSoz2hqO1M0k9UuYW5xeGXZdqanJUWaUvBtAc2oKs3wahcH_1a0lDZRR0yxkeMk9dFZRzzAAaIAVYJSHsCJ3sm4fe1gj7BqtdwEZLjvv0G6cqKdZUsIn3Mnsh13Tig=w1336-h714-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXeYT44sOQ3_iHIzaBi7_PrU2gDhkW90Tr_lbApQUIz2pJjedib0ydivmwF-QO1rq39VtAnnro00ftZWI8LpleWyLeJPJzEGBLkIuyXd5WXAyDdY06fFA59lCGS_wDT9M3kfABHqCBrCOTvOgN9SJ7Uww=w1324-h1360-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXcOpyyi9_zKAXTUJYGBEeaBCwq9ClPeiZR60W6okj7von9Vz_1IkiQFsrFp-ToOV_Oot0gw12UxmlKunD6dpg6JXL6aiT_dREgl4QJj_TFNcH8JK161t-ixei0rRjV48nbES3CiSFAEmMiALAOZrtRjw=w3436-h516-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXum-FODN87OBpEx_s_mQ5M1N_t1AyS3nTO-M3ou1SVb8ZOxYpcpiKmzkf9xIeUDnXOBmslMqrpJSCcUTAXu6OXxywFikVby-Dw8gj8yKpGoaBqrbbC0QiV8qrbhW7fcs0wPt4t_EL6VnpUo5fMS6gerw=w3700-h1182-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLX1Zcxb5twsNdMZBJkJvczu9kWZlAn9EtRHMdSvnMWvRgoAloGqsrpVU2W0gbqf0Bmpv78oqheHeDicf4FpvoOjlelrn7i0bXBuKTfND2AnAxOFMLhjvMHVKDcRQCQxskoh9PQf1n9EVpln6UpZofIgtw=w1662-h970-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLWTHq16v9pDFO_1pbb3_gmFHQ3quTl5LFQ6eLr2jg4BBZq-5nkurLxR8_0ROOnMn5sjyiydI9v3DciXTdCcsQ4CXSnQfsyVcJ0TfI-S2Bcg2tGQ6Fq9fM_0olHlg803xLN03PDlUrXmS5yRzDbgJEa2NA=w1274-h1358-no?authuser=0">
+<meta property="article:published_time" content="2021-12-22T04:12:02.000Z">
+<meta property="article:modified_time" content="2022-01-25T04:32:25.054Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="高併發">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/AM-JKLW_0x85lI4-BQxnIhxgTugiIJ4cLQa9nlgPhMV5oR0ifW7x8OOOe0e76NTK8mmZ9Mk-r3g8NV5Ym4hfV7czgbOnQHdPpShq1ibU_83mfqarvEGNL9pl7pox7Zx2BJ3drI625KuYhBDTnqrDXRWFaexwcQ=w1226-h1048-no?authuser=0">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-high-concurrency/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言紀錄一下 5000 RPS 併發的專案架構">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - 高併發">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-high-concurrency/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言紀錄一下 5000 RPS 併發的專案架構">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLW_0x85lI4-BQxnIhxgTugiIJ4cLQa9nlgPhMV5oR0ifW7x8OOOe0e76NTK8mmZ9Mk-r3g8NV5Ym4hfV7czgbOnQHdPpShq1ibU_83mfqarvEGNL9pl7pox7Zx2BJ3drI625KuYhBDTnqrDXRWFaexwcQ=w1226-h1048-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLVYFdLE1hggKbGt702_muoriqU-lBHsmUiJuQ1AysY8jw3pfIV8fCvMerwOIy20-xgBgdY-imwyfOH3f7KubWrXAnk0rnxwJB80i2XiGiWCv8QDvhWDkcCqrOUacO_Dl5zSrLi27khv2g8OobmRIVuULg=w1250-h896-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLVPG__M32yIGaXisXHfHCUxUFbhzZExMdzxWNlPpCWespqbhumLS_vOcPpUNXn8Fss77WwyYIyEjMK7MH-Wz4B7spCI_S6_fRC03arf9SOSNcND7WXdz4vg3lPaCwv20_g0OnTyneVzTvLqeOmAVEQDeQ=w1016-h1662-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLUzKTNrk3ZiKASQrM3P04CHJgTNVfF37CmeqYn3vjzQU5mN_CWrOrPBZPRETLhyvchrUuEFvDR80dWoAaV_y6YhmlxHypIicnnKbH6JmD7BGt44Fpy0tK0t45vvyEHu1rEXetf8M7Z4kEsV4mcrZD-L2g=w1374-h1426-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXZuhHVgWiGdBwtaq3f8MhW2KLgzSoz2hqO1M0k9UuYW5xeGXZdqanJUWaUvBtAc2oKs3wahcH_1a0lDZRR0yxkeMk9dFZRzzAAaIAVYJSHsCJ3sm4fe1gj7BqtdwEZLjvv0G6cqKdZUsIn3Mnsh13Tig=w1336-h714-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXeYT44sOQ3_iHIzaBi7_PrU2gDhkW90Tr_lbApQUIz2pJjedib0ydivmwF-QO1rq39VtAnnro00ftZWI8LpleWyLeJPJzEGBLkIuyXd5WXAyDdY06fFA59lCGS_wDT9M3kfABHqCBrCOTvOgN9SJ7Uww=w1324-h1360-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXcOpyyi9_zKAXTUJYGBEeaBCwq9ClPeiZR60W6okj7von9Vz_1IkiQFsrFp-ToOV_Oot0gw12UxmlKunD6dpg6JXL6aiT_dREgl4QJj_TFNcH8JK161t-ixei0rRjV48nbES3CiSFAEmMiALAOZrtRjw=w3436-h516-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXum-FODN87OBpEx_s_mQ5M1N_t1AyS3nTO-M3ou1SVb8ZOxYpcpiKmzkf9xIeUDnXOBmslMqrpJSCcUTAXu6OXxywFikVby-Dw8gj8yKpGoaBqrbbC0QiV8qrbhW7fcs0wPt4t_EL6VnpUo5fMS6gerw=w3700-h1182-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLX1Zcxb5twsNdMZBJkJvczu9kWZlAn9EtRHMdSvnMWvRgoAloGqsrpVU2W0gbqf0Bmpv78oqheHeDicf4FpvoOjlelrn7i0bXBuKTfND2AnAxOFMLhjvMHVKDcRQCQxskoh9PQf1n9EVpln6UpZofIgtw=w1662-h970-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLWTHq16v9pDFO_1pbb3_gmFHQ3quTl5LFQ6eLr2jg4BBZq-5nkurLxR8_0ROOnMn5sjyiydI9v3DciXTdCcsQ4CXSnQfsyVcJ0TfI-S2Bcg2tGQ6Fq9fM_0olHlg803xLN03PDlUrXmS5yRzDbgJEa2NA=w1274-h1358-no?authuser=0">
+<meta property="article:published_time" content="2021-12-22T04:12:02.000Z">
+<meta property="article:modified_time" content="2022-01-25T04:32:25.054Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="高併發">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/AM-JKLW_0x85lI4-BQxnIhxgTugiIJ4cLQa9nlgPhMV5oR0ifW7x8OOOe0e76NTK8mmZ9Mk-r3g8NV5Ym4hfV7czgbOnQHdPpShq1ibU_83mfqarvEGNL9pl7pox7Zx2BJ3drI625KuYhBDTnqrDXRWFaexwcQ=w1226-h1048-no?authuser=0">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署">2&nbsp;&nbsp;<b># 部署</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#AMI-製作">2.1&nbsp;&nbsp;# AMI 製作</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前端專案">2.2&nbsp;&nbsp;# 前端專案</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#s3-設定">2.2.1&nbsp;&nbsp;# s3 設定</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CloudFront">2.2.2&nbsp;&nbsp;# CloudFront</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#後端">2.3&nbsp;&nbsp;# 後端</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#DB">2.3.1&nbsp;&nbsp;# DB</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#DB-proxy">2.3.2&nbsp;&nbsp;# DB proxy</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Redis">2.3.3&nbsp;&nbsp;# Redis</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#EC2">2.3.4&nbsp;&nbsp;# EC2</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#AMI">2.3.5&nbsp;&nbsp;# AMI</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動範本">2.3.6&nbsp;&nbsp;# 啟動範本</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#security-group">2.3.7&nbsp;&nbsp;# security group</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#target-group">2.3.8&nbsp;&nbsp;# target group</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#LB">2.3.9&nbsp;&nbsp;# LB</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#auto-scalling-policy">2.3.10&nbsp;&nbsp;# auto scalling policy</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CloudWatch">2.3.11&nbsp;&nbsp;# CloudWatch</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CodeDeploy">2.3.12&nbsp;&nbsp;# CodeDeploy</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#CodeDeploy-Notification">2.3.13&nbsp;&nbsp;# CodeDeploy Notification</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-high-concurrency/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-high-concurrency/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - 高併發
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-12-22T04:12:02.000Z" itemprop="datePublished">12月 22 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            22 分钟 讀完 (大概 3301 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>紀錄一下 5000 RPS 併發的專案架構</p>
+<span id="more"></span>
+
+<br>
+
+<h2 id="部署"><a href="#部署" class="headerlink" title="# 部署"></a># 部署</h2><p>全套架構</p>
+<h3 id="AMI-製作"><a href="#AMI-製作" class="headerlink" title="# AMI 製作"></a># AMI 製作</h3><p>啟動一台 instance, 安裝必要環境, 視需求可參考 <a target="_blank" rel="noopener" href="http://localhost:4000/zh-tw/laravel-deploayment/">Laravel 部署</a></p>
+<br>
+
+<h3 id="前端專案"><a href="#前端專案" class="headerlink" title="# 前端專案"></a># 前端專案</h3><p>部署在 AWS S3 上, 並使用 CloudFront 來 cache 靜態檔案<br>整個架構大概是 <code>CI/CD 將專案部署到 s3</code>, <code>CloudFront 建立從 s3 取得資源, 並 cache</code>, <code>將 domain map 到 CloudFront 分佈的 domain</code> </p>
+<h4 id="s3-設定"><a href="#s3-設定" class="headerlink" title="# s3 設定"></a># s3 設定</h4><ul>
+<li><p>建立一個 bucket, 並從屬性設定靜態網站託管<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLW_0x85lI4-BQxnIhxgTugiIJ4cLQa9nlgPhMV5oR0ifW7x8OOOe0e76NTK8mmZ9Mk-r3g8NV5Ym4hfV7czgbOnQHdPpShq1ibU_83mfqarvEGNL9pl7pox7Zx2BJ3drI625KuYhBDTnqrDXRWFaexwcQ=w1226-h1048-no?authuser=0"></p>
+</li>
+<li><p>取消封鎖公開存取<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLVYFdLE1hggKbGt702_muoriqU-lBHsmUiJuQ1AysY8jw3pfIV8fCvMerwOIy20-xgBgdY-imwyfOH3f7KubWrXAnk0rnxwJB80i2XiGiWCv8QDvhWDkcCqrOUacO_Dl5zSrLi27khv2g8OobmRIVuULg=w1250-h896-no?authuser=0"></p>
+</li>
+<li><p>儲存貯體政策定義, 讓 bucket 可被存取, 但僅限特定的 referer</p>
+<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;Version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2012-10-17&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;Id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http referer policy example&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;Statement&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span></span><br><span class="line">        <span class="hljs-punctuation">&#123;</span></span><br><span class="line">            <span class="hljs-attr">&quot;Sid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Allow get requests originating from www.example.com and example.com.&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;Effect&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Allow&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;Principal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;*&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;Action&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span></span><br><span class="line">                <span class="hljs-string">&quot;s3:GetObject&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">                <span class="hljs-string">&quot;s3:GetObjectVersion&quot;</span></span><br><span class="line">            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;Resource&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;arn:aws:s3:::貯體名稱/*&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;Condition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">                <span class="hljs-attr">&quot;StringLike&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">                    <span class="hljs-attr">&quot;aws:Referer&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;設定在 cloud front 的 referer value&quot;</span></span><br><span class="line">                <span class="hljs-punctuation">&#125;</span></span><br><span class="line">            <span class="hljs-punctuation">&#125;</span></span><br><span class="line">        <span class="hljs-punctuation">&#125;</span></span><br><span class="line">    <span class="hljs-punctuation">]</span></span><br><span class="line"><span class="hljs-punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>cors 設定, 若有使用 CloudFront, 可直接設定在 CloudFront。 若不特別定義, s3 針對 option request 的 response, 不會帶著 <code>Access-Control-Allow-origin</code> 相關的 header, 直接的結果是, 當瀏覽器使用非簡單請求時, 就會被 cors block</p>
+<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-punctuation">[</span></span><br><span class="line">    <span class="hljs-punctuation">&#123;</span></span><br><span class="line">        <span class="hljs-attr">&quot;AllowedHeaders&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span></span><br><span class="line">            <span class="hljs-string">&quot;*&quot;</span></span><br><span class="line">        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;AllowedMethods&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span></span><br><span class="line">            <span class="hljs-string">&quot;GET&quot;</span></span><br><span class="line">        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;AllowedOrigins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span></span><br><span class="line">            <span class="hljs-string">&quot;*&quot;</span></span><br><span class="line">        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;ExposeHeaders&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span></span><br><span class="line">    <span class="hljs-punctuation">&#125;</span></span><br><span class="line"><span class="hljs-punctuation">]</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="CloudFront"><a href="#CloudFront" class="headerlink" title="# CloudFront"></a># CloudFront</h4><ul>
+<li>來源網域輸入 s3 static site url</li>
+<li>名稱隨便</li>
+<li>新增自訂標頭, 這邊新增一個 key 為 <code>Referer</code>, value 自訂的 header, 主要是讓 s3 識別用, 這樣可以阻擋一部分 <code>非 CloudFront 對 s3 所發出的請求</code><br><img src="https://lh3.googleusercontent.com/pw/AM-JKLVPG__M32yIGaXisXHfHCUxUFbhzZExMdzxWNlPpCWespqbhumLS_vOcPpUNXn8Fss77WwyYIyEjMK7MH-Wz4B7spCI_S6_fRC03arf9SOSNcND7WXdz4vg3lPaCwv20_g0OnTyneVzTvLqeOmAVEQDeQ=w1016-h1662-no?authuser=0"></li>
+<li>回應標頭政策, 可加入 CORS, 不然就是要在 s3 處做設定</li>
+<li>針對 error 404, 一律導向 index.html<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLUzKTNrk3ZiKASQrM3P04CHJgTNVfF37CmeqYn3vjzQU5mN_CWrOrPBZPRETLhyvchrUuEFvDR80dWoAaV_y6YhmlxHypIicnnKbH6JmD7BGt44Fpy0tK0t45vvyEHu1rEXetf8M7Z4kEsV4mcrZD-L2g=w1374-h1426-no?authuser=0"></li>
+<li>若專案有更新, 都需 invalidate cache, 手動的話可從 console 操作, CI/CD 的話需呼叫 AWS API<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLXZuhHVgWiGdBwtaq3f8MhW2KLgzSoz2hqO1M0k9UuYW5xeGXZdqanJUWaUvBtAc2oKs3wahcH_1a0lDZRR0yxkeMk9dFZRzzAAaIAVYJSHsCJ3sm4fe1gj7BqtdwEZLjvv0G6cqKdZUsIn3Mnsh13Tig=w1336-h714-no?authuser=0"></li>
+<li>若要使用 HTTPS, 可使用 ACM 來取得憑證, 用於 CloudFront 的憑證是有限制區域的, 僅限於 us-east-1 的 ACM<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLXeYT44sOQ3_iHIzaBi7_PrU2gDhkW90Tr_lbApQUIz2pJjedib0ydivmwF-QO1rq39VtAnnro00ftZWI8LpleWyLeJPJzEGBLkIuyXd5WXAyDdY06fFA59lCGS_wDT9M3kfABHqCBrCOTvOgN9SJ7Uww=w1324-h1360-no?authuser=0"></li>
+<li>使用 ACM, 替我們擁有的 domain 取得憑證, 需要在 dns 管理介面 (看 domain 在哪買的) 輸入 ACM 產生的 key / value 來成功驗證, 驗證成功後即取得憑證</li>
+<li>建立分佈後, 在 dns 管理介面建立 cname, 將特定 domain 導向此分佈產生的 domain, 注意憑證須事先設定好, 否則 HTTPS 無法導向</li>
+</ul>
+<br>
+
+<h3 id="後端"><a href="#後端" class="headerlink" title="# 後端"></a># 後端</h3><h4 id="DB"><a href="#DB" class="headerlink" title="# DB"></a># DB</h4><ul>
+<li>使用 console 建立 DB</li>
+<li>使用生產環境</li>
+<li>SSD 大小關係到 IOPS, 最高級的可使用佈建式 EBS, 若是一般的 SSD, 約 <code>1 GB = 3 IOPS</code>, 所以 SSD 越大, IOPS 越高, 可視實際用量調整</li>
+<li>備份時間設定在半夜</li>
+<li>是否備庫取決於專案形式, 主要就是預算以及需求</li>
+<li>可自訂 security group, 需開通 port 3306 可傳入, 否則會連不上資料庫</li>
+<li>可自訂 parameter group, 這是修改 MySQL 參數的唯一方法</li>
+<li>可自訂登入預設使用者 &amp; password, 以供 APP 存取</li>
+<li>為安全性, 可設為非公開, 再透過 AWS 機器連進去</li>
+<li>記得匯出日誌</li>
+</ul>
+<br>
+
+<h4 id="DB-proxy"><a href="#DB-proxy" class="headerlink" title="# DB proxy"></a># DB proxy</h4><ul>
+<li>使用 proxy 的目的, 是為了隊列 connection, 因為 RDS 的 max_connection 是有限的, 且依據每一種規格的 max_connection 會有所不同, 是根據 <code>memory / 某個數</code> 來定義的, 可到 default parameter group 去看</li>
+<li>代理的運作原理, 是代替 DB 在 DB 之前 proxy, 發給 DB 定義的 connection 數量, 並把超出的隊列</li>
+<li>建立代理前, 需要先使用 secret manager 來建立新的 secret, secret 的內容為存取 DB 的 account &amp; password</li>
+<li>可參考這篇<a target="_blank" rel="noopener" href="https://aws.amazon.com/tw/getting-started/hands-on/set-up-shared-database-connection-amazon-rds-proxy/">文件</a> 來建立 proxy</li>
+<li>有一點要注意, 由於是 client 連到 proxy, 在連到 DB, 所以 proxy 的 security group inbound 會是允許 EC2 來源的 3306, 而 DB 的 security group inbound 會是允許 proxy 來源的 3306, 所以這邊會有兩個 security group, 一個是 proxy, 一個是 DB, 文件裡沒寫到, 照文件的 security group 配置會失敗</li>
+</ul>
+<br>
+
+
+<h4 id="Redis"><a href="#Redis" class="headerlink" title="# Redis"></a># Redis</h4><ul>
+<li>使用 Elasticache console 建立</li>
+<li>可定義 security group, 需允許 6379 port, 否則會連不上</li>
+<li>若資料較不敏感, 不需使用加密, 不管是靜態加密或傳輸加密, 畢竟加密就會對性能造成影響</li>
+<li>若使用傳輸加密, 可自訂 auth 字串, 在 Laravel 的 .env 會像是這樣 <code>REDIS_HOST=tls://redis 終端節點</code> <code>REDIS_PASSWORD=auth字串, 若無傳輸加密可留空</code></li>
+</ul>
+<br>
+
+<h4 id="EC2"><a href="#EC2" class="headerlink" title="# EC2"></a># EC2</h4><ul>
+<li>基本上就是開一台乾淨的機器, 將專案會需要用到的環境安裝上去, 然後建立 AMI</li>
+</ul>
+<br>
+
+<h4 id="AMI"><a href="#AMI" class="headerlink" title="# AMI"></a># AMI</h4><ul>
+<li>相較於啟動範本, AMI 像是硬碟中的資料, 跟硬體無關, 像是機器規格, 安全群組, 硬碟空間大小</li>
+</ul>
+<br>
+
+<h4 id="啟動範本"><a href="#啟動範本" class="headerlink" title="# 啟動範本"></a># 啟動範本</h4><ul>
+<li>相較於 AMI, 啟動範本可以指定 AMI, 然後定義其他資訊, 像是機器規格, 安全群組, 硬碟空間大小</li>
+<li>用於 auto scalling 啟動機器的依據, 需先建立好 AMI</li>
+<li>可選auto scalling 指引, 會提示哪些選項須留空, 哪邊為必填</li>
+<li>如果想從現存的範本複製一份, 可指定來源範本</li>
+<li>需指定是先建立好的 AMI</li>
+<li>最重要的當屬 <code>使用者資料</code>, 機器會再啟動後執行 <code>使用者資料</code> 當中的 script, 目的是讓你的專案可以在機器啟動後達到 ready to service 的狀態</li>
+<li>可為範本定義一個 security group</li>
+</ul>
+<br>
+
+
+<h4 id="security-group"><a href="#security-group" class="headerlink" title="# security group"></a># security group</h4><ul>
+<li>AWS 幾乎每種服務都可為其定義 security group</li>
+<li>default security group 無法刪除</li>
+<li>若要限制特定來源的 port, 比如說, 我只允許來自於 LB 的 80 port 的 request, 那麼除了定義 port 之外, 可將來源定義成該 LB 的 security gruop<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLXcOpyyi9_zKAXTUJYGBEeaBCwq9ClPeiZR60W6okj7von9Vz_1IkiQFsrFp-ToOV_Oot0gw12UxmlKunD6dpg6JXL6aiT_dREgl4QJj_TFNcH8JK161t-ixei0rRjV48nbES3CiSFAEmMiALAOZrtRjw=w3436-h516-no?authuser=0"></li>
+</ul>
+<br>
+
+<h4 id="target-group"><a href="#target-group" class="headerlink" title="# target group"></a># target group</h4><ul>
+<li>可將複數的 instance 註冊到同一個 target group, 亦可稱為 instance group</li>
+<li>可接收來自於 LB 的 request</li>
+</ul>
+<br>
+
+
+<h4 id="LB"><a href="#LB" class="headerlink" title="# LB"></a># LB</h4><ul>
+<li>將來自於 Internet 的 request 導向後方的 target group</li>
+<li>可設定 LB 將特定條件的 source 導向特定的 target group</li>
+<li>LB 與 target group 的 protocol 必須一致, 即兩者要嘛都 HTTP, 要嘛都 TCP, 或其他相同的 protocol</li>
+<li>當使用 HTTPS 時, 憑證可使用 ACM 來取得, 同 CloudFront 的 ACM 設定, 但 LB 的 ACM 不局限於 us-east-1 地區</li>
+<li>在 DNS 管理介面, 將特定的 domain name cname 到 LB 產生的 domain name, 若 LB 支援 HTTPS 且 request 為 HTTPS, 則 LB 上設定的憑證的 domain name, 需與發出 HTTPS request 的 domain name 相符</li>
+<li>可從 <code>listener =&gt; rule</code> 將特定的來源導向不同的 target group, 可定義多個 target group 以及多種 rule</li>
+<li>可設定 log, 並將其匯出到 s3, s3 bucket 可不必事先建立, 設定 log 匯出時選擇自動建立 s3 bucket 即可</li>
+</ul>
+<br>
+
+
+<h4 id="auto-scalling-policy"><a href="#auto-scalling-policy" class="headerlink" title="# auto scalling policy"></a># auto scalling policy</h4><ul>
+<li>當我們已經定義好啟動範本, 就可以定義 auto scalling policy 來自動根據情境 scale instance, 並且使用啟動範本來啟動 instance </li>
+<li>可根據機器的使用率來決定是否 scale, 也可單純手動控制所需數量</li>
+<li>可在建立時, 指定要套用的 LB, 選擇該 LB 下的 target group</li>
+<li>當健康檢查未通過時, auto scaling policy 會自動關掉 unhealthy instance 並且啟動新的, 可設定新的 instance 啟動後, 過多久時間開始做健康檢查, 以避免啟動耗時較久的啟動範本, 還沒啟動好就被關掉了</li>
+</ul>
+<br>
+
+<h4 id="CloudWatch"><a href="#CloudWatch" class="headerlink" title="# CloudWatch"></a># CloudWatch</h4><ul>
+<li><p>在機器上安裝 cloud watch agent, 可以非同步的將指定的 log 檔定時輸出到 AWS CloudWatch, 只有一台機器時用不到, 但若 LB 架構, 可能會有多台機器的話就必要</p>
+</li>
+<li><p>使用 cloud watch agent, 而不是直接使用 cloud watch sdk 的原因是, 使用 sdk 由於是在程式端進行 log 串流, 會影響 response time, 若是跑 qeueue 可以解決這個問題, 但必須要額外設定 worker 去跑, 所以倒不如直接使用 agent 跑 backgroud process 來的單純</p>
+</li>
+<li><p>首先要先安裝 cloud watch agent, 參考 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Agent-on-EC2-Instance.html">文件</a></p>
+</li>
+<li><p>config 可以自動生成預設的, 也可以手動增加, 為了後續可以即時地透過 Git 來對 config 做版本控制並且更新, 我是採手動的, 可參考 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html">文件</a></p>
+</li>
+<li><p>example 大概像是這樣, 可安裝後, 輸入 command <code>amazon-cloudwatch-agent-ctl</code> 獲取各種參數以及用法, 像是 <code>$cloudAgentCtl -a fetch-config -m ec2 -c file:$cloudWatchAgentConfigFile -s</code>, 這樣就是讀取指定位置的 config, 並且重啟, 類行為 ec2</p>
+<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-punctuation">&#123;</span></span><br><span class="line">  <span class="hljs-attr">&quot;agent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;logfile&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/var/log/cloud-watch-agent/cloud-watch-agent.log&quot;</span></span><br><span class="line">  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span></span><br><span class="line">  <span class="hljs-attr">&quot;logs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;logs_collected&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">      <span class="hljs-attr">&quot;files&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">        <span class="hljs-attr">&quot;collect_list&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span></span><br><span class="line">          <span class="hljs-punctuation">&#123;</span></span><br><span class="line">            <span class="hljs-attr">&quot;file_path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/var/www/fun-marketing-backend/storage/logs/laravel-*.log&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;log_group_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fun-marketing-pro&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;log_stream_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;backend-api-default&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;timezone&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;UTC&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;multi_line_start_pattern&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^\\[\\d&#123;4&#125;\\-\\d&#123;2&#125;\\-\\d&#123;2&#125; \\d&#123;2&#125;:\\d&#123;2&#125;:\\d&#123;2&#125;\\].*$&quot;</span></span><br><span class="line">          <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span></span><br><span class="line">          <span class="hljs-punctuation">&#123;</span></span><br><span class="line">            <span class="hljs-attr">&quot;file_path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/var/www/fun-marketing-backend/storage/logs/grabRedEnvelope-*.log&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;log_group_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fun-marketing-pro&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;log_stream_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;backend-api-grab-red-envelope&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;timezone&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;UTC&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;multi_line_start_pattern&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^\\[\\d&#123;4&#125;\\-\\d&#123;2&#125;\\-\\d&#123;2&#125; \\d&#123;2&#125;:\\d&#123;2&#125;:\\d&#123;2&#125;\\].*$&quot;</span></span><br><span class="line">          <span class="hljs-punctuation">&#125;</span></span><br><span class="line">        <span class="hljs-punctuation">]</span></span><br><span class="line">      <span class="hljs-punctuation">&#125;</span></span><br><span class="line">    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;log_stream_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;default&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;force_flush_interval&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">15</span></span><br><span class="line">  <span class="hljs-punctuation">&#125;</span></span><br><span class="line"><span class="hljs-punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>細節設定檔部分, 可參考你自己寫的 fun-marketing 專案, 大概流程是 <code>push 到 gitlab</code>, 然後 <code>觸發 git runner, 呼叫 codedeploy api</code>, 然後 <code>codedeploy 將 cloud agent config 部署到機器上</code>, 最後 <code>重啟 cloud agent</code></p>
+</li>
+</ul>
+<br>
+
+<h4 id="CodeDeploy"><a href="#CodeDeploy" class="headerlink" title="# CodeDeploy"></a># CodeDeploy</h4><ul>
+<li>因為使用 AWS 全套服務, CodeDeploy 在一定用量內的話, 基本上可以說是免費的</li>
+<li>另外就是, 因為專案是 LB 架構, 需要同時部署到多台機器上, 是以 target group 為單位來部署的, 因此使用 AWS CodeDeploy 會相對單純很多</li>
+<li>首先, 先從 console 去建立一個應用程式<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLXum-FODN87OBpEx_s_mQ5M1N_t1AyS3nTO-M3ou1SVb8ZOxYpcpiKmzkf9xIeUDnXOBmslMqrpJSCcUTAXu6OXxywFikVby-Dw8gj8yKpGoaBqrbbC0QiV8qrbhW7fcs0wPt4t_EL6VnpUo5fMS6gerw=w3700-h1182-no?authuser=0"></li>
+<li>這邊看是使用哪種平台, 這個專案是使用 EC2 內部部署的, 簡單來說就是部署對象是 EC2 機器<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLX1Zcxb5twsNdMZBJkJvczu9kWZlAn9EtRHMdSvnMWvRgoAloGqsrpVU2W0gbqf0Bmpv78oqheHeDicf4FpvoOjlelrn7i0bXBuKTfND2AnAxOFMLhjvMHVKDcRQCQxskoh9PQf1n9EVpln6UpZofIgtw=w1662-h970-no?authuser=0"></li>
+<li>需建立一個 service role 讓 code deploy process 使用, 可以直接建立一個 service role, 然後綁 AWS CodeDeploy 預設的 role 就可<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLWTHq16v9pDFO_1pbb3_gmFHQ3quTl5LFQ6eLr2jg4BBZq-5nkurLxR8_0ROOnMn5sjyiydI9v3DciXTdCcsQ4CXSnQfsyVcJ0TfI-S2Bcg2tGQ6Fq9fM_0olHlg803xLN03PDlUrXmS5yRzDbgJEa2NA=w1274-h1358-no?authuser=0"></li>
+<li>可以選擇 <code>Auto scalling 群組</code>, <code>EC2 執行個體</code>, 以及 <code>現場部署執行個體</code> 來作為部署目標, 可多選而非則一</li>
+<li>現場部署的官方解釋是 <code>An on-premises instance is any physical device that is not an Amazon EC2 instance that can run the CodeDeploy agent and connect to public AWS service endpoints.</code>, 這是他跟一般 EC2 部署的差異</li>
+<li>Auto scalling 群組會出現你已經建立的群組給你選</li>
+<li>EC2 執行個體, 可以指定 tag</li>
+<li>現場部署執行個體也是指定 tag, 但這個 tag 要自己到機器上去下指令定義, 然後才能獲取 tag</li>
+<li>部署類型可使用就地或藍綠, 藍綠部署主要是利用 LB 多台機器的機制, 新的開起來後再馬上切過去, 然後再關掉舊的, 可以某層面上做到 zero downtime (在不談到 DB 的情況下), 就地部署則是不管三七二十一直接給你部署下去, fun-marketing 專案我在部署 script 有使用特別的方法, 也是會先把新的專案部署好, 再切換過去, 所以在 code deploy 這邊就使用就地部署</li>
+<li>承上, 由於已經做到 zero downtime, 所以直接就使用 AllAtOnce 組態</li>
+<li>可以讓負載平衡器在部署時, 阻擋流量, 等到部署完畢再放行流量, 由於在機器上已做到 zero downtime, 所以這邊就沒特別阻擋, 只是說應該上版時, 要選在人少的時候上版, 總不可能在尖峰時段上版吧 QQ</li>
+</ul>
+<br>
+
+<h4 id="CodeDeploy-Notification"><a href="#CodeDeploy-Notification" class="headerlink" title="# CodeDeploy Notification"></a># CodeDeploy Notification</h4><ul>
+<li>在每次部署時, 發送通知到 Slack channel</li>
+<li>先到 AWS Chatbot config new client, 具體可參考這篇<a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/dtconsole/latest/userguide/notifications-chatbot.html#notifications-chatbot-configure-client">文件</a>, 文件中的 guardrail 可以先隨便選一個, 等到建立完成後再編輯, 因為 guardrail 主要是界定一個權限範圍, 會需要輸入一個 policy, 而照文件上, 會使用 policy template 來建立, 所以在成功建立 chatbot 的同時, 一個預設 notification only 的 policy 也會被建立, 可被用在 guardrail</li>
+<li>建立 chatbot 時, SNS topic 先不用定義, 在我們建立通知規則時, 將 chatbot 作為 notification target 時, AWS 會自動建立對應的 SNS topic</li>
+<li>建立完 chatbot 之後, 參考這篇<a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/dtconsole/latest/userguide/notification-rule-create.html">文件</a> 建立 notification rule, 把上面建立的 chatbot 作為目標, 這樣 SNS topic 就會自動被建立</li>
+<li>最後, 到 chatbot 處 sens test message 看看 channel 是否能收到 test message </li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/%E9%AB%98%E4%BD%B5%E7%99%BC/">#高併發</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/ThirdPartyLogin/">第三方登入</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/k6/">k6 - 使用筆記</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-high-concurrency/';
+        this.page.identifier = 'zh-tw/laravel-high-concurrency/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

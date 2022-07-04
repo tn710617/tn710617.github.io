@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Kubernetes - Health Check - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes - Health Check">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-02-02T09:34:05.000Z">
+<meta property="article:modified_time" content="2020-02-07T12:10:07.979Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Kubernetes health check">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/config-liveness-readiness-startup-probes/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes - Health Check">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 kubelet 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-02-02T09:34:05.000Z">
+<meta property="article:modified_time" content="2020-02-07T12:10:07.979Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Kubernetes health check">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義存活探針指令">2&nbsp;&nbsp;<b>定義存活探針指令</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義-liveness-HTTP-request">3&nbsp;&nbsp;<b>定義 liveness HTTP request</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義-TCP-liveness-probe">4&nbsp;&nbsp;<b>定義 TCP liveness probe</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用命名-port">5&nbsp;&nbsp;<b>使用命名 port</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用-startup-probes-來保護啟動較慢的容器">6&nbsp;&nbsp;<b>使用 startup probes 來保護啟動較慢的容器</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#定義-readiness-probes">7&nbsp;&nbsp;<b>定義 readiness probes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設置-Probes">8&nbsp;&nbsp;<b>設置 Probes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#參考資料">9&nbsp;&nbsp;<b>參考資料</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Q-amp-A">10&nbsp;&nbsp;<b>Q&amp;amp;amp;A</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/config-liveness-readiness-startup-probes/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/config-liveness-readiness-startup-probes/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Kubernetes - Health Check
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-02-02T09:34:05.000Z" itemprop="datePublished">2月 2 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            28 分钟 讀完 (大概 4206 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇會示範如何設定 liveness probe(存活探針), readiness probe(就緒探針), 以及 startup probe(啟動探針)。 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/admin/kubelet/">kubelet</a> 使用 liveness probe 來決定何時重啟容器, 舉例來說, 當你的應用處於運行中, 但是卻無法處理 request。</p>
+<span id="more"></span>
+
+<p>kubelet 使用 readiness probe 來決定這個容器是否已經準備就緒, 可以接收流量了。 當一個 Pod 內的所有容器都就緒了, 該 Pod 才算是就緒。 如果一個 Pod 尚未就緒, 它將會從 Service 負載平衡的後端清單中被移除。<br>kubelet 使用 startup probe 來決定一個容器應用是否已經成功啟動了。 當 startup probe 判定為 success 之前, liveness probe 跟 readiness probe 是沒有作用的。 這可以用在某些會花比較久時間來啟動的應用, 這樣就不會在還沒啟動完成前就因為 liveness 判定失敗而給殺掉了。</p>
+<p>本篇主要是個人學習 Kubernetes health check 的一篇筆記, 內容你會看到很多很多的 Q&amp;A, 因為 Ray 個人習慣將長篇的理論知識切割成零碎 Q&amp;A, 適合我個人學習吸收, 考試都考 100 分呢！</p>
+<br>
+<br>
+
+<h2 id="定義存活探針指令"><a href="#定義存活探針指令" class="headerlink" title="定義存活探針指令"></a>定義存活探針指令</h2><p>許多應用長時間運行後, 就陷入一個壞掉的狀態, 這時候唯有重啟才可恢復。 Kubernetes 提供了 liveness probe 來偵測並且排除這樣的狀況<br>讓我們啟動一個 Pod, 這個 Pod 會運行 <code>k8s.gcr.io/busybox</code> 鏡像, 以下是該 Pod 的設定檔:</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">test:</span> <span class="hljs-string">liveness</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-exec</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/busybox</span></span><br><span class="line">    <span class="hljs-attr">args:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/bin/sh</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">touch</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">30</span><span class="hljs-string">;</span> <span class="hljs-string">rm</span> <span class="hljs-string">-rf</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">600</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-attr">exec:</span></span><br><span class="line">        <span class="hljs-attr">command:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">cat</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">/tmp/healthy</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>這邊針對上面的 yaml file 做解說：</p>
+<ul>
+<li><strong>periodSeconds</strong>: liveness probe 多久檢查一次</li>
+<li><strong>initialDelaySeconds</strong>: 首次啟動後, 要延遲多久在執行</li>
+<li><strong>cat /tmp/healthy</strong>: livenessProbe 會執行這段執行, 如果成功則回傳 0, 其他都是失敗。</li>
+<li>當容器啟動時, 會執行 <code>/bin/sh -c &quot;touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600&quot;</code>, 會先建立 <code>/tmp/healthy</code>, 然後 sleep 30 秒, 所以在這 30 秒間, <code>/tmp/healthy</code> 是存在的。 30 秒後會把 <code>/tmp/healthy</code> 砍了, 然後 sleep 600 秒, 在這 600 秒間, 指令會回傳錯誤</li>
+</ul>
+<p>接著來實際操作一回:</p>
+<ul>
+<li><p>建立 Pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/pods/probe/exec-liveness.yaml</span><br></pre></td></tr></table></figure></li>
+<li><p>頭 30 秒, 執行以下指令檢視 Pod 事件：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod liveness-exec</span><br></pre></td></tr></table></figure></li>
+<li><p>輸出未顯示 liveness probe 失敗</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">FirstSeen    LastSeen    Count   From            SubobjectPath           Type        Reason      Message</span><br><span class="line">--------- --------    -----   ----            -------------           --------    ------      -------</span><br><span class="line">24s       24s     1   &#123;default-scheduler &#125;                    Normal      Scheduled   Successfully assigned liveness-exec to worker0</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulling     pulling image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulled      Successfully pulled image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Created     Created container with docker id 86849c15382e; Security:[seccomp=unconfined]</span><br><span class="line">23s       23s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Started     Started container with docker id 86849c15382e</span><br></pre></td></tr></table></figure></li>
+<li><p>35 秒後, 在檢視一次</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod liveness-exec</span><br></pre></td></tr></table></figure></li>
+<li><p>輸出可以看到, liveness probe 失敗了</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">FirstSeen LastSeen    Count   From            SubobjectPath           Type        Reason      Message</span><br><span class="line">--------- --------    -----   ----            -------------           --------    ------      -------</span><br><span class="line">37s       37s     1   &#123;default-scheduler &#125;                    Normal      Scheduled   Successfully assigned liveness-exec to worker0</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulling     pulling image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Pulled      Successfully pulled image &quot;k8s.gcr.io/busybox&quot;</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Created     Created container with docker id 86849c15382e; Security:[seccomp=unconfined]</span><br><span class="line">36s       36s     1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Normal      Started     Started container with docker id 86849c15382e</span><br><span class="line">2s        2s      1   &#123;kubelet worker0&#125;   spec.containers&#123;liveness&#125;   Warning     Unhealthy   Liveness probe failed: cat: can&#x27;t open &#x27;/tmp/healthy&#x27;: No such file or directory</span><br></pre></td></tr></table></figure></li>
+<li><p>在等 30 秒, 看容器有沒有被重啟</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pod liveness-exec</span><br></pre></td></tr></table></figure></li>
+<li><p>看來是重啟了, 並且重啟次數加一</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">NAME            READY     STATUS    RESTARTS   AGE</span><br><span class="line">liveness-exec   1/1       Running   1          1m</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="定義-liveness-HTTP-request"><a href="#定義-liveness-HTTP-request" class="headerlink" title="定義 liveness HTTP request"></a>定義 liveness HTTP request</h2><p>liveness probe 另外一種方式為 HTTP request, 以下設定檔為運行鏡像 <code>k8s.gcr.io/liveness</code> 的 Pod</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">test:</span> <span class="hljs-string">liveness</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-http</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/liveness</span></span><br><span class="line">    <span class="hljs-attr">args:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/server</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-attr">httpGet:</span></span><br><span class="line">        <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">        <span class="hljs-attr">httpHeaders:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Custom-Header</span></span><br><span class="line">          <span class="hljs-attr">value:</span> <span class="hljs-string">Awesome</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">3</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>針對以上的設定檔做解釋:</p>
+<ul>
+<li><strong>periodSeconds</strong>: 每 3 秒檢查一次</li>
+<li><strong>initialDelaySeconds</strong>: 容器啟動後, 要延遲 3 秒再開始探針</li>
+<li>這次探針實施的方式為傳送 HTTP GET request 到 server 的 port 8080</li>
+<li>如果 <code>/haalthz</code> 回傳 200~399, 則表示成功, 其餘都失敗</li>
+<li>如果有興趣可以去看此鏡像的<a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubernetes/blob/master/test/images/agnhost/liveness/server.go">原始碼</a>, 如以下程式碼, 10 秒後開始回傳 500, 10 秒內回傳 200<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">http.HandleFunc(&quot;/healthz&quot;, func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">    duration := time.Now().Sub(started)</span><br><span class="line">    if duration.Seconds() &gt; 10 &#123;</span><br><span class="line">        w.WriteHeader(500)</span><br><span class="line">        w.Write([]byte(fmt.Sprintf(&quot;error: %v&quot;, duration.Seconds())))</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        w.WriteHeader(200)</span><br><span class="line">        w.Write([]byte(&quot;ok&quot;))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></li>
+<li>kubelet 會在容器啟動後 3 秒開始探測, 所以一開始的健康健康會是 success 的, 但是 10 秒後就會開始 fail, 然後 kubelet 會把容器殺掉並且重啟</li>
+</ul>
+<p>以下實際試試 HTTP liveness check</p>
+<ul>
+<li><p>建立 Pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/pods/probe/http-liveness.yaml</span><br></pre></td></tr></table></figure></li>
+<li><p>10 秒後, 檢視 liveness probe 事件, 可以發現已經失敗並且又重啟了</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod liveness-http</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>在版本 v1.13 之前 (包含 v1.13), 如果在 node 有設定 <code>http_proxy</code> (或 <code>HTTP_PROXY</code>) 環境變數, 則 HTTP liveness 會使用這個 proxy, v1.13 之後的版本不會影響 HTTP liveness probe</p>
+<br>
+<br>
+
+<h2 id="定義-TCP-liveness-probe"><a href="#定義-TCP-liveness-probe" class="headerlink" title="定義 TCP liveness probe"></a>定義 TCP liveness probe</h2><p>第三種 liveness probe 使用 TCP Socket, 如下設定檔, kubelet 會嘗試在你容器上的一個特定的 port 開啟一個 socket, 如果可以建立連線, 則成功, 反之則視為失敗</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">app:</span> <span class="hljs-string">goproxy</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/goproxy:0.1</span></span><br><span class="line">    <span class="hljs-attr">ports:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">    <span class="hljs-attr">readinessProbe:</span></span><br><span class="line">      <span class="hljs-attr">tcpSocket:</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-attr">tcpSocket:</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">15</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">20</span></span><br></pre></td></tr></table></figure>
+
+<p>以下依序來解釋上面設定檔的步驟：</p>
+<ul>
+<li>TCP 檢查跟 HTTP 檢查很類似</li>
+<li>這個範例同時使用了 readiness probe 以及 liveness probe</li>
+<li>容器啟動五秒後, kubelet 會發送第一個 readiness 探測</li>
+<li>readiness 探測會嘗試連結 <code>goproxy</code> 容器的 port 8080, 如果成功, 表示該容器 ready</li>
+<li>kubelet 會持續的每十秒做一次檢查</li>
+<li>kubelet 會在容器啟動十五秒後, 發送第一個 liveness 探測</li>
+<li>liveness 探測會嘗試連結 <code>goproxy</code> 容器的 port 8080, 如果失敗, 容器會被重新啟動</li>
+<li>liveness probe 每二十秒探測一次</li>
+</ul>
+<p>以下可以實際操作看看：</p>
+<ul>
+<li><p>建立 Pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/pods/probe/tcp-liveness-readiness.yaml</span><br></pre></td></tr></table></figure></li>
+<li><p>十五秒後, 檢視 Pod 事件來看看 liveness 的狀態:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pod goproxy</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="使用命名-port"><a href="#使用命名-port" class="headerlink" title="使用命名 port"></a>使用命名 port</h2><p>在 HTTP 或 TCP liveness 檢查中, 你可以使用一個命名過的 port, 如下</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+
+<h2 id="使用-startup-probes-來保護啟動較慢的容器"><a href="#使用-startup-probes-來保護啟動較慢的容器" class="headerlink" title="使用 startup probes 來保護啟動較慢的容器"></a>使用 startup probes 來保護啟動較慢的容器</h2><p>某些時候, 你可能會碰到會花較久時間在容器首次啟動的應用, 這個時候你不需要提高 liveness probe 的失敗門檻, 你可以使用 startup probe, 重點就是, 設定 <code>failureThreshold * periodSeconds</code> 的時間, 這個時間要長於正常應用啟動可能耗費的最大時間, 如下範例：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>以下針對上面的配置檔做解說:</p>
+<ul>
+<li>應用會有最長五分鐘的啟動時間 (30 * 10 = 300s)</li>
+<li>一旦 startup probe 被判定為成功, liveness probe 會接手, 從<strong>原本擁有高容許失敗門檻啟動偵測</strong>變成<strong>一次失敗就重啟的卡死偵測</strong></li>
+<li>如果 startup probe 一直失敗, 那超過 300s 後, 容器會被殺掉, 並視乎 <code>restartPolicy</code> 看是否重啟</li>
+</ul>
+<br>
+<br>
+    
+<h2 id="定義-readiness-probes"><a href="#定義-readiness-probes" class="headerlink" title="定義 readiness probes"></a>定義 readiness probes</h2><p>某些時候, 應用會暫時的無法處理流量, 舉例來說, 當在啟動時載入大量資料或是設定檔時, 或是在啟動後依賴外部服務時。 在這些情況下, 你不需要殺掉容器, 但你需要暫時的不將請求送往這些容器。 Kubernetes 提供了 readiness probe 來解決這個問題, 如果一個 Pod 被 readiness probe 回報 not ready 的話, 那該 Pod 將不會收到來自於 Kubernetes Services 的流量<br>Readiness probe 的運行是不間斷的<br>Readiness probe 的設定基本上跟 liveness probe 差不多, 只差在 <code>readinessProbe</code> 換成 <code>livenessProbe</code>, 如下：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">readinessProbe:</span></span><br><span class="line">  <span class="hljs-attr">exec:</span></span><br><span class="line">    <span class="hljs-attr">command:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">cat</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/tmp/healthy</span></span><br><span class="line">  <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>Readiness probe 跟 liveness probe 可以一起使用, 避免一些狀況, 例如說該容器暫時還無法處理流量, 但還收到 Service 的請求, 這時候 liveness probe 探測失敗, 就直接將容器殺掉了。</p>
+<br>
+<br>
+
+<h2 id="設置-Probes"><a href="#設置-Probes" class="headerlink" title="設置 Probes"></a>設置 Probes</h2><p>以下介紹幾個 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#probe-v1-core">Probes</a> 的 field, 更精確的控制 livenss 跟 readiness 的檢查行為</p>
+<ul>
+<li><code>intialDelaySeconds</code>: 在容器首次啟動時, 控制 liveness probe 或 readiness probe 開始探測的延遲時間, 預設為 0 秒, 最小為 0</li>
+<li><code>periodSeconds</code>: 多久探測一次, 預設 10 秒, 最短 1 秒</li>
+<li><code>timeoutSeconds</code>: 幾秒沒收到回應時判斷為失敗, 預設 1 秒, 最短 1 秒</li>
+<li><code>successThreshold</code>: 在檢查被判定失敗後, 接下來要多少次連續判定成功才算成功, 預設 1 次, liveness 必須設為 1 次, 最小可設為 1 次</li>
+<li><code>failureThreshold</code>: 當 Pod 被偵測到失敗時, Kubernetes 會持續嘗試直到滿足此欄位設定的次數, 這樣才算失敗, 套用在 liveness probe 上就是重啟容器, 而套用在 readiness probe 上就是標示該容器為 unready, 預設為 3 次, 最小可設為 1 次</li>
+</ul>
+<p>以下介紹幾個 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/#httpgetaction-v1-core">HTTP probes</a>, 可設在 <code>httpGet</code> 的欄位：</p>
+<ul>
+<li><code>host</code>: 要連結的 host name, 預設為 pod IP, 相比在 httpHeaders 中設定, 你可能會想要使用這一個欄位來設定</li>
+<li><code>scheme</code>: 連接到 host 的 scheme (HTTP 或 HTTPS), 預設為 HTTP</li>
+<li><code>path</code>: 存取 HTTP server 的路徑</li>
+<li><code>httpHeaders</code>: 客製化設定請求的 header, HTTP 允許重複的 header</li>
+<li><code>port</code>: 可以使用 port number 或已命名的 port, 如果是 port number, 範圍須介於 1 ~ 65535</li>
+</ul>
+<p>針對上面的 HTTP probes 行為做補充解釋:</p>
+<ul>
+<li>如果使用 HTTP probe, kubelet 會發送 HTTP 請求到指定的 path 以及 port 來做檢查</li>
+<li>kubelet 預設使用 pod 的 IP 位址, 除非在 <code>host</code> 欄位有特別指定</li>
+<li>如果 <code>scheme</code> 欄位設為 <code>HTTPS</code>, 則 kubelet 會發送 HTTPS 請求, 並且略過憑證檢查</li>
+<li>大部分的情況, 你不會去設定 <code>host</code> 欄位, 除非以下特殊情況<ul>
+<li>假如你的容器監聽 <strong>127.0.0.1</strong>, 然後 pod 的 <code>hostNetwork</code> 欄位為 true, 那 <code>httpGet</code> 下的 <code>host</code> 欄位需設定為 <strong>127.0.0.1</strong></li>
+<li>如果你的 pod 取決於 virtual hosts, 你不可使用 <code>host</code> 欄位, 而是要設定 <code>httpHeaders</code> 欄位中的 <code>Host</code> header</li>
+</ul>
+</li>
+<li>TCP probe 中, kubelet 是在 node 中建立連線, 不是在 pod 中, 所以 <code>host</code> 欄位中不可使用 service name, 否則 kubelet 將無法解析它</li>
+</ul>
+<br>
+<br>
+
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/">官方文件</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/swlh/fantastic-probes-and-how-to-configure-them-fef7e030bd2f">Fantastic Probes And How To Configure Them — A Kubernetes Story</a></li>
+</ul>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><strong>Kubernetes 中, 當我使用 TCP probe 時我無法在 <code>httpGet</code> 下的 <code>host</code> 使用 service name, 為什麼？</strong><br>因為 kubelet 是在 node 建立 connection, 並非在 pod</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 如果我將 <code>httpGet</code> 下的 <code>scheme</code> 欄位設置為 <code>HTTPS</code>, 那會怎麼樣？</strong><br>kubelet 會發送 HTTPS 請求且會略過憑證驗證</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 預設 <code>httpGet</code> 下的 <code>host</code> 是什麼？</strong><br>pod 的 ip</li>
+</ul>
+<ul>
+<li><strong>kubernetes 中, <code>failureThreshold</code> 預設為幾次?</strong><br>3 次</li>
+</ul>
+<ul>
+<li><strong>kubernetes 中, <code>successthreshold</code> 在 liveness probe 必須設為多少？</strong><br>1</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 健康檢查可以設定最短多久檢查一次？</strong><br>1 秒</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 健康檢查預設幾秒檢查一次？</strong><br>10 秒</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, startup probe 解決了什麼問題？</strong><br>對於啟動時間較長的應用可以有高容許失敗門檻, 一旦啟動完成後, 切換成低失敗容許門檻的 liveness probe</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, liveness probe 可以解決什麼問題？</strong><br>一個 container 有在運行, 但是卻無法正常運作</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 如果一個 pod 裡頭有一個 container 沒通過 readiness probe, 那這個 pod 算 ready 嗎？</strong><br>不算</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, readiness probe 的作用是？</strong><br>決定容器是否已準備開始接受流量</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 一個尚未通過 readiness probe 的 container, 會被列在 service load balancers 的後端之一嗎？</strong><br>不會</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, startup probe 的作用是？</strong><br>判斷一個容器何時完成啟動</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 如果 startup probe 尚未通過, readiness probe 或 liveness probe 會開始運作嗎？</strong><br>不會哦</li>
+</ul>
+<ul>
+<li><strong>請試著解釋以下 kubernetes yaml file 中的每一條 directive ？</strong><ul>
+<li><strong>yaml file</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">test:</span> <span class="hljs-string">liveness</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-exec</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/busybox</span></span><br><span class="line">    <span class="hljs-attr">args:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/bin/sh</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">touch</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">30</span><span class="hljs-string">;</span> <span class="hljs-string">rm</span> <span class="hljs-string">-rf</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">600</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-attr">exec:</span></span><br><span class="line">        <span class="hljs-attr">command:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">cat</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">/tmp/healthy</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">5</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># API 版本</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-comment"># 種類為 Pod</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-comment"># 該 Pod 的 metadata</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># 該 Pod 的 labels, 可被 selector 選擇, 為 key/value pair</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">test:</span> <span class="hljs-string">liveness</span></span><br><span class="line">  <span class="hljs-comment"># 該 pod 的 name</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-exec</span></span><br><span class="line"><span class="hljs-comment"># 該 pod 運行的規格</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-comment"># 定義容器</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">    <span class="hljs-comment"># 容器名稱</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness</span></span><br><span class="line">    <span class="hljs-comment"># 鏡像名稱</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/busybox</span></span><br><span class="line">    <span class="hljs-comment"># 容器啟動後運行的指令</span></span><br><span class="line">    <span class="hljs-attr">args:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/bin/sh</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">touch</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">30</span><span class="hljs-string">;</span> <span class="hljs-string">rm</span> <span class="hljs-string">-rf</span> <span class="hljs-string">/tmp/healthy;</span> <span class="hljs-string">sleep</span> <span class="hljs-number">600</span></span><br><span class="line">    <span class="hljs-comment"># 存活探針</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-comment"># 探測方式為 exec, 執行指定的 command, 若回傳值非為 0, 則視為失敗</span></span><br><span class="line">      <span class="hljs-attr">exec:</span></span><br><span class="line">        <span class="hljs-comment"># 定義 command</span></span><br><span class="line">        <span class="hljs-attr">command:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">cat</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">/tmp/healthy</span></span><br><span class="line">      <span class="hljs-comment"># 首次啟動容器時, 探針延遲 5 秒, 以等待所有資源準備就緒</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">      <span class="hljs-comment"># 每五秒探測一次</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">5</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>Kubernetes 中, health check 有哪三種探針？</strong><ul>
+<li>startup probe</li>
+<li>liveness probe</li>
+<li>readiness probe</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>試著解釋以下 kubernetes yaml file 中的每一條 directive</strong><ul>
+<li><strong>yaml file</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">test:</span> <span class="hljs-string">liveness</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-http</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/liveness</span></span><br><span class="line">    <span class="hljs-attr">args:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/server</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-attr">httpGet:</span></span><br><span class="line">        <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">        <span class="hljs-attr">httpHeaders:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Custom-Header</span></span><br><span class="line">          <span class="hljs-attr">value:</span> <span class="hljs-string">Awesome</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">3</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">3</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># API 版本</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-comment"># 種類為 pod</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-comment"># 該 pod 的 metadata</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># 該 pod 的 label, 可被選擇器選擇, 為自定義 key/value pair</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">test:</span> <span class="hljs-string">liveness</span></span><br><span class="line">  <span class="hljs-comment"># 該 pod 的 name</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-http</span></span><br><span class="line"><span class="hljs-comment"># 該 pod 運行規格</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-comment"># 定義容器</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">    <span class="hljs-comment"># 容器名稱</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness</span></span><br><span class="line">    <span class="hljs-comment"># 鏡像名稱</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/liveness</span></span><br><span class="line">    <span class="hljs-comment"># 容器啟動後執行的指令</span></span><br><span class="line">    <span class="hljs-attr">args:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-string">/server</span></span><br><span class="line">    <span class="hljs-comment"># 存活探針</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-comment"># 探測類型為 httpGet, 就像是透過呼叫一支 API 並取得回應來判斷是否運作正常</span></span><br><span class="line">      <span class="hljs-attr">httpGet:</span></span><br><span class="line">        <span class="hljs-comment"># API 位址</span></span><br><span class="line">        <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">        <span class="hljs-comment"># API port 號</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">        <span class="hljs-comment"># 定義 header</span></span><br><span class="line">        <span class="hljs-attr">httpHeaders:</span></span><br><span class="line">          <span class="hljs-comment"># header name</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Custom-Header</span></span><br><span class="line">          <span class="hljs-comment"># header value</span></span><br><span class="line">          <span class="hljs-attr">value:</span> <span class="hljs-string">Awesome</span></span><br><span class="line">      <span class="hljs-comment"># 首次啟動時, delay 3 秒以待資源就緒</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">3</span></span><br><span class="line">      <span class="hljs-comment"># 每 3 秒探測一次</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">3</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>Kubernetes liveness probe 中, 若使用 httpGet, 怎樣的回應算是成功？</strong><br>status code <code>200 &gt;= 成功 &lt; 400</code></li>
+</ul>
+<ul>
+<li><strong>試著解釋以下的 Kubernetes yaml file 中的每一條 directive</strong><ul>
+<li><strong>yaml file</strong>: <figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">app:</span> <span class="hljs-string">goproxy</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/goproxy:0.1</span></span><br><span class="line">    <span class="hljs-attr">ports:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">    <span class="hljs-attr">readinessProbe:</span></span><br><span class="line">      <span class="hljs-attr">tcpSocket:</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-attr">tcpSocket:</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">15</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">20</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># API 版本</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-comment"># 種類為 Pod</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-comment"># 該 Pod 的 metadata</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-comment"># 該 pod 的 name</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line">  <span class="hljs-comment"># 該 pod 的 label, 可被 selector 選擇, 為自定義的 key/value pair</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">app:</span> <span class="hljs-string">goproxy</span></span><br><span class="line"><span class="hljs-comment"># 該 pod 的運行規格</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-comment"># 定義容器</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">    <span class="hljs-comment"># 容器名稱</span></span><br><span class="line">  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">goproxy</span></span><br><span class="line">    <span class="hljs-comment"># 鏡像名稱</span></span><br><span class="line">    <span class="hljs-attr">image:</span> <span class="hljs-string">k8s.gcr.io/goproxy:0.1</span></span><br><span class="line">    <span class="hljs-comment"># 定義 port</span></span><br><span class="line">    <span class="hljs-attr">ports:</span></span><br><span class="line">      <span class="hljs-comment"># 容器 port 為 8080</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">    <span class="hljs-comment"># 定義 readiness 探針</span></span><br><span class="line">    <span class="hljs-attr">readinessProbe:</span></span><br><span class="line">      <span class="hljs-comment"># 探測類型為 tcpSocket</span></span><br><span class="line">      <span class="hljs-attr">tcpSocket:</span></span><br><span class="line">        <span class="hljs-comment"># 探測的 port</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">      <span class="hljs-comment"># 首次啟動容器時, 延遲 5 秒</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">5</span></span><br><span class="line">      <span class="hljs-comment"># 每 10 秒探測一次</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line">    <span class="hljs-comment"># 定義存活探針</span></span><br><span class="line">    <span class="hljs-attr">livenessProbe:</span></span><br><span class="line">      <span class="hljs-comment"># 探測方式為 tcpSocket</span></span><br><span class="line">      <span class="hljs-attr">tcpSocket:</span></span><br><span class="line">        <span class="hljs-comment"># 探測的 port 為 8080</span></span><br><span class="line">        <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span></span><br><span class="line">      <span class="hljs-comment"># 首次啟動容器時, 延遲 15 秒</span></span><br><span class="line">      <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">15</span></span><br><span class="line">      <span class="hljs-comment"># 每 20 秒探測一次</span></span><br><span class="line">      <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">20</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>請解釋以下的 Kubernetes yaml file 中的 directives</strong><ul>
+<li><strong>yaml file</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 定義 port</span></span><br><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line">  <span class="hljs-comment"># port name</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># port 號</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-comment"># 宿主機 port 號</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 定義存活探針</span></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-comment"># 定義類型為 httpGet</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-comment"># API 位址</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-comment"># 使用定義好的 port</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>Kubernetes 中, 如果我有一個應用可能啟動需要長一點啟動時間, 舉例來說, 可能容器啟動之後, 應用還需要一段時間才會正常運作, 那我可以使用什麼 probe 來讓 liveness probe 可以在應用啟動完成後馬上開始探測？</strong><br>使用 startup probe</li>
+</ul>
+<ul>
+<li><p><strong>以下的 Kubernetes yaml file 中, 如果超過了 300 秒都沒有成功, Kubernetes 會如何處置這個 pod?</strong></p>
+<ul>
+<li><strong>yaml file</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>該容器會被砍掉</li>
+</ul>
+</li>
+<li><p><strong>以下的 Kubernetes yaml file 中, 如果 startupProbe 成功了, Kubernetes 會如何處置這個 pod?</strong></p>
+<ul>
+<li><strong>yaml file</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>livenessProbe 會開始運作, 接手探測工作</li>
+</ul>
+</li>
+<li><p><strong>請解釋以下 Kubernetes yaml file 中的每一條 directive</strong></p>
+<ul>
+<li><strong>yaml file</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># 定義 port</span></span><br><span class="line"><span class="hljs-attr">ports:</span></span><br><span class="line">  <span class="hljs-comment"># port name</span></span><br><span class="line"><span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># 容器 port</span></span><br><span class="line">  <span class="hljs-attr">containerPort:</span> <span class="hljs-number">8080</span></span><br><span class="line">  <span class="hljs-comment"># 宿主機 port</span></span><br><span class="line">  <span class="hljs-attr">hostPort:</span> <span class="hljs-number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 定義存活探針</span></span><br><span class="line"><span class="hljs-attr">livenessProbe:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 httpGet 方式</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-comment"># 呼叫的 path</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-comment"># 呼叫的 port, 使用上面定義的 port</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># 失敗一次就算失敗</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-comment"># 每 10 秒探測一次</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 定義 startup 探針</span></span><br><span class="line"><span class="hljs-attr">startupProbe:</span></span><br><span class="line">  <span class="hljs-comment"># 定義 httpGet</span></span><br><span class="line">  <span class="hljs-attr">httpGet:</span></span><br><span class="line">    <span class="hljs-comment"># 探測 path</span></span><br><span class="line">    <span class="hljs-attr">path:</span> <span class="hljs-string">/healthz</span></span><br><span class="line">    <span class="hljs-comment"># 探測 port</span></span><br><span class="line">    <span class="hljs-attr">port:</span> <span class="hljs-string">liveness-port</span></span><br><span class="line">  <span class="hljs-comment"># 失敗 30 次才算失敗</span></span><br><span class="line">  <span class="hljs-attr">failureThreshold:</span> <span class="hljs-number">30</span></span><br><span class="line">  <span class="hljs-comment"># 每 10 秒探測一次</span></span><br><span class="line">  <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">10</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>Kubernetes 中, 當 readiness probe 失敗, 會怎麼樣？</strong><br>將不會從 Kubernetes Service 收到 traffic</p>
+</li>
+<li><p><strong>Kubernetes 中, 當我使用 httpGet 探測方式時, 該探測行為在 pod 還是在 node?</strong><br>pod</p>
+</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當我使用 tcpSocket 探測方式時, 該探測行為在 pod 還是在 node?</strong><br>node</li>
+</ul>
+<ul>
+<li><strong>Kubernetes 中, 當 startup probe 失敗, 會怎麼樣？</strong><br>該 pod 會被 killed</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes-health-check/">#Kubernetes health check</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/kubernetes-container-lifecycle-hooks/">Kubernetes - Container Lifecycle Hooks</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/managing-compute-resources-for-containers/">Kubernetes - Resources Limit</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/config-liveness-readiness-startup-probes/';
+        this.page.identifier = 'zh-tw/config-liveness-readiness-startup-probes/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

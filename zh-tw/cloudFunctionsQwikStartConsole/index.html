@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Cloud Functions 初探 - 主控台 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud Functions 初探 - 主控台">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudFunctionsQwikStartConsole/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/PT4fx5QIfBiaRJwH1dla-HZ4p8dSF5Upwj5jEVaPZKDgZnaryQBfZGBeOU_CdYwkD8pvvzWhOkUGAw9HA9aavZ_N6vF-E6x2GRwk75RyTVOyKEim6mVjHqAuJqdzvRm0WfGKvij2is8ckzF4FUqOX_lX8z59JoXtyhAWk-jG0INN_iNNkgcAFyqPIIZVY9BKCV43VQwvHSs67jSpsJ-G8S9O2YCAcnI3qE7VPeP8HiBXS5RW5e9h2KDub7WmjDFI5_YKh0K6Pw8eH3hTOpNe_fRoHOQ2E-qWediFv1WjgMUrIc1CoVWySk3V1nDH_LtBe84URvaLWS5yOW1Ln72k9Ev-PC_rFrQjCEPobql2Jom3vEPs4qu8ZnnT_HNxCVG5LFvZonPl1c9ir9ps5QJmhMVDkkWeSmUn-YLhH5IMIF2RRR_avenhQTpS1JKq0sbGnqjEMkR5Ivccn-4aPSaJwm50w-Ja6nKBkYhCkHGI5vyong8tAYf2JR75-woi-gq5rPLfs2-CoKWJmK3ZXPMsNypncW7Z9zKSFrPVqlVNrNb0ZMGa7asnoo96n4ZV87jble8sHl6FcXiBGGkgAIPcy1t6AA5e176k94qwJw-JfEXx6VMn-fPHqAJvqz721wxUVsoPhlfRB9mVEUIWv_tzWBTV46dzYtBf_fkacogfCkVsd4u05Ld6l1w=w292-h310-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/GfKhr_fKadJxw2DXry6zsPSM68yB3HqcGQuBSowFb-unY3f7QXA4Nd_XbY46HJEkG1l8OPO9D3gRk5vlCbrOW8RXZbrcxEe7XA76RrDgDOqWq8XNWBt7f-HYeizabcIXxvWc4usAcpL6s456KpOINeSHShC2JeybsdrpDeR2ZC4nuLM5ZcMieKeZmMQdF0hVpk-tgvK91mk474Beph6Gd_XLEi5UdpLDr0m6SAKdLESfbKL7puAv93dCTh6vbODlRsmnl11SjoEpqMEduSjMPAq0Nog8ldrid0ZlWMGhdz9Bs0ygSXd4wlQTda7L73_ReQxxuy6LIV-Dis0XKPdz6ByroVU2tt3gONz5OnpJz1AeDc5UyoKREPs2rp49JjoEl9y3V0WdAyhtb1tGTBVzSluXCSTNUFHmH_M27Ea0j4dSQacfrrXoi-0O8HcUi1bMF3UyO9XjrAyn1gDT90mbraBTOAjxUqcJFg91jQ3wsVjaafSuaaVfyuGPG-g5ikiPoDF6040guE1ndXWbMlPNCW3c4DuI9He7-BUiX1D4c90IsLZ3z50O7XhGx5A6CILVKrmYHoeHR6t5yV9u2yNnX1AqzzUKkWofUOKtSvSP4xhHzk5YXlQxrGLRoct6DtV14rm2UEpKIT5lEW7-_o_CdhenYenOO_qGdq5stUhctGClq_t9Fxe9OSw=w409-h217-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/WAWtKBx940rfnfBUEynfImqRmVtw12PlpmKuJcLSdeeDkEAbyiN7aPHL4r751AAt1Z-Ypx22aPvMqeG70HiivdtOCMxQeP0QU_ZGo11RAsIxxDviRVJ-MFGpH0xPETjqHUunGw5fzvoQ9P75vj0isj7k6UThLTidPYNIwDZPH51rWRUaJOHmJ-xU8836pu7uA1eMEpiymHYWoYmpY5emLlq8ZbshXJRWCPGqq_2lhMvYzQg6R3Yy8vYkKGhXIhcG-I9bt8l6AvZ6WZ1BUpXNCV6VGWODoiIKNxMrzhYjMpd9z8Z6Fr-EaMcL1qcT5Q2CDSA8R2f0vLZxtl1_93C96COkFY6X0uip7RUkJn47LWXgHE9oTeZgjVj_3MCx1HQLq9J5di9f0prV839wQvLOalt-k-yQ8Mqqk0E2X4xP9ry1JzQx2DGUJ2DwqScsYjClaShWCLlRIkBIEI7qT9gvc8DTabn5G62Vw6KkDdLR_mRzyqj6v3bjFV1qUASC9pJmpBzAUVRbgsW9-WvKjJ_QJsfx06KEx5m17hFzSp5dSwnHVBW0zzdGq4szhML1Xe9b7Gp7P7QuWSufuln41WT91kDR9O73qoh6tzPaItaAPVEjZES6e68wudZ22L2kG95W8JUS2sOfTHqI6nYq0aQGDblC63KjhwgrTEsUzxoiaXzNZItbpsqf2II=w409-h786-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/G_xrUZJsRRKOzwDhOfLjZc1e21iv69clRGK1qzVbOUcY0E3hkYy5rW9r6u9UXlSrQejUnTyx-73-JQHwsXwb8BQVsllYRoDgFCxFo49fRQjM8EcVQbzUw9SvT---7T3s59HTQkMXOcwYQrkj-x1OarIEimdoE_xjPfWdptVG5XYFgb7sEp-WWqJqL7P_Jk7aN8fVCogUGyj9KXQteduNyUiZegXaQW7uWj-BqAP2QfiJmYl5xbf6WMAty73xJqCiIoHX3z91eENUVMDuD5zlsM5X-UNwzch1SI3CEdmguK_JQrQlj1gBjbOWkwE2Bqhofe2BU_OD34WryEi_M5al0NOpPl7OdGmgFoqcGRl-tAYNlF9tNM_kMlW_LoKhiKrcsvHEkG1HGZmxF11L8pRdo46xAJqlNKPNEOiVmRnHK0t7qeCOeJ_Z-afF_xGAhXyin9PP--6rTcUz0WSpiSJkgH-sW-dp0WP7vGbx1Xcfkz4r_iEwBxeco-iPwIKb_UB8HDRM27P1-C5C1Ey0aZ7EORN84qoFCEZTEHLs0cXSNRK-7uexZmQHMlyKIwLxX8TKRz8ioU0UvhrfMZt61O3CslBPc8bGK7-oP1FR8kU6d8TlxJMTHxCN0AydPZrp4wFblbhaxm6DlJvsAbuLFkcNdROF9k4dp9SrEaYWzGRWFrdDyZuw_NnhlOg=w255-h60-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/cIxSWZVxgB0AiGYEAcZoMLovZh_D0IImFNXhguFKC2zTWQJhfu0_tcUFEf-L0mydEzBCi_kil7J7A14Wl_8v9wOZMFbHc6GZYLcqJf7ZUF4xwxn0umb-aWQ6VrWkpNkN3c_M6aqqeXry-hDFsXa4Qe11FQ5wtHli7l1CSQID26yFrXc1lwV0m2jN283hHBNqmQ2a3u51mfiq9umnNEojR3aTKGuttmjl5uGdoGpI8KEffwlmGx6D2TVFOXIPEzQd8klmCRyP2SLIA7vwZ49tvPeceynczsBcEDIbTlQiofdzBEujLOXQkS5ovzP456Bl59ROn0LxAhgmo93OSY7hNur0Ohyl4DGQh_TggEvOko27H6Cy0dSM0GH_VvTjqjPCOxAxhuwR7edNo0VaYUhbFvyNvdQKWEkIvEFfTXFtZoFFSnPAHQkpFWyzo8iMhGh5SHFGwVXFshbDqWHu1eHrnG1eo_2icj8Xl8n2ERXPO2SoFdG8hRvIiPI9mSGXl1lBgWDiXHzsoOhkhHXvKaaIjf1BOsjjJf6c3NPsrNAgpoopE6gFah43KmEoCu3EGeB4i5f-XetZ9cdA_cP6pRNeEr1feyzgbiY256OHsHZgNdmJR4OKfEM8XRaXZNPfxgHtM9bYS30vDKuIuPFzYhK5E3eqYEJlttp2LBPF-wwe3C0bO5iCJN3Y0bM=w1032-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/6gDU3-PST_iCphSk95NVuDzMne8TK9X_AFE5ASYByaeALiT-5t1UstwvqXrf6GoabS2Y69rlSjKnd3ljx4SPaQNIsyY94b5_lrg0RCXDEQSqI5zYdW6vrhYfRo8XACkCdSqpiqFY4NoNoz18dB7hbcglkZn6g54hs9qteenO_tRyVq_fdku_VNC4mUTUhCT1goW1s_7a_Ia--LKMn_Sbe7AKd4cS1InZ0CSIzRiOyBW5E357QlROnRGkRWCjf6ZG27WpFP2HltM0AYttlB5fFIsM1A2MKCEPA3DMveI7Rt7vU3RfqLDzpESOkQwJTNkmy9ZD98ruLtwyeIHa5nkQaW2yWa-eR7fP8UMw2QVsiJ8cy13CchkYuM-gHBqXzuT3NAaly1zYL7bgexs9HX9h8saVCCveSEM8-ZdfUFueOhfcJoRmL32gsz50PZQWZKvwkf0FLy8mkxe70RpCqTkH_tOonrxF7ovcX9K8mhiJFAxNlXEjJSdCy-zqK08I6V4QUTimR-7Gh4odxW2hh9-1B0yb-KN7mBhK9P8gEwtUY1qBFe4val9TL5eIMoNpa6nNv7YWP3ttC31uEqJ74zkzqfh7T-GK4U7ulUwfWjKB7FCp4Xn0XdZfo5Sqh7YjLaRy4H9_j-j5w-HjLjdSYzTtUaGzToFpI8Aq4yLY8-HFLtqSZ359MV4YGiY=w758-h195-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/bkJ3PhIekM_2gD812ncwDtAxw6ySt7uWbPSPoG_VB99KLuCeRfcb69AA7-qyAxzcMcYCqyjyG33JFLd5ja-U-dJ6Y39DKEPZLqE6GIJsNzPm-7s5rT4wjubTJC9p3ahSBKKkcdVitHKHpfjCvyo94aLW2sAC_fij_Yi90cmw4kVDvgOvWJ8OdudKtsRZR177J8n_XyLkIsDaR8bfgoL2w1qRXTdHuJbxWp4qa6vymJU3PhbD9fhfgTrCNGcAtLI0ci0VuFD8nIPyyMv_i7hUwvnFExUTy02vspdK-YVFiCSUswV_542n1-auaB_q6TvwUXYpCSI9YwM9UjKstEL0l9kDRDWpVA2KKNfh8hYvMu7VCqa7EWsPh9dR0QsTEvOOQjd0SFO-80Gm-QCZLKh6W9zGuB6i862vAdMI936dg9YwU02xYuw9M9JaqiPxaYzqadYJ8d6CPq2a9o-3oStgy4jp2lBrD70WdRX7oUmQV_2N8zDIij1AijWYMNviNNXtgGcoVof3QygE1hJOBN4w4Tk5uv-4F1yDtRgBpVunnMH_CX_lohl3KMU0h-j7kt7Zq3LAYZIrqQQ1532DzjHoinKJtNTMhW0VE3mj1ce442nDQFvjOYhnvEAynowPomuhOUA37ZUGroIFPTDjdHUy49IyuM2tVIf-V8LS1dTkDQYdsNlsEA9JhbQ=w497-h705-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LaRlK8AyEmP8D-8PJhZLH_fhT7-_p_eDELxGeG-TKxuWTk7geN6_2DWX_S0AeCGmYBBaQb-OvBcZ_HGYTejnnyJBkx2c5A0kTjLH1fpNDakcW5nn1_qACZzDiZmGUxqlE9yJ6tHKoXyCcbdpwk38vPGhwAiYcAU_LgnjYtlfQaMzHoZDxaxVR6yqiRnSptZ2yWwwTBmBMq2yzypHmp6YkMSPkcZJrdXKYKZDA1ElLK3zjqJhBmyRpx2eoSedfM1b6A6WANaWHpDgIPggRBJKIh_QNzz19qD6qDY-IGlqWGYU8pOg80Q0Iym5uHp8tg8gsP8OfJvkzOIQhs4RERnFLK1nUuyOPotMP2JyogM99AEaNnlvtepoWqg7J3V9RSCu_hcfblbTQyShCYYqOamUwAvZEllj8GQS90jvJeZPFQXOk2TihBBfOfANKtQ1d3D2O6ke7Jf9eiWsjBN8bnXyUYOT0hBQ9ADuXmYfG-DDl1xf9aF54PBQAv3uy1mwOvFrMua7I6TF4FE8FSw7XYAeiXT6hdWYInSFMJiCJFXqvsNl590ELlC0ZrJVmKg9OSm7xxOd1t7oqBe8KufBo1wWWKcrIfKvgv9ztz8jNQHA8-YDcnpqtB9Khy0kkl7-8Jl_WjRpKpSQkrbTR9HdtQMryz0urAt9N2lvq1IM5fUBqkpmXTezX0vdePA=w198-h53-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/evXJRfmtPpezNqKNS5mZPik2GXHsLDPM9Qi0pnVGcNFU-IGDt8dpuY4cS3CFyOHCOjYe8cxWKmiVo3OYIn2V9pGCLkCrWdqE60ERoEzKyUYMRAhcPDIM9rraMwJiCuE-9duZfGxbRZ0HU622hrDKp9Crx_FKP-SwtNiCGwb4cYKmj9yTuCRds2nFL9FrYkZpXNhROlzfAdloGrUfBBt712ZIBPtDfRZZcPDurVxsWzBiRCasVtwaHN1DoWcl0a6YAIdRLaSssXhCakapU52rsiAn-7L7vzs4DxfyKHWvddqO31hSNJqOpoSiXtk0M3Nlayeb9gqlVIlRZNhqYqHUrXu5667kkAPGPHGrjaq8yTORaQOghWh4hoQd8c_W-RrqYcbkUtPI4LsM-ENpdPQWSIKNSwqSSMG7UqII8cggtOB1W-qnuLMG4VQltDiNFCMuA95dq0Bd-h_gCNLcCRdNo59L4HBxl2fmTB6XUU_uZvNlz3R0PkgkGa1gQsyXYnPtkw_7jHpuDnhHH1PWtZ-E1Y4RlsAIARZop_EXZgLBZgTfb11Jiug4ZxmJWGKmmFVahC0nrEE6K4eAANlwv7kfzndB6abIxLKH9pGOlO9T6jCT9I-JKR7JcScRmosUmROywqrUcOkPayKvhcyQD8HoJXl0UW_X6Nv9Xn7mqXI7gClRulpSHz8w8sI=w746-h162-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/OCTDtpfHPCZviJYqVWgy2B7iqbLrra2vXw6qkljqO7u2ODnMbyH96aeyTED7YVdbDPpt00Hcvd9dMRR2ixg171c94_wCmO0OSK4ViD8ZGd8Ry1Wn42181ZExnx7mCX8iFAiOyFsSAVzxlNPlsQXA7KEhnkRL44IO5BaE4bqp-aWE8yuM4YtcSeXh1I1-zg2Ip2P7NEnu3zvUvtqs1LcNrZfF6Z5fi34a6DpoE0zRXPOk3qS3r2KgFvTt8d5u_MYfv_Yn8d2-Y6LAinUBT2O9zMNuSCcprmqvkGVy9Nb4c9doBfhc87aSxsPJyno8uBQyylTRWw2W317d9mqmGFE16epFZ1_XREB8SA2m3DvdjB-yzrMqZCBGxBiCmmvcgbqH5mGmCM87OGadb4RjlTF1_y6m9l7Gj-CkGkVB5HPJWYcsuDeu1fBUCRxT-y-fTupcVye7WK8NwxzxDMEtla-oxnsGsCumQO9UublO9YbqRzYd3fG3D02WGbSZ50z834AqJRT4W8DKinXMhjhsRJNvlsibzhBxGAd3eUbJhLIT1hVkw9zd7KtDpKXnoH795mqWiXFGIIvD-TS4MLJvdpuhfPtqBhK3F6bbn9iOENsFGRzfECHemlMY_YaR4EsfiNMgAaDIE8BVXuCCmNsg5PwZiyNluLELmeGTNDBcMsveX_xUmDy4PQIrPnE=w1014-h170-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/ZQ91zLxCKMj_Q61v4QkiZu3KklnfoabS_h-hZwcPSfw354MO3HoDIiaRWNY58zO_N5mPICynoqshGoUIqaOk4nvMgL1deJLALKIOk8e_05PkQ_peilqgGcVAkm49pRTKuzTF0bZFrIuVIcxkmeXUrGhGKoxLwQR23luSU14E2dsmrNunCFwUMr3IiOYw4e1HXUla9rDNjkhgZsgLE03dBLnLWDg1zr50J1NtOxoHbt8PEWjjo2gcYy6pXfCQpBiJUqbcYygURQ1cEQYxFm3-iSJpqeEwNX5SV5ytuSPgzhc2BIKPrNEDEZgQnOh2sz-2ErgaxIPuNbRPrHpR9_f-N3k5ck3u1JaJTla-fSesy9b03rcUBGt_9dNqyb3xWl6SIyPMgFltz0Z7SeB5VaIW9U0L_aqCHg9vLwNsBB4oIpOuL1TkJA7pWsu3J50tyj-Tnrv953X9nr1U3VbpZOrLtk5dRyV4XukkzYHHnz0k6h7ZpIEjzqf7vJBgSXWy-BZOMxIv2zs1TWDK1wrjeO_9E0S3TmX6xheRzjsx_9xOrmqhdqcYgGr236k-6q-WyDMUsj3K2he7Kw89e16sPbPcv0nuqlB8L1YyuDj6gaoHBoghKTc0kjjTMdbX9CIgZ6aVOBKybMjPT-Kc1yKKMyWcByo7B4Aet8M3j18p48Qnsx87w2eT9glsQzk=w1032-h1026-no">
+<meta property="article:published_time" content="2019-09-13T07:44:58.000Z">
+<meta property="article:modified_time" content="2019-11-04T10:45:24.747Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="QWIKLABS">
+<meta property="article:tag" content="Baseline: Infrastructure">
+<meta property="article:tag" content="GCP Cloud Functions">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/cloudFunctionsQwikStartConsole/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud Functions 初探 - 主控台">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/cloudFunctionsQwikStartConsole/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/PT4fx5QIfBiaRJwH1dla-HZ4p8dSF5Upwj5jEVaPZKDgZnaryQBfZGBeOU_CdYwkD8pvvzWhOkUGAw9HA9aavZ_N6vF-E6x2GRwk75RyTVOyKEim6mVjHqAuJqdzvRm0WfGKvij2is8ckzF4FUqOX_lX8z59JoXtyhAWk-jG0INN_iNNkgcAFyqPIIZVY9BKCV43VQwvHSs67jSpsJ-G8S9O2YCAcnI3qE7VPeP8HiBXS5RW5e9h2KDub7WmjDFI5_YKh0K6Pw8eH3hTOpNe_fRoHOQ2E-qWediFv1WjgMUrIc1CoVWySk3V1nDH_LtBe84URvaLWS5yOW1Ln72k9Ev-PC_rFrQjCEPobql2Jom3vEPs4qu8ZnnT_HNxCVG5LFvZonPl1c9ir9ps5QJmhMVDkkWeSmUn-YLhH5IMIF2RRR_avenhQTpS1JKq0sbGnqjEMkR5Ivccn-4aPSaJwm50w-Ja6nKBkYhCkHGI5vyong8tAYf2JR75-woi-gq5rPLfs2-CoKWJmK3ZXPMsNypncW7Z9zKSFrPVqlVNrNb0ZMGa7asnoo96n4ZV87jble8sHl6FcXiBGGkgAIPcy1t6AA5e176k94qwJw-JfEXx6VMn-fPHqAJvqz721wxUVsoPhlfRB9mVEUIWv_tzWBTV46dzYtBf_fkacogfCkVsd4u05Ld6l1w=w292-h310-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/GfKhr_fKadJxw2DXry6zsPSM68yB3HqcGQuBSowFb-unY3f7QXA4Nd_XbY46HJEkG1l8OPO9D3gRk5vlCbrOW8RXZbrcxEe7XA76RrDgDOqWq8XNWBt7f-HYeizabcIXxvWc4usAcpL6s456KpOINeSHShC2JeybsdrpDeR2ZC4nuLM5ZcMieKeZmMQdF0hVpk-tgvK91mk474Beph6Gd_XLEi5UdpLDr0m6SAKdLESfbKL7puAv93dCTh6vbODlRsmnl11SjoEpqMEduSjMPAq0Nog8ldrid0ZlWMGhdz9Bs0ygSXd4wlQTda7L73_ReQxxuy6LIV-Dis0XKPdz6ByroVU2tt3gONz5OnpJz1AeDc5UyoKREPs2rp49JjoEl9y3V0WdAyhtb1tGTBVzSluXCSTNUFHmH_M27Ea0j4dSQacfrrXoi-0O8HcUi1bMF3UyO9XjrAyn1gDT90mbraBTOAjxUqcJFg91jQ3wsVjaafSuaaVfyuGPG-g5ikiPoDF6040guE1ndXWbMlPNCW3c4DuI9He7-BUiX1D4c90IsLZ3z50O7XhGx5A6CILVKrmYHoeHR6t5yV9u2yNnX1AqzzUKkWofUOKtSvSP4xhHzk5YXlQxrGLRoct6DtV14rm2UEpKIT5lEW7-_o_CdhenYenOO_qGdq5stUhctGClq_t9Fxe9OSw=w409-h217-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/WAWtKBx940rfnfBUEynfImqRmVtw12PlpmKuJcLSdeeDkEAbyiN7aPHL4r751AAt1Z-Ypx22aPvMqeG70HiivdtOCMxQeP0QU_ZGo11RAsIxxDviRVJ-MFGpH0xPETjqHUunGw5fzvoQ9P75vj0isj7k6UThLTidPYNIwDZPH51rWRUaJOHmJ-xU8836pu7uA1eMEpiymHYWoYmpY5emLlq8ZbshXJRWCPGqq_2lhMvYzQg6R3Yy8vYkKGhXIhcG-I9bt8l6AvZ6WZ1BUpXNCV6VGWODoiIKNxMrzhYjMpd9z8Z6Fr-EaMcL1qcT5Q2CDSA8R2f0vLZxtl1_93C96COkFY6X0uip7RUkJn47LWXgHE9oTeZgjVj_3MCx1HQLq9J5di9f0prV839wQvLOalt-k-yQ8Mqqk0E2X4xP9ry1JzQx2DGUJ2DwqScsYjClaShWCLlRIkBIEI7qT9gvc8DTabn5G62Vw6KkDdLR_mRzyqj6v3bjFV1qUASC9pJmpBzAUVRbgsW9-WvKjJ_QJsfx06KEx5m17hFzSp5dSwnHVBW0zzdGq4szhML1Xe9b7Gp7P7QuWSufuln41WT91kDR9O73qoh6tzPaItaAPVEjZES6e68wudZ22L2kG95W8JUS2sOfTHqI6nYq0aQGDblC63KjhwgrTEsUzxoiaXzNZItbpsqf2II=w409-h786-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/G_xrUZJsRRKOzwDhOfLjZc1e21iv69clRGK1qzVbOUcY0E3hkYy5rW9r6u9UXlSrQejUnTyx-73-JQHwsXwb8BQVsllYRoDgFCxFo49fRQjM8EcVQbzUw9SvT---7T3s59HTQkMXOcwYQrkj-x1OarIEimdoE_xjPfWdptVG5XYFgb7sEp-WWqJqL7P_Jk7aN8fVCogUGyj9KXQteduNyUiZegXaQW7uWj-BqAP2QfiJmYl5xbf6WMAty73xJqCiIoHX3z91eENUVMDuD5zlsM5X-UNwzch1SI3CEdmguK_JQrQlj1gBjbOWkwE2Bqhofe2BU_OD34WryEi_M5al0NOpPl7OdGmgFoqcGRl-tAYNlF9tNM_kMlW_LoKhiKrcsvHEkG1HGZmxF11L8pRdo46xAJqlNKPNEOiVmRnHK0t7qeCOeJ_Z-afF_xGAhXyin9PP--6rTcUz0WSpiSJkgH-sW-dp0WP7vGbx1Xcfkz4r_iEwBxeco-iPwIKb_UB8HDRM27P1-C5C1Ey0aZ7EORN84qoFCEZTEHLs0cXSNRK-7uexZmQHMlyKIwLxX8TKRz8ioU0UvhrfMZt61O3CslBPc8bGK7-oP1FR8kU6d8TlxJMTHxCN0AydPZrp4wFblbhaxm6DlJvsAbuLFkcNdROF9k4dp9SrEaYWzGRWFrdDyZuw_NnhlOg=w255-h60-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/cIxSWZVxgB0AiGYEAcZoMLovZh_D0IImFNXhguFKC2zTWQJhfu0_tcUFEf-L0mydEzBCi_kil7J7A14Wl_8v9wOZMFbHc6GZYLcqJf7ZUF4xwxn0umb-aWQ6VrWkpNkN3c_M6aqqeXry-hDFsXa4Qe11FQ5wtHli7l1CSQID26yFrXc1lwV0m2jN283hHBNqmQ2a3u51mfiq9umnNEojR3aTKGuttmjl5uGdoGpI8KEffwlmGx6D2TVFOXIPEzQd8klmCRyP2SLIA7vwZ49tvPeceynczsBcEDIbTlQiofdzBEujLOXQkS5ovzP456Bl59ROn0LxAhgmo93OSY7hNur0Ohyl4DGQh_TggEvOko27H6Cy0dSM0GH_VvTjqjPCOxAxhuwR7edNo0VaYUhbFvyNvdQKWEkIvEFfTXFtZoFFSnPAHQkpFWyzo8iMhGh5SHFGwVXFshbDqWHu1eHrnG1eo_2icj8Xl8n2ERXPO2SoFdG8hRvIiPI9mSGXl1lBgWDiXHzsoOhkhHXvKaaIjf1BOsjjJf6c3NPsrNAgpoopE6gFah43KmEoCu3EGeB4i5f-XetZ9cdA_cP6pRNeEr1feyzgbiY256OHsHZgNdmJR4OKfEM8XRaXZNPfxgHtM9bYS30vDKuIuPFzYhK5E3eqYEJlttp2LBPF-wwe3C0bO5iCJN3Y0bM=w1032-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/6gDU3-PST_iCphSk95NVuDzMne8TK9X_AFE5ASYByaeALiT-5t1UstwvqXrf6GoabS2Y69rlSjKnd3ljx4SPaQNIsyY94b5_lrg0RCXDEQSqI5zYdW6vrhYfRo8XACkCdSqpiqFY4NoNoz18dB7hbcglkZn6g54hs9qteenO_tRyVq_fdku_VNC4mUTUhCT1goW1s_7a_Ia--LKMn_Sbe7AKd4cS1InZ0CSIzRiOyBW5E357QlROnRGkRWCjf6ZG27WpFP2HltM0AYttlB5fFIsM1A2MKCEPA3DMveI7Rt7vU3RfqLDzpESOkQwJTNkmy9ZD98ruLtwyeIHa5nkQaW2yWa-eR7fP8UMw2QVsiJ8cy13CchkYuM-gHBqXzuT3NAaly1zYL7bgexs9HX9h8saVCCveSEM8-ZdfUFueOhfcJoRmL32gsz50PZQWZKvwkf0FLy8mkxe70RpCqTkH_tOonrxF7ovcX9K8mhiJFAxNlXEjJSdCy-zqK08I6V4QUTimR-7Gh4odxW2hh9-1B0yb-KN7mBhK9P8gEwtUY1qBFe4val9TL5eIMoNpa6nNv7YWP3ttC31uEqJ74zkzqfh7T-GK4U7ulUwfWjKB7FCp4Xn0XdZfo5Sqh7YjLaRy4H9_j-j5w-HjLjdSYzTtUaGzToFpI8Aq4yLY8-HFLtqSZ359MV4YGiY=w758-h195-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/bkJ3PhIekM_2gD812ncwDtAxw6ySt7uWbPSPoG_VB99KLuCeRfcb69AA7-qyAxzcMcYCqyjyG33JFLd5ja-U-dJ6Y39DKEPZLqE6GIJsNzPm-7s5rT4wjubTJC9p3ahSBKKkcdVitHKHpfjCvyo94aLW2sAC_fij_Yi90cmw4kVDvgOvWJ8OdudKtsRZR177J8n_XyLkIsDaR8bfgoL2w1qRXTdHuJbxWp4qa6vymJU3PhbD9fhfgTrCNGcAtLI0ci0VuFD8nIPyyMv_i7hUwvnFExUTy02vspdK-YVFiCSUswV_542n1-auaB_q6TvwUXYpCSI9YwM9UjKstEL0l9kDRDWpVA2KKNfh8hYvMu7VCqa7EWsPh9dR0QsTEvOOQjd0SFO-80Gm-QCZLKh6W9zGuB6i862vAdMI936dg9YwU02xYuw9M9JaqiPxaYzqadYJ8d6CPq2a9o-3oStgy4jp2lBrD70WdRX7oUmQV_2N8zDIij1AijWYMNviNNXtgGcoVof3QygE1hJOBN4w4Tk5uv-4F1yDtRgBpVunnMH_CX_lohl3KMU0h-j7kt7Zq3LAYZIrqQQ1532DzjHoinKJtNTMhW0VE3mj1ce442nDQFvjOYhnvEAynowPomuhOUA37ZUGroIFPTDjdHUy49IyuM2tVIf-V8LS1dTkDQYdsNlsEA9JhbQ=w497-h705-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LaRlK8AyEmP8D-8PJhZLH_fhT7-_p_eDELxGeG-TKxuWTk7geN6_2DWX_S0AeCGmYBBaQb-OvBcZ_HGYTejnnyJBkx2c5A0kTjLH1fpNDakcW5nn1_qACZzDiZmGUxqlE9yJ6tHKoXyCcbdpwk38vPGhwAiYcAU_LgnjYtlfQaMzHoZDxaxVR6yqiRnSptZ2yWwwTBmBMq2yzypHmp6YkMSPkcZJrdXKYKZDA1ElLK3zjqJhBmyRpx2eoSedfM1b6A6WANaWHpDgIPggRBJKIh_QNzz19qD6qDY-IGlqWGYU8pOg80Q0Iym5uHp8tg8gsP8OfJvkzOIQhs4RERnFLK1nUuyOPotMP2JyogM99AEaNnlvtepoWqg7J3V9RSCu_hcfblbTQyShCYYqOamUwAvZEllj8GQS90jvJeZPFQXOk2TihBBfOfANKtQ1d3D2O6ke7Jf9eiWsjBN8bnXyUYOT0hBQ9ADuXmYfG-DDl1xf9aF54PBQAv3uy1mwOvFrMua7I6TF4FE8FSw7XYAeiXT6hdWYInSFMJiCJFXqvsNl590ELlC0ZrJVmKg9OSm7xxOd1t7oqBe8KufBo1wWWKcrIfKvgv9ztz8jNQHA8-YDcnpqtB9Khy0kkl7-8Jl_WjRpKpSQkrbTR9HdtQMryz0urAt9N2lvq1IM5fUBqkpmXTezX0vdePA=w198-h53-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/evXJRfmtPpezNqKNS5mZPik2GXHsLDPM9Qi0pnVGcNFU-IGDt8dpuY4cS3CFyOHCOjYe8cxWKmiVo3OYIn2V9pGCLkCrWdqE60ERoEzKyUYMRAhcPDIM9rraMwJiCuE-9duZfGxbRZ0HU622hrDKp9Crx_FKP-SwtNiCGwb4cYKmj9yTuCRds2nFL9FrYkZpXNhROlzfAdloGrUfBBt712ZIBPtDfRZZcPDurVxsWzBiRCasVtwaHN1DoWcl0a6YAIdRLaSssXhCakapU52rsiAn-7L7vzs4DxfyKHWvddqO31hSNJqOpoSiXtk0M3Nlayeb9gqlVIlRZNhqYqHUrXu5667kkAPGPHGrjaq8yTORaQOghWh4hoQd8c_W-RrqYcbkUtPI4LsM-ENpdPQWSIKNSwqSSMG7UqII8cggtOB1W-qnuLMG4VQltDiNFCMuA95dq0Bd-h_gCNLcCRdNo59L4HBxl2fmTB6XUU_uZvNlz3R0PkgkGa1gQsyXYnPtkw_7jHpuDnhHH1PWtZ-E1Y4RlsAIARZop_EXZgLBZgTfb11Jiug4ZxmJWGKmmFVahC0nrEE6K4eAANlwv7kfzndB6abIxLKH9pGOlO9T6jCT9I-JKR7JcScRmosUmROywqrUcOkPayKvhcyQD8HoJXl0UW_X6Nv9Xn7mqXI7gClRulpSHz8w8sI=w746-h162-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/OCTDtpfHPCZviJYqVWgy2B7iqbLrra2vXw6qkljqO7u2ODnMbyH96aeyTED7YVdbDPpt00Hcvd9dMRR2ixg171c94_wCmO0OSK4ViD8ZGd8Ry1Wn42181ZExnx7mCX8iFAiOyFsSAVzxlNPlsQXA7KEhnkRL44IO5BaE4bqp-aWE8yuM4YtcSeXh1I1-zg2Ip2P7NEnu3zvUvtqs1LcNrZfF6Z5fi34a6DpoE0zRXPOk3qS3r2KgFvTt8d5u_MYfv_Yn8d2-Y6LAinUBT2O9zMNuSCcprmqvkGVy9Nb4c9doBfhc87aSxsPJyno8uBQyylTRWw2W317d9mqmGFE16epFZ1_XREB8SA2m3DvdjB-yzrMqZCBGxBiCmmvcgbqH5mGmCM87OGadb4RjlTF1_y6m9l7Gj-CkGkVB5HPJWYcsuDeu1fBUCRxT-y-fTupcVye7WK8NwxzxDMEtla-oxnsGsCumQO9UublO9YbqRzYd3fG3D02WGbSZ50z834AqJRT4W8DKinXMhjhsRJNvlsibzhBxGAd3eUbJhLIT1hVkw9zd7KtDpKXnoH795mqWiXFGIIvD-TS4MLJvdpuhfPtqBhK3F6bbn9iOENsFGRzfECHemlMY_YaR4EsfiNMgAaDIE8BVXuCCmNsg5PwZiyNluLELmeGTNDBcMsveX_xUmDy4PQIrPnE=w1014-h170-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/ZQ91zLxCKMj_Q61v4QkiZu3KklnfoabS_h-hZwcPSfw354MO3HoDIiaRWNY58zO_N5mPICynoqshGoUIqaOk4nvMgL1deJLALKIOk8e_05PkQ_peilqgGcVAkm49pRTKuzTF0bZFrIuVIcxkmeXUrGhGKoxLwQR23luSU14E2dsmrNunCFwUMr3IiOYw4e1HXUla9rDNjkhgZsgLE03dBLnLWDg1zr50J1NtOxoHbt8PEWjjo2gcYy6pXfCQpBiJUqbcYygURQ1cEQYxFm3-iSJpqeEwNX5SV5ytuSPgzhc2BIKPrNEDEZgQnOh2sz-2ErgaxIPuNbRPrHpR9_f-N3k5ck3u1JaJTla-fSesy9b03rcUBGt_9dNqyb3xWl6SIyPMgFltz0Z7SeB5VaIW9U0L_aqCHg9vLwNsBB4oIpOuL1TkJA7pWsu3J50tyj-Tnrv953X9nr1U3VbpZOrLtk5dRyV4XukkzYHHnz0k6h7ZpIEjzqf7vJBgSXWy-BZOMxIv2zs1TWDK1wrjeO_9E0S3TmX6xheRzjsx_9xOrmqhdqcYgGr236k-6q-WyDMUsj3K2he7Kw89e16sPbPcv0nuqlB8L1YyuDj6gaoHBoghKTc0kjjTMdbX9CIgZ6aVOBKybMjPT-Kc1yKKMyWcByo7B4Aet8M3j18p48Qnsx87w2eT9glsQzk=w1032-h1026-no">
+<meta property="article:published_time" content="2019-09-13T07:44:58.000Z">
+<meta property="article:modified_time" content="2019-11-04T10:45:24.747Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="QWIKLABS">
+<meta property="article:tag" content="Baseline: Infrastructure">
+<meta property="article:tag" content="GCP Cloud Functions">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#連結並且延伸雲端服務">2.1&nbsp;&nbsp;連結並且延伸雲端服務</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#事件以及觸發-Events-and-Triggers">2.2&nbsp;&nbsp;事件以及觸發 (Events and Triggers)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#無伺服器">2.3&nbsp;&nbsp;無伺服器</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#使用情境">2.4&nbsp;&nbsp;使用情境</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">3&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一個-function">4&nbsp;&nbsp;<b>建立一個 function</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署-function">5&nbsp;&nbsp;<b>部署 function</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度">5.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試-function">6&nbsp;&nbsp;<b>測試 function</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#View-logs-檢視紀錄">7&nbsp;&nbsp;<b>View logs (檢視紀錄)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#測試你的理解">8&nbsp;&nbsp;<b>測試你的理解</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#恭喜">9&nbsp;&nbsp;<b>恭喜</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/cloudFunctionsQwikStartConsole/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/cloudFunctionsQwikStartConsole/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Cloud Functions 初探 - 主控台
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-09-13T07:44:58.000Z" itemprop="datePublished">9月 13 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            27 分钟 讀完 (大概 4027 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Google Cloud Functions 是一個用來建立以及連結雲端服務的無伺服器執行環境。 你可以利用 Cloud Functions 來寫簡單，單一用途的 functions, 這些 functions 被附加到雲端基礎設施以及服務的事件上。 當監聽的事件被觸發， Cloud Function 也會被觸發。 你的代碼將在一個完全自動化管理的環境中被執行。 你完全不需要提供任何的基礎設施或管理任何的伺服器。</p>
+<span id="more"></span>
+
+<p>Cloud Functions 由 Javascript 所編寫，並且執行在 Google Cloud Platform 的 Node.js 環境。 你可以讓你的 Cloud Functions 運行在任何的 Node.js 執行階段上，這不只攜帶輕便，而且更讓本地測試非常簡單。</p>
+<br>
+<br>
+<br>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+<br>
+<br>
+<br>
+
+<h3 id="連結並且延伸雲端服務"><a href="#連結並且延伸雲端服務" class="headerlink" title="連結並且延伸雲端服務"></a>連結並且延伸雲端服務</h3><p>Cloud Functions 提供一個邏輯的連結層，它可以讓你在上面寫代碼來連接並且延伸雲端服務。 監聽並且回應 Cloud Storage 的檔案上傳事件，一個紀錄改變事件，或是 Cloud Pub/Sub 的訊息觸發事件。 Cloud Functions 擴大已經存在的雲端服務，並且允許使用客制的程式邏輯來處理越來越多的使用情境。 Cloud Functions 擁有 Google Service Account credential 的存取權，因此可以無縫接軌大部分的 Google Cloud Platform 服務，像是 Datastore, Cloud Spanner, Cloud Translation API, Cloud Vision API, 以及很多很多其他的服務。 並且，很多的 <a target="_blank" rel="noopener" href="https://cloud.google.com/nodejs/apis">Node.js client libraries</a> 都有支援 Cloud Functions, 這更是簡化了這些服務之間的整合。  </p>
+<br>
+
+<h3 id="事件以及觸發-Events-and-Triggers"><a href="#事件以及觸發-Events-and-Triggers" class="headerlink" title="事件以及觸發 (Events and Triggers)"></a>事件以及觸發 (Events and Triggers)</h3><p>雲端事件是發生在雲端環境的事。 像是資料庫的資料有所改變，檔案被上傳到儲存區，或是一台新的虛擬機背建立。</p>
+<p>不管你是否選擇回應，事件都會發生。 你可以使用 trigger 來建立對一個事件的回應。 Trigger 是一個宣告，對那些你有興趣的特定的或是一連串事件的宣告。 將一個 function 連結到 trigger 讓我們可以捕捉，並且隨著事件的發生有所動作。 更多有關建立 trigger 並且將它與 function 關聯的資訊，請參考 <a target="_blank" rel="noopener" href="https://cloud.google.com/functions/docs/concepts/events-triggers">Events and Triggers</a></p>
+<br>
+
+<h3 id="無伺服器"><a href="#無伺服器" class="headerlink" title="無伺服器"></a>無伺服器</h3><p>Cloud Functions 幫我們拿掉了這些工作，像是伺服器管理，軟體設置，框架更新，作業系統更新。 你只需要專注在代碼的部分，因為 Google 完全地幫你管理軟體以及基礎設施的部分。 再者，資源會隨著事件的回應自動地被提供。 這代表說，你完全不需要做任何事就可以讓一個 function 從一天幾次的調用，到一天好幾百萬次的調用。</p>
+<br>
+
+<h3 id="使用情境"><a href="#使用情境" class="headerlink" title="使用情境"></a>使用情境</h3><p>異步的工作量像是輕量化的 ETL, 或是雲端自動化像是應用被觸發而自動建立，不再需要獨立的伺服器以及開發者的維護。 你只要簡單的部署 Cloud Function 並且和你想要的事件做連結。</p>
+<p>Cloud Functions 的這些細緻的，立即提供的特質讓它非常適合輕量化的 API 以及 webhooks。 再者，當你部署一個 HTTP Function，該 HTTP endpoints 將會自動地被提供，這代表你不再需要像其他服務的複雜設置。 下面的表格列出了一些額外的常用 Cloud Function 的使用情境：</p>
+<p>使用情境 | 敘述<br>— |<br>Data Processing / ETL | 監聽並且回應 <a target="_blank" rel="noopener" href="https://cloud.google.com/storage">Cloud Storage</a> 事件像是當一個檔案被建立，被改變，或是被移除了。 處理圖片，影片編譯，資料驗證及轉換，以及從 Cloud Functions 上觸發任何網路上的服務。<br>Webhooks | 經由簡單的 <a target="_blank" rel="noopener" href="https://cloud.google.com/functions/docs/calling/http">HTTP trigger</a>, 回應那些來自第三方的事件，像是 GitHub, Slack, Stripe, 或是任何可以發 HTTP requests 的來源。<br>輕量化 APIs | 使用輕量化、不緊密相依、快速建立，以及立即可調整大小的邏輯來建構你的應用。 你的 functions 可以被事件驅動或者是直接通過 HTTP/S 觸發<br>可攜式後端 | 使用 Google 專為 App 開發者的可攜式平台, <a target="_blank" rel="noopener" href="https://firebase.google.com/docs/functions/">Firebase</a>, 以及在 Cloud Functions 建構你自己的移動後端。 監聽以及回應來自於 Firebase Analytics, Realtime Database, Authentication, 以及 Storage 的事件。<br>IoT | 想像一個數以萬計的裝置串流資料到 Cloud Pub/Sub, 然後啟動 Cloud Functions 來處理，轉換，並且儲存資料。 Cloud Functions 讓你使用完全無伺服器的方式來做到這些事。</p>
+<p>這個手把手的教程將會教你如何使用 Google Cloud 主控台來建立，部署，並且測試 Cloud Function</p>
+<p><strong>你將會做什麼？</strong></p>
+<ul>
+<li>建立一個 cloud function</li>
+<li>部署並且測試這個 function</li>
+<li>檢視紀錄</li>
+</ul>
+<br>
+<br>
+<br>
+
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><br>
+
+<p><b>在你按下 Start Lab 按鈕之前</b></p>
+<p>詳讀所有的教學。Labs 是有時間限制的，而且你不可以停止時間倒數。倒數計時器在你按下 Start Lab 按鈕後開始倒數，上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Qwiklabs 的手把手環境，讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程，而不是在一個模擬或是展示的環境。我們透過提供你一個全新的、暫時的帳號密碼，在計時器歸零之前，你可以用來登入並存取 Google Cloud Platform。</p>
+<p><b>你需要什麼？</b></p>
+<p>要完成這個 lab ，你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><b>備註：</b> 如果你已經有你自己的個人 GCP 帳號或專案，請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台，然後開啟命令列工具</p>
+<p><b>如何開始你的 lab ，然後登入 Console?</b></p>
+<ol>
+<li>按下 <b>Start Lab</b> 按鈕。如果你需要付費，會有一個彈出視窗來讓你選擇付費的方式。在左方你會看到一個面板，上面有暫時的帳號密碼，你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
+<ol start="2">
+<li>複製 <code>username</code> , 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗，顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p><b>tip:</b> 開啟一個全新的視窗，然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
+<ol start="4">
+<li>登入頁面開啟，貼上之前複製的 <code>username</code> 以及 <code>password</code> ，然後貼上</li>
+</ol>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼，不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號，請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受<code>terms</code>以及<code>conditions</code></li>
+<li>不要增加<code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候， GCP 控制台將會在這個視窗開啟。</p>
+<p>注意：按下左上方位於<code>Google Cloud Platform</code> 隔壁的 <code>Navigation menu</code> ，你可以瀏覽選單，裡面有一系列的 GCP 產品以及服務</p>
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+<br>
+<br>
+<br>
+
+<h2 id="建立一個-function"><a href="#建立一個-function" class="headerlink" title="建立一個 function"></a>建立一個 function</h2><p>在這個步驟，你將使用主控台建立一個 cloud function</p>
+<ol>
+<li>在主控台，點擊 <strong>Navigation menu &gt; Cloud Functions</strong></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/PT4fx5QIfBiaRJwH1dla-HZ4p8dSF5Upwj5jEVaPZKDgZnaryQBfZGBeOU_CdYwkD8pvvzWhOkUGAw9HA9aavZ_N6vF-E6x2GRwk75RyTVOyKEim6mVjHqAuJqdzvRm0WfGKvij2is8ckzF4FUqOX_lX8z59JoXtyhAWk-jG0INN_iNNkgcAFyqPIIZVY9BKCV43VQwvHSs67jSpsJ-G8S9O2YCAcnI3qE7VPeP8HiBXS5RW5e9h2KDub7WmjDFI5_YKh0K6Pw8eH3hTOpNe_fRoHOQ2E-qWediFv1WjgMUrIc1CoVWySk3V1nDH_LtBe84URvaLWS5yOW1Ln72k9Ev-PC_rFrQjCEPobql2Jom3vEPs4qu8ZnnT_HNxCVG5LFvZonPl1c9ir9ps5QJmhMVDkkWeSmUn-YLhH5IMIF2RRR_avenhQTpS1JKq0sbGnqjEMkR5Ivccn-4aPSaJwm50w-Ja6nKBkYhCkHGI5vyong8tAYf2JR75-woi-gq5rPLfs2-CoKWJmK3ZXPMsNypncW7Z9zKSFrPVqlVNrNb0ZMGa7asnoo96n4ZV87jble8sHl6FcXiBGGkgAIPcy1t6AA5e176k94qwJw-JfEXx6VMn-fPHqAJvqz721wxUVsoPhlfRB9mVEUIWv_tzWBTV46dzYtBf_fkacogfCkVsd4u05Ld6l1w=w292-h310-no"></p>
+<ol start="2">
+<li>點擊 <strong>Create function</strong></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/GfKhr_fKadJxw2DXry6zsPSM68yB3HqcGQuBSowFb-unY3f7QXA4Nd_XbY46HJEkG1l8OPO9D3gRk5vlCbrOW8RXZbrcxEe7XA76RrDgDOqWq8XNWBt7f-HYeizabcIXxvWc4usAcpL6s456KpOINeSHShC2JeybsdrpDeR2ZC4nuLM5ZcMieKeZmMQdF0hVpk-tgvK91mk474Beph6Gd_XLEi5UdpLDr0m6SAKdLESfbKL7puAv93dCTh6vbODlRsmnl11SjoEpqMEduSjMPAq0Nog8ldrid0ZlWMGhdz9Bs0ygSXd4wlQTda7L73_ReQxxuy6LIV-Dis0XKPdz6ByroVU2tt3gONz5OnpJz1AeDc5UyoKREPs2rp49JjoEl9y3V0WdAyhtb1tGTBVzSluXCSTNUFHmH_M27Ea0j4dSQacfrrXoi-0O8HcUi1bMF3UyO9XjrAyn1gDT90mbraBTOAjxUqcJFg91jQ3wsVjaafSuaaVfyuGPG-g5ikiPoDF6040guE1ndXWbMlPNCW3c4DuI9He7-BUiX1D4c90IsLZ3z50O7XhGx5A6CILVKrmYHoeHR6t5yV9u2yNnX1AqzzUKkWofUOKtSvSP4xhHzk5YXlQxrGLRoct6DtV14rm2UEpKIT5lEW7-_o_CdhenYenOO_qGdq5stUhctGClq_t9Fxe9OSw=w409-h217-no"></p>
+<ol start="3">
+<li>在 <strong>Create function</strong> 對話框，輸入以下的值<br>欄位 | 值</li>
+</ol>
+<p>— |<br>Name | GCFunction<br>Memory allocated | Default<br>Trigger | HPPT trigger<br>Source code | Inline editor (使用預設被提供給 index.js 的 **helloWorld function 實作)</p>
+<p><img src="https://lh3.googleusercontent.com/WAWtKBx940rfnfBUEynfImqRmVtw12PlpmKuJcLSdeeDkEAbyiN7aPHL4r751AAt1Z-Ypx22aPvMqeG70HiivdtOCMxQeP0QU_ZGo11RAsIxxDviRVJ-MFGpH0xPETjqHUunGw5fzvoQ9P75vj0isj7k6UThLTidPYNIwDZPH51rWRUaJOHmJ-xU8836pu7uA1eMEpiymHYWoYmpY5emLlq8ZbshXJRWCPGqq_2lhMvYzQg6R3Yy8vYkKGhXIhcG-I9bt8l6AvZ6WZ1BUpXNCV6VGWODoiIKNxMrzhYjMpd9z8Z6Fr-EaMcL1qcT5Q2CDSA8R2f0vLZxtl1_93C96COkFY6X0uip7RUkJn47LWXgHE9oTeZgjVj_3MCx1HQLq9J5di9f0prV839wQvLOalt-k-yQ8Mqqk0E2X4xP9ry1JzQx2DGUJ2DwqScsYjClaShWCLlRIkBIEI7qT9gvc8DTabn5G62Vw6KkDdLR_mRzyqj6v3bjFV1qUASC9pJmpBzAUVRbgsW9-WvKjJ_QJsfx06KEx5m17hFzSp5dSwnHVBW0zzdGq4szhML1Xe9b7Gp7P7QuWSufuln41WT91kDR9O73qoh6tzPaItaAPVEjZES6e68wudZ22L2kG95W8JUS2sOfTHqI6nYq0aQGDblC63KjhwgrTEsUzxoiaXzNZItbpsqf2II=w409-h786-no"></p>
+<p>在下個章節部署 function </p>
+<br>
+<br>
+<br>
+
+<h2 id="部署-function"><a href="#部署-function" class="headerlink" title="部署 function"></a>部署 function</h2><p>還是在 <strong>Create function</strong> 對話框，在底部點擊 <strong>Create</strong> 來部署 function</p>
+<p>在你點擊 <strong>Create</strong> 後，主控台會重導向 <strong>Cloud Functions Overview</strong> 頁面</p>
+<p>當 function 正被部署時，旁邊的小圖案會顯示轉圈圈，當部署完畢，會變成一個打勾的圖案</p>
+<p><img src="https://lh3.googleusercontent.com/G_xrUZJsRRKOzwDhOfLjZc1e21iv69clRGK1qzVbOUcY0E3hkYy5rW9r6u9UXlSrQejUnTyx-73-JQHwsXwb8BQVsllYRoDgFCxFo49fRQjM8EcVQbzUw9SvT---7T3s59HTQkMXOcwYQrkj-x1OarIEimdoE_xjPfWdptVG5XYFgb7sEp-WWqJqL7P_Jk7aN8fVCogUGyj9KXQteduNyUiZegXaQW7uWj-BqAP2QfiJmYl5xbf6WMAty73xJqCiIoHX3z91eENUVMDuD5zlsM5X-UNwzch1SI3CEdmguK_JQrQlj1gBjbOWkwE2Bqhofe2BU_OD34WryEi_M5al0NOpPl7OdGmgFoqcGRl-tAYNlF9tNM_kMlW_LoKhiKrcsvHEkG1HGZmxF11L8pRdo46xAJqlNKPNEOiVmRnHK0t7qeCOeJ_Z-afF_xGAhXyin9PP--6rTcUz0WSpiSJkgH-sW-dp0WP7vGbx1Xcfkz4r_iEwBxeco-iPwIKb_UB8HDRM27P1-C5C1Ey0aZ7EORN84qoFCEZTEHLs0cXSNRK-7uexZmQHMlyKIwLxX8TKRz8ioU0UvhrfMZt61O3CslBPc8bGK7-oP1FR8kU6d8TlxJMTHxCN0AydPZrp4wFblbhaxm6DlJvsAbuLFkcNdROF9k4dp9SrEaYWzGRWFrdDyZuw_NnhlOg=w255-h60-no"></p>
+<br>
+
+<h3 id="測試進度"><a href="#測試進度" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經完成目前的進度，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/cIxSWZVxgB0AiGYEAcZoMLovZh_D0IImFNXhguFKC2zTWQJhfu0_tcUFEf-L0mydEzBCi_kil7J7A14Wl_8v9wOZMFbHc6GZYLcqJf7ZUF4xwxn0umb-aWQ6VrWkpNkN3c_M6aqqeXry-hDFsXa4Qe11FQ5wtHli7l1CSQID26yFrXc1lwV0m2jN283hHBNqmQ2a3u51mfiq9umnNEojR3aTKGuttmjl5uGdoGpI8KEffwlmGx6D2TVFOXIPEzQd8klmCRyP2SLIA7vwZ49tvPeceynczsBcEDIbTlQiofdzBEujLOXQkS5ovzP456Bl59ROn0LxAhgmo93OSY7hNur0Ohyl4DGQh_TggEvOko27H6Cy0dSM0GH_VvTjqjPCOxAxhuwR7edNo0VaYUhbFvyNvdQKWEkIvEFfTXFtZoFFSnPAHQkpFWyzo8iMhGh5SHFGwVXFshbDqWHu1eHrnG1eo_2icj8Xl8n2ERXPO2SoFdG8hRvIiPI9mSGXl1lBgWDiXHzsoOhkhHXvKaaIjf1BOsjjJf6c3NPsrNAgpoopE6gFah43KmEoCu3EGeB4i5f-XetZ9cdA_cP6pRNeEr1feyzgbiY256OHsHZgNdmJR4OKfEM8XRaXZNPfxgHtM9bYS30vDKuIuPFzYhK5E3eqYEJlttp2LBPF-wwe3C0bO5iCJN3Y0bM=w1032-h248-no"></p>
+<br>
+<br>
+<br>
+
+<h2 id="測試-function"><a href="#測試-function" class="headerlink" title="測試 function"></a>測試 function</h2><p>測試這個被部署上去的 function</p>
+<ol>
+<li>在 <strong>Cloud Functions Overview</strong> 頁面，從右邊三個小點的選單處點擊 <strong>Test function</strong></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/6gDU3-PST_iCphSk95NVuDzMne8TK9X_AFE5ASYByaeALiT-5t1UstwvqXrf6GoabS2Y69rlSjKnd3ljx4SPaQNIsyY94b5_lrg0RCXDEQSqI5zYdW6vrhYfRo8XACkCdSqpiqFY4NoNoz18dB7hbcglkZn6g54hs9qteenO_tRyVq_fdku_VNC4mUTUhCT1goW1s_7a_Ia--LKMn_Sbe7AKd4cS1InZ0CSIzRiOyBW5E357QlROnRGkRWCjf6ZG27WpFP2HltM0AYttlB5fFIsM1A2MKCEPA3DMveI7Rt7vU3RfqLDzpESOkQwJTNkmy9ZD98ruLtwyeIHa5nkQaW2yWa-eR7fP8UMw2QVsiJ8cy13CchkYuM-gHBqXzuT3NAaly1zYL7bgexs9HX9h8saVCCveSEM8-ZdfUFueOhfcJoRmL32gsz50PZQWZKvwkf0FLy8mkxe70RpCqTkH_tOonrxF7ovcX9K8mhiJFAxNlXEjJSdCy-zqK08I6V4QUTimR-7Gh4odxW2hh9-1B0yb-KN7mBhK9P8gEwtUY1qBFe4val9TL5eIMoNpa6nNv7YWP3ttC31uEqJ74zkzqfh7T-GK4U7ulUwfWjKB7FCp4Xn0XdZfo5Sqh7YjLaRy4H9_j-j5w-HjLjdSYzTtUaGzToFpI8Aq4yLY8-HFLtqSZ359MV4YGiY=w758-h195-no"></p>
+<ol start="2">
+<li>在 Triggering event 欄位，在大括號 <code>&#123;&#125;</code> 之間輸入以下代碼並且點擊 <strong>Test the function</strong></li>
+</ol>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">&quot;message&quot;:&quot;Hello World!&quot;</span><br></pre></td></tr></table></figure>
+
+<p>在 <strong>output</strong> 欄位，你應該可以看到一段訊息 <code>Success: Hello World!</code></p>
+<p>在 <strong>Logs</strong> 欄位，一段狀態碼 <strong>200</strong> 顯示成功。 (紀錄出現可能會需要幾分鐘的時間)</p>
+<p><img src="https://lh3.googleusercontent.com/bkJ3PhIekM_2gD812ncwDtAxw6ySt7uWbPSPoG_VB99KLuCeRfcb69AA7-qyAxzcMcYCqyjyG33JFLd5ja-U-dJ6Y39DKEPZLqE6GIJsNzPm-7s5rT4wjubTJC9p3ahSBKKkcdVitHKHpfjCvyo94aLW2sAC_fij_Yi90cmw4kVDvgOvWJ8OdudKtsRZR177J8n_XyLkIsDaR8bfgoL2w1qRXTdHuJbxWp4qa6vymJU3PhbD9fhfgTrCNGcAtLI0ci0VuFD8nIPyyMv_i7hUwvnFExUTy02vspdK-YVFiCSUswV_542n1-auaB_q6TvwUXYpCSI9YwM9UjKstEL0l9kDRDWpVA2KKNfh8hYvMu7VCqa7EWsPh9dR0QsTEvOOQjd0SFO-80Gm-QCZLKh6W9zGuB6i862vAdMI936dg9YwU02xYuw9M9JaqiPxaYzqadYJ8d6CPq2a9o-3oStgy4jp2lBrD70WdRX7oUmQV_2N8zDIij1AijWYMNviNNXtgGcoVof3QygE1hJOBN4w4Tk5uv-4F1yDtRgBpVunnMH_CX_lohl3KMU0h-j7kt7Zq3LAYZIrqQQ1532DzjHoinKJtNTMhW0VE3mj1ce442nDQFvjOYhnvEAynowPomuhOUA37ZUGroIFPTDjdHUy49IyuM2tVIf-V8LS1dTkDQYdsNlsEA9JhbQ=w497-h705-no"></p>
+<br>
+<br>
+<br>
+
+<h2 id="View-logs-檢視紀錄"><a href="#View-logs-檢視紀錄" class="headerlink" title="View logs (檢視紀錄)"></a>View logs (檢視紀錄)</h2><p>從 Cloud Functions Overview 頁面檢視紀錄</p>
+<ol>
+<li><p>點擊藍色箭頭來回到 <strong>Cloud Functions Overview</strong> 頁面<br><img src="https://lh3.googleusercontent.com/LaRlK8AyEmP8D-8PJhZLH_fhT7-_p_eDELxGeG-TKxuWTk7geN6_2DWX_S0AeCGmYBBaQb-OvBcZ_HGYTejnnyJBkx2c5A0kTjLH1fpNDakcW5nn1_qACZzDiZmGUxqlE9yJ6tHKoXyCcbdpwk38vPGhwAiYcAU_LgnjYtlfQaMzHoZDxaxVR6yqiRnSptZ2yWwwTBmBMq2yzypHmp6YkMSPkcZJrdXKYKZDA1ElLK3zjqJhBmyRpx2eoSedfM1b6A6WANaWHpDgIPggRBJKIh_QNzz19qD6qDY-IGlqWGYU8pOg80Q0Iym5uHp8tg8gsP8OfJvkzOIQhs4RERnFLK1nUuyOPotMP2JyogM99AEaNnlvtepoWqg7J3V9RSCu_hcfblbTQyShCYYqOamUwAvZEllj8GQS90jvJeZPFQXOk2TihBBfOfANKtQ1d3D2O6ke7Jf9eiWsjBN8bnXyUYOT0hBQ9ADuXmYfG-DDl1xf9aF54PBQAv3uy1mwOvFrMua7I6TF4FE8FSw7XYAeiXT6hdWYInSFMJiCJFXqvsNl590ELlC0ZrJVmKg9OSm7xxOd1t7oqBe8KufBo1wWWKcrIfKvgv9ztz8jNQHA8-YDcnpqtB9Khy0kkl7-8Jl_WjRpKpSQkrbTR9HdtQMryz0urAt9N2lvq1IM5fUBqkpmXTezX0vdePA=w198-h53-no"></p>
+</li>
+<li><p>在 <strong>Cloud Functions Overview</strong> 頁面，從右邊三個小點的選單處點擊 <strong>View logs</strong></p>
+</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/evXJRfmtPpezNqKNS5mZPik2GXHsLDPM9Qi0pnVGcNFU-IGDt8dpuY4cS3CFyOHCOjYe8cxWKmiVo3OYIn2V9pGCLkCrWdqE60ERoEzKyUYMRAhcPDIM9rraMwJiCuE-9duZfGxbRZ0HU622hrDKp9Crx_FKP-SwtNiCGwb4cYKmj9yTuCRds2nFL9FrYkZpXNhROlzfAdloGrUfBBt712ZIBPtDfRZZcPDurVxsWzBiRCasVtwaHN1DoWcl0a6YAIdRLaSssXhCakapU52rsiAn-7L7vzs4DxfyKHWvddqO31hSNJqOpoSiXtk0M3Nlayeb9gqlVIlRZNhqYqHUrXu5667kkAPGPHGrjaq8yTORaQOghWh4hoQd8c_W-RrqYcbkUtPI4LsM-ENpdPQWSIKNSwqSSMG7UqII8cggtOB1W-qnuLMG4VQltDiNFCMuA95dq0Bd-h_gCNLcCRdNo59L4HBxl2fmTB6XUU_uZvNlz3R0PkgkGa1gQsyXYnPtkw_7jHpuDnhHH1PWtZ-E1Y4RlsAIARZop_EXZgLBZgTfb11Jiug4ZxmJWGKmmFVahC0nrEE6K4eAANlwv7kfzndB6abIxLKH9pGOlO9T6jCT9I-JKR7JcScRmosUmROywqrUcOkPayKvhcyQD8HoJXl0UW_X6Nv9Xn7mqXI7gClRulpSHz8w8sI=w746-h162-no"></p>
+<p>紀錄歷史範例如下：</p>
+<p><img src="https://lh3.googleusercontent.com/OCTDtpfHPCZviJYqVWgy2B7iqbLrra2vXw6qkljqO7u2ODnMbyH96aeyTED7YVdbDPpt00Hcvd9dMRR2ixg171c94_wCmO0OSK4ViD8ZGd8Ry1Wn42181ZExnx7mCX8iFAiOyFsSAVzxlNPlsQXA7KEhnkRL44IO5BaE4bqp-aWE8yuM4YtcSeXh1I1-zg2Ip2P7NEnu3zvUvtqs1LcNrZfF6Z5fi34a6DpoE0zRXPOk3qS3r2KgFvTt8d5u_MYfv_Yn8d2-Y6LAinUBT2O9zMNuSCcprmqvkGVy9Nb4c9doBfhc87aSxsPJyno8uBQyylTRWw2W317d9mqmGFE16epFZ1_XREB8SA2m3DvdjB-yzrMqZCBGxBiCmmvcgbqH5mGmCM87OGadb4RjlTF1_y6m9l7Gj-CkGkVB5HPJWYcsuDeu1fBUCRxT-y-fTupcVye7WK8NwxzxDMEtla-oxnsGsCumQO9UublO9YbqRzYd3fG3D02WGbSZ50z834AqJRT4W8DKinXMhjhsRJNvlsibzhBxGAd3eUbJhLIT1hVkw9zd7KtDpKXnoH795mqWiXFGIIvD-TS4MLJvdpuhfPtqBhK3F6bbn9iOENsFGRzfECHemlMY_YaR4EsfiNMgAaDIE8BVXuCCmNsg5PwZiyNluLELmeGTNDBcMsveX_xUmDy4PQIrPnE=w1014-h170-no"></p>
+<p>你的應用已經被部署，被測試，而且你已經可以檢視它的紀錄</p>
+<br>
+<br>
+<br>
+
+
+<h2 id="測試你的理解"><a href="#測試你的理解" class="headerlink" title="測試你的理解"></a>測試你的理解</h2><p>下面有多重選擇的問題來鞏固你對本教程概念的理解，盡你所能的回答吧：</p>
+<ul>
+<li>true</li>
+<li>HTTP</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/ZQ91zLxCKMj_Q61v4QkiZu3KklnfoabS_h-hZwcPSfw354MO3HoDIiaRWNY58zO_N5mPICynoqshGoUIqaOk4nvMgL1deJLALKIOk8e_05PkQ_peilqgGcVAkm49pRTKuzTF0bZFrIuVIcxkmeXUrGhGKoxLwQR23luSU14E2dsmrNunCFwUMr3IiOYw4e1HXUla9rDNjkhgZsgLE03dBLnLWDg1zr50J1NtOxoHbt8PEWjjo2gcYy6pXfCQpBiJUqbcYygURQ1cEQYxFm3-iSJpqeEwNX5SV5ytuSPgzhc2BIKPrNEDEZgQnOh2sz-2ErgaxIPuNbRPrHpR9_f-N3k5ck3u1JaJTla-fSesy9b03rcUBGt_9dNqyb3xWl6SIyPMgFltz0Z7SeB5VaIW9U0L_aqCHg9vLwNsBB4oIpOuL1TkJA7pWsu3J50tyj-Tnrv953X9nr1U3VbpZOrLtk5dRyV4XukkzYHHnz0k6h7ZpIEjzqf7vJBgSXWy-BZOMxIv2zs1TWDK1wrjeO_9E0S3TmX6xheRzjsx_9xOrmqhdqcYgGr236k-6q-WyDMUsj3K2he7Kw89e16sPbPcv0nuqlB8L1YyuDj6gaoHBoghKTc0kjjTMdbX9CIgZ6aVOBKybMjPT-Kc1yKKMyWcByo7B4Aet8M3j18p48Qnsx87w2eT9glsQzk=w1032-h1026-no"></p>
+<br>
+<br>
+<br>
+
+<h2 id="恭喜"><a href="#恭喜" class="headerlink" title="恭喜"></a>恭喜</h2><p>你已經完成本教程</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Baseline-Infrastructure/">#Baseline: Infrastructure</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Cloud-Functions/">#GCP Cloud Functions</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/letsEncryptWildcard/">利用 Let&#39;s Encrypt 來自動簽署並更新 SSL 憑證 (wildcard)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/monitoringAndLoggingForCloudFunctions/">Cloud Functions 上的監控與紀錄</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/cloudFunctionsQwikStartConsole/';
+        this.page.identifier = 'zh-tw/cloudFunctionsQwikStartConsole/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

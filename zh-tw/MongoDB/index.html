@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>MongoDB 學習筆記 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言一份未整理的 MongoDB 學習筆記">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB 學習筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/MongoDB/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言一份未整理的 MongoDB 學習筆記">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-08-23T09:06:11.000Z">
+<meta property="article:modified_time" content="2019-11-04T10:48:28.061Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="MongoDB">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/MongoDB/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言一份未整理的 MongoDB 學習筆記">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB 學習筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/MongoDB/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言一份未整理的 MongoDB 學習筆記">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-08-23T09:06:11.000Z">
+<meta property="article:modified_time" content="2019-11-04T10:48:28.061Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="MongoDB">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#環境">2&nbsp;&nbsp;<b>環境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#安裝">3&nbsp;&nbsp;<b>安裝</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#重啟">4&nbsp;&nbsp;<b>重啟</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#登入">5&nbsp;&nbsp;<b>登入</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#無建立使用者">5.1&nbsp;&nbsp;無建立使用者</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#有建立使用者">5.2&nbsp;&nbsp;有建立使用者</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定檔位置">6&nbsp;&nbsp;<b>設定檔位置</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#說明書">7&nbsp;&nbsp;<b>說明書</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#一般指令">8&nbsp;&nbsp;<b>一般指令</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立需驗證的-user">9&nbsp;&nbsp;<b>建立需驗證的 user</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#連接">10&nbsp;&nbsp;<b>連接</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#讓外面可以連到資料庫">11&nbsp;&nbsp;<b>讓外面可以連到資料庫</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/MongoDB/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/MongoDB/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            MongoDB 學習筆記
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-08-23T09:06:11.000Z" itemprop="datePublished">8月 23 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/%E8%B3%87%E6%96%99%E5%BA%AB/">資料庫</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            4 分钟 讀完 (大概 585 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一份未整理的 MongoDB 學習筆記</p>
+<span id="more"></span>
+
+<br>
+<br>
+<br>
+
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>GCP Linux Ubuntu 19.04</p>
+<br>
+<br>
+<br>
+
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>參考 <a target="_blank" rel="noopener" href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/">官方文件</a></p>
+<br>
+<br>
+<br>
+
+<h2 id="重啟"><a href="#重啟" class="headerlink" title="重啟"></a>重啟</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo service mongod restart</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
+<h2 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h2><h3 id="無建立使用者"><a href="#無建立使用者" class="headerlink" title="無建立使用者"></a>無建立使用者</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mongo</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="有建立使用者"><a href="#有建立使用者" class="headerlink" title="有建立使用者"></a>有建立使用者</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mongo -u user -p password</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
+<h2 id="設定檔位置"><a href="#設定檔位置" class="headerlink" title="設定檔位置"></a>設定檔位置</h2><p><strong>ubuntu</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/mongod.conf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /lib/systemd/system/mongod.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>MacOS</strong></p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /usr/local/etc/mongod.conf</span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
+<h2 id="說明書"><a href="#說明書" class="headerlink" title="說明書"></a>說明書</h2><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mongo --<span class="hljs-built_in">help</span></span><br></pre></td></tr></table></figure>
+
+<br>
+<br>
+<br>
+
+<h2 id="一般指令"><a href="#一般指令" class="headerlink" title="一般指令"></a>一般指令</h2><ul>
+<li><p>顯示 database</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show databases</span><br></pre></td></tr></table></figure></li>
+<li><p>顯示 collections</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show collections</span><br></pre></td></tr></table></figure></li>
+<li><p>顯示使用者</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">use admin</span><br><span class="line">show <span class="hljs-built_in">users</span></span><br></pre></td></tr></table></figure></li>
+<li><p>使用資料庫</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">use databaseName</span><br></pre></td></tr></table></figure></li>
+<li><p>刪除 user</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">db.dropUser(<span class="hljs-string">&#x27;User&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+<li><p>變更密碼</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">db.changeUserPassword(<span class="hljs-string">&#x27;user&#x27;</span>, <span class="hljs-string">&#x27;updatedPassword&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+<br>
+
+<h2 id="建立需驗證的-user"><a href="#建立需驗證的-user" class="headerlink" title="建立需驗證的 user"></a>建立需驗證的 user</h2><p><a target="_blank" rel="noopener" href="https://docs.mongodb.com/guides/server/auth/">參考文件</a></p>
+<ul>
+<li><p>登入</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mongo --host &lt;HOSTNAME&gt; --port &lt;PORT&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p>切換到 <code>admin</code> 資料庫</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">use admin</span><br></pre></td></tr></table></figure></li>
+<li><p>建立 user</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">db.createUser(</span><br><span class="line">  &#123;</span><br><span class="line">    user: <span class="hljs-string">&quot;superuser&quot;</span>,</span><br><span class="line">    <span class="hljs-built_in">pwd</span>: <span class="hljs-string">&quot;changeMeToAStrongPassword&quot;</span>,</span><br><span class="line">    roles: [ <span class="hljs-string">&quot;root&quot;</span> ]</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></li>
+<li><p>驗證 user 是否成功建立</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">show <span class="hljs-built_in">users</span></span><br></pre></td></tr></table></figure></li>
+<li><p>關閉 MongoDB server</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">db.shutdownServer()</span><br></pre></td></tr></table></figure></li>
+<li><p>離開</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure></li>
+<li><p>如果是用套件安裝，需要先更改設定。 編輯設定檔，並新增 uncomment security 欄位</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/mongod.conf</span><br></pre></td></tr></table></figure></li>
+<li><p>如下設定</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">security:</span><br><span class="line">  authorization: enabled</span><br></pre></td></tr></table></figure></li>
+<li><p>重新啟動 MongoDB Server, dbPath 可以在設定檔裡面看到</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">vim /etc/mongod.conf</span><br></pre></td></tr></table></figure></li>
+<li><p>ubuntu</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># Where and how to store data.</span></span><br><span class="line">storage:</span><br><span class="line">  dbPath: /var/lib/mongodb</span><br><span class="line">  journal:</span><br><span class="line">    enabled: <span class="hljs-literal">true</span></span><br></pre></td></tr></table></figure></li>
+<li><p>MacOS</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">systemLog:</span><br><span class="line">  destination: file</span><br><span class="line">  path: /usr/local/var/log/mongodb/mongo.log</span><br><span class="line">  logAppend: <span class="hljs-literal">true</span></span><br><span class="line">storage:</span><br><span class="line">  dbPath: /usr/local/var/mongodb</span><br><span class="line">net:</span><br><span class="line">  bindIp: 127.0.0.1</span><br><span class="line"></span><br><span class="line">security:</span><br><span class="line">  authorization: enabled</span><br></pre></td></tr></table></figure></li>
+<li><p>執行下面指令重新啟動</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">mongod --dbpath &lt;path to data directory&gt; --auth &amp;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+<br>
+
+<h2 id="連接"><a href="#連接" class="headerlink" title="連接"></a>連接</h2><p><strong>連接語法</strong></p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>mongodb://這是固定的格式，必須要指定。</li>
+<li>username:password@可選項，如果設置，在連接數據庫服務器之後，驅動都會嘗試登陸這個數據庫</li>
+<li>host1必須的指定至少一個host, host1是這個URI唯一要填寫的。它指定了要連接服務器的地址。如果要連接複製集，請指定多個主機地址。</li>
+<li>portX可選的指定端口，如果不填，默認為27017</li>
+<li>/database如果指定username:password@，連接並驗證登陸指定數據庫。若不指定，默認打開test數據庫。</li>
+<li>?options是連接選項。如果不使用/database，則前面需要加上/。所有連接選項都是鍵值對name=value，鍵值對之間通過&amp;或;（分號）隔開</li>
+</ul>
+<br>
+<br>
+<br>
+
+<h2 id="讓外面可以連到資料庫"><a href="#讓外面可以連到資料庫" class="headerlink" title="讓外面可以連到資料庫"></a>讓外面可以連到資料庫</h2><ul>
+<li>更改 IP 如下<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment"># network interfaces</span></span><br><span class="line">net:</span><br><span class="line">  port: 27017</span><br><span class="line">  bindIp: 0.0.0.0</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/MongoDB/">#MongoDB</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/googleCloudPubSubQwikStartConsole/">Google Cloud Pub/Sub 初探 - 控制面板</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/cloudStorageQwikStartCLISDK/">Cloud Storage 初探 - CLI/SDK</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/MongoDB/';
+        this.page.identifier = 'zh-tw/MongoDB/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

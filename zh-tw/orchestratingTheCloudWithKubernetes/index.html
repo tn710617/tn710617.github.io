@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>使用 Kubernetes 來編排你的雲端 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Kubernetes 來編排你的雲端">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/orchestratingTheCloudWithKubernetes/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/BI2b0U4FJlAbPT0o4-WMXniOEOrPFRIA9kLthfdFv1qJ7UqvY9AnaN1IpGulxYfW3x19-bDQqOrsJmzSiWAvCMqlFxf-KoK6Il1kS7qgauetvUqQU9UIXNLfLUsnyqiefZDg0kagI7lb4wtuY-0w9skENctZ74OiZ0CyALuMH_rMreRgM0VxxLkxsqfzJ6T6w09Bm2XJHBQrFjVCACCQckhBd5kHOP680ZKfgHtL-eN-23n68YKDqH56FtVGQ5K0ArL7KOWQsODnNCZd3t04-7_fYsIzrGBtSEw5uAd8Q5Xfz3SOggm-CpXLxhLJ7EBGhJcW4tTAG3MXfo0p2uYJSucMWt_wZOR08t5pegowMoQ-V7paP17Dq-W0gO0G1D4xL6aplvy_22Yw26ebIVF1sHb6qwSM0fUh44KTXT6qOEMMIEPR7D6WVItfnB1eHsu2rz9imJ3_kfPxotscbvDUoOxBQmpzZe9_1GmhN2Zg7cWCWBp6ecZUTyohrKe_4wvRLgfREIbiocBA1MkSWGBM84DVPzcXEOLjmXIaiVlvYColPEiZM2xUdfSfZXRdEsZQAtLlzabXWlXDVGU-_U0SOoNs3_V7oz-BTkZnv9-qnk33JqkckROq2Vh1nqDc_3bJRMaxwYuA5rOCqQchJbQt2TOJxAS2UwR6d9mak0FuLhFSU63VHSAeKhyZVgA_bcDFDPc2vVjyC7UVT4gflh_szXKyo1rSZVrYkdeMQMsDUHQvOCDc=w640-h113-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/9pGx0gXlBWEONWGwoTzFGW9XdWJWmjRbFFwDrzWU5qVE8wAbuIiOU1xHvvsd4ar55vJZo2aXiRcmRBQaieQyW9nvvME6LcMrOSM3-JAjaLY6XH8pEHH2uuEOR9eQ9p7-T12Xu-PDrJti7p-xuM8BU7znxMQ6zzUSKZKsV2iBhehvhVFxfSgjYSlaDAGav5IbheeghAY5DuN4D-67yrfhb0h5b7djNJvMWSm18s__XteppCARDngFp_-0YKIPFCqB2gWsUivYb6Z9vEGp7qjH69uqDUgTNyhbIljdPXvMR0oLCgz7mqUdpZDPAXmzme-4g8biXYQ_acUyns1T7fzloQScPBpGFM5IXrZvTKQtFeNA7IN0Sf8a3yEgEEUCVSdHFE0KEmys7dTekkWxXf12TTD6xa8ZKaYo6ajk3T31xcOAieH8UfZdTeVBIWs37u4E69kUsnOGq3OdGVOMNH35ZwXPVYus9FGjHb_WmOwVLCqhye_z8gFv7qmLluUZNoCDccIHa_U89A7--giqVPUZ1xoJl80n7mVpVzj7A5SR75ITFyxcsRpLYfM7zSfZVinpRrZap5zC1jEXrobi0Djvv3iRMBVY2PcROqauu80q1YLYJmhyLBlUqGMBf2DsvFc1z9rodg2RLXO71AOL8snQn5-COIGurMAijiT3P7MyqRpSCCUfApKBNMH9E2PSerPwp24YZtcsKWB4hEgTfnoVvjim9PtCwO_c46td8XCJ8om6ZNSE=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/wmix5S6c0qILIDo7lPkGvxP8udMyvckPt0HNbgPonTt45c4ALmnBvnR7qQ98mVBstQ8dzkVQk2CLWfdy8rV697xWwigNxUWsO-T2JSloctAQ4DDBHz7aVxeD70DRTONtNJU8O9-r27NlV2ZEMS7iwW61xGyXbqxiH8YRyDp-04dfwLHITdQa95pyyfcoq1FNshNuPrKhALPI33DvYBbI0SYOx-dTjrBxxIY5U4przZKv3MtHEVsuqAlAlesq9k9peo9vOVxLmiDUGDq7b8y6JOOhc_g-py-GjdXmOQuNHr6yJ43vf30JeKzg3U7o2JIHbqbEQqNcev3Z-9MIlYPQ9MG9TB_VrofycTMSb9_zzIhNfJvx4nsj1ZQiJWsB5YB1GGBEldubKlKTuuHauEBd2rE8yeaptDpfbWpc4qO8ccIq_4VkpBctdlcUYAnJmEJdfyx9hIkSoyFtHLrCQJPAuQ_ZXFYcipOz1yqBuvJaJhOwPAMZ6paZGBot-yyI0JxxnZfJ4S6A0otzjB0VSqS-qS-pNVbA1YbfmhBUMtzL9WZ8KgL5RWgAGNi6woIhRkLuUTKQh8WfyRO5EFkspVrtTuSc1qMFos62uC2nMtRrpCLdXqnPmA5gSpBPDmlY0cmeKF3zZPe29-O5vsmTyK4L_iz5xt1vmWW3Wq8eVIRvQAQIjNiJl0lElsjzUoCE982SmuyGJFkb_ZMJSk0-imupXMwrlHLhqlepjWA0YERmLRz3Zc0Q=w640-h113-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/lGqa7juuExAu-zczNpQOixc2OWDycAi11MebQgzN7Qq8XtxCBWu1bCgb2moox40dQHkaLtyqAxa8NsHSD5It9-3cMrBPSrZzQc6yTMr0HTdLSyieqqo1jTK4nXqkb2cF-2O-Svh_Re-JbLcsA3YeXf7Ys2ZKPdXjin1RUtO-2p3FNd-TkWdp9L3BTgbrZLRb5GI7fI-bceC9kyeeEYb9-93-ssedSp8RdVohUfjgwacVNBXbToqP6dyR9RpYhhO1z6jd8ge_1UmNHcA7lHUhEI8X367FgOEUmYzDMnQFlLCc3VWpSf2unW-_nzVy1JTogRcGtM2Vjt8wHGxBr4NegbF9slVh9I-ExRX8iVoRoNptqg1Q5XYciUDUgXpKgoKZ9T3v-zm2wgtNwxJeXTS4cJscySYjUUB9kLgKmgJy7QDpvwjnXmnf49iXkWHjGZUL1_076IR6x4bosEDcxhEgU9jdkPi619Or3TU0f9U1Sn-ltcGeO-IrMo9dIdyxg2fQdczB8waSyo8ASgbbVemyQ3MFE1hTnz5Y8ML4y3i_OgW7LopldeNqQwlTE7Pd7jSuiO8AINtrN4ZJ4sMtmQxHlpD6GfBSMzfEwW2rAQccbDbPbMB-Z5zRUHfa4t-pJU_kZ7o1AM5pbA8g0QaSeUq3dvMJLquDO7gRqU8qkJ9634dak-ZqbtOdVQDjX-dxIbKNcBNDVxhHaYh6JTZciRC-PcQJDtK2hh0CIPjwZr4C4DAPxQiN=w634-h98-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/PTCBcsWDjYHXw17BxtRCR-43R4FyuaGQmOliFQCI6Ue1471P8H9z4cAMWXD5xxTajpgvaQT6VZntWvvDjeVxbVj4aIIzaxh5tEZXbJmxB0Bqw9Q0WIaRJCxXFVE8jG3SYlvhZzUCWsI17e3Ui6eUB-EJn84b_TSjSpIsVwjAs-QDj0x2_lWDKuyfQW5TD7ce8hdQSzjkqMi_YJGllmmU1aexnWxLdfsYuZ_SefkHKSTCv7sclh7jsXiWWqgFnKzDwFZjNKPESaFL_61EOM_aGaSuP5y-StvPcqCWPkGm7pyYYl0c01ow6PLsJ1mZg81FZWxqt-nB23U2ZDnZQDSP8rWJDQbmhnhCmtylon1mQosMop4oBP_xqr8-OXkh72FbFwZxd8SqYAhcBPn1wHSM4Wqk3y24Wh-AxTCHWtrenfwtCEwDIDF4kZqTauA6UWiEZiDzb3RDk5PA5oM5ChlY4ScI2KJtlY89wp3kjxvxj-TCUMJVM7RHouG0XLUeEFGlPoWV41dPoj_nD34331OFp8TknvPZtUsUO5DjneA7eQPewiVRnUMgKmvogY0VRVxCHykSdlRBrDxwQ4ZYLpbDDiha56hH2mzI8KeDWJHeb-jG8Hz6kGYmyhkgwKZlXxAOOp7lKB2MJIrT_WK9TCPioVKOaWxCLcy_GdHYBNkrecVnwo8ndo1-NH8ohP5I0HLZQUS1zPzclMKp1c4yQ24KRwcF8hVs17CijQm_eyLxBj5Lzg7q=w635-h113-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/HVx5XAN14CaP-RCCB70a3HfuZaeIAAmmZMSlxg1sFkiy_s4bQCUaOp91uXEwyQoEydsJsrLt1mVnFd6ZsKUSL4g4_Ea_hDid0aO4DjENYLFIKzoKMZExeC2jhF9-sA03eqOsrvWcul3UFeOR4Bz0HPr_E6KOxaz-XqGDWfYRHz8NLetovc6SZkVQ8dTLHV-RDrytQnL23bld3mKia8zfWu9r5V4VO39WJMjjMm7DVyA5iUi0GYevwqWcPkmIjbwgwly-z78FUbRhBmkplecveGPw0bj4vYvezanD51wTBw0p3YKJtAGrxmPbk2WhAvdOs5MWTgkx7C9Um1TlOWzaqKhTBm0WXl-UBafy5P0HqSmt__GCzPuzPzRRWunkYt6FPlJb6EBei3DBusMp-dFwbtA9rKykchnDp8uHKI0SJBBTYIBIiBb_JFzCpzutMYQ_Xhsegm0RkAsNPCJ0-CocMPJHv-0V8QK6gRKvFZowkgeCNcEXK0XqNL7chMt_RUoAb6AEu5Z-bRiTWlY0j4KXUXTgPHBvAkJba5ORH-19y-HT1ujjzMIXXyh7_Mek0SeCQQIS2qbBJPAuS8_FeqSrzob6NqzXDMy8QnwIQhkqvJrJV3RDZ7oem3AaAgbtkEiVr3i3h_6PG_CQ7N67UdS2WYkztM36SvIP17IR-E_HVuWEjmyoQdYVV_Qnh9qjG5lBZ1kIlDDZbeIGKSWjPpxXtjldfMhnISWfTrcGsQ6blFGDjm-Y=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/I3itCKzxeObdI0QDb7NrzhXJL57RwNSOirw67GNXySXbS_G_Od-LrlFa_WVN1einlH4ahfPZI1SyTXgRIuvwuquAEiHawuff37W2JBlh4pq21_dUkKgUvas1Qicw95VKkMf29s2URkHOVeMbFR2nhmzxtUjxOfgs4tebb3bnEcPVKUzB-40dp0wEvhUR4uH7-QsYk3k-GrFNqIFzb9cW-sCzvFs-6xxbddXbXX4iwbaHHNcI3TzJ325U_6JrsTQ5pqz_HxXmmm5GZSUzlWkRle_rIxB8bDAeqdoZdfbxFZ9iAtNxCmq96LZAjJxZ92xyS35xsoOh4S6ajLEMmlTadHexyLy3KhTKK7CgmpXtFBeDb2bi6F8ebjxpuhv_Y9caYUbVAcSj48g7OKd64OL98TnsMAJXatTlit3aM45Gr6CePpHQpqHhCZDVGKY2272MOiRG-1kHOfFvfYcCqXwq6ymLIPnBNkln-OH_bHSMLqr1R5zVsXI5d3uA_HXbG4xYSODDvl6W2exaIf0OUFSTYr9r4E1-g0H04Iy2XEJkI4UjgK0jo7hIMsacSqu7VViTwx69kKiJARP_VUB_VhLzoDvV1l1E4AxVR7QPy2hNBQM3LEAIUlzxD3ff11xOhXLO4-cDusi_76uxhJS0awjqAPO1t_edjXUx68yt6KvNb5qUwSh3PrvzgAV69CRfT7ghdbCha7HTMH4iUIlNqwCuOGMXe1FoU_BwQxRGVpqdn_oHh6LQ=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/--iUpKvBcOAvKgNvgK-Rzo7Y-YeJc8MtKyuzgo-DST4J3l8cHre1xXi8ZyJ9UBuOhbRe82Yxfr0hA0cqsxVyiLFSRI4tdHd0h3EyKmzruQ3br_phtvrT6SvdyyG5hscLxuOOJvZDnbr2gn7BZ9CuCJwFOkIA_2ZbJhOZglvVLZ3sv_lSpKPRmijW5-MY-rnAvwiTIHvwWS-fcq0Zzbg1qAGDEY3a1WPoRMk9SzdcDlH7b-FcM6cvW8UEcPERqq6e7Sx8SmL3HsKDD4s35FJhzIA1dtj7El9K6OSUuvSfqAj7Rlqqt-rZRkmPE9f3kzxutbNuKuSXFbC9bBDSXlHa55PvPVHjxy-ycKMJ6LDEH18fg_2NNMNsN21a0AvDJ_0XlEQp2IfUHMOpFieFL9pg36bVpUgeneyMn0O0BtCe53XUrNBEMjoApL47qHeG_L242plojixMWJ0-dFY_q4VEdCvI5eIvD7zGRKzteGy8EV06LBZFyDvvtTUQ7sSkeUm51YmivquysUBfk7ie7NJEVr0za6CpBbccg4UVk1pDbrwtqQLUYMEbK_NvyldcXVHLEjTRsJm-7NpqLAtMg7_i0q2PImrFeRZjR5xo7Gkxw-ji2xJpDq1dnxLK3dbosHU5jaDp2Mjne8hgtwsh3pnvlejeGa2YdCtEdxZUiPTQkSULhKYd1bJ9NKVbg_alagLTL6a4Y6y5BUJH-9vVIMghvRODmhMhq3Cvk8JozGpG8ZpK2YCh=w631-h106-no">
+<meta property="article:published_time" content="2019-10-19T02:46:40.000Z">
+<meta property="article:modified_time" content="2020-02-16T12:43:12.501Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="QWIKLABS">
+<meta property="article:tag" content="GCP Kubernetes Engine">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Cloud Architecture">
+<meta property="article:tag" content="Kubernetes in the Google Cloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/orchestratingTheCloudWithKubernetes/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Kubernetes 來編排你的雲端">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/orchestratingTheCloudWithKubernetes/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="概述在這個教程中, 你將會學習到如何：  使用 Kubernetes Engine 來提供一個完整的 Kubernetes 叢集 使用 kubectl 部署以及管理 Docker 容器 使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/BI2b0U4FJlAbPT0o4-WMXniOEOrPFRIA9kLthfdFv1qJ7UqvY9AnaN1IpGulxYfW3x19-bDQqOrsJmzSiWAvCMqlFxf-KoK6Il1kS7qgauetvUqQU9UIXNLfLUsnyqiefZDg0kagI7lb4wtuY-0w9skENctZ74OiZ0CyALuMH_rMreRgM0VxxLkxsqfzJ6T6w09Bm2XJHBQrFjVCACCQckhBd5kHOP680ZKfgHtL-eN-23n68YKDqH56FtVGQ5K0ArL7KOWQsODnNCZd3t04-7_fYsIzrGBtSEw5uAd8Q5Xfz3SOggm-CpXLxhLJ7EBGhJcW4tTAG3MXfo0p2uYJSucMWt_wZOR08t5pegowMoQ-V7paP17Dq-W0gO0G1D4xL6aplvy_22Yw26ebIVF1sHb6qwSM0fUh44KTXT6qOEMMIEPR7D6WVItfnB1eHsu2rz9imJ3_kfPxotscbvDUoOxBQmpzZe9_1GmhN2Zg7cWCWBp6ecZUTyohrKe_4wvRLgfREIbiocBA1MkSWGBM84DVPzcXEOLjmXIaiVlvYColPEiZM2xUdfSfZXRdEsZQAtLlzabXWlXDVGU-_U0SOoNs3_V7oz-BTkZnv9-qnk33JqkckROq2Vh1nqDc_3bJRMaxwYuA5rOCqQchJbQt2TOJxAS2UwR6d9mak0FuLhFSU63VHSAeKhyZVgA_bcDFDPc2vVjyC7UVT4gflh_szXKyo1rSZVrYkdeMQMsDUHQvOCDc=w640-h113-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/9pGx0gXlBWEONWGwoTzFGW9XdWJWmjRbFFwDrzWU5qVE8wAbuIiOU1xHvvsd4ar55vJZo2aXiRcmRBQaieQyW9nvvME6LcMrOSM3-JAjaLY6XH8pEHH2uuEOR9eQ9p7-T12Xu-PDrJti7p-xuM8BU7znxMQ6zzUSKZKsV2iBhehvhVFxfSgjYSlaDAGav5IbheeghAY5DuN4D-67yrfhb0h5b7djNJvMWSm18s__XteppCARDngFp_-0YKIPFCqB2gWsUivYb6Z9vEGp7qjH69uqDUgTNyhbIljdPXvMR0oLCgz7mqUdpZDPAXmzme-4g8biXYQ_acUyns1T7fzloQScPBpGFM5IXrZvTKQtFeNA7IN0Sf8a3yEgEEUCVSdHFE0KEmys7dTekkWxXf12TTD6xa8ZKaYo6ajk3T31xcOAieH8UfZdTeVBIWs37u4E69kUsnOGq3OdGVOMNH35ZwXPVYus9FGjHb_WmOwVLCqhye_z8gFv7qmLluUZNoCDccIHa_U89A7--giqVPUZ1xoJl80n7mVpVzj7A5SR75ITFyxcsRpLYfM7zSfZVinpRrZap5zC1jEXrobi0Djvv3iRMBVY2PcROqauu80q1YLYJmhyLBlUqGMBf2DsvFc1z9rodg2RLXO71AOL8snQn5-COIGurMAijiT3P7MyqRpSCCUfApKBNMH9E2PSerPwp24YZtcsKWB4hEgTfnoVvjim9PtCwO_c46td8XCJ8om6ZNSE=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/wmix5S6c0qILIDo7lPkGvxP8udMyvckPt0HNbgPonTt45c4ALmnBvnR7qQ98mVBstQ8dzkVQk2CLWfdy8rV697xWwigNxUWsO-T2JSloctAQ4DDBHz7aVxeD70DRTONtNJU8O9-r27NlV2ZEMS7iwW61xGyXbqxiH8YRyDp-04dfwLHITdQa95pyyfcoq1FNshNuPrKhALPI33DvYBbI0SYOx-dTjrBxxIY5U4przZKv3MtHEVsuqAlAlesq9k9peo9vOVxLmiDUGDq7b8y6JOOhc_g-py-GjdXmOQuNHr6yJ43vf30JeKzg3U7o2JIHbqbEQqNcev3Z-9MIlYPQ9MG9TB_VrofycTMSb9_zzIhNfJvx4nsj1ZQiJWsB5YB1GGBEldubKlKTuuHauEBd2rE8yeaptDpfbWpc4qO8ccIq_4VkpBctdlcUYAnJmEJdfyx9hIkSoyFtHLrCQJPAuQ_ZXFYcipOz1yqBuvJaJhOwPAMZ6paZGBot-yyI0JxxnZfJ4S6A0otzjB0VSqS-qS-pNVbA1YbfmhBUMtzL9WZ8KgL5RWgAGNi6woIhRkLuUTKQh8WfyRO5EFkspVrtTuSc1qMFos62uC2nMtRrpCLdXqnPmA5gSpBPDmlY0cmeKF3zZPe29-O5vsmTyK4L_iz5xt1vmWW3Wq8eVIRvQAQIjNiJl0lElsjzUoCE982SmuyGJFkb_ZMJSk0-imupXMwrlHLhqlepjWA0YERmLRz3Zc0Q=w640-h113-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/lGqa7juuExAu-zczNpQOixc2OWDycAi11MebQgzN7Qq8XtxCBWu1bCgb2moox40dQHkaLtyqAxa8NsHSD5It9-3cMrBPSrZzQc6yTMr0HTdLSyieqqo1jTK4nXqkb2cF-2O-Svh_Re-JbLcsA3YeXf7Ys2ZKPdXjin1RUtO-2p3FNd-TkWdp9L3BTgbrZLRb5GI7fI-bceC9kyeeEYb9-93-ssedSp8RdVohUfjgwacVNBXbToqP6dyR9RpYhhO1z6jd8ge_1UmNHcA7lHUhEI8X367FgOEUmYzDMnQFlLCc3VWpSf2unW-_nzVy1JTogRcGtM2Vjt8wHGxBr4NegbF9slVh9I-ExRX8iVoRoNptqg1Q5XYciUDUgXpKgoKZ9T3v-zm2wgtNwxJeXTS4cJscySYjUUB9kLgKmgJy7QDpvwjnXmnf49iXkWHjGZUL1_076IR6x4bosEDcxhEgU9jdkPi619Or3TU0f9U1Sn-ltcGeO-IrMo9dIdyxg2fQdczB8waSyo8ASgbbVemyQ3MFE1hTnz5Y8ML4y3i_OgW7LopldeNqQwlTE7Pd7jSuiO8AINtrN4ZJ4sMtmQxHlpD6GfBSMzfEwW2rAQccbDbPbMB-Z5zRUHfa4t-pJU_kZ7o1AM5pbA8g0QaSeUq3dvMJLquDO7gRqU8qkJ9634dak-ZqbtOdVQDjX-dxIbKNcBNDVxhHaYh6JTZciRC-PcQJDtK2hh0CIPjwZr4C4DAPxQiN=w634-h98-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/PTCBcsWDjYHXw17BxtRCR-43R4FyuaGQmOliFQCI6Ue1471P8H9z4cAMWXD5xxTajpgvaQT6VZntWvvDjeVxbVj4aIIzaxh5tEZXbJmxB0Bqw9Q0WIaRJCxXFVE8jG3SYlvhZzUCWsI17e3Ui6eUB-EJn84b_TSjSpIsVwjAs-QDj0x2_lWDKuyfQW5TD7ce8hdQSzjkqMi_YJGllmmU1aexnWxLdfsYuZ_SefkHKSTCv7sclh7jsXiWWqgFnKzDwFZjNKPESaFL_61EOM_aGaSuP5y-StvPcqCWPkGm7pyYYl0c01ow6PLsJ1mZg81FZWxqt-nB23U2ZDnZQDSP8rWJDQbmhnhCmtylon1mQosMop4oBP_xqr8-OXkh72FbFwZxd8SqYAhcBPn1wHSM4Wqk3y24Wh-AxTCHWtrenfwtCEwDIDF4kZqTauA6UWiEZiDzb3RDk5PA5oM5ChlY4ScI2KJtlY89wp3kjxvxj-TCUMJVM7RHouG0XLUeEFGlPoWV41dPoj_nD34331OFp8TknvPZtUsUO5DjneA7eQPewiVRnUMgKmvogY0VRVxCHykSdlRBrDxwQ4ZYLpbDDiha56hH2mzI8KeDWJHeb-jG8Hz6kGYmyhkgwKZlXxAOOp7lKB2MJIrT_WK9TCPioVKOaWxCLcy_GdHYBNkrecVnwo8ndo1-NH8ohP5I0HLZQUS1zPzclMKp1c4yQ24KRwcF8hVs17CijQm_eyLxBj5Lzg7q=w635-h113-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/HVx5XAN14CaP-RCCB70a3HfuZaeIAAmmZMSlxg1sFkiy_s4bQCUaOp91uXEwyQoEydsJsrLt1mVnFd6ZsKUSL4g4_Ea_hDid0aO4DjENYLFIKzoKMZExeC2jhF9-sA03eqOsrvWcul3UFeOR4Bz0HPr_E6KOxaz-XqGDWfYRHz8NLetovc6SZkVQ8dTLHV-RDrytQnL23bld3mKia8zfWu9r5V4VO39WJMjjMm7DVyA5iUi0GYevwqWcPkmIjbwgwly-z78FUbRhBmkplecveGPw0bj4vYvezanD51wTBw0p3YKJtAGrxmPbk2WhAvdOs5MWTgkx7C9Um1TlOWzaqKhTBm0WXl-UBafy5P0HqSmt__GCzPuzPzRRWunkYt6FPlJb6EBei3DBusMp-dFwbtA9rKykchnDp8uHKI0SJBBTYIBIiBb_JFzCpzutMYQ_Xhsegm0RkAsNPCJ0-CocMPJHv-0V8QK6gRKvFZowkgeCNcEXK0XqNL7chMt_RUoAb6AEu5Z-bRiTWlY0j4KXUXTgPHBvAkJba5ORH-19y-HT1ujjzMIXXyh7_Mek0SeCQQIS2qbBJPAuS8_FeqSrzob6NqzXDMy8QnwIQhkqvJrJV3RDZ7oem3AaAgbtkEiVr3i3h_6PG_CQ7N67UdS2WYkztM36SvIP17IR-E_HVuWEjmyoQdYVV_Qnh9qjG5lBZ1kIlDDZbeIGKSWjPpxXtjldfMhnISWfTrcGsQ6blFGDjm-Y=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/I3itCKzxeObdI0QDb7NrzhXJL57RwNSOirw67GNXySXbS_G_Od-LrlFa_WVN1einlH4ahfPZI1SyTXgRIuvwuquAEiHawuff37W2JBlh4pq21_dUkKgUvas1Qicw95VKkMf29s2URkHOVeMbFR2nhmzxtUjxOfgs4tebb3bnEcPVKUzB-40dp0wEvhUR4uH7-QsYk3k-GrFNqIFzb9cW-sCzvFs-6xxbddXbXX4iwbaHHNcI3TzJ325U_6JrsTQ5pqz_HxXmmm5GZSUzlWkRle_rIxB8bDAeqdoZdfbxFZ9iAtNxCmq96LZAjJxZ92xyS35xsoOh4S6ajLEMmlTadHexyLy3KhTKK7CgmpXtFBeDb2bi6F8ebjxpuhv_Y9caYUbVAcSj48g7OKd64OL98TnsMAJXatTlit3aM45Gr6CePpHQpqHhCZDVGKY2272MOiRG-1kHOfFvfYcCqXwq6ymLIPnBNkln-OH_bHSMLqr1R5zVsXI5d3uA_HXbG4xYSODDvl6W2exaIf0OUFSTYr9r4E1-g0H04Iy2XEJkI4UjgK0jo7hIMsacSqu7VViTwx69kKiJARP_VUB_VhLzoDvV1l1E4AxVR7QPy2hNBQM3LEAIUlzxD3ff11xOhXLO4-cDusi_76uxhJS0awjqAPO1t_edjXUx68yt6KvNb5qUwSh3PrvzgAV69CRfT7ghdbCha7HTMH4iUIlNqwCuOGMXe1FoU_BwQxRGVpqdn_oHh6LQ=w960-h540-no">
+<meta property="og:image" content="https://lh3.googleusercontent.com/--iUpKvBcOAvKgNvgK-Rzo7Y-YeJc8MtKyuzgo-DST4J3l8cHre1xXi8ZyJ9UBuOhbRe82Yxfr0hA0cqsxVyiLFSRI4tdHd0h3EyKmzruQ3br_phtvrT6SvdyyG5hscLxuOOJvZDnbr2gn7BZ9CuCJwFOkIA_2ZbJhOZglvVLZ3sv_lSpKPRmijW5-MY-rnAvwiTIHvwWS-fcq0Zzbg1qAGDEY3a1WPoRMk9SzdcDlH7b-FcM6cvW8UEcPERqq6e7Sx8SmL3HsKDD4s35FJhzIA1dtj7El9K6OSUuvSfqAj7Rlqqt-rZRkmPE9f3kzxutbNuKuSXFbC9bBDSXlHa55PvPVHjxy-ycKMJ6LDEH18fg_2NNMNsN21a0AvDJ_0XlEQp2IfUHMOpFieFL9pg36bVpUgeneyMn0O0BtCe53XUrNBEMjoApL47qHeG_L242plojixMWJ0-dFY_q4VEdCvI5eIvD7zGRKzteGy8EV06LBZFyDvvtTUQ7sSkeUm51YmivquysUBfk7ie7NJEVr0za6CpBbccg4UVk1pDbrwtqQLUYMEbK_NvyldcXVHLEjTRsJm-7NpqLAtMg7_i0q2PImrFeRZjR5xo7Gkxw-ji2xJpDq1dnxLK3dbosHU5jaDp2Mjne8hgtwsh3pnvlejeGa2YdCtEdxZUiPTQkSULhKYd1bJ9NKVbg_alagLTL6a4Y6y5BUJH-9vVIMghvRODmhMhq3Cvk8JozGpG8ZpK2YCh=w631-h106-no">
+<meta property="article:published_time" content="2019-10-19T02:46:40.000Z">
+<meta property="article:modified_time" content="2020-02-16T12:43:12.501Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="QWIKLABS">
+<meta property="article:tag" content="GCP Kubernetes Engine">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Cloud Architecture">
+<meta property="article:tag" content="Kubernetes in the Google Cloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概述">1&nbsp;&nbsp;<b>概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#前言">2&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#設定及要求">3&nbsp;&nbsp;<b>設定及要求</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#啟動-Google-Cloud-Shell">3.1&nbsp;&nbsp;啟動 Google Cloud Shell</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Google-Kubernetes-Engine">3.2&nbsp;&nbsp;Google Kubernetes Engine</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#取得範例代碼">4&nbsp;&nbsp;<b>取得範例代碼</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Kubernetes-快速示範">5&nbsp;&nbsp;<b>Kubernetes 快速示範</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度">5.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Pods">6&nbsp;&nbsp;<b>Pods</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立-pods">7&nbsp;&nbsp;<b>建立 pods</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#與-pods-的互動">8&nbsp;&nbsp;<b>與 pods 的互動</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#服務">9&nbsp;&nbsp;<b>服務</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立一個-Service">10&nbsp;&nbsp;<b>建立一個 Service</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度-1">10.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度-2">10.2&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#增加標籤到-Pods">11&nbsp;&nbsp;<b>增加標籤到 Pods</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度-3">11.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#部署應用到-Kubernetes">12&nbsp;&nbsp;<b>部署應用到 Kubernetes</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立-Deployments">13&nbsp;&nbsp;<b>建立 Deployments</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#測試進度-4">13.1&nbsp;&nbsp;測試進度</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#總結">14&nbsp;&nbsp;<b>總結</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/orchestratingTheCloudWithKubernetes/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/orchestratingTheCloudWithKubernetes/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            使用 Kubernetes 來編排你的雲端
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-10-19T02:46:40.000Z" itemprop="datePublished">10月 19 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/GCP/">GCP</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            1 小时 讀完 (大概 6934 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在這個教程中, 你將會學習到如何：</p>
+<ul>
+<li>使用 <a target="_blank" rel="noopener" href="http://kubernetes.io/">Kubernetes Engine</a> 來提供一個完整的 <a target="_blank" rel="noopener" href="https://cloud.google.com/container-engine">Kubernetes</a> 叢集</li>
+<li>使用 kubectl 部署以及管理 Docker 容器</li>
+<li>使用 Kubernetes 的 Deployments 以及 Services 將應用拆分為微服務</li>
+</ul>
+<span id="more"></span>
+
+<p>Kubernetes 重點就是應用。 在本教程中的這個部分, 你將使用範例應用名為 “app” 來完成這個教程</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kelseyhightower/app">App</a> 由 GitHub 管理, 且提供一個 12-Factor 範例應用。 在本教程中你將會使用以下的 Docker images</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://hub.docker.com/r/kelseyhightower/monolith">kelseyhightower/monolith</a> - Monolith 包含 auth 以及 hello 服務</li>
+<li><a target="_blank" rel="noopener" href="https://hub.docker.com/r/kelseyhightower/auth">kelseyhightower/auth</a> - Auth 微服務。 為通過驗證的使用者產生 JWT tokens</li>
+<li><a target="_blank" rel="noopener" href="https://hub.docker.com/r/kelseyhightower/hello">kelseyhightower/hello</a> - Hello 微服務。 向通過驗證的使用者打招呼</li>
+<li><a target="_blank" rel="noopener" href="https://hub.docker.com/_/nginx">ngnix</a> - 將流量導向 auth 以及 hello 服務</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/dbwzyO2lX9E4BYZ4-_EfgZTIc-d9qIbpo72MtwUmz0L_WxJTWQcFvFYpJKP78Y0Aov6WqKlizLMrH87bb6SsorPNQdhHpf700uviLRM8gqHJ--gq__9GoXl_yNGa_1RfHANoXnzU0BJHyqJRaTNBxh1QvjgmNVIeauYAg2kpzM5AcMls2XWujqlaPT2vgBbW2QBis80VE3g-jXZENMh_1FHzz3BH0SUDc1r397BEFw0lki1Aht9Nbj4390UlHE7Kcat9MFBX3aFnz0AhTJqZwDZu8a1NKyIe0wJUzfMntgzGsWMOu36w9APbY0rspr_Doaxz-2IVkmOtQm5AqCQyCBq3QVKenJQzyGnu-a4InqhozlE6OxYbZ8EVpduQtcnHfjDG74aQxbCC42cY7qoE_FbPa2lD14jYeJUQLP86Ms-BBON87T1yLsPY86xBGVbyfjq1A1Xp7o0ssrNASKKKOqMi8esBuYNVqiTaYL2iiJ-q1Z939IBOuh2xQrBCn9J1_Z5qMRBsBT8xxlAFwESCxclkHWugBQU55OtI4OC3byiWr0EqscDcF5q4fR8f5tyX9zIgPs_OOF0XlddkzujJr7Jun6twjDXwniJMlK-BiP0JAfF6nrV75K737Of8ps9gKL4daSfUKX0M0gPcWJ40PKwNzXG4KCPloBnkJtkNXRHNeI_QcznzTGOkXhpHUBahwSmczuJEFpXrnxq7oFsKfeBzauFflgeiZ3adeKcS__pwf2TF=w600-h582-no"></p>
+<p>Kubernetes 是一個開源的專案 (可從 <a target="_blank" rel="noopener" href="http://kubernetes.io/">kubernetes.io</a> 獲得), 可以運行在很多不同的環境上, 從筆電到高可用的多主機叢集; 從公開的雲端到人為部署; 從虛擬機到裸機</p>
+<p>在本教程中, 使用一個受管理的環境, 像是 Kubernetes Engine (一個由 Google 維護的 Kubernetes 版本, 運行在 Compute Engine 上), 將會讓你可以更專注在體驗 Kubernetes, 而不是設定底層的環境。</p>
+<br>
+<br>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇主要是利用 Google 的 Qwiklab 平台學習的同時，做的一份學習筆記<br>為避免翻譯誤解，專業術語在本篇將不會被翻譯，保留原文</p>
+<br>
+<br>
+
+<h2 id="設定及要求"><a href="#設定及要求" class="headerlink" title="設定及要求"></a>設定及要求</h2><p><strong>在你按下 Start Lab 按鈕之前</strong></p>
+<p>詳讀所有的教學。 Labs 是有時間限制的, 而且你不可以停止時間倒數。 倒數計時器在你按下 Start Lab 按鈕後開始倒數, 上面顯示的時間為你還能使用 Cloud 資源的時間。</p>
+<p>Qwiklabs 的手把手環境, 讓你可以在真實環境中來操作進行 Qwiklabs 上提供的課程, 而不是在一個模擬或是展示的環境。 我們透過提供你一個全新的、暫時的帳號密碼, 在計時器歸零之前, 你可以用來登入並存取 Google Cloud Platform。</p>
+<p><strong>你需要什麼？</strong></p>
+<p>要完成這個 lab, 你需要:</p>
+<ul>
+<li>一個一般的網路瀏覽器（推薦 Chrome）</li>
+<li>完成這個 lab 的時間</li>
+</ul>
+<p><strong>備註：</strong> 如果你已經有你自己的個人 GCP 帳號或專案,請不要使用在這一個 lab</p>
+<p>現在你已經開始你的 <code>lab</code>, 你將會登入 <code>Google Cloud Shell</code> 主控台, 然後開啟命令列工具</p>
+<p><strong>如何開始你的 lab, 然後登入 Console?</strong></p>
+<ol>
+<li>按下 <b>Start Lab</b> 按鈕。 如果你需要付費, 會有一個彈出視窗來讓你選擇付費的方式。 在左方你會看到一個面板, 上面有暫時的帳號密碼, 你必須使用這些帳號密碼在此次 lab</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/JoxRKMMSKbzKyCJ83rgcHWsp0GqmDd4VJyA2JHttJIWtbeuSIiuLjuSSxc4iqePChDXbxGcLwlK2Ak3L_XKUbYDDc02KsoQczJQUjhf54Va0RDUXYR3Rs41gZ6chzqI4yNHMtFh8n21uoOrorZxFgQW_zUF7DxoFbP2cud5EQHISGuRo46oC3y4twF9RdpS0TSSA4olJ7qOJOWkyI6BVt4W3xNBLoNQe1KpHMsh4yZmNy62qzpIPZzG6mOyWJhxoeQgDv_AJMUZeePJb07cQRL0A1Z2o4BOmY2yDMeQxeo6zLOUa2YQn03IyyXmRkOHITivPHxEUNTRwRpx692JGJ0xLiRXaTrR3zUHIshdqfeUgqqpu3IzBEyFeQf_uuq3SBcVam2n-82KYWus0e9V9JyPdc57OK88fPGEv2FQ8gL3BphZ2cGk4m8-r2aZlcUu8eyAc3xf0ggMczseovjEtSj-Yd3hf7qMhQj6kczUUNLQ3bzF5Xj3X_w4frm5zaeGneTpLzM3R0rCa1OG-97DkR22YNXTSZoAHeEyH6i5TIWUjLQZfUFgAaDe7yHFFFv6ykMXIosO0hR93UeNtSxfkwBmZ1YSvIM_GBF4u5kSqRJkiPkIv0wso8tkk6Lu0lrvEPMUDeLwu_c_7AM-gq0GPkFdXF4Q4ED4=w297-h293-no"></p>
+<ol start="2">
+<li>複製 <code>username</code>, 然後點擊 <code>Open Google Console</code>。 Lab 會開啟另外一個視窗, 顯示<code>選擇帳號</code>的頁面</li>
+</ol>
+<p><strong>tip:</strong> 開啟一個全新的視窗,然後跟原本的頁面並排</p>
+<ol start="3">
+<li>在<code>選擇帳號</code>頁面, 點擊 <code>Use Another Account</code></li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/7d6Sw0e-DdZsWhuQG4LieT4RhHJlEIYZ3PbCTTS9B1rLivIvMY7G-VFuy-sQl3bbaNBlVoWipPwQyAWu-oPHUEQYIU5WOnfxflf5JtqsPiaRjQZ32Euuzo5_GqdSZ_hTaGyOBdVq8PzLfoT0RXQGIIEX5GJpnQvm1H8V9VD54X7RACmwemGHdHnOIN3OEYaYDTu3tfMD7NMlmlxvfs4aw1ZuKKGg52cuhwFZQB8e-uOFILtjRwvlJLVEO_iwmv8DDefMd6bIJDh6UdkunTMPcozfKT1muTgaqD1ie8LlaXUgHg5Uqnk9peB7yFejJfL-AwG44agBDOehNad2fJZAIb10HF8ZsAv0_JM-MJzSGbNQ3GK8J0ghFWu1qCNA5udefx6IXzX3vcDz92ArWjSz1QyNBErc2Zkj8YAA5Mfa0CRdFqTmOfXdxt73q7dpQup3zu5aASM4lh37l6SMCQ1ZVy07vcYvCL1mFnQ_hjc4Dg0SqdI7SvravdzmNO3ZEsumpEYgaIIJsnkRU7tzOrmZbV8hH__b90cAkfAamsPmVlgp9sZIwqUzptuDvuPEDyBPBYZC4o9eo5KyQahlTN1grAvzKkPMKYNQfiuKZKch1vpV24M0zuvjgRZFUQnz3V2ERzreJVNRaT_REMv6ifmf1RetnnHYIHg=w356-h248-no"></p>
+<ol start="4">
+<li>登入頁面開啟, 貼上之前複製的 <code>username</code> 以及 <code>password</code>, 然後貼上</li>
+</ol>
+<p><b>重要：</b>必須使用之前於 <code>Connection Details 面板</code> 取得的帳號密碼,不要使用你自己的 Qwiklabs 帳號密碼。 如果你有自己的 GCP 帳號, 請不要用在這裡（避免產生費用）</p>
+<ol start="5">
+<li>點擊並通過接下來的頁面:<ul>
+<li>接受 <code>terms</code> 以及 <code>conditions</code></li>
+<li>不要增加 <code>recovery optoins</code> 或 <code>two factor authentication</code> (因為這只是一個臨時帳號)</li>
+<li>不要註冊免費體驗</li>
+</ul>
+</li>
+</ol>
+<p>稍待一些時候, GCP 控制台將會在這個視窗開啟。</p>
+<div style="padding:0px 14px 0px 14px; margin:0px 0px; background-color:rgba(26,115,232,0.08)">
+<font size="2px">
+**注意：** 按下左上方位於 `Google Cloud Platform` 隔壁的 `Navigation menu`, 你可以瀏覽選單, 裡面有一系列的 GCP 產品以及服務
+
+<p><img src="https://lh3.googleusercontent.com/LTqcvw12A83DFUA6wBwrvyfkCfqOXSzirXjbsH-F2lXQSFeA-RLHZ7-OwmSo2KRMIyh4aeOIM3sH7OEcgtvyRBhBZ3XUT0KeCA6JCziJfbwWoHeo_yQJEM6L0yNrsOxxvYsTfi7vc0JcG2PCq16I_-VapQeMzCUG4YHfQ05FMXM_Qbk3Q5AS_Gz37Qnnb2LBnS_FEq6xB1P5JZQPg0ewtkXL_w4uzxXBuiTF20FD5Wmvozjka_hHRPg7sNNv_s7Gl5QozEPvCLluVaulnZRr_EgqkMDsFhAYQo6f40EJ3d2G7h-teXuZxzGUNNauapux1XG54aCL-dbHexnOLC-_zPGhCJcU8s51SPLH_-mscGdvTbSmM1bfacQb4jqn28Ce0YTeFk_GdKE_Yc1uBhzv7AX3hPI47EtVMoDTN1S_4VRalxoaCGMW1W8weYxiVOKvqvts_vKrXPNcQhID-XGtTLRbMxHVVJQM_CZVLMdbIS04olUmWMompFUREpOdVvogPOxCeMNiOZOrjY8I53D6SdKdDjepyNBVHpD1U9clBS88hczGUhhZbEMDqM5V91GG0OmpcFu0vgc0vnAhmpBvcUrA4xf0_16Nxq3fxYky9x7xLLUXS12pIfLwShDt9RWhU8hiDDTzGkugZB294m_e1d4rjHxTiOw=w1172-h266-no"></p>
+</font>
+</div>
+
+<br>
+
+<h3 id="啟動-Google-Cloud-Shell"><a href="#啟動-Google-Cloud-Shell" class="headerlink" title="啟動 Google Cloud Shell"></a>啟動 Google Cloud Shell</h3><p><code>Google Cloud Shell</code> 是載有開發工具的虛擬機器。 它提供了5GB的 home 資料夾, 並且運行在 <code>Google Cloud</code> 上。 <code>Google Cloud Shell</code> 讓你可以利用 command-line 存取 <code>GCP</code> 資源</p>
+<ol>
+<li>在 <code>GCP 控制台</code>, 右上的工具列,點擊 <code>Open Cloud Shell</code> 按鈕</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NQiAOvTG-8VLhp5DpNDvWH8j61jQ_9siMi_WMu8ZkujJnJ1nDCddW6e25xxpJykZi9CppWFX3PUbQ-1DOGAVO68NF_qXSOB0ne3apVKL3-x-CFbxxOjDc6FMZ6QK6Xq9cOX1WRgLxk76IhOWGZq4KQ2JOpE6XcH8CMWaowuunUPBLURUdnYWsEh_uanRFPwvabcbMGDgaU8Y-rXOTlMaiC8rBanZtz94OziyEuW8quqpTUb0t9zsLb9WwbZn3dQzC7nK7IBwZ4Hn_F9oeTtGk4RWpd-C0GdqHeDvobjExPIKjkIaO1n56PZHPbkBIZi8ltEAEaR8IRp31u2ryYpKSDFtobrWVA4Px9zI1FyWed-MhwoCJVX2KE-8LJEahoYgO-d43oi_bolFsiCmjEkJj5q9UWeIF3SapHHZj3rHUtV3WRnlpP32UWXnltfOpaDvFfSgDC_IukM_uwrn64VHRo0mwyCPM8jZM280GWdg2CGJOLBf8T4tq-5Tj71vBj3toOtfcHYSa0_fTBfCwfQUeuzR3qncAHKYk0N7TVIxtcTQdmQX9fVTI3lB0ngg_suUB5NWIErLkfGhHpxNO5m6Iji5h1tBl4Cx3UqTBpqbQD4qqmuDpfYqjjxfyymoTGDGuFvYlyheBnx6LYz4R-5WTcgwpL06OCs=w1172-h266-no"></p>
+<ol start="2">
+<li>在打開的對話框裡, 按下 <code>START CLOUD SHELL</code>:</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/NsZ_a6EE077gPoIPQHGUyv3oi-CS0ZXvCCqcqQRSHXNB5NJP_532CiuaTBPpV3bC6WZK9mP5xuRCsIQCHERH-qJc5Ez1ISujFlCPJXBgAPZSTi_vg7pQKIQwEDei7UrjelpPIFpu8nj5c48WcLyn7iy8ZB5rW1jMCCnaICN9ckEPST_Bq4mum0WyDA0vbxZ6s_prBqRwHP7BYqK-yv5LY5WU2Cp_u58T2EVXS-TJ3b460s-PNEaKgPC6SoCpdamnW9VY2YzsvCycviBIODgAH-pvIZf7AppQsTWF7fe9d6JLq0yvBT3fnO4isK-Tu_i3ZlzIHyb5Ccmb4oYBzt42FIm9NmgUF0sDhiVEi3y2qgts7aU-5S3Sd85uv1N9qVuHZqTcuZk0uNgAfjfKfZN6clp4JFcf-CsZWPxZOJ5QdxSFG8wKAxz02vgiQdopj-R9SEEBR--TikL2KiSl2zHFqmegWol-8TYaLQSI4ZKKRqgzrsLuDvf_nw3Z9RqvX-4_P7HY9cqmaRDIkwK5pP-KF0gOjurvuRRmbGpdSpNCbM7cVZbyCpQgV28UdUdLdd0N-7xHa2QT1hVJnVGwmn3e7dMdc5PuTnJ6TMm6h0mcLKVdvqF7cInxrhsqBrvGj1VAZwY5ej4O4VPF1r0XAEH7bnD4HqSXMWg=w993-h696-no"></p>
+<p>你可以立即按下 <code>START CLOUD SHELL</code> 當對話視窗打開。</p>
+<p>連結並提供環境會需要一點時間。 當你連結成功, 這代表你已成功獲得授權, 且此專案已被設為你的專案ID, 例如：</p>
+<p><img src="https://lh3.googleusercontent.com/67XYRFIt0PZG-lcSS21Eum9KeVPQBBSZ6WedKsA578qdHbCrs43df3Url887daqVpEm5xJTYmhlu3g1IVQFf8QOwIU01QWXSqybAnT9oRhjnx31l9ykNLa_hJCc9Szr1ODStfEd7hEXnlknqkrawQx9KWHIVAfYQsv36VXHzNh8CFRRYC96L8G8TnWUh-3GDiijvkBIg30jPWDCXrcre6bKvQmiOS8RIdhYsmh8KaYXYsMJQ83pWyQeKaTkY8fAcwnuFHTLt1Fx6lVolrSIUFqTH7N_snLcLxqVVnBcr9jBWN_cz-hGEyNzYPCq-GR1XjY8REeisXM9wskHXtYKBIwzyIpSkrZqSF-yJ5Y83UL55nQQ3aqK1gPOMizYbApEBfVEEOai-o9bO9hiSgAzg2oNckT3e7zRNeak5WUe41e1RPK8qvZIRPgUDfTWAUhBJgYPFfzQtI-HC4M_6G8Cj9y_W1DWtc9h8MnEbdBU2ARIWEsOBPhGEIrVCfWjIFk_wg13j3SidpqUXvjy8oqoDhwzJ_dnrntwL_o22ZBn0wxzdhjltdIjAB079f19G6PqRcxtNHVfwn9J4BTliJ4JYDx_13LkVArVmi1o8ZmnBuBb-99qBscIcj1qPrGSVbE-f2AQ7to7pSZHuFpn0BuHrQNDYcfnqePs=w1267-h196-no"></p>
+<p><b>gcloud</b> 是 <code>Google Cloud Platform</code> 的 command-line 工具, 他已事先被安裝在 <code>Cloud Shell</code> 並且支援自動補齊</p>
+<p>使用這個 command, 你可以列出有效帳戶名稱:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud auth list</span><br></pre></td></tr></table></figure>
+
+<p>輸出:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">Credentialed accounts:</span><br><span class="line"> - google1623327_student@qwiklabs.net</span><br></pre></td></tr></table></figure>
+
+<p>你可以使用以下 command 來列出專案 ID</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config list project</span><br></pre></td></tr></table></figure>
+
+<p>輸出：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = &lt;project_ID&gt;</span><br></pre></td></tr></table></figure>
+
+<p>範例輸出：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">project = qwiklabs-gcp-44776a13dea667a6</span><br></pre></td></tr></table></figure>
+
+<p><code>gcloud</code> 的完整文件可以參閱 <a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/gcloud">Google Cloud gcloud Overview</a></p>
+<br>
+
+<h3 id="Google-Kubernetes-Engine"><a href="#Google-Kubernetes-Engine" class="headerlink" title="Google Kubernetes Engine"></a>Google Kubernetes Engine</h3><p>在 cloud shell 環境, 輸入以下指令來設定 zone</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud config <span class="hljs-built_in">set</span> compute/zone us-central1-b</span><br></pre></td></tr></table></figure>
+
+<p>設定完 zone 之後, 開始一個本教程需要用到的叢集</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud container clusters create io</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> 創建叢集會耗費幾分鐘 - Kubernetes Engine 會提供數個虛擬機讓我們使用</p>
+<br>
+<br>
+
+<h2 id="取得範例代碼"><a href="#取得範例代碼" class="headerlink" title="取得範例代碼"></a>取得範例代碼</h2><p>在 Cloud Shell 執行以下代碼來複製 GitHub 倉庫</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">git <span class="hljs-built_in">clone</span> https://github.com/googlecodelabs/orchestrate-with-kubernetes.git</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> orchestrate-with-kubernetes/kubernetes</span><br></pre></td></tr></table></figure>
+
+<p>列出我們會使用的檔案</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">ls</span></span><br></pre></td></tr></table></figure>
+
+<p>範例結構如下：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">deployments/  /* Deployment manifests */</span><br><span class="line">  ...</span><br><span class="line">nginx/        /* nginx config files */</span><br><span class="line">  ...</span><br><span class="line">pods/         /* Pod manifests */</span><br><span class="line">  ...</span><br><span class="line">services/     /* Services manifests */</span><br><span class="line">  ...</span><br><span class="line">tls/          /* TLS certificates */</span><br><span class="line">  ...</span><br><span class="line">cleanup.sh    /* Cleanup script */</span><br></pre></td></tr></table></figure>
+
+<p>該有的都有了, 讓我們來試試看 Kubernetes 吧！</p>
+<br>
+<br>
+
+<h2 id="Kubernetes-快速示範"><a href="#Kubernetes-快速示範" class="headerlink" title="Kubernetes 快速示範"></a>Kubernetes 快速示範</h2><p>開始 Kubernetes 最簡單的方法, 就是使用 <code>kubectl create</code> 指令。 使用它來啟動一個 nignx 容器的單一虛擬機</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create deployment nginx --image=nginx:1.10.0</span><br></pre></td></tr></table></figure>
+
+<p>Kubernetes 已經建立了一個 deployment – 關於 deployment 等等會再多加解釋, 但現在你唯一需要知道的是, deployments 維持 pods 啟動以及運行, 就算當他們運行的 nodes 有錯誤</p>
+<p>在 Kubernetes 中, 所有的容器都運行在 pod 當中。 使用 <code>kubectl get pods</code> 指令來檢視運行中的 nginx 容器:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+
+<p>一旦 nginx 容器已經在運行中, 你可以使用 <code>kubectl expose</code> 指令來暴露它</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl expose deployment nginx --port 80 --<span class="hljs-built_in">type</span> LoadBalancer</span><br></pre></td></tr></table></figure>
+
+<p>所以剛剛發生什麼事了呢？ 在我們看不見的地方, Kubernetes 建立了一個外部的平衡負載附有一個公開的 IP。 任何向這個 IP 發請求的客戶端都會被導向服務後方的 pods, 在這個例子中, 是 nginx pod</p>
+<p>現在使用 <code>kubectl get</code> 指令來列出服務</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get services</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> <code>ExternalIP</code> 欄位可能會需要幾秒鐘的時間載入我們的服務。 這是正常的 – 可以幾秒鐘執行一次 <code>kubectl get services</code> 直到該欄位載入</p>
+<p>執行以下指令來存取 Nginx container</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl http://&lt;External IP&gt;:80</span><br></pre></td></tr></table></figure>
+
+<p>是不是有了！ Kubernetes 提供立即可用的簡單方法, 使用 <code>kubectl</code> 運行以及暴露的指令</p>
+<br>
+
+<h3 id="測試進度"><a href="#測試進度" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經完成目前的進度，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/BI2b0U4FJlAbPT0o4-WMXniOEOrPFRIA9kLthfdFv1qJ7UqvY9AnaN1IpGulxYfW3x19-bDQqOrsJmzSiWAvCMqlFxf-KoK6Il1kS7qgauetvUqQU9UIXNLfLUsnyqiefZDg0kagI7lb4wtuY-0w9skENctZ74OiZ0CyALuMH_rMreRgM0VxxLkxsqfzJ6T6w09Bm2XJHBQrFjVCACCQckhBd5kHOP680ZKfgHtL-eN-23n68YKDqH56FtVGQ5K0ArL7KOWQsODnNCZd3t04-7_fYsIzrGBtSEw5uAd8Q5Xfz3SOggm-CpXLxhLJ7EBGhJcW4tTAG3MXfo0p2uYJSucMWt_wZOR08t5pegowMoQ-V7paP17Dq-W0gO0G1D4xL6aplvy_22Yw26ebIVF1sHb6qwSM0fUh44KTXT6qOEMMIEPR7D6WVItfnB1eHsu2rz9imJ3_kfPxotscbvDUoOxBQmpzZe9_1GmhN2Zg7cWCWBp6ecZUTyohrKe_4wvRLgfREIbiocBA1MkSWGBM84DVPzcXEOLjmXIaiVlvYColPEiZM2xUdfSfZXRdEsZQAtLlzabXWlXDVGU-_U0SOoNs3_V7oz-BTkZnv9-qnk33JqkckROq2Vh1nqDc_3bJRMaxwYuA5rOCqQchJbQt2TOJxAS2UwR6d9mak0FuLhFSU63VHSAeKhyZVgA_bcDFDPc2vVjyC7UVT4gflh_szXKyo1rSZVrYkdeMQMsDUHQvOCDc=w640-h113-no"></p>
+<p>現在你已經完成一個 Kubernetes 簡短的旅程, 是時候更深入每一個元件以及抽象層</p>
+<br>
+<br>
+
+<h2 id="Pods"><a href="#Pods" class="headerlink" title="Pods"></a>Pods</h2><p>Kubernetes 的核心就是 <a target="_blank" rel="noopener" href="http://kubernetes.io/docs/user-guide/pods/">Pod</a></p>
+<p>Pods 代表, 並持有一個或多個容器。 一般來說, 如果你有多個容器, 並且容器之間有很強的依賴, 那你會將這些容器打包進一個 pod</p>
+<p><img src="https://lh3.googleusercontent.com/yuldfNqBTjJr88uEZgUPk_2YqWs0-IVE0q_7reM7QfKGufxtrtBLsK-SUav4cO6meR5mdn7tH48NZDIjyTK75mwmmQxQAZI6M3GcEYikRyolW-FKpK_D5Kq8bVNav9tRo5lMpttziKnSKUPagpcyCop-ANV7P_AHV-GM0DXztREXtkwK0ILgvOcrvjKWUweHsbJ0aI2aFCx2ll0FGPWbAmAeSEriBqqVrfZzk6a9kw2jxzHhE2khunNV5WOUML_e-07zRJqRFz4IKFzxodlrSn2Xs4F29qi4TBmc9BQWIL8nEgSL9lLvcex3yRS80f0luuFrLxXPQyQCFDZXp0bLqUP0DYqXuNJXGWVWbMPCuYiuyne5kTHJn0VS5HFt3RAacqM2C_1iws8QOFG3-etyQUfUkIDqDNMPxprFSUyvW_UnvhP38hRmVcHr3nAW2WVkiz_e8CWQG210aLSFHUFuDiXRS-D87fbz2bxrSBQEmyvQFE5VdxCxmPD-U74YAo_VFoCJwrYKDwXcOrg6TP3-GU59J-iYYVtj28XnVIx5XddHqKdePCcZQDPLgXJlWU41k5-Vx85W6kiHTCjXtdbAEOQgg7IQYsxiEeTuA89A_mi21C2wVoXKGk-HkV-pu4XkdR1E6XTJ4Z9UWIDgGBiev1XeYDWufIzMatGrzvrrPsKGObfBwMmX0efPrDnH7-PUIkGy-NKeDICT_hEbP36NnXQ2scAeE2iFmjXCvxtaA4-6ohEG=w960-h540-no"></p>
+<p>這裡的範例是一個 pod 內裝有 monolith 以及 nginx 的容器</p>
+<p>Pods 也有 <a target="_blank" rel="noopener" href="http://kubernetes.io/docs/user-guide/volumes/">Volumes</a>。 Volumes 是與 pods 共存亡的資料硬碟, 且可被 pod 內的容器使用。 Pods 為其內容提供一個共享的命名空間, 這表示範例 pod 內的兩個容器可以互相溝通, 並且分享附加的 volumes</p>
+<p>Pods 同時也分享一個網路命名空間。 這表示每個 pod 有著一個 IP 位址</p>
+<p>現在讓我們更深入 pods 的世界</p>
+<br>
+<br>
+
+<h2 id="建立-pods"><a href="#建立-pods" class="headerlink" title="建立 pods"></a>建立 pods</h2><p>可以使用 pod 設定檔來建立 pod 。 讓我們來探索一下 monolith pod 設定檔, 執行以下指令:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cat</span> pods/monolith.yaml</span><br></pre></td></tr></table></figure>
+
+<p>輸出如下：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">monolith</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">app:</span> <span class="hljs-string">monolith</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">containers:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">monolith</span></span><br><span class="line">      <span class="hljs-attr">image:</span> <span class="hljs-string">kelseyhightower/monolith:1.0.0</span></span><br><span class="line">      <span class="hljs-attr">args:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;-http=0.0.0.0:80&quot;</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;-health=0.0.0.0:81&quot;</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;-secret=secret&quot;</span></span><br><span class="line">      <span class="hljs-attr">ports:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">http</span></span><br><span class="line">          <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">health</span></span><br><span class="line">          <span class="hljs-attr">containerPort:</span> <span class="hljs-number">81</span></span><br><span class="line">      <span class="hljs-attr">resources:</span></span><br><span class="line">        <span class="hljs-attr">limits:</span></span><br><span class="line">          <span class="hljs-attr">cpu:</span> <span class="hljs-number">0.2</span></span><br><span class="line">          <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;10Mi&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>有幾件需要注意到的事, 你將看到：</p>
+<ul>
+<li>你的 pod 由一個容器組成 (monolith)</li>
+<li>當容器啟動時, 你帶入一些參數</li>
+<li>你打開 port 80 供 http 流量使用</li>
+</ul>
+<p>使用 <code>kubect1</code> 建立 monolith pod</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create -f pods/monolith.yaml</span><br></pre></td></tr></table></figure>
+
+<p>檢視你的 pods 。 使用 <code>kubectl get pods</code> 指令來列出所有運行在預設命名空間的 pods</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意:</strong> monolith pod 啟動與運行可能會需要幾秒鐘。 monolith 容器的 image 需要先從 Docker Hub 下載下來, 然後才能啟動。</p>
+<p>一旦 pod 開始運行, 使用 <code>kubectl describe</code> 指令來獲得 monolith pod 更多的資訊</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl describe pods monolith</span><br></pre></td></tr></table></figure>
+
+<p>你將會看到很多很多關於 monolith 的資訊, 包含 Pod IP 位址以及事件紀錄。 當除錯時, 這些資訊隨手可得。</p>
+<p>Kubernetes 讓建立 pods 如此的簡單, 只需要再設定檔中敘述, 並且當在運行中時, 檢視資訊也是如此的簡單。 現在你已經有能力建立所有你部署需要的 pods</p>
+<br>
+<br>
+
+<h2 id="與-pods-的互動"><a href="#與-pods-的互動" class="headerlink" title="與 pods 的互動"></a>與 pods 的互動</h2><p>照預設, pods 會被分配一個非公開的 IP 位址, 且無法被從叢集外存取。 使用 <code>kubectl port-forward</code> 指令來將本地的 port 以及 monolith pod 裡頭的 port 做連結</p>
+<p>從現在開始, 本教程會要求在多個 cloud shell 視窗之間操作以設定 pods 之間的溝通。 任何在第二個或第三個 shell 中執行的指令都表示該 shell 的命令</p>
+<p>開啟兩個 Cloud Shell terminals 。 一個執行 <code>kubectl port-forward</code> 指令, 另一個執行 <code>curl</code> 指令。</p>
+<p>在 <strong>第二個 terminal</strong>, 執行以下指令來設定 port-forwarding</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl port-forward monolith 10080:80</span><br></pre></td></tr></table></figure>
+
+<p>現在在<strong>第一個 terminal</strong>, 開始使用 <code>curl</code> 與你的 pod 對話</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl http://127.0.0.1:10080</span><br></pre></td></tr></table></figure>
+
+<p>Yes! 你從你的容器收到一個友善的 “hello”</p>
+<p>現在使用 <code>curl</code> 指令來看看當你存取一個安全端點時, 發生什麼事：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl http://127.0.0.1:10080/secure</span><br></pre></td></tr></table></figure>
+
+<p>Oh!<br>試著登入, 從 monolith 取得 auth token</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -u user http://127.0.0.1:10080/login</span><br></pre></td></tr></table></figure>
+
+<p>在登入彈窗, 使用超級安全的密碼 “password” 來登入</p>
+<p>登入會返回一個 JWT 。 因為 cloud shell 無法很好的處理長字串的複製, 建立一個環境變數來裝這個 token</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">TOKEN=$(curl http://127.0.0.1:10080/login -u user|jq -r <span class="hljs-string">&#x27;.token&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>再次輸入超級安全密碼 “password” 當彈窗要求 host 密碼</p>
+<p>使用上面的指令來複製, 然後用 <code>curl</code> 來提供 token 存取安全端點</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -H <span class="hljs-string">&quot;Authorization: Bearer <span class="hljs-variable">$TOKEN</span>&quot;</span> http://127.0.0.1:10080/secure</span><br></pre></td></tr></table></figure>
+
+<p>現在你應該可以從應用得到回應, 告訴我們世界又恢復了正常</p>
+<p>使用 <code>kubectl logs</code> 指令來檢視 monolith pod 的紀錄</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl logs monolith</span><br></pre></td></tr></table></figure>
+
+<p>開啟<strong>第三個 terminal</strong> 並且使用 <code>-f</code> 旗標來取得即時的紀錄</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl logs -f monolith</span><br></pre></td></tr></table></figure>
+
+<p>現在在<strong>第一個 terminal</strong> 使用 <code>curl</code> 來語 monolith 互動, 你可以看到記錄在更新著 (在<strong>第三個 terminal</strong>)</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl http://127.0.0.1:10080</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>kubectl exec</code> 指令, 在 monolith pod 內運行一個互動的 shell 。 當在除錯時, 這會十分方便。</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl <span class="hljs-built_in">exec</span> monolith --stdin --<span class="hljs-built_in">tty</span> -c monolith /bin/sh</span><br></pre></td></tr></table></figure>
+
+<p>例如說, 一旦我們在 monolith 容器有一個 shell, 我們可以使用 <code>ping</code> 測試外部的連結</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">ping -c 3 google.com</span><br></pre></td></tr></table></figure>
+
+<p>確認登出互動 shell</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<p>你可以看到, 使用 <code>kubectl</code> 指令與 pod 互動是如此的容易。 Kubernetes 提供了所有的一切, 如果你需要遠端存取一個容器, 或是取得一個登入的 shell</p>
+<br>
+<br>
+
+<h2 id="服務"><a href="#服務" class="headerlink" title="服務"></a>服務</h2><p>Pods 並不會永遠存在。 有很多種原因, 他們會被停止以及開啟 - 像是沒通過存活以及就緒的檢查 - 而這衍生一個問題</p>
+<p>當一組 Pods 重啟了, 他們的 IP 變了, 這時候你要怎麼去跟他們溝通？</p>
+<p>這就是 <a target="_blank" rel="noopener" href="http://kubernetes.io/docs/user-guide/services/">Services</a> 的功用。 Services 為 Pods 提供了穩定的端點</p>
+<p><img src="https://lh3.googleusercontent.com/9pGx0gXlBWEONWGwoTzFGW9XdWJWmjRbFFwDrzWU5qVE8wAbuIiOU1xHvvsd4ar55vJZo2aXiRcmRBQaieQyW9nvvME6LcMrOSM3-JAjaLY6XH8pEHH2uuEOR9eQ9p7-T12Xu-PDrJti7p-xuM8BU7znxMQ6zzUSKZKsV2iBhehvhVFxfSgjYSlaDAGav5IbheeghAY5DuN4D-67yrfhb0h5b7djNJvMWSm18s__XteppCARDngFp_-0YKIPFCqB2gWsUivYb6Z9vEGp7qjH69uqDUgTNyhbIljdPXvMR0oLCgz7mqUdpZDPAXmzme-4g8biXYQ_acUyns1T7fzloQScPBpGFM5IXrZvTKQtFeNA7IN0Sf8a3yEgEEUCVSdHFE0KEmys7dTekkWxXf12TTD6xa8ZKaYo6ajk3T31xcOAieH8UfZdTeVBIWs37u4E69kUsnOGq3OdGVOMNH35ZwXPVYus9FGjHb_WmOwVLCqhye_z8gFv7qmLluUZNoCDccIHa_U89A7--giqVPUZ1xoJl80n7mVpVzj7A5SR75ITFyxcsRpLYfM7zSfZVinpRrZap5zC1jEXrobi0Djvv3iRMBVY2PcROqauu80q1YLYJmhyLBlUqGMBf2DsvFc1z9rodg2RLXO71AOL8snQn5-COIGurMAijiT3P7MyqRpSCCUfApKBNMH9E2PSerPwp24YZtcsKWB4hEgTfnoVvjim9PtCwO_c46td8XCJ8om6ZNSE=w960-h540-no"></p>
+<p>Services 使用標籤 (labels) 來確定要作用在哪一些 Pods 上。 如果 Pods 有正確的標籤, 他們會自動地被 service 選擇且暴露</p>
+<p>Service 提供給一系列的 Pods 的存取等級取決於 Service 的類型。 目前有三種類型：</p>
+<ul>
+<li><code>ClusterIP (internal)</code> – 預設類型, 表示這個 Service 只能在叢集內部被看見</li>
+<li><code>NodePort</code> – 給予叢集內的節點一個外部可存取的 IP</li>
+<li><code>LoadBalancer</code> – 從雲端提供者那增加一個平衡負載, 將外部流量經由 Service 導向節點</li>
+</ul>
+<p>現在, 你將學習如何：</p>
+<ul>
+<li>建立一個 Service</li>
+<li>使用標籤選擇器來暴露某幾個 Pods, 使他們可被外部看見</li>
+</ul>
+<br>
+<br>
+
+<h2 id="建立一個-Service"><a href="#建立一個-Service" class="headerlink" title="建立一個 Service"></a>建立一個 Service</h2><p>在我們建立我們的 Service 之前 – 讓我們先建立一個安全 pod, 它可以處理 HTTPS 的流量</p>
+<p>如果你已經變更資料夾了, 確保你已經回到 <code>~/orchestrate-with-kubernetes/kubernetes</code> 資料夾</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cd</span> ~/orchestrate-with-kubernetes/kubernetes</span><br></pre></td></tr></table></figure>
+
+<p>檢視 monolith service 設定檔</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cat</span> pods/secure-monolith.yaml</span><br></pre></td></tr></table></figure>
+
+<p>建立一個 secure-monolith pods 以及他們的設定資料：</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create secret generic tls-certs --from-file tls/</span><br><span class="line">kubectl create configmap nginx-proxy-conf --from-file nginx/proxy.conf</span><br><span class="line">kubectl create -f pods/secure-monolith.yaml</span><br></pre></td></tr></table></figure>
+
+<p>現在你有一個 secure pod, 是時候暴露 secure-monolith Pod 到外部。 建立一個 Kubernetes service</p>
+<p>檢視 monolith service 設定檔</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cat</span> services/monolith.yaml</span><br></pre></td></tr></table></figure>
+
+<p>輸出：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span></span><br><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">&quot;monolith&quot;</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">selector:</span></span><br><span class="line">    <span class="hljs-attr">app:</span> <span class="hljs-string">&quot;monolith&quot;</span></span><br><span class="line">    <span class="hljs-attr">secure:</span> <span class="hljs-string">&quot;enabled&quot;</span></span><br><span class="line">  <span class="hljs-attr">ports:</span></span><br><span class="line">    <span class="hljs-bullet">-</span> <span class="hljs-attr">protocol:</span> <span class="hljs-string">&quot;TCP&quot;</span></span><br><span class="line">      <span class="hljs-attr">port:</span> <span class="hljs-number">443</span></span><br><span class="line">      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">443</span></span><br><span class="line">      <span class="hljs-attr">nodePort:</span> <span class="hljs-number">31000</span></span><br><span class="line">  <span class="hljs-attr">type:</span> <span class="hljs-string">NodePort</span></span><br></pre></td></tr></table></figure>
+
+<p>要注意的事情：</p>
+<ol>
+<li>選擇器 (selector) 被使用來自動選擇以及暴露任何有標籤 “app=monolith” 以及 “secure=enabled” 的 pods</li>
+<li>現在你必須暴露 nodePort, 因為這樣你才可以轉送外部流量從 31000 到 nginx (port 443)</li>
+</ol>
+<p>使用 <code>kubectl create</code> 指令, 從 monolith service 設定檔來建立 monolith service</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">kubectl create -f services/monolith.yaml</span><br></pre></td></tr></table></figure>
+
+<p>輸出：</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">service &quot;monolith&quot; created</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="測試進度-1"><a href="#測試進度-1" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經成功地建立了 Monolith pods 以及 service，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/wmix5S6c0qILIDo7lPkGvxP8udMyvckPt0HNbgPonTt45c4ALmnBvnR7qQ98mVBstQ8dzkVQk2CLWfdy8rV697xWwigNxUWsO-T2JSloctAQ4DDBHz7aVxeD70DRTONtNJU8O9-r27NlV2ZEMS7iwW61xGyXbqxiH8YRyDp-04dfwLHITdQa95pyyfcoq1FNshNuPrKhALPI33DvYBbI0SYOx-dTjrBxxIY5U4przZKv3MtHEVsuqAlAlesq9k9peo9vOVxLmiDUGDq7b8y6JOOhc_g-py-GjdXmOQuNHr6yJ43vf30JeKzg3U7o2JIHbqbEQqNcev3Z-9MIlYPQ9MG9TB_VrofycTMSb9_zzIhNfJvx4nsj1ZQiJWsB5YB1GGBEldubKlKTuuHauEBd2rE8yeaptDpfbWpc4qO8ccIq_4VkpBctdlcUYAnJmEJdfyx9hIkSoyFtHLrCQJPAuQ_ZXFYcipOz1yqBuvJaJhOwPAMZ6paZGBot-yyI0JxxnZfJ4S6A0otzjB0VSqS-qS-pNVbA1YbfmhBUMtzL9WZ8KgL5RWgAGNi6woIhRkLuUTKQh8WfyRO5EFkspVrtTuSc1qMFos62uC2nMtRrpCLdXqnPmA5gSpBPDmlY0cmeKF3zZPe29-O5vsmTyK4L_iz5xt1vmWW3Wq8eVIRvQAQIjNiJl0lElsjzUoCE982SmuyGJFkb_ZMJSk0-imupXMwrlHLhqlepjWA0YERmLRz3Zc0Q=w640-h113-no"></p>
+<p>使用 port 來暴露 service。 這表示如果有其他的 app 嘗試連結你其中一個 service 的 port 31000, 那可能會有衝突。</p>
+<p>正常來說, Kubernetes 會處理 port 的分配, 在這個教程中, 你自己選擇 port, 所以等等我們在設定健康檢查的時候會比較容易。</p>
+<p>使用 <code>gcloud compute firewall-rules</code> 指令來允許流量經由 nodePort 31000 來存取 monolith service</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute firewall-rules create allow-monolith-nodeport \</span><br><span class="line">  --allow=tcp:31000</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="測試進度-2"><a href="#測試進度-2" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經成功建立防火牆規則來允許 TCP 流量進出 port 31000，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/lGqa7juuExAu-zczNpQOixc2OWDycAi11MebQgzN7Qq8XtxCBWu1bCgb2moox40dQHkaLtyqAxa8NsHSD5It9-3cMrBPSrZzQc6yTMr0HTdLSyieqqo1jTK4nXqkb2cF-2O-Svh_Re-JbLcsA3YeXf7Ys2ZKPdXjin1RUtO-2p3FNd-TkWdp9L3BTgbrZLRb5GI7fI-bceC9kyeeEYb9-93-ssedSp8RdVohUfjgwacVNBXbToqP6dyR9RpYhhO1z6jd8ge_1UmNHcA7lHUhEI8X367FgOEUmYzDMnQFlLCc3VWpSf2unW-_nzVy1JTogRcGtM2Vjt8wHGxBr4NegbF9slVh9I-ExRX8iVoRoNptqg1Q5XYciUDUgXpKgoKZ9T3v-zm2wgtNwxJeXTS4cJscySYjUUB9kLgKmgJy7QDpvwjnXmnf49iXkWHjGZUL1_076IR6x4bosEDcxhEgU9jdkPi619Or3TU0f9U1Sn-ltcGeO-IrMo9dIdyxg2fQdczB8waSyo8ASgbbVemyQ3MFE1hTnz5Y8ML4y3i_OgW7LopldeNqQwlTE7Pd7jSuiO8AINtrN4ZJ4sMtmQxHlpD6GfBSMzfEwW2rAQccbDbPbMB-Z5zRUHfa4t-pJU_kZ7o1AM5pbA8g0QaSeUq3dvMJLquDO7gRqU8qkJ9634dak-ZqbtOdVQDjX-dxIbKNcBNDVxhHaYh6JTZciRC-PcQJDtK2hh0CIPjwZr4C4DAPxQiN=w634-h98-no"></p>
+<p>現在, 所有東西都設定好了, 你應該可以從叢集外部直接存取 secure-monolith service, 且不需要特別轉發 port</p>
+<p>首先, 取得其中一個節點的外部 IP</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances list</span><br></pre></td></tr></table></figure>
+
+<p>現在試著使用 <code>curl</code> 向 secure-monolith service 發請求:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">curl -k https://&lt;EXTERNAL_IP&gt;:31000</span><br></pre></td></tr></table></figure>
+
+<p>Oh, 連線逾時了, 怎麼會這樣？</p>
+<p>是時候快速利用以下幾個問題釐清一下概念, 利用下面的指令來取得問題的答案：<br><code>kubectl get services monolith</code><br><code>kubectl describe services monolith</code></p>
+<p><strong>問題：</strong></p>
+<ul>
+<li>為什麼你無法從 monolith service 取得回應？</li>
+<li>monolith service 有幾個端點？</li>
+<li>Pod 需要有哪些標籤, 才會被 monolith service 取用？</li>
+</ul>
+<p>提示： 跟標籤有關。 你將會在下一個章節解決這個問題。 </p>
+<br>
+<br>
+
+<h2 id="增加標籤到-Pods"><a href="#增加標籤到-Pods" class="headerlink" title="增加標籤到 Pods"></a>增加標籤到 Pods</h2><p>目前 monolith service 沒有任何端點。 有一個排除像這樣的錯誤的好方法, 那就是使用 <code>kubectl get pods</code> 指令的標籤查詢</p>
+<p>我們可以看到, 有一些 pods 被貼上了 monolith 標籤</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods -l <span class="hljs-string">&quot;app=monolith&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是標籤不是 “app=monolith” 和 “secure=enabled” 嗎？</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods -l <span class="hljs-string">&quot;app=monolith,secure=enabled&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意到這個標籤查詢並沒有印出任何的結果。 看起來是我們需要把 “secure=enabled” 標籤加到這些 pods 上</p>
+<p>使用 <code>kubectl label</code> 指令來加漏掉的 <code>secure=enabled</code> 標籤加到 secure-monolith Pod。 之後呢, 你可以確認標籤是否有更新</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl label pods secure-monolith <span class="hljs-string">&#x27;secure=enabled&#x27;</span></span><br><span class="line">kubectl get pods secure-monolith --show-labels</span><br></pre></td></tr></table></figure>
+
+<p>現在我們的 pods 已經被上標籤了, 讓我們檢視一下 monolith service 端點的清單</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kebectl describe services monolith | grep Endpoints</span><br></pre></td></tr></table></figure>
+
+<p>有一個!</p>
+<p>讓我們向其中一個節點發請求, 測試看看！</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">gcloud compute instances list</span><br><span class="line">curl -k https://&lt;EXTERNAL_IP&gt;:31000</span><br></pre></td></tr></table></figure>
+
+<p>連接上了！</p>
+<h3 id="測試進度-3"><a href="#測試進度-3" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經成功地將標籤加到 monolith pods，你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/PTCBcsWDjYHXw17BxtRCR-43R4FyuaGQmOliFQCI6Ue1471P8H9z4cAMWXD5xxTajpgvaQT6VZntWvvDjeVxbVj4aIIzaxh5tEZXbJmxB0Bqw9Q0WIaRJCxXFVE8jG3SYlvhZzUCWsI17e3Ui6eUB-EJn84b_TSjSpIsVwjAs-QDj0x2_lWDKuyfQW5TD7ce8hdQSzjkqMi_YJGllmmU1aexnWxLdfsYuZ_SefkHKSTCv7sclh7jsXiWWqgFnKzDwFZjNKPESaFL_61EOM_aGaSuP5y-StvPcqCWPkGm7pyYYl0c01ow6PLsJ1mZg81FZWxqt-nB23U2ZDnZQDSP8rWJDQbmhnhCmtylon1mQosMop4oBP_xqr8-OXkh72FbFwZxd8SqYAhcBPn1wHSM4Wqk3y24Wh-AxTCHWtrenfwtCEwDIDF4kZqTauA6UWiEZiDzb3RDk5PA5oM5ChlY4ScI2KJtlY89wp3kjxvxj-TCUMJVM7RHouG0XLUeEFGlPoWV41dPoj_nD34331OFp8TknvPZtUsUO5DjneA7eQPewiVRnUMgKmvogY0VRVxCHykSdlRBrDxwQ4ZYLpbDDiha56hH2mzI8KeDWJHeb-jG8Hz6kGYmyhkgwKZlXxAOOp7lKB2MJIrT_WK9TCPioVKOaWxCLcy_GdHYBNkrecVnwo8ndo1-NH8ohP5I0HLZQUS1zPzclMKp1c4yQ24KRwcF8hVs17CijQm_eyLxBj5Lzg7q=w635-h113-no"></p>
+<br>
+<br>
+
+<h2 id="部署應用到-Kubernetes"><a href="#部署應用到-Kubernetes" class="headerlink" title="部署應用到 Kubernetes"></a>部署應用到 Kubernetes</h2><p>本教程的目標是讓你準備好在正式產品線上操作擴充以及管理容器。 這也是 <a target="_blank" rel="noopener" href="http://kubernetes.io/docs/user-guide/deployments/#what-is-a-deployment">Deployment</a> 的作用。 Deployments 是一種宣告的方法, 確保運行的 Pods 數量跟使用者指定的數量是一致的。</p>
+<p><img src="https://lh3.googleusercontent.com/HVx5XAN14CaP-RCCB70a3HfuZaeIAAmmZMSlxg1sFkiy_s4bQCUaOp91uXEwyQoEydsJsrLt1mVnFd6ZsKUSL4g4_Ea_hDid0aO4DjENYLFIKzoKMZExeC2jhF9-sA03eqOsrvWcul3UFeOR4Bz0HPr_E6KOxaz-XqGDWfYRHz8NLetovc6SZkVQ8dTLHV-RDrytQnL23bld3mKia8zfWu9r5V4VO39WJMjjMm7DVyA5iUi0GYevwqWcPkmIjbwgwly-z78FUbRhBmkplecveGPw0bj4vYvezanD51wTBw0p3YKJtAGrxmPbk2WhAvdOs5MWTgkx7C9Um1TlOWzaqKhTBm0WXl-UBafy5P0HqSmt__GCzPuzPzRRWunkYt6FPlJb6EBei3DBusMp-dFwbtA9rKykchnDp8uHKI0SJBBTYIBIiBb_JFzCpzutMYQ_Xhsegm0RkAsNPCJ0-CocMPJHv-0V8QK6gRKvFZowkgeCNcEXK0XqNL7chMt_RUoAb6AEu5Z-bRiTWlY0j4KXUXTgPHBvAkJba5ORH-19y-HT1ujjzMIXXyh7_Mek0SeCQQIS2qbBJPAuS8_FeqSrzob6NqzXDMy8QnwIQhkqvJrJV3RDZ7oem3AaAgbtkEiVr3i3h_6PG_CQ7N67UdS2WYkztM36SvIP17IR-E_HVuWEjmyoQdYVV_Qnh9qjG5lBZ1kIlDDZbeIGKSWjPpxXtjldfMhnISWfTrcGsQ6blFGDjm-Y=w960-h540-no"></p>
+<p>Deployments 的主要優點, 是將管理 Pods 的低階細節抽象化。 如果 Pods 需要擴充或更新, Deployment 會處理這一段。 Deployment 也處理重啟 Pods 這一塊, 如果 Pods 因為某些原因關閉的話。</p>
+<p>讓我們來快速看一個範例：</p>
+<p><img src="https://lh3.googleusercontent.com/I3itCKzxeObdI0QDb7NrzhXJL57RwNSOirw67GNXySXbS_G_Od-LrlFa_WVN1einlH4ahfPZI1SyTXgRIuvwuquAEiHawuff37W2JBlh4pq21_dUkKgUvas1Qicw95VKkMf29s2URkHOVeMbFR2nhmzxtUjxOfgs4tebb3bnEcPVKUzB-40dp0wEvhUR4uH7-QsYk3k-GrFNqIFzb9cW-sCzvFs-6xxbddXbXX4iwbaHHNcI3TzJ325U_6JrsTQ5pqz_HxXmmm5GZSUzlWkRle_rIxB8bDAeqdoZdfbxFZ9iAtNxCmq96LZAjJxZ92xyS35xsoOh4S6ajLEMmlTadHexyLy3KhTKK7CgmpXtFBeDb2bi6F8ebjxpuhv_Y9caYUbVAcSj48g7OKd64OL98TnsMAJXatTlit3aM45Gr6CePpHQpqHhCZDVGKY2272MOiRG-1kHOfFvfYcCqXwq6ymLIPnBNkln-OH_bHSMLqr1R5zVsXI5d3uA_HXbG4xYSODDvl6W2exaIf0OUFSTYr9r4E1-g0H04Iy2XEJkI4UjgK0jo7hIMsacSqu7VViTwx69kKiJARP_VUB_VhLzoDvV1l1E4AxVR7QPy2hNBQM3LEAIUlzxD3ff11xOhXLO4-cDusi_76uxhJS0awjqAPO1t_edjXUx68yt6KvNb5qUwSh3PrvzgAV69CRfT7ghdbCha7HTMH4iUIlNqwCuOGMXe1FoU_BwQxRGVpqdn_oHh6LQ=w960-h540-no"></p>
+<p>Pods 的生命週期與他們被建立且身處的 Node 一樣長。 在上面的範例中, Node3 關閉了 (帶著 Pod 一起)。 Deployment 建立一個新的 Pod, 然後在 Node2 上運行, 而不需要手動建立一個新的 Pod 然後再找一個 Node 來運行它。</p>
+<p>真是太酷了！</p>
+<p>是時候結合你學到的東西, Pods, Services, 使用 Deployment 將 monolith 應用拆分成更小的 Services</p>
+<br>
+<br>
+
+<h2 id="建立-Deployments"><a href="#建立-Deployments" class="headerlink" title="建立 Deployments"></a>建立 Deployments</h2><p>我們將會把 monolith app 拆成三個小的部分：</p>
+<ul>
+<li><strong>auth</strong> - 為通過驗證的使用者產生 JWT tokens</li>
+<li><strong>hello</strong> - 向通過驗證的使用者打招呼</li>
+<li><strong>frontend</strong> - 將流量導向 auth 以及 hello 服務</li>
+</ul>
+<p>我們已經準備好要為每一個 service 建立 deployments了。 在那之後, 我們將為 auth 以及 hello deployments 定義內部 service, 以及為 frontend deployment 定義外部 service 。 一旦完成, 你將可以跟每個微服務互動, 就跟現在一樣, 不同的是, 每一個部分將可以獨立地被部署, 擴充。</p>
+<p>先從檢視 deployment 設定檔開始吧</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-built_in">cat</span> deployments/auth.yaml</span><br></pre></td></tr></table></figure>
+
+<p>輸出：</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">extensions/v1beta1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">auth</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">replicas:</span> <span class="hljs-number">1</span></span><br><span class="line">  <span class="hljs-attr">template:</span></span><br><span class="line">    <span class="hljs-attr">metadata:</span></span><br><span class="line">      <span class="hljs-attr">labels:</span></span><br><span class="line">        <span class="hljs-attr">app:</span> <span class="hljs-string">auth</span></span><br><span class="line">        <span class="hljs-attr">track:</span> <span class="hljs-string">stable</span></span><br><span class="line">    <span class="hljs-attr">spec:</span></span><br><span class="line">      <span class="hljs-attr">containers:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">auth</span></span><br><span class="line">          <span class="hljs-attr">image:</span> <span class="hljs-string">&quot;kelseyhightower/auth:2.0.0&quot;</span></span><br><span class="line">          <span class="hljs-attr">ports:</span></span><br><span class="line">            <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">http</span></span><br><span class="line">              <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span></span><br><span class="line">            <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">health</span></span><br><span class="line">              <span class="hljs-attr">containerPort:</span> <span class="hljs-number">81</span></span><br><span class="line"><span class="hljs-string">...</span></span><br></pre></td></tr></table></figure>
+
+<p>deployment 建立 1 個 replica, 且使用版本 ２.0.0 的 auth 容器</p>
+<p>當你執行 <code>kubectl create</code> 指令建立 auth deployment, 它會建立一個 pod, 這個 pod 會符合 Deployment 的清單資料。 這表示你可以藉由改變 Replicas 欄位的數字來擴充 Pods 的數量</p>
+<p>不管怎樣, 建立 deployment 物件吧</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create -f deployments/auth.yaml</span><br></pre></td></tr></table></figure>
+
+<p>是時候為 auth deployment 建立 service 了。 使用 <code>kubectl create</code> 指令來建立 auth service:</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create -f services/auth.yaml</span><br></pre></td></tr></table></figure>
+
+<p>現在重複一樣的步驟來建立並暴露 hello deployment</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create -f deployments/hello.yaml</span><br><span class="line">kubectl create -f services/hello.yaml</span><br></pre></td></tr></table></figure>
+
+<p>再一次, 建立及暴露 frontend deployment</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl create configmap nginx-frontend-conf --from-file=nginx/frontend.conf</span><br><span class="line">kubectl create -f deployments/frontend.yaml</span><br><span class="line">kubectl create -f services/frontend.yaml</span><br></pre></td></tr></table></figure>
+
+<p>建立 frontend 還有最後一步, 因為你需要使用容器儲存一些設定資料</p>
+<p>取得 frontend 的外部 IP, 並且使用 curl 來跟它互動吧!</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">kubectl get services frontend</span><br><span class="line">curl -k https://&lt;EXTERNAL-IP&gt;</span><br></pre></td></tr></table></figure>
+
+<p>然後你得到一個 hello 回應！</p>
+<br>
+
+<h3 id="測試進度-4"><a href="#測試進度-4" class="headerlink" title="測試進度"></a>測試進度</h3><p>點擊 <strong>Check my progress</strong> 來確認目前的進度。如果你已經成功建立 auth, hello, 以及 frontend deployment, 你將獲得一個評價分數。</p>
+<p><img src="https://lh3.googleusercontent.com/--iUpKvBcOAvKgNvgK-Rzo7Y-YeJc8MtKyuzgo-DST4J3l8cHre1xXi8ZyJ9UBuOhbRe82Yxfr0hA0cqsxVyiLFSRI4tdHd0h3EyKmzruQ3br_phtvrT6SvdyyG5hscLxuOOJvZDnbr2gn7BZ9CuCJwFOkIA_2ZbJhOZglvVLZ3sv_lSpKPRmijW5-MY-rnAvwiTIHvwWS-fcq0Zzbg1qAGDEY3a1WPoRMk9SzdcDlH7b-FcM6cvW8UEcPERqq6e7Sx8SmL3HsKDD4s35FJhzIA1dtj7El9K6OSUuvSfqAj7Rlqqt-rZRkmPE9f3kzxutbNuKuSXFbC9bBDSXlHa55PvPVHjxy-ycKMJ6LDEH18fg_2NNMNsN21a0AvDJ_0XlEQp2IfUHMOpFieFL9pg36bVpUgeneyMn0O0BtCe53XUrNBEMjoApL47qHeG_L242plojixMWJ0-dFY_q4VEdCvI5eIvD7zGRKzteGy8EV06LBZFyDvvtTUQ7sSkeUm51YmivquysUBfk7ie7NJEVr0za6CpBbccg4UVk1pDbrwtqQLUYMEbK_NvyldcXVHLEjTRsJm-7NpqLAtMg7_i0q2PImrFeRZjR5xo7Gkxw-ji2xJpDq1dnxLK3dbosHU5jaDp2Mjne8hgtwsh3pnvlejeGa2YdCtEdxZUiPTQkSULhKYd1bJ9NKVbg_alagLTL6a4Y6y5BUJH-9vVIMghvRODmhMhq3Cvk8JozGpG8ZpK2YCh=w631-h106-no"></p>
+<br>
+<br>
+
+<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><p>恭喜！ 你已經使用 Kubernetes 部署了一個多服務的應用。 你在這學到的技術將可以讓你使用一系列的 deployments 以及 services 在 Kubernetes 部署複雜的應用。</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/QWIKLABS/">#QWIKLABS</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/GCP-Kubernetes-Engine/">#GCP Kubernetes Engine</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Cloud-Architecture/">#Cloud Architecture</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes-in-the-Google-Cloud/">#Kubernetes in the Google Cloud</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/deploymentManagerFullProduction/">GCP Deployment Manager - 正式環境</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/IAMCustomRoles/">IAM 自訂角色</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/orchestratingTheCloudWithKubernetes/';
+        this.page.identifier = 'zh-tw/orchestratingTheCloudWithKubernetes/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

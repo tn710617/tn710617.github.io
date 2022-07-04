@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - Testing - HTTP Tests (官方文件原子化翻譯筆記) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Testing - HTTP Tests (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-testing-http-tests/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-12-01T09:26:56.000Z">
+<meta property="article:modified_time" content="2020-12-27T08:14:10.800Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel HTTP Tests">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-testing-http-tests/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Testing - HTTP Tests (官方文件原子化翻譯筆記)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-testing-http-tests/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-12-01T09:26:56.000Z">
+<meta property="article:modified_time" content="2020-12-27T08:14:10.800Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel HTTP Tests">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">2&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Customizing-Request-Headers">2.1&nbsp;&nbsp;# Customizing Request Headers</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Cookies">2.2&nbsp;&nbsp;# Cookies</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Debugging-Responses">2.3&nbsp;&nbsp;# Debugging Responses</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Session-Authentication">3&nbsp;&nbsp;<b># Session / Authentication</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Testing-JSON-APIs">4&nbsp;&nbsp;<b># Testing JSON APIs</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Verifying-An-Exact-JSON-Match">4.1&nbsp;&nbsp;# Verifying An Exact JSON Match</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Verifying-JSON-Paths">4.2&nbsp;&nbsp;# Verifying JSON Paths</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Testing-File-Uploads">5&nbsp;&nbsp;<b># Testing File Uploads</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Fake-File-Customization">5.1&nbsp;&nbsp;# Fake File Customization</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Testing-Views">6&nbsp;&nbsp;<b># Testing Views</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Sharing-Errors">6.1&nbsp;&nbsp;# Sharing Errors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Rendering-Blade-amp-Components">6.2&nbsp;&nbsp;# Rendering Blade &amp;amp;amp; Components</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Available-Assertions">7&nbsp;&nbsp;<b># Available Assertions</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Response-Assertions">7.1&nbsp;&nbsp;# Response Assertions</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertCookie">7.1.1&nbsp;&nbsp;# assertCookie</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertCookieExpired">7.1.2&nbsp;&nbsp;# assertCookieExpired</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertCookieNotExpired">7.1.3&nbsp;&nbsp;# assertCookieNotExpired</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertCookieMissing">7.1.4&nbsp;&nbsp;# assertCookieMissing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertCreated">7.1.5&nbsp;&nbsp;# assertCreated</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertDontSee">7.1.6&nbsp;&nbsp;# assertDontSee</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertDontSeeText">7.1.7&nbsp;&nbsp;# assertDontSeeText</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertExactJson">7.1.8&nbsp;&nbsp;# assertExactJson</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertForbidden">7.1.9&nbsp;&nbsp;# assertForbidden</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertHeader">7.1.10&nbsp;&nbsp;# assertHeader</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertHeaderMissing">7.1.11&nbsp;&nbsp;# assertHeaderMissing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJson">7.1.12&nbsp;&nbsp;# assertJson</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonCount">7.1.13&nbsp;&nbsp;# assertJsonCount</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonFragment">7.1.14&nbsp;&nbsp;# assertJsonFragment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonMissing">7.1.15&nbsp;&nbsp;# assertJsonMissing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonMissingExact">7.1.16&nbsp;&nbsp;# assertJsonMissingExact</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonMissingValidationErrors">7.1.17&nbsp;&nbsp;# assertJsonMissingValidationErrors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonPath">7.1.18&nbsp;&nbsp;# assertJsonPath</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonStructure">7.1.19&nbsp;&nbsp;# assertJsonStructure</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertJsonValidationErrors">7.1.20&nbsp;&nbsp;# assertJsonValidationErrors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertLocation">7.1.21&nbsp;&nbsp;# assertLocation</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertNoContent">7.1.22&nbsp;&nbsp;# assertNoContent</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertNotFound">7.1.23&nbsp;&nbsp;# assertNotFound</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertOk">7.1.24&nbsp;&nbsp;# assertOk</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertPlainCookie">7.1.25&nbsp;&nbsp;# assertPlainCookie</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertRedirect">7.1.26&nbsp;&nbsp;# assertRedirect</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSee">7.1.27&nbsp;&nbsp;# assertSee</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSeeInOrder">7.1.28&nbsp;&nbsp;# assertSeeInOrder</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSeeText">7.1.29&nbsp;&nbsp;# assertSeeText</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSeeTextInOrder">7.1.30&nbsp;&nbsp;# assertSeeTextInOrder</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionHas">7.1.31&nbsp;&nbsp;# assertSessionHas</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionHasInput">7.1.32&nbsp;&nbsp;# assertSessionHasInput</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionHasAll">7.1.33&nbsp;&nbsp;# assertSessionHasAll</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionHasErrors">7.1.34&nbsp;&nbsp;# assertSessionHasErrors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionHasErrorsIn">7.1.35&nbsp;&nbsp;# assertSessionHasErrorsIn</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionHasNoErrors">7.1.36&nbsp;&nbsp;# assertSessionHasNoErrors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionDoesntHaveErrors">7.1.37&nbsp;&nbsp;# assertSessionDoesntHaveErrors</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSessionMissing">7.1.38&nbsp;&nbsp;# assertSessionMissing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertStatus">7.1.39&nbsp;&nbsp;# assertStatus</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertSuccessful">7.1.40&nbsp;&nbsp;# assertSuccessful</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertUnauthorized">7.1.41&nbsp;&nbsp;# assertUnauthorized</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertViewHasAll">7.1.42&nbsp;&nbsp;# assertViewHasAll</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertViewIs">7.1.43&nbsp;&nbsp;# assertViewIs</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertViewMissing">7.1.44&nbsp;&nbsp;# assertViewMissing</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Authentication-Assertions">7.2&nbsp;&nbsp;# Authentication Assertions</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertAuthenticated">7.2.1&nbsp;&nbsp;# assertAuthenticated</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertGuest">7.2.2&nbsp;&nbsp;# assertGuest</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#assertAuthenticatedAs">7.2.3&nbsp;&nbsp;# assertAuthenticatedAs</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-testing-http-tests/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-testing-http-tests/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Testing - HTTP Tests (官方文件原子化翻譯筆記)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-01T09:26:56.000Z" itemprop="datePublished">12月 1 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            22 分钟 讀完 (大概 3336 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">Tests</span>\<span class="title class_">Feature</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">RefreshDatabase</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">WithoutMiddleware</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Tests</span>\<span class="hljs-title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicTest</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertStatus</span>(<span class="hljs-number">200</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果對 ‘/‘ 發 request, response 將會是 200, 如果不是則測試不通過</li>
+</ul>
+<br>
+<br>
+
+<h3 id="Customizing-Request-Headers"><a href="#Customizing-Request-Headers" class="headerlink" title="# Customizing Request Headers"></a># Customizing Request Headers</h3><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">withHeaders</span>([</span><br><span class="line">            <span class="hljs-string">&#x27;X-Header&#x27;</span> =&gt; <span class="hljs-string">&#x27;Value&#x27;</span>,</span><br><span class="line">        ])-&gt;<span class="title function_ invoke__">json</span>(<span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;/user&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Sally&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span></span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertStatus</span>(<span class="hljs-number">201</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertJson</span>([</span><br><span class="line">                <span class="hljs-string">&#x27;created&#x27;</span> =&gt; <span class="hljs-literal">true</span>,</span><br><span class="line">            ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>自訂 request 的 header, 然後以 POST 的方式帶著參數發到 ‘/user’ url<br>並斷言需以 JSON 格式回傳 ‘created’ =&gt; true, status code 為 201</li>
+</ul>
+<h6 id="Laravel-Testing-中-CSRF-token-會運作嗎？"><a href="#Laravel-Testing-中-CSRF-token-會運作嗎？" class="headerlink" title="Laravel Testing 中, CSRF token 會運作嗎？"></a><strong>Laravel Testing 中, CSRF token 會運作嗎？</strong></h6><p>不會</p>
+<br>
+
+<h3 id="Cookies"><a href="#Cookies" class="headerlink" title="# Cookies"></a># Cookies</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testCookies</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">withCookie</span>(<span class="hljs-string">&#x27;color&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">withCookies</span>([</span><br><span class="line">            <span class="hljs-string">&#x27;color&#x27;</span> =&gt; <span class="hljs-string">&#x27;blue&#x27;</span>,</span><br><span class="line">            <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>,</span><br><span class="line">        ])-&gt;<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 test case, 定義 cookie 為 ‘color’ =&gt; ‘blue’, 並向 ‘/‘ 發 GET request, 上面兩種定義 cookie 的方式皆可</li>
+</ul>
+<br>
+
+<h3 id="Debugging-Responses"><a href="#Debugging-Responses" class="headerlink" title="# Debugging Responses"></a># Debugging Responses</h3><h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">Tests</span>\<span class="title class_">Feature</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">RefreshDatabase</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">WithoutMiddleware</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Tests</span>\<span class="hljs-title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicTest</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">dumpHeaders</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">dumpSession</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">dump</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>對 ‘/‘ 發 GET request, 並印出 headers, session, 以及整個 response 方便 debug</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Session-Authentication"><a href="#Session-Authentication" class="headerlink" title="# Session / Authentication"></a># Session / Authentication</h2><h6 id="以下的-Laravel-Testing-example-code-的意思是？"><a href="#以下的-Laravel-Testing-example-code-的意思是？" class="headerlink" title="以下的 Laravel Testing example code 的意思是？"></a><strong>以下的 Laravel Testing example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testApplication</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">withSession</span>([<span class="hljs-string">&#x27;foo&#x27;</span> =&gt; <span class="hljs-string">&#x27;bar&#x27;</span>])</span><br><span class="line">                         -&gt;<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 session 載入檔案 [‘foo’ =&gt; ‘bar’], 並發送 ‘/‘ GET request</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testApplication</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">factory</span>()-&gt;<span class="title function_ invoke__">create</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">actingAs</span>(<span class="hljs-variable">$user</span>, <span class="hljs-string">&#x27;api&#x27;</span>)</span><br><span class="line">                         -&gt;<span class="title function_ invoke__">withSession</span>([<span class="hljs-string">&#x27;foo&#x27;</span> =&gt; <span class="hljs-string">&#x27;bar&#x27;</span>])</span><br><span class="line">                         -&gt;<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 user, 並指定由這個 user 登入, 使用 ‘api’ guard 來驗證身份 (也可不設), 並帶著 session [‘foo’ =&gt; ‘bar’], 發送 ‘/‘ GET request</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Testing-JSON-APIs"><a href="#Testing-JSON-APIs" class="headerlink" title="# Testing JSON APIs"></a># Testing JSON APIs</h2><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">postJson</span>(<span class="hljs-string">&#x27;/user&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Sally&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span></span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertStatus</span>(<span class="hljs-number">201</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertJson</span>([</span><br><span class="line">                <span class="hljs-string">&#x27;created&#x27;</span> =&gt; <span class="hljs-literal">true</span>,</span><br><span class="line">            ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 JSON 格式發送 POST request, 發送位址為 ‘/user’, body 為 [‘name’ =&gt; ‘Sally’]<br>並斷言回傳 status code 201, 以及 JSON “created” : “true”</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">postJson</span>(<span class="hljs-string">&#x27;/user&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Sally&#x27;</span>]);</span><br><span class="line">        </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertTrue</span>(<span class="hljs-variable">$response</span>[<span class="hljs-string">&#x27;created&#x27;</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 JSON 格式發送 POST request, 發送位址為 <code>&#39;/user&#39;</code>, body 為 <code>[&#39;name&#39; =&gt; &#39;Sally&#39;]</code><br>並斷言回傳 的 JSON response 的 <code>&#39;created&#39;</code> value 為 true</li>
+</ul>
+<br>
+
+<h3 id="Verifying-An-Exact-JSON-Match"><a href="#Verifying-An-Exact-JSON-Match" class="headerlink" title="# Verifying An Exact JSON Match"></a># Verifying An Exact JSON Match</h3><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">json</span>(<span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;/user&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Sally&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span></span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertStatus</span>(<span class="hljs-number">201</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertExactJson</span>([</span><br><span class="line">                <span class="hljs-string">&#x27;created&#x27;</span> =&gt; <span class="hljs-literal">true</span>,</span><br><span class="line">            ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 JSON 格式發送 POST request, 發送位址為 <code>&#39;/user&#39;</code>, body 為 <code>[&#39;name&#39; =&gt; &#39;Sally&#39;]</code><br>並斷言 response 會是 JSON <code>[&#39;created =&gt; true]</code>, 若不是則 test fail</li>
+</ul>
+<br>
+
+<h3 id="Verifying-JSON-Paths"><a href="#Verifying-JSON-Paths" class="headerlink" title="# Verifying JSON Paths"></a># Verifying JSON Paths</h3><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">json</span>(<span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;/user&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Sally&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span></span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertStatus</span>(<span class="hljs-number">201</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">assertJsonPath</span>(<span class="hljs-string">&#x27;team.owner.name&#x27;</span>, <span class="hljs-string">&#x27;foo&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 JSON 格式發送 POST request, 發送位址為 <code>&#39;/user&#39;</code>, body 為 <code>[&#39;name&#39; =&gt; &#39;Sally&#39;]</code><br>並斷言 response 需包含 status code 201, 以及在 <code>&#39;team.owner.name&#39;</code> 的路徑, value 需為 <code>&#39;foo&#39;</code></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Testing-File-Uploads"><a href="#Testing-File-Uploads" class="headerlink" title="# Testing File Uploads"></a># Testing File Uploads</h2><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">Tests</span>\<span class="title class_">Feature</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">RefreshDatabase</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">WithoutMiddleware</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">UploadedFile</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Storage</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Tests</span>\<span class="hljs-title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testAvatarUpload</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title class_">Storage</span>::<span class="title function_ invoke__">fake</span>(<span class="hljs-string">&#x27;avatars&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$file</span> = <span class="title class_">UploadedFile</span>::<span class="title function_ invoke__">fake</span>()-&gt;<span class="title function_ invoke__">image</span>(<span class="hljs-string">&#x27;avatar.jpg&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">json</span>(<span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;/avatar&#x27;</span>, [</span><br><span class="line">            <span class="hljs-string">&#x27;avatar&#x27;</span> =&gt; <span class="hljs-variable">$file</span>,</span><br><span class="line">        ]);</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Storage</span>::<span class="title function_ invoke__">disk</span>(<span class="hljs-string">&#x27;avatars&#x27;</span>)-&gt;<span class="title function_ invoke__">assertExists</span>(<span class="hljs-variable">$file</span>-&gt;<span class="title function_ invoke__">hashName</span>());</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Storage</span>::<span class="title function_ invoke__">disk</span>(<span class="hljs-string">&#x27;avatars&#x27;</span>)-&gt;<span class="title function_ invoke__">assertMissing</span>(<span class="hljs-string">&#x27;missing.jpg&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">Tests</span>\<span class="title class_">Feature</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">RefreshDatabase</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Testing</span>\<span class="hljs-title">WithoutMiddleware</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Http</span>\<span class="hljs-title">UploadedFile</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">Storage</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Tests</span>\<span class="hljs-title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testAvatarUpload</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// fake 一個 storage disk 名為 &#x27;avatars&#x27;</span></span><br><span class="line">        <span class="title class_">Storage</span>::<span class="title function_ invoke__">fake</span>(<span class="hljs-string">&#x27;avatars&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// fake 一個 image 名為 &#x27;avatar.jpg&#x27;, 並 assign 到 $file</span></span><br><span class="line">        <span class="hljs-variable">$file</span> = <span class="title class_">UploadedFile</span>::<span class="title function_ invoke__">fake</span>()-&gt;<span class="title function_ invoke__">image</span>(<span class="hljs-string">&#x27;avatar.jpg&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 對 &#x27;/avatar&#x27; 發起一個 JSON POST Request, 帶著 [&#x27;avatar&#x27; =&gt; $file]</span></span><br><span class="line">        <span class="hljs-variable">$response</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">json</span>(<span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;/avatar&#x27;</span>, [</span><br><span class="line">            <span class="hljs-string">&#x27;avatar&#x27;</span> =&gt; <span class="hljs-variable">$file</span>,</span><br><span class="line">        ]);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 斷言在 &#x27;avatars&#x27; 這個 storage disk 中, 有 $file 的 hash name, 若無則 test fails</span></span><br><span class="line">        <span class="title class_">Storage</span>::<span class="title function_ invoke__">disk</span>(<span class="hljs-string">&#x27;avatars&#x27;</span>)-&gt;<span class="title function_ invoke__">assertExists</span>(<span class="hljs-variable">$file</span>-&gt;<span class="title function_ invoke__">hashName</span>());</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 斷言在 &#x27;avatars&#x27; 這個 storage disk 中, 沒有 &#x27;missing.jpg&#x27; 這個檔案, 若有則 test fails</span></span><br><span class="line">        <span class="title class_">Storage</span>::<span class="title function_ invoke__">disk</span>(<span class="hljs-string">&#x27;avatars&#x27;</span>)-&gt;<span class="title function_ invoke__">assertMissing</span>(<span class="hljs-string">&#x27;missing.jpg&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Fake-File-Customization"><a href="#Fake-File-Customization" class="headerlink" title="# Fake File Customization"></a># Fake File Customization</h3><h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title class_">UploadedFile</span>::<span class="title function_ invoke__">fake</span>()-&gt;<span class="title function_ invoke__">image</span>(<span class="hljs-string">&#x27;avatar.jpg&#x27;</span>, <span class="hljs-variable">$width</span>, <span class="hljs-variable">$height</span>)-&gt;<span class="title function_ invoke__">size</span>(<span class="hljs-number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>fake 一個 image, 名為 <code>&#39;avatar.jpg&#39;</code>, 定義 width, height, 以及 size</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testBasicExample</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title class_">UploadedFile</span>::<span class="title function_ invoke__">fake</span>()-&gt;<span class="title function_ invoke__">create</span>(<span class="hljs-string">&#x27;document.pdf&#x27;</span>, <span class="hljs-variable">$sizeInKilobytes</span>, <span class="hljs-string">&#x27;application/pdf&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 faker 的 create method 建立一個 PDF file, 可以指定 size 以及 mimeType (optional)</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Testing-Views"><a href="#Testing-Views" class="headerlink" title="# Testing Views"></a># Testing Views</h2><h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testWelcomeView</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$view</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;welcome&#x27;</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>]);</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-variable">$view</span>-&gt;<span class="title function_ invoke__">assertSee</span>(<span class="hljs-string">&#x27;Taylor&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>test 的 view method 會 return 一個 <code>Illuminate\Testing\TestView</code> instance, 可帶入 view name 以及 parameters, <code>TestView</code> instance 也提供了很多 assertion method:<br><code>assertsee</code>, <code>assertSeeInOrder</code>, <code>assertSeeText</code>, <code>assertSeeTextInOrder</code>, <code>assertDontSee</code>, <code>assertDontSeeText</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testWelcomeView</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$contents</span> = (<span class="hljs-keyword">string</span>) <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;welcome&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>若有需要, 也可取得 raw, rendered view 的內容</li>
+</ul>
+<br>
+
+<h3 id="Sharing-Errors"><a href="#Sharing-Errors" class="headerlink" title="# Sharing Errors"></a># Sharing Errors</h3><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TestCase</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testWelcomeView</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$view</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">withViewErrors</span>([</span><br><span class="line">            <span class="hljs-string">&#x27;name&#x27;</span> =&gt; [<span class="hljs-string">&#x27;Please provide a valid name.&#x27;</span>]</span><br><span class="line">        ])-&gt;<span class="title function_ invoke__">view</span>(<span class="hljs-string">&#x27;form&#x27;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-variable">$view</span>-&gt;<span class="title function_ invoke__">assertSee</span>(<span class="hljs-string">&#x27;Please provide a valid name.&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將模擬的 error message <code>&#39;name&#39; =&gt; [&#39;Please provide a valid name.&#39;]</code>待到指定的 view <code>&#39;form&#39;</code></li>
+</ul>
+<br>
+
+<h3 id="Rendering-Blade-amp-Components"><a href="#Rendering-Blade-amp-Components" class="headerlink" title="# Rendering Blade &amp; Components"></a># Rendering Blade &amp; Components</h3><h6 id="以下的-Laravel-Test-example-code-的意思是？"><a href="#以下的-Laravel-Test-example-code-的意思是？" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$view</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">blade</span>(</span><br><span class="line">    <span class="hljs-string">&#x27;&lt;x-component :name=&quot;$name&quot; /&gt;&#x27;</span>,</span><br><span class="line">    [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>]</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$view</span>-&gt;<span class="title function_ invoke__">assertSee</span>(<span class="hljs-string">&#x27;Taylor&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 blade()<br>arg1 定義使用名為 <code>component</code> 的 component, 且定義帶入的參數為 $name<br>arg2 定義 $name 為 <code>&#39;Taylor&#39;</code><br>最後斷言 $view 需可看到 <code>&#39;Taylor&#39;</code></li>
+</ul>
+<h6 id="以下的-Laravel-Test-example-code-的意思是？-1"><a href="#以下的-Laravel-Test-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$view</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">component</span>(<span class="title class_">Profile</span>::<span class="variable language_">class</span>, [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$view</span>-&gt;<span class="title function_ invoke__">assertSee</span>(<span class="hljs-string">&#x27;Taylor&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 component()<br>arg1 使用的 component class<br>arg2 定義帶入的 args key/value<br>最後斷言 $view 需可看到 <code>&#39;Taylor&#39;</code></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Available-Assertions"><a href="#Available-Assertions" class="headerlink" title="# Available Assertions"></a># Available Assertions</h2><h3 id="Response-Assertions"><a href="#Response-Assertions" class="headerlink" title="# Response Assertions"></a># Response Assertions</h3><h4 id="assertCookie"><a href="#assertCookie" class="headerlink" title="# assertCookie"></a># assertCookie</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-2"><a href="#以下的-Laravel-Test-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertCookie</span>(<span class="hljs-variable">$cookieName</span>, <span class="hljs-variable">$value</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 帶有指定 $cookie</li>
+</ul>
+<h4 id="assertCookieExpired"><a href="#assertCookieExpired" class="headerlink" title="# assertCookieExpired"></a># assertCookieExpired</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-3"><a href="#以下的-Laravel-Test-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertCookieExpired</span>(<span class="hljs-variable">$cookieName</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 帶有指定 $cookie, 且該 cookie 已過期</li>
+</ul>
+<h4 id="assertCookieNotExpired"><a href="#assertCookieNotExpired" class="headerlink" title="# assertCookieNotExpired"></a># assertCookieNotExpired</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-4"><a href="#以下的-Laravel-Test-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertCookieNotExpired</span>(<span class="hljs-variable">$cookieName</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 帶有指定 $cookie, 且該 cookie 還沒過期</li>
+</ul>
+<h4 id="assertCookieMissing"><a href="#assertCookieMissing" class="headerlink" title="# assertCookieMissing"></a># assertCookieMissing</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-5"><a href="#以下的-Laravel-Test-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertCookieMissing</span>(<span class="hljs-variable">$cookieName</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 未帶有指定 cookie</li>
+</ul>
+<h4 id="assertCreated"><a href="#assertCreated" class="headerlink" title="# assertCreated"></a># assertCreated</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-6"><a href="#以下的-Laravel-Test-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertCreated</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response status code 為 201</li>
+</ul>
+<h4 id="assertDontSee"><a href="#assertDontSee" class="headerlink" title="# assertDontSee"></a># assertDontSee</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-7"><a href="#以下的-Laravel-Test-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertDontSee</span>(<span class="hljs-variable">$value</span>, <span class="hljs-variable">$escaped</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 含有指定 $value string<br>預設會自動 escape string, 除非 arg2 為 false</li>
+</ul>
+<h4 id="assertDontSeeText"><a href="#assertDontSeeText" class="headerlink" title="# assertDontSeeText"></a># assertDontSeeText</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-8"><a href="#以下的-Laravel-Test-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertDontSeeText</span>(<span class="hljs-variable">$value</span>, <span class="hljs-variable">$escaped</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response text 中含有指定 $value string<br>預設會自動 escape string, 除非 arg2 為 false<br>在跑此 assertion 之前, 會先把 response 的內容用 PHP function <code>strip_tags</code> 跑過</li>
+</ul>
+<h4 id="assertExactJson"><a href="#assertExactJson" class="headerlink" title="# assertExactJson"></a># assertExactJson</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-9"><a href="#以下的-Laravel-Test-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertExactJson</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 中, 含有完全符合指定 $data 的 JSON data</li>
+</ul>
+<h4 id="assertForbidden"><a href="#assertForbidden" class="headerlink" title="# assertForbidden"></a># assertForbidden</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-10"><a href="#以下的-Laravel-Test-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertForbidden</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 含有 HTTP status code 403</li>
+</ul>
+<h4 id="assertHeader"><a href="#assertHeader" class="headerlink" title="# assertHeader"></a># assertHeader</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-11"><a href="#以下的-Laravel-Test-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertHeader</span>(<span class="hljs-variable">$headerName</span>, <span class="hljs-variable">$value</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 含有指定的 header 以及其 value</li>
+</ul>
+<h4 id="assertHeaderMissing"><a href="#assertHeaderMissing" class="headerlink" title="# assertHeaderMissing"></a># assertHeaderMissing</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-12"><a href="#以下的-Laravel-Test-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertHeaderMissing</span>(<span class="hljs-variable">$headerName</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 不含有指定 header</li>
+</ul>
+<h4 id="assertJson"><a href="#assertJson" class="headerlink" title="# assertJson"></a># assertJson</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-13"><a href="#以下的-Laravel-Test-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJson</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>, <span class="hljs-variable">$strict</span> = <span class="hljs-literal">false</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 含有指定 JSON data<br><code>assertJson</code> 會將 response 轉成 array, 並且使用 <code>PHPUnit::assertArraySubset</code> 確認指定的 array 存在於 JSON response, 所以如果該 JSON response 中有其他 property, test 也會 pass 過去</li>
+</ul>
+<h4 id="assertJsonCount"><a href="#assertJsonCount" class="headerlink" title="# assertJsonCount"></a># assertJsonCount</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-14"><a href="#以下的-Laravel-Test-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonCount</span>(<span class="hljs-variable">$count</span>, <span class="hljs-variable">$key</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response JSON 中, 指定的 $key 為 array, 而裡頭的 item 數量跟斷言的 $count 數量相符</li>
+</ul>
+<h4 id="assertJsonFragment"><a href="#assertJsonFragment" class="headerlink" title="# assertJsonFragment"></a># assertJsonFragment</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-15"><a href="#以下的-Laravel-Test-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/users&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> [</span><br><span class="line">        <span class="hljs-string">&#x27;users&#x27;</span> =&gt; [</span><br><span class="line">            [</span><br><span class="line">                <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor Otwell&#x27;</span>,</span><br><span class="line">            ],</span><br><span class="line">        ],</span><br><span class="line">    ];</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonFragment</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor Otwell&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 中, 在某個位置有著 <code>[&#39;name&#39; =&gt; &#39;Taylor Otwell&#39;</code></li>
+</ul>
+<h4 id="assertJsonMissing"><a href="#assertJsonMissing" class="headerlink" title="# assertJsonMissing"></a># assertJsonMissing</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-16"><a href="#以下的-Laravel-Test-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonMissing</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 中, 並無 JSON $data<br>假如 Response 為 <code>[&#39;a&#39; =&gt; 1, &#39;b&#39; =&gt; 2]</code>, 那如果 $data 為 <code>[&#39;a&#39; =&gt; 2, &#39;b&#39; =&gt; 2]</code>, 這樣也算 fail</li>
+</ul>
+<h4 id="assertJsonMissingExact"><a href="#assertJsonMissingExact" class="headerlink" title="# assertJsonMissingExact"></a># assertJsonMissingExact</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-17"><a href="#以下的-Laravel-Test-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonMissingExact</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 中, 並無 JSON $data<br>假如 Response 為 <code>[&#39;a&#39; =&gt; 1, &#39;b&#39; =&gt; 2]</code>, 那如果 $data 為 <code>[&#39;a&#39; =&gt; 2, &#39;b&#39; =&gt; 2]</code>, 因為沒有完全符合, 這樣便不算 fail, 然而測試結果為 <code>not perform any assertion</code>, 不確定這樣的行為是否正常, 預期行為應為 <code>pass</code></li>
+</ul>
+<h4 id="assertJsonMissingValidationErrors"><a href="#assertJsonMissingValidationErrors" class="headerlink" title="# assertJsonMissingValidationErrors"></a># assertJsonMissingValidationErrors</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-18"><a href="#以下的-Laravel-Test-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonMissingValidationErrors</span>(<span class="hljs-variable">$keys</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 中, 並無指定 $key 的 JSON validation error</li>
+</ul>
+<h4 id="assertJsonPath"><a href="#assertJsonPath" class="headerlink" title="# assertJsonPath"></a># assertJsonPath</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-19"><a href="#以下的-Laravel-Test-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonPath</span>(<span class="hljs-variable">$path</span>, <span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>, <span class="hljs-variable">$strict</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 在指定的 $path 位置含有指定的 $data<br>見範例如下:</li>
+<li><strong>Demonstration</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// response</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="hljs-string">&quot;user&quot;</span>: &#123;</span><br><span class="line">        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Steve Schoger&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// test method</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonPath</span>(<span class="hljs-string">&#x27;user.name&#x27;</span>, <span class="hljs-string">&#x27;Steve Schoger&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="assertJsonStructure"><a href="#assertJsonStructure" class="headerlink" title="# assertJsonStructure"></a># assertJsonStructure</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-20"><a href="#以下的-Laravel-Test-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonStructure</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$structure</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 為定義的 JSON 結構<br>見範例如下:</li>
+<li><strong>Demonstration</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// response</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="hljs-string">&quot;user&quot;</span>: &#123;</span><br><span class="line">        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Steve Schoger&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// test method</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonStructure</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;user&#x27;</span> =&gt; [</span><br><span class="line">        <span class="hljs-string">&#x27;name&#x27;</span>,</span><br><span class="line">    ]</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="assertJsonValidationErrors"><a href="#assertJsonValidationErrors" class="headerlink" title="# assertJsonValidationErrors"></a># assertJsonValidationErrors</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-21"><a href="#以下的-Laravel-Test-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertJsonValidationErrors</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 需含有指定 keys 的 errors, 適用於 validator error 是以 JSON 結構回傳, 而不是置於 session 當中</li>
+</ul>
+<h4 id="assertLocation"><a href="#assertLocation" class="headerlink" title="# assertLocation"></a># assertLocation</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-22"><a href="#以下的-Laravel-Test-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertLocation</span>(<span class="hljs-variable">$uri</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 的 Location header 的 value 為 $uri</li>
+</ul>
+<h4 id="assertNoContent"><a href="#assertNoContent" class="headerlink" title="# assertNoContent"></a># assertNoContent</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-23"><a href="#以下的-Laravel-Test-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertNoContent</span>(<span class="hljs-variable">$status</span> = <span class="hljs-number">204</span>)</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 需為 no content, 且 status code 為 204</li>
+</ul>
+<h4 id="assertNotFound"><a href="#assertNotFound" class="headerlink" title="# assertNotFound"></a># assertNotFound</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-24"><a href="#以下的-Laravel-Test-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertNotFound</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response status code 需為 404</li>
+</ul>
+<h4 id="assertOk"><a href="#assertOk" class="headerlink" title="# assertOk"></a># assertOk</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-25"><a href="#以下的-Laravel-Test-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertOk</span>()</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response status code 需為 200</li>
+</ul>
+<h4 id="assertPlainCookie"><a href="#assertPlainCookie" class="headerlink" title="# assertPlainCookie"></a># assertPlainCookie</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-26"><a href="#以下的-Laravel-Test-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertPlainCookie</span>(<span class="hljs-variable">$cookieName</span>, <span class="hljs-variable">$value</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 含有指定的 unencrypted cookie</li>
+</ul>
+<h4 id="assertRedirect"><a href="#assertRedirect" class="headerlink" title="# assertRedirect"></a># assertRedirect</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-27"><a href="#以下的-Laravel-Test-example-code-的意思是？-27" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertRedirect</span>(<span class="hljs-variable">$uri</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 為 redirect 到 $uri</li>
+</ul>
+<h4 id="assertSee"><a href="#assertSee" class="headerlink" title="# assertSee"></a># assertSee</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-28"><a href="#以下的-Laravel-Test-example-code-的意思是？-28" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSee</span>(<span class="hljs-variable">$value</span>, <span class="hljs-variable">$escaped</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 含有 string $value, 預設會 escape 此 string, 可指定為 false</li>
+</ul>
+<h4 id="assertSeeInOrder"><a href="#assertSeeInOrder" class="headerlink" title="# assertSeeInOrder"></a># assertSeeInOrder</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-29"><a href="#以下的-Laravel-Test-example-code-的意思是？-29" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSeeInOrder</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$values</span>, <span class="hljs-variable">$escaped</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 中, string 的順序如 $values 的定義, 預設 escape, 可變更為 false</li>
+</ul>
+<h4 id="assertSeeText"><a href="#assertSeeText" class="headerlink" title="# assertSeeText"></a># assertSeeText</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-30"><a href="#以下的-Laravel-Test-example-code-的意思是？-30" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSeeText</span>(<span class="hljs-variable">$value</span>, <span class="hljs-variable">$escaped</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response text 中有 string $value, 預設會 escape string, 可改為 false<br>response 內容會先經過 <a target="_blank" rel="noopener" href="https://www.php.net/manual/en/function.strip-tags.php">strip_tags</a> 處理過, 才會到 assertion</li>
+</ul>
+<h4 id="assertSeeTextInOrder"><a href="#assertSeeTextInOrder" class="headerlink" title="# assertSeeTextInOrder"></a># assertSeeTextInOrder</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-31"><a href="#以下的-Laravel-Test-example-code-的意思是？-31" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSeeTextInOrder</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$values</span>, <span class="hljs-variable">$escaped</span> = <span class="hljs-literal">true</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response text 中有 string $value, 並且照定義的順序排列, 預設會 escape string, 可改為 false<br>response 內容會先經過 <a target="_blank" rel="noopener" href="https://www.php.net/manual/en/function.strip-tags.php">strip_tags</a> 處理過, 才會到 assertion</li>
+</ul>
+<h4 id="assertSessionHas"><a href="#assertSessionHas" class="headerlink" title="# assertSessionHas"></a># assertSessionHas</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-32"><a href="#以下的-Laravel-Test-example-code-的意思是？-32" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHas</span>(<span class="hljs-variable">$key</span>, <span class="hljs-variable">$value</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session $key 含有 $value</li>
+</ul>
+<h4 id="assertSessionHasInput"><a href="#assertSessionHasInput" class="headerlink" title="# assertSessionHasInput"></a># assertSessionHasInput</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-33"><a href="#以下的-Laravel-Test-example-code-的意思是？-33" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasInput</span>(<span class="hljs-variable">$key</span>, <span class="hljs-variable">$value</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 在 flashed input array 含有指定的 key / value</li>
+</ul>
+<h4 id="assertSessionHasAll"><a href="#assertSessionHasAll" class="headerlink" title="# assertSessionHasAll"></a># assertSessionHasAll</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-34"><a href="#以下的-Laravel-Test-example-code-的意思是？-34" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasAll</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 在 含有指定的 array [key / value]<br>例如 session 含有 <code>name</code> 及 <code>status</code> key, 可定義如下：</li>
+<li><strong>Demonstration</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasAll</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor Otwell&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;status&#x27;</span> =&gt; <span class="hljs-string">&#x27;active&#x27;</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="assertSessionHasErrors"><a href="#assertSessionHasErrors" class="headerlink" title="# assertSessionHasErrors"></a># assertSessionHasErrors</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-35"><a href="#以下的-Laravel-Test-example-code-的意思是？-35" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasErrors</span>(</span><br><span class="line">    <span class="hljs-keyword">array</span> <span class="hljs-variable">$keys</span>, <span class="hljs-variable">$format</span> = <span class="hljs-literal">null</span>, <span class="hljs-variable">$errorBag</span> = <span class="hljs-string">&#x27;default&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 中含有指定的 errors, 可以只斷言 key, 也可 key / value<br>這個適合用來測試會將 error 放入 session 的 route, 而不是將 error 導出 JSON response 的 route<br>例如, 斷言 session 中有 error message filed <code>name</code>, <code>email</code> (demonstration 1)<br>也可指定 error message <code>key / value</code> (demonstration 2)</li>
+<li><strong>Demonstration1</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasErrors</span>([<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;email&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Demonstration2</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasErrors</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;The given name was invalid.&#x27;</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="assertSessionHasErrorsIn"><a href="#assertSessionHasErrorsIn" class="headerlink" title="# assertSessionHasErrorsIn"></a># assertSessionHasErrorsIn</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-36"><a href="#以下的-Laravel-Test-example-code-的意思是？-36" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasErrorsIn</span>(<span class="hljs-variable">$errorBag</span>, <span class="hljs-variable">$keys</span> = [], <span class="hljs-variable">$format</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 中, messageBag $errorBag 中含有指定的 error / message <code>$keys</code>, 可定義 key 以及 key / value</li>
+</ul>
+<h4 id="assertSessionHasNoErrors"><a href="#assertSessionHasNoErrors" class="headerlink" title="# assertSessionHasNoErrors"></a># assertSessionHasNoErrors</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-37"><a href="#以下的-Laravel-Test-example-code-的意思是？-37" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionHasNoErrors</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 中沒有 validation errors</li>
+</ul>
+<h4 id="assertSessionDoesntHaveErrors"><a href="#assertSessionDoesntHaveErrors" class="headerlink" title="# assertSessionDoesntHaveErrors"></a># assertSessionDoesntHaveErrors</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-38"><a href="#以下的-Laravel-Test-example-code-的意思是？-38" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionDoesntHaveErrors</span>(<span class="hljs-variable">$keys</span> = [], <span class="hljs-variable">$format</span> = <span class="hljs-literal">null</span>, <span class="hljs-variable">$errorBag</span> = <span class="hljs-string">&#x27;default&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 中沒有指定的 error key</li>
+</ul>
+<h4 id="assertSessionMissing"><a href="#assertSessionMissing" class="headerlink" title="# assertSessionMissing"></a># assertSessionMissing</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-39"><a href="#以下的-Laravel-Test-example-code-的意思是？-39" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSessionMissing</span>(<span class="hljs-variable">$key</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 session 中沒有指定的 $key</li>
+</ul>
+<h4 id="assertStatus"><a href="#assertStatus" class="headerlink" title="# assertStatus"></a># assertStatus</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-40"><a href="#以下的-Laravel-Test-example-code-的意思是？-40" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertStatus</span>(<span class="hljs-variable">$code</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 的 status code 為 $code</li>
+</ul>
+<h4 id="assertSuccessful"><a href="#assertSuccessful" class="headerlink" title="# assertSuccessful"></a># assertSuccessful</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-41"><a href="#以下的-Laravel-Test-example-code-的意思是？-41" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertSuccessful</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 的 status code 為 <code>(&gt;= 200 and &lt; 300)</code></li>
+</ul>
+<h4 id="assertUnauthorized"><a href="#assertUnauthorized" class="headerlink" title="# assertUnauthorized"></a># assertUnauthorized</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-42"><a href="#以下的-Laravel-Test-example-code-的意思是？-42" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertUnauthorized</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response 的 status code 為 401</li>
+</ul>
+<h4 id="assertViewHasAll"><a href="#assertViewHasAll" class="headerlink" title="# assertViewHasAll"></a># assertViewHasAll</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-43"><a href="#以下的-Laravel-Test-example-code-的意思是？-43" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertViewHasAll</span>(<span class="hljs-keyword">array</span> <span class="hljs-variable">$data</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 斷言 response view 中含有指定的 keys 或是多組 key / value</span></span><br><span class="line"><span class="hljs-variable">$rseponse</span>-&gt;<span class="title function_ invoke__">assertViewHasAll</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;name&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;email&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$rseponse</span>-&gt;<span class="title function_ invoke__">assertViewHasAll</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor Otwell&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;email&#x27;</span> =&gt; <span class="hljs-string">&#x27;taylor@example.com,&#x27;</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="assertViewIs"><a href="#assertViewIs" class="headerlink" title="# assertViewIs"></a># assertViewIs</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-44"><a href="#以下的-Laravel-Test-example-code-的意思是？-44" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertViewIs</span>(<span class="hljs-variable">$value</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response view name 跟 $value 一樣</li>
+</ul>
+<h4 id="assertViewMissing"><a href="#assertViewMissing" class="headerlink" title="# assertViewMissing"></a># assertViewMissing</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-45"><a href="#以下的-Laravel-Test-example-code-的意思是？-45" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$response</span>-&gt;<span class="title function_ invoke__">assertViewMissing</span>(<span class="hljs-variable">$key</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 response view 中沒有 $key</li>
+</ul>
+<br>
+
+<h3 id="Authentication-Assertions"><a href="#Authentication-Assertions" class="headerlink" title="# Authentication Assertions"></a># Authentication Assertions</h3><h4 id="assertAuthenticated"><a href="#assertAuthenticated" class="headerlink" title="# assertAuthenticated"></a># assertAuthenticated</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-46"><a href="#以下的-Laravel-Test-example-code-的意思是？-46" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertAuthenticated</span>(<span class="hljs-variable">$guard</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 user is authenticated</li>
+</ul>
+<h4 id="assertGuest"><a href="#assertGuest" class="headerlink" title="# assertGuest"></a># assertGuest</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-47"><a href="#以下的-Laravel-Test-example-code-的意思是？-47" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertGuest</span>(<span class="hljs-variable">$guard</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 user is not authenticated</li>
+</ul>
+<h4 id="assertAuthenticatedAs"><a href="#assertAuthenticatedAs" class="headerlink" title="# assertAuthenticatedAs"></a># assertAuthenticatedAs</h4><h6 id="以下的-Laravel-Test-example-code-的意思是？-48"><a href="#以下的-Laravel-Test-example-code-的意思是？-48" class="headerlink" title="以下的 Laravel Test example code 的意思是？"></a><strong>以下的 Laravel Test example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertAuthenticatedAs</span>(<span class="hljs-variable">$user</span>, <span class="hljs-variable">$guard</span> = <span class="hljs-literal">null</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>斷言 $user is authenticated</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-HTTP-Tests/">#Laravel HTTP Tests</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/different-categories-of-binary-tree/">資料結構 - Tree - 不同類型的 Binary Tree</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-testing-getting-started/">Laravel - Testing - Getting Started (官方文件原子化翻譯)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-testing-http-tests/';
+        this.page.identifier = 'zh-tw/laravel-testing-http-tests/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - Digging Deeper - Task Scheduling (官方文件原子化翻譯) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Task Scheduling (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-task-scheduling/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-02-11T06:31:20.000Z">
+<meta property="article:modified_time" content="2021-08-08T12:41:58.669Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Task Scheduling">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-digging-deeper-task-scheduling/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Task Scheduling (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-task-scheduling/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# Introduction學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-02-11T06:31:20.000Z">
+<meta property="article:modified_time" content="2021-08-08T12:41:58.669Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Task Scheduling">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">1&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Schedules">2&nbsp;&nbsp;<b># Defining Schedules</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Scheduling-Artisan-Commands">2.1&nbsp;&nbsp;# Scheduling Artisan Commands</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Scheduling-Shell-Commands">2.2&nbsp;&nbsp;# Scheduling Shell Commands</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Schedule-Frequency-Options">2.3&nbsp;&nbsp;# Schedule Frequency Options</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Day-Constraints">2.3.1&nbsp;&nbsp;# Day Constraints</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Between-Time-Constraints">2.3.2&nbsp;&nbsp;# Between Time Constraints</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Timezones">2.4&nbsp;&nbsp;# Timezones</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Preventing-Task-Overlaps">2.5&nbsp;&nbsp;# Preventing Task Overlaps</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Running-Tasks-On-One-Server">2.6&nbsp;&nbsp;# Running Tasks On One Server</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Background-Tasks">2.7&nbsp;&nbsp;# Background Tasks</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Maintenance-Mode">2.8&nbsp;&nbsp;# Maintenance Mode</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Running-The-Scheduler">3&nbsp;&nbsp;<b># Running The Scheduler</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Running-The-Scheduler-Locally">4&nbsp;&nbsp;<b># Running The Scheduler Locally</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Task-Output">5&nbsp;&nbsp;<b># Task Output</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Task-Hooks">6&nbsp;&nbsp;<b># Task Hooks</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Pinging-URLs">6.1.1&nbsp;&nbsp;# Pinging URLs</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-digging-deeper-task-scheduling/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-digging-deeper-task-scheduling/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Digging Deeper - Task Scheduling (官方文件原子化翻譯)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-02-11T06:31:20.000Z" itemprop="datePublished">2月 11 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            19 分钟 讀完 (大概 2833 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Defining-Schedules"><a href="#Defining-Schedules" class="headerlink" title="# Defining Schedules"></a># Defining Schedules</h2><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Console</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Scheduling</span>\<span class="hljs-title">Schedule</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Foundation</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Kernel</span> <span class="hljs-keyword">as</span> <span class="hljs-title">ConsoleKernel</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Facades</span>\<span class="hljs-title">DB</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Kernel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ConsoleKernel</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$commands</span> = [</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">schedule</span>(<span class="hljs-params">Schedule <span class="hljs-variable">$schedule</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">            DB::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;recent_users&#x27;</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br><span class="line">        &#125;)-&gt;<span class="title function_ invoke__">daily</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 <code>App\Console\Kernel</code> class 的 schedule method 中定義 schedule, 在每天的晚上 12 點刪除 records in recent_users table</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(<span class="hljs-keyword">new</span> <span class="title class_">DeleteRecentUsers</span>)-&gt;<span class="title function_ invoke__">daily</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>除了 schedule closure, 也可以 schedule invokable object</li>
+</ul>
+<h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan schedule:<span class="hljs-keyword">list</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>列出所有已定義的 schedule overview  </li>
+</ul>
+<br>
+
+<h3 id="Scheduling-Artisan-Commands"><a href="#Scheduling-Artisan-Commands" class="headerlink" title="# Scheduling Artisan Commands"></a># Scheduling Artisan Commands</h3><h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Commands</span>\<span class="hljs-title">SendEmailsCommand</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send Taylor --force&#x27;</span>)-&gt;<span class="title function_ invoke__">daily</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="title class_">SendEmailsCommand</span>::<span class="variable language_">class</span>, [<span class="hljs-string">&#x27;Taylor&#x27;</span>, <span class="hljs-string">&#x27;--force&#x27;</span>])-&gt;<span class="title function_ invoke__">daily</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 Laravel schedule 來 schedule command</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Jobs</span>\<span class="hljs-title">Heartbeat</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">job</span>(<span class="hljs-keyword">new</span> <span class="title class_">Heartbeat</span>, <span class="hljs-string">&#x27;heartbeats&#x27;</span>, <span class="hljs-string">&#x27;sqs&#x27;</span>)-&gt;<span class="title function_ invoke__">everyFiveMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 Laravel schedule 來 schedule job, 並指定 queue 以及 connection</li>
+</ul>
+<br>
+
+<h3 id="Scheduling-Shell-Commands"><a href="#Scheduling-Shell-Commands" class="headerlink" title="# Scheduling Shell Commands"></a># Scheduling Shell Commands</h3><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">exec</span>(<span class="hljs-string">&#x27;node /home/forge/script.js&#x27;</span>)-&gt;<span class="title function_ invoke__">daily</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 Laravel schedule 來 schedule shell command</li>
+</ul>
+<br>
+
+<h3 id="Schedule-Frequency-Options"><a href="#Schedule-Frequency-Options" class="headerlink" title="# Schedule Frequency Options"></a># Schedule Frequency Options</h3><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">cron</span>(<span class="hljs-string">&#x27;* * * * *&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>客製化的 cron schedule</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyMinute</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyTwoMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 2 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyThreeMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 3 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyFourMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 4 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyFiveMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 5 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyTenMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 10 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyFifteenMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 15 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyThirtyMinutes</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 30 分鐘執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">hourly</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 1 小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">hourlyAt</span>(<span class="hljs-number">17</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 1 小時的 17 分執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyTwoHours</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 2 小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyThreeHours</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 3 小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everyFourHours</span>();	</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 4 小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">everySixHours</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 6 小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">daily</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 1 天 00:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">dailyAt</span>(<span class="hljs-string">&#x27;13:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 1 天的 13:00 時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">twiceDaily</span>(<span class="hljs-number">1</span>, <span class="hljs-number">13</span>);	</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每 1 天的 01:00 以及 13:00 時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">weekly</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每個 Sunday 00:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-24"><a href="#以下的-Laravel-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">weeklyOn</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;8:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每個 Monday 8:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">monthly</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每個月的第一天 00:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">monthlyOn</span>(<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;15:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每個月的第四天 15:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-27"><a href="#以下的-Laravel-example-code-的意思是？-27" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">twiceMonthly</span>(<span class="hljs-number">1</span>, <span class="hljs-number">16</span>, <span class="hljs-string">&#x27;13:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每個月的第一天, 第十六天 13:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-28"><a href="#以下的-Laravel-example-code-的意思是？-28" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">lastDayOfMonth</span>(<span class="hljs-string">&#x27;15:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每個月的最後一天, 15:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-29"><a href="#以下的-Laravel-example-code-的意思是？-29" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">quarterly</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每季的第一天 00:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-30"><a href="#以下的-Laravel-example-code-的意思是？-30" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">yearly</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每年的第一天 00:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-31"><a href="#以下的-Laravel-example-code-的意思是？-31" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">yearlyOn</span>(<span class="hljs-number">6</span>, <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;17:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每年的六月一號 17:00 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-32"><a href="#以下的-Laravel-example-code-的意思是？-32" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">timezone</span>(<span class="hljs-string">&#x27;America/New_York&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 schedule timezone</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-33"><a href="#以下的-Laravel-example-code-的意思是？-33" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">weekly</span>()-&gt;<span class="title function_ invoke__">mondays</span>()-&gt;<span class="title function_ invoke__">at</span>(<span class="hljs-string">&#x27;13:00&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;foo&#x27;</span>)</span><br><span class="line">          -&gt;<span class="title function_ invoke__">weekdays</span>()</span><br><span class="line">          -&gt;<span class="title function_ invoke__">hourly</span>()</span><br><span class="line">          -&gt;<span class="title function_ invoke__">timezone</span>(<span class="hljs-string">&#x27;America/Chicago&#x27;</span>)</span><br><span class="line">          -&gt;<span class="title function_ invoke__">between</span>(<span class="hljs-string">&#x27;8:00&#x27;</span>, <span class="hljs-string">&#x27;17:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>除了直接使用 constraint method, 也可以將不同的 constraint 連接起來<br>每個禮拜一的 13:00 執行<br>星期 1 - 5, 8:00 到 17:00 每小時執行一次</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-34"><a href="#以下的-Laravel-example-code-的意思是？-34" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">weekdays</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜 1 - 5 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-35"><a href="#以下的-Laravel-example-code-的意思是？-35" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">weekends</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜六 - 日 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-36"><a href="#以下的-Laravel-example-code-的意思是？-36" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">sundays</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜日執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-37"><a href="#以下的-Laravel-example-code-的意思是？-37" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">mondays</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜一執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-38"><a href="#以下的-Laravel-example-code-的意思是？-38" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;tuesdays;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜二執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-39"><a href="#以下的-Laravel-example-code-的意思是？-39" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;wednesdays;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜三執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-40"><a href="#以下的-Laravel-example-code-的意思是？-40" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;thursdays;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜四執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-41"><a href="#以下的-Laravel-example-code-的意思是？-41" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;fridays;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜五執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-42"><a href="#以下的-Laravel-example-code-的意思是？-42" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">saturdays</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>禮拜六執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-43"><a href="#以下的-Laravel-example-code-的意思是？-43" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">days</span>(<span class="hljs-keyword">array</span>|<span class="hljs-keyword">mixed</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在指定的 days 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-44"><a href="#以下的-Laravel-example-code-的意思是？-44" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">bewteen</span>(<span class="hljs-variable">$startTime</span>, <span class="hljs-variable">$endTime</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在指定的時間區間內執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-45"><a href="#以下的-Laravel-example-code-的意思是？-45" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">unlessBetween</span>(<span class="hljs-variable">$startTime</span>, <span class="hljs-variable">$endTime</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>只在指定的時間區間內不執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-46"><a href="#以下的-Laravel-example-code-的意思是？-46" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">when</span>(<span class="hljs-built_in">Closure</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當 closure return true 時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-47"><a href="#以下的-Laravel-example-code-的意思是？-47" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">call</span>(function () &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">enviroments</span>(<span class="hljs-variable">$env</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>若為指定的 env 時則執行, 例如 staging 或 production</li>
+</ul>
+<br>
+
+<h4 id="Day-Constraints"><a href="#Day-Constraints" class="headerlink" title="# Day Constraints"></a># Day Constraints</h4><h6 id="以下的-Laravel-example-code-的意思是？-48"><a href="#以下的-Laravel-example-code-的意思是？-48" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">hourly</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">days</span>([<span class="hljs-number">0</span>, <span class="hljs-number">3</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在禮拜日, 禮拜三的每小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-49"><a href="#以下的-Laravel-example-code-的意思是？-49" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Scheduling</span>\<span class="hljs-title">Schedule</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">hourly</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">days</span>([<span class="title class_">Schedule</span>::<span class="variable constant_">SUNDAY</span>, <span class="title class_">Schedule</span>::<span class="variable constant_">WEDNESDAY</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在禮拜日, 禮拜三的每小時執行</li>
+</ul>
+<br>
+
+<h4 id="Between-Time-Constraints"><a href="#Between-Time-Constraints" class="headerlink" title="# Between Time Constraints"></a># Between Time Constraints</h4><h6 id="以下的-Laravel-example-code-的意思是？-50"><a href="#以下的-Laravel-example-code-的意思是？-50" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">hourly</span>()</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">between</span>(<span class="hljs-string">&#x27;7:00&#x27;</span>, <span class="hljs-string">&#x27;22:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 7:00 到 22:00 之間, 每小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-51"><a href="#以下的-Laravel-example-code-的意思是？-51" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">hourly</span>()</span><br><span class="line">                    -&gt;<span class="title function_ invoke__">unlessBetween</span>(<span class="hljs-string">&#x27;23:00&#x27;</span>, <span class="hljs-string">&#x27;4:00&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 23:00 到 04:00 之間不執行, 其餘時間每小時執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-52"><a href="#以下的-Laravel-example-code-的意思是？-52" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)-&gt;<span class="title function_ invoke__">daily</span>()-&gt;<span class="title function_ invoke__">when</span>(function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每天的 00:00, 若 when() 內 closure return true 執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-53"><a href="#以下的-Laravel-example-code-的意思是？-53" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)-&gt;<span class="title function_ invoke__">daily</span>()-&gt;<span class="title function_ invoke__">skip</span>(function () &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每天的 00:00, 若 skip() 內 closure return true 則不執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-54"><a href="#以下的-Laravel-example-code-的意思是？-54" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">            -&gt;<span class="title function_ invoke__">environments</span>([<span class="hljs-string">&#x27;staging&#x27;</span>, <span class="hljs-string">&#x27;production&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>每天的 00:00, 若 env 為 staging 或 production 時執行</li>
+</ul>
+<br>
+
+<h3 id="Timezones"><a href="#Timezones" class="headerlink" title="# Timezones"></a># Timezones</h3><h6 id="以下的-Laravel-example-code-的意思是？-55"><a href="#以下的-Laravel-example-code-的意思是？-55" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;report:generate&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">timezone</span>(<span class="hljs-string">&#x27;America/New_York&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">at</span>(<span class="hljs-string">&#x27;2:00&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>New_York 時間的 2:00 執行</li>
+</ul>
+<h6 id="以下位於-App-Console-Kernel-的-Laravel-example-code-的意思是？"><a href="#以下位於-App-Console-Kernel-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 App\Console\Kernel 的 Laravel example code 的意思是？"></a><strong>以下位於 App\Console\Kernel 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scheduleTimezone</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;America/Chicago&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 App\Console\Kernel 的 scheduleTimezone() 內可定義適用於 schedule 的 global timezone</li>
+</ul>
+<h6 id="Laravel-中-為何不建議-timezone-scheduling"><a href="#Laravel-中-為何不建議-timezone-scheduling" class="headerlink" title="Laravel 中, 為何不建議 timezone scheduling?"></a><strong>Laravel 中, 為何不建議 timezone scheduling?</strong></h6><p>因為一些時區會使用夏令制, 也就是可能會多一個小時或少一個小時, 這會造成一個 schedule 在一天內執行兩次, 或完全不執行</p>
+<br>
+
+<h3 id="Preventing-Task-Overlaps"><a href="#Preventing-Task-Overlaps" class="headerlink" title="# Preventing Task Overlaps"></a># Preventing Task Overlaps</h3><h6 id="以下的-Laravel-example-code-的意思是？-56"><a href="#以下的-Laravel-example-code-的意思是？-56" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)-&gt;<span class="title function_ invoke__">withoutOverlapping</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 withoutOverlapping() 來避免 task 已經在執行中了, 又被執行</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-57"><a href="#以下的-Laravel-example-code-的意思是？-57" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)-&gt;<span class="title function_ invoke__">withoutOverlapping</span>(<span class="hljs-number">10</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 withoutOverlapping() 來避免 task 已經在執行中了, 又被執行, 預設 withoutOverlapping lock 會在 24 hours 後失效, 也可帶入時間自定義, 單位為 minute</li>
+</ul>
+<br>
+
+<h3 id="Running-Tasks-On-One-Server"><a href="#Running-Tasks-On-One-Server" class="headerlink" title="# Running Tasks On One Server"></a># Running Tasks On One Server</h3><h6 id="以下的-Laravel-example-code-的意思是？-58"><a href="#以下的-Laravel-example-code-的意思是？-58" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;report:generate&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">fridays</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">at</span>(<span class="hljs-string">&#x27;17:00&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">onOneServer</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果是跑多台 server 的話, scheduled task 很有可能會在多台 server 同時執行, 這樣就執行了多次, 浪費效能, 可使用 onOneServer(), 第一台取得該 scheduled task 執行權的 server 會給該 task 加上一個 lock, 避免重複執行</li>
+</ul>
+<br>
+
+<h3 id="Background-Tasks"><a href="#Background-Tasks" class="headerlink" title="# Background Tasks"></a># Background Tasks</h3><h6 id="以下的-Laravel-example-code-的意思是？-59"><a href="#以下的-Laravel-example-code-的意思是？-59" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;analytics:report&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">runInBackground</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用 scheduled task 時, 預設會按照順序執行的, 如此一來, 如果遇到耗時較久的 task, 很有可能會造成阻塞, 這時可使用 runInBackground() 讓不同的 task 同時被執行, runInBackground() 只適用於 command 或 exec 的 scheduled task</li>
+</ul>
+<br>
+
+<h3 id="Maintenance-Mode"><a href="#Maintenance-Mode" class="headerlink" title="# Maintenance Mode"></a># Maintenance Mode</h3><h6 id="以下的-Laravel-example-code-的意思是？-60"><a href="#以下的-Laravel-example-code-的意思是？-60" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)-&gt;<span class="title function_ invoke__">evenInMaintenanceMode</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>預設在 maintenance mode 時, scheduled task 是不會被執行的, 如果依然想要執行的話, 可使用 evenInMaintenanceMode()</li>
+</ul>
+<br>
+
+<h2 id="Running-The-Scheduler"><a href="#Running-The-Scheduler" class="headerlink" title="# Running The Scheduler"></a># Running The Scheduler</h2><h6 id="以下的-Laravel-example-code-的意思是？-61"><a href="#以下的-Laravel-example-code-的意思是？-61" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">* * * * * cd /path-to-your-project &amp;&amp; php artisan schedule:run &gt;&gt; /dev/<span class="hljs-literal">null</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br><code>schedule:run</code> 指定會去判斷當下時間是否有需要執行任何已定義的 scheduled task, 所以必須使用 cron server, 每分鐘都執行一次 <code>schedule:run</code></li>
+</ul>
+<br>
+
+<h2 id="Running-The-Scheduler-Locally"><a href="#Running-The-Scheduler-Locally" class="headerlink" title="# Running The Scheduler Locally"></a># Running The Scheduler Locally</h2><h6 id="以下的-Laravel-example-code-的意思是？-62"><a href="#以下的-Laravel-example-code-的意思是？-62" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan schedule:work</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在本地開發時, 我們不太會使用 cron 來跑 scheduled task, 這時可使用 <code>schedule:work</code> command 來暫時跑一個 process 在 foreground, 每分鐘都去執行 <code>schedule:run</code></li>
+</ul>
+<br>
+
+<h2 id="Task-Output"><a href="#Task-Output" class="headerlink" title="# Task Output"></a># Task Output</h2><h6 id="以下的-Laravel-example-code-的意思是？-63"><a href="#以下的-Laravel-example-code-的意思是？-63" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">sendOutputTo</span>(<span class="hljs-variable">$filePath</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 scheduled task 的 output 位置, 會覆蓋該檔案</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-64"><a href="#以下的-Laravel-example-code-的意思是？-64" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">appendOutputTo</span>(<span class="hljs-variable">$filePath</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 scheduled task 的 output append 位置, append 輸出</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-65"><a href="#以下的-Laravel-example-code-的意思是？-65" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;report:generate&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">sendOutputTo</span>(<span class="hljs-variable">$filePath</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">emailOutputTo</span>(<span class="hljs-string">&#x27;taylor@example.com&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 scheduled task 的 output 位置, 可定義機器內的檔案位置, 或是將 output 透過 email 發送</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-66"><a href="#以下的-Laravel-example-code-的意思是？-66" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;report:generate&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">emailOutputOnFailure</span>(<span class="hljs-string">&#x27;taylor@example.com&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 scheduled task 的 output 透過 email 方式發送, 且只有在 non-zero exit code 時才發送</li>
+</ul>
+<br>
+
+<h2 id="Task-Hooks"><a href="#Task-Hooks" class="headerlink" title="# Task Hooks"></a># Task Hooks</h2><h6 id="以下的-Laravel-example-code-的意思是？-67"><a href="#以下的-Laravel-example-code-的意思是？-67" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">before</span>(function () &#123;</span><br><span class="line">            <span class="hljs-comment">// do something</span></span><br><span class="line">         &#125;)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">after</span>(function () &#123;</span><br><span class="line">            <span class="hljs-comment">// do something</span></span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 before(), after(), 在 scheduled task 被執行前以及執行後執行一些邏輯</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-68"><a href="#以下的-Laravel-example-code-的意思是？-68" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">Stringable</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">onSuccess</span>(function (<span class="hljs-built_in">Stringable</span> <span class="hljs-variable">$output</span>) &#123;</span><br><span class="line">             <span class="hljs-comment">// do something</span></span><br><span class="line">         &#125;)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">onFailure</span>(function (<span class="hljs-built_in">Stringable</span> <span class="hljs-variable">$output</span>) &#123;</span><br><span class="line">             <span class="hljs-comment">// do something</span></span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 onSuccess(), onFailure(), 在 scheduled task 執行成功或失敗後做一些事, 並且可使用 type hint Stringable 來存取 output</li>
+</ul>
+<br>
+
+<h4 id="Pinging-URLs"><a href="#Pinging-URLs" class="headerlink" title="# Pinging URLs"></a># Pinging URLs</h4><h6 id="以下的-Laravel-example-code-的意思是？-69"><a href="#以下的-Laravel-example-code-的意思是？-69" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">pingBefore</span>(<span class="hljs-variable">$url</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">thenPing</span>(<span class="hljs-variable">$url</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 pingBefore(), thenPing(), 在 scheduled task 執行前後 ping 指定的 url</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-70"><a href="#以下的-Laravel-example-code-的意思是？-70" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">pingBeforeIf</span>(<span class="hljs-variable">$condition</span>, <span class="hljs-variable">$url</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">thenPingIf</span>(<span class="hljs-variable">$condition</span>, <span class="hljs-variable">$url</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>ping arg2 的 $url, 如果 arg1 $condition 為 true 的話</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-71"><a href="#以下的-Laravel-example-code-的意思是？-71" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">daily</span>()</span><br><span class="line">         -&gt;<span class="title function_ invoke__">pingOnSuccess</span>(<span class="hljs-variable">$successUrl</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">pingOnFailure</span>(<span class="hljs-variable">$failureUrl</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>會在 success 時 ping $successUrl, fails 時 ping $failureUrl</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-72"><a href="#以下的-Laravel-example-code-的意思是？-72" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$schedule</span>-&gt;<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;emails:send&#x27;</span>)</span><br><span class="line">         -&gt;<span class="title function_ invoke__">twiceDailyAt</span>(<span class="hljs-number">1</span>, <span class="hljs-number">13</span>, <span class="hljs-number">5</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>一天跑兩次, 分別在 01:05, 以及 13:05 時執行</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Task-Scheduling/">#Laravel Task Scheduling</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-eloquent-orm-serialization/">Laravel - Eloquent ORM - Serialization (官方文件原子化翻譯)</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-digging-deeper-mail/">Laravel - Digging Deeper - Mail (官方文件原子化翻譯筆記)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-digging-deeper-task-scheduling/';
+        this.page.identifier = 'zh-tw/laravel-digging-deeper-task-scheduling/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

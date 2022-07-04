@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Kubernetes - 建立一個 DaemonSet - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言本文會簡單介紹 Kubernetes DaemonSet, 並且實際建立一個 DaemonSet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes - 建立一個 DaemonSet">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-create-a-daemonset/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言本文會簡單介紹 Kubernetes DaemonSet, 並且實際建立一個 DaemonSet">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3et3HhDo2SxP9McSAnOKOObwlB_Q2c65Te4ON3gnszVhXd8Xb1ciNwR1qtwdQyxYrxFHYYCfpVzh-RhGJJbphBnIfrOapfjjbgS2gj-CqaTymlkAzt2IlPmYY99yL87-A_ElZ3OQ_N5oL2Yzkiw4o8aGw=w3562-h228-no?authuser=0">
+<meta property="article:published_time" content="2020-12-21T02:40:46.000Z">
+<meta property="article:modified_time" content="2020-12-21T07:13:54.176Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Kubernetes DaemonSet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3et3HhDo2SxP9McSAnOKOObwlB_Q2c65Te4ON3gnszVhXd8Xb1ciNwR1qtwdQyxYrxFHYYCfpVzh-RhGJJbphBnIfrOapfjjbgS2gj-CqaTymlkAzt2IlPmYY99yL87-A_ElZ3OQ_N5oL2Yzkiw4o8aGw=w3562-h228-no?authuser=0">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/kubernetes-create-a-daemonset/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言本文會簡單介紹 Kubernetes DaemonSet, 並且實際建立一個 DaemonSet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes - 建立一個 DaemonSet">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/kubernetes-create-a-daemonset/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言本文會簡單介紹 Kubernetes DaemonSet, 並且實際建立一個 DaemonSet">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3et3HhDo2SxP9McSAnOKOObwlB_Q2c65Te4ON3gnszVhXd8Xb1ciNwR1qtwdQyxYrxFHYYCfpVzh-RhGJJbphBnIfrOapfjjbgS2gj-CqaTymlkAzt2IlPmYY99yL87-A_ElZ3OQ_N5oL2Yzkiw4o8aGw=w3562-h228-no?authuser=0">
+<meta property="article:published_time" content="2020-12-21T02:40:46.000Z">
+<meta property="article:modified_time" content="2020-12-21T07:13:54.176Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Kubernetes DaemonSet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3et3HhDo2SxP9McSAnOKOObwlB_Q2c65Te4ON3gnszVhXd8Xb1ciNwR1qtwdQyxYrxFHYYCfpVzh-RhGJJbphBnIfrOapfjjbgS2gj-CqaTymlkAzt2IlPmYY99yL87-A_ElZ3OQ_N5oL2Yzkiw4o8aGw=w3562-h228-no?authuser=0">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#簡介">2&nbsp;&nbsp;<b># 簡介</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#實作">3&nbsp;&nbsp;<b># 實作</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結語">4&nbsp;&nbsp;<b># 結語</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">5&nbsp;&nbsp;<b># Questions and Answers</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-example-code-代表什麼意思？">5.1&nbsp;&nbsp;以下的 Kubernetes example code 代表什麼意思？</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#以下的-Kubernetes-example-code-代表什麼意思？-1">5.2&nbsp;&nbsp;以下的 Kubernetes example code 代表什麼意思？</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/kubernetes-create-a-daemonset/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/kubernetes-create-a-daemonset/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Kubernetes - 建立一個 DaemonSet
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-12-21T02:40:46.000Z" itemprop="datePublished">12月 21 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Ops/">Ops</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            5 分钟 讀完 (大概 783 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>本文會簡單介紹 Kubernetes DaemonSet, 並且實際建立一個 DaemonSet</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="簡介"><a href="#簡介" class="headerlink" title="# 簡介"></a># 簡介</h2><p>DaemonSet 是一種 Pod 控制器, 簡單來說, 我們可以定義<strong>所有</strong> 或 <strong>部分</strong> 的 Node 上自動運行 DaemonSet 所定義的 Pod<br>當新的 Node 被加入 Cluster, DaemonSet 所定義的 Pod 會自動 schedule 到該 Node, 而當該 Node 從 Cluster 被移除時, 該 Pod 也會被移除<br>常見的三種應用：</p>
+<ul>
+<li>用來運行 Cluster 規模的儲存應用, 像是 Ceph</li>
+<li>在每個 Node 上運行 Logs collection 應用, 像是 Fluentd-elasticsearch</li>
+<li>在每個 Node 上運行監控應用, 像是 Prometheus</li>
+</ul>
+<br>
+<br>
+
+<h2 id="實作"><a href="#實作" class="headerlink" title="# 實作"></a># 實作</h2><p>下面我們就依照官方文件簡單的來部署一個 DaemonSet 吧</p>
+<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">  <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-system</span></span><br><span class="line">  <span class="hljs-attr">labels:</span></span><br><span class="line">    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">fluentd-logging</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">  <span class="hljs-attr">selector:</span></span><br><span class="line">    <span class="hljs-attr">matchLabels:</span></span><br><span class="line">      <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">  <span class="hljs-attr">template:</span></span><br><span class="line">    <span class="hljs-attr">metadata:</span></span><br><span class="line">      <span class="hljs-attr">labels:</span></span><br><span class="line">        <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">    <span class="hljs-attr">spec:</span></span><br><span class="line">      <span class="hljs-attr">tolerations:</span></span><br><span class="line">      <span class="hljs-comment"># this toleration is to have the daemonset runnable on master nodes</span></span><br><span class="line">      <span class="hljs-comment"># remove it if your masters can&#x27;t run pods</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">node-role.kubernetes.io/master</span></span><br><span class="line">        <span class="hljs-attr">effect:</span> <span class="hljs-string">NoSchedule</span></span><br><span class="line">      <span class="hljs-attr">containers:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">        <span class="hljs-attr">image:</span> <span class="hljs-string">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span></span><br><span class="line">        <span class="hljs-attr">resources:</span></span><br><span class="line">          <span class="hljs-attr">limits:</span></span><br><span class="line">            <span class="hljs-attr">memory:</span> <span class="hljs-string">200Mi</span></span><br><span class="line">          <span class="hljs-attr">requests:</span></span><br><span class="line">            <span class="hljs-attr">cpu:</span> <span class="hljs-string">100m</span></span><br><span class="line">            <span class="hljs-attr">memory:</span> <span class="hljs-string">200Mi</span></span><br><span class="line">        <span class="hljs-attr">volumeMounts:</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlog</span></span><br><span class="line">          <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/log</span></span><br><span class="line">        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line">          <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br><span class="line">          <span class="hljs-attr">readOnly:</span> <span class="hljs-literal">true</span></span><br><span class="line">      <span class="hljs-attr">terminationGracePeriodSeconds:</span> <span class="hljs-number">30</span></span><br><span class="line">      <span class="hljs-attr">volumes:</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlog</span></span><br><span class="line">        <span class="hljs-attr">hostPath:</span></span><br><span class="line">          <span class="hljs-attr">path:</span> <span class="hljs-string">/var/log</span></span><br><span class="line">      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">varlibdockercontainers</span></span><br><span class="line">        <span class="hljs-attr">hostPath:</span></span><br><span class="line">          <span class="hljs-attr">path:</span> <span class="hljs-string">/var/lib/docker/containers</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的配置架構基本上跟 Deployment 差不多</p>
+<p>resources 為定義 Pod 的資源限制, request 為 <strong>將該 Pod 放置到該 Node, 該 Node 需耗費的資源</strong>, limit 為 <strong>該 Pod 可使用的資源限制</strong>, 若有多個 container, 相加之後就等於該 Pod 的資源限制。 詳情可參考 <a href="https://tn710617.github.io/zh-tw/managing-compute-resources-for-containers/">Kubernetes Resources</a></p>
+<p>volumeMounts 會將定義的 volume 與 <strong>mountPath</strong> 定義的位置互相同步</p>
+<p>volumes 可使用多種來源, configMap, secret 都是可以的, 這邊使用 hostPath, 為該 Pod 的 Host 位置, 也就試運行該 Pod 的 Node 位置</p>
+<p>要特別注意的是 toleration, DaemonSet 預設是不會把 Pod 部署到 master node 上的, 但加了 toleration 的設定後, 就可以解除這個限制</p>
+<p>讓我們實際部署吧, 可以 apply 上面的 yaml, 也可以 apply 官網提供的 url</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">kubectl apply -f https://k8s.io/examples/controllers/daemonset.yaml</span><br></pre></td></tr></table></figure>
+
+<p>接著讓我們來觀察一下是否每個 Node 都被分配了這個 Pod</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">kubectl get pods -l name=fluentd-elasticsearch -A -o wide</span><br></pre></td></tr></table></figure>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3et3HhDo2SxP9McSAnOKOObwlB_Q2c65Te4ON3gnszVhXd8Xb1ciNwR1qtwdQyxYrxFHYYCfpVzh-RhGJJbphBnIfrOapfjjbgS2gj-CqaTymlkAzt2IlPmYY99yL87-A_ElZ3OQ_N5oL2Yzkiw4o8aGw=w3562-h228-no?authuser=0"></p>
+<p>可以看到, 每個 Node 上都被部署了該 DaemonSet 定義的 Pod</p>
+<br>
+<br>
+
+<h2 id="結語"><a href="#結語" class="headerlink" title="# 結語"></a># 結語</h2><p>風蕭蕭兮易水寒, 壯士一去兮… 不復還…<br>拍謝我自己都不知道自己在工啥小<br>好啦！ 本文就到此結束, 謝謝各位, 我們下次見！</p>
+<br>
+<br>
+
+<h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="# Questions and Answers"></a># Questions and Answers</h2><h6 id="以下的-Kubernetes-example-code-代表什麼意思？"><a href="#以下的-Kubernetes-example-code-代表什麼意思？" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">kubectl</span> <span class="hljs-string">get</span> <span class="hljs-string">pods</span> <span class="hljs-string">-l</span> <span class="hljs-string">name=fluentd-elasticsearch</span> <span class="hljs-string">-A</span> <span class="hljs-string">-o</span> <span class="hljs-string">wide</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取出所有 Namespace 中, labels 為 <code>name=fluentd-elasticsearch</code> 的 Pod, output = wide</li>
+</ul>
+<h6 id="以下的-Kubernetes-example-code-代表什麼意思？-1"><a href="#以下的-Kubernetes-example-code-代表什麼意思？-1" class="headerlink" title="以下的 Kubernetes example code 代表什麼意思？"></a><strong>以下的 Kubernetes example code 代表什麼意思？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight yaml hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span></span><br><span class="line"><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span></span><br><span class="line"><span class="hljs-attr">metadata:</span></span><br><span class="line">    <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">    <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-system</span></span><br><span class="line">    <span class="hljs-attr">labels:</span></span><br><span class="line">        <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">fluentd-logging</span></span><br><span class="line"><span class="hljs-attr">spec:</span></span><br><span class="line">    <span class="hljs-attr">selector:</span></span><br><span class="line">        <span class="hljs-attr">matchLabels:</span></span><br><span class="line">            <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">    <span class="hljs-attr">template:</span></span><br><span class="line">        <span class="hljs-attr">metadata:</span></span><br><span class="line">            <span class="hljs-attr">labels:</span></span><br><span class="line">                <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">        <span class="hljs-attr">spec:</span></span><br><span class="line">            <span class="hljs-attr">tolerations:</span></span><br><span class="line">                <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">node-role.kubernetes.io/master</span></span><br><span class="line">                  <span class="hljs-attr">effect:</span> <span class="hljs-string">NoSchedule</span></span><br><span class="line">            <span class="hljs-attr">containers:</span></span><br><span class="line">                <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">fluentd-elasticsearch</span></span><br><span class="line">                  <span class="hljs-attr">image:</span> <span class="hljs-string">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span></span><br><span class="line">            <span class="hljs-attr">terminationGracePeriodSeconds:</span> <span class="hljs-number">30</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 tolerations 來解除 <code>DaemonSet 預設並不會將 Pod 部署到 master node 上</code> 的限制</li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes/">#Kubernetes</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Kubernetes-DaemonSet/">#Kubernetes DaemonSet</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/introduction-on-recursion-with-php-example/">Recursion (遞迴) 簡介 - PHP 範例</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/kubernetes-daemonset/">Kubernetes - DaemonSet</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/kubernetes-create-a-daemonset/';
+        this.page.identifier = 'zh-tw/kubernetes-create-a-daemonset/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

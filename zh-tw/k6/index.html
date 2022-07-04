@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>k6 - 使用筆記 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言使用 k6 來測試高併發">
+<meta property="og:type" content="article">
+<meta property="og:title" content="k6 - 使用筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/k6/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言使用 k6 來測試高併發">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-12-17T03:47:21.000Z">
+<meta property="article:modified_time" content="2021-12-27T05:34:16.611Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="k6">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/k6/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言使用 k6 來測試高併發">
+<meta property="og:type" content="article">
+<meta property="og:title" content="k6 - 使用筆記">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/k6/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言使用 k6 來測試高併發">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-12-17T03:47:21.000Z">
+<meta property="article:modified_time" content="2021-12-27T05:34:16.611Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="k6">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#安裝">2&nbsp;&nbsp;<b># 安裝</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Linux">2.1&nbsp;&nbsp;# Linux</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Fedora-CentOS">2.2&nbsp;&nbsp;# Fedora/CentOS</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#MacOS">2.3&nbsp;&nbsp;# MacOS</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用概述">3&nbsp;&nbsp;<b># 使用概述</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用詳解">4&nbsp;&nbsp;<b># 使用詳解</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#HTTP-Requests">4.1&nbsp;&nbsp;# HTTP Requests</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#GET-request-example">4.1.1&nbsp;&nbsp;# GET request example</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#POST-request-example">4.1.2&nbsp;&nbsp;# POST request example</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#可用-method">4.1.3&nbsp;&nbsp;# 可用 method</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#HTTP-Request-Tags">4.1.4&nbsp;&nbsp;# HTTP Request Tags</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#URL-Grouping">4.1.5&nbsp;&nbsp;# URL Grouping</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Metrics">4.2&nbsp;&nbsp;# Metrics</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#內建-metrics">4.2.1&nbsp;&nbsp;# 內建 metrics</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取得指定-request-的-HTTP-metric">4.2.2&nbsp;&nbsp;# 取得指定 request 的 HTTP metric</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Custom-metrics">4.2.3&nbsp;&nbsp;# Custom metrics</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Metric-types">4.2.4&nbsp;&nbsp;# Metric types</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Checks">4.3&nbsp;&nbsp;# Checks</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Thresholds">4.4&nbsp;&nbsp;# Thresholds</a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/k6/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/k6/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            k6 - 使用筆記
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2021-12-17T03:47:21.000Z" itemprop="datePublished">12月 17 2021</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            20 分钟 讀完 (大概 2933 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>使用 k6 來測試高併發</p>
+<span id="more"></span>
+
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="# 安裝"></a># 安裝</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="# Linux"></a># Linux</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69</span><br><span class="line"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;deb https://dl.k6.io/deb stable main&quot;</span> | sudo <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/k6.list</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install k6</span><br></pre></td></tr></table></figure>
+
+<h3 id="Fedora-CentOS"><a href="#Fedora-CentOS" class="headerlink" title="# Fedora/CentOS"></a># Fedora/CentOS</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">sudo dnf install https://dl.k6.io/rpm/repo.rpm</span><br><span class="line">sudo dnf install k6</span><br></pre></td></tr></table></figure>
+
+<h3 id="MacOS"><a href="#MacOS" class="headerlink" title="# MacOS"></a># MacOS</h3><figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">brew install k6</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="使用概述"><a href="#使用概述" class="headerlink" title="# 使用概述"></a># 使用概述</h2><ul>
+<li><p>default function 內的為 test 的內容</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test.k6.io&#x27;</span>);</span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>init code 每個 vu 只會執行一次, vu code 會一直執行, 假如 vus=10, iterations=100, 那 init code 只會跑 10 次, 而每個 vu 都會執行 script 10 次 (100/10) </p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-comment">// init code</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-comment">// vu code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>可以使用 options 或 CLI, 效果一樣</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">vus</span>: <span class="hljs-number">10</span>,</span><br><span class="line">  <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;30s&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://test.k6.io&#x27;</span>);</span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// or CLI</span></span><br><span class="line">k6 run --vus <span class="hljs-number">10</span> --duration 30s script.<span class="hljs-property">js</span></span><br></pre></td></tr></table></figure></li>
+<li><p>可在 test 中定義不同的階段, </p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; check, sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">stages</span>: [</span><br><span class="line">    <span class="hljs-comment">// 30 秒內達到 20 VUs</span></span><br><span class="line">    &#123; <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;30s&#x27;</span>, <span class="hljs-attr">target</span>: <span class="hljs-number">20</span> &#125;,</span><br><span class="line">    <span class="hljs-comment">// 1m30s 降到 10 VUs</span></span><br><span class="line">    &#123; <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;1m30s&#x27;</span>, <span class="hljs-attr">target</span>: <span class="hljs-number">10</span> &#125;,</span><br><span class="line">    <span class="hljs-comment">// 20s 降到 0 VUs</span></span><br><span class="line">    &#123; <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;20s&#x27;</span>, <span class="hljs-attr">target</span>: <span class="hljs-number">0</span> &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://httpbin.org/&#x27;</span>);</span><br><span class="line">  <span class="title function_">check</span>(res, &#123; <span class="hljs-string">&#x27;status was 200&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">status</span> == <span class="hljs-number">200</span> &#125;);</span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>output 預設會顯示多種資訊, 可從 CLI flag <code>summary-trend-stats</code>, <code>summary-time-unit</code> 控制輸出的資訊, 假如 CLI 中不出現 min, 那 output 就不會有 min</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">k6 run --summary-trend-stats=<span class="hljs-string">&quot;min,avg,med,p(99),p(99.9),max,count&quot;</span> --summary-time-unit=ms  script.js</span><br></pre></td></tr></table></figure></li>
+<li><p>可將 output 輸出指定格式到檔案, 或輸出到外部服務</p>
+<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">k6 run \</span><br><span class="line">    --out json=test.json \</span><br><span class="line">    --out influxdb=http://localhost:8086/k6</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h2 id="使用詳解"><a href="#使用詳解" class="headerlink" title="# 使用詳解"></a># 使用詳解</h2><h3 id="HTTP-Requests"><a href="#HTTP-Requests" class="headerlink" title="# HTTP Requests"></a># HTTP Requests</h3><h6 id="GET-request-example"><a href="#GET-request-example" class="headerlink" title="# GET request example"></a># GET request example</h6><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://test.k6.io&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="POST-request-example"><a href="#POST-request-example" class="headerlink" title="# POST request example"></a># POST request example</h6><figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> url = <span class="hljs-string">&#x27;http://test.k6.io/login&#x27;</span>;</span><br><span class="line">  <span class="hljs-keyword">const</span> payload = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123;</span><br><span class="line">    <span class="hljs-attr">email</span>: <span class="hljs-string">&#x27;aaa&#x27;</span>,</span><br><span class="line">    <span class="hljs-attr">password</span>: <span class="hljs-string">&#x27;bbb&#x27;</span>,</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">const</span> params = &#123;</span><br><span class="line">    <span class="hljs-attr">headers</span>: &#123;</span><br><span class="line">      <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  http.<span class="title function_">post</span>(url, payload, params);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="可用-method"><a href="#可用-method" class="headerlink" title="# 可用 method"></a># 可用 method</h6><table>
+<thead>
+<tr>
+<th>method</th>
+<th>解釋</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>batch()</td>
+<td>可併行發出複數 request</td>
+</tr>
+<tr>
+<td>del()</td>
+<td>delete request</td>
+</tr>
+<tr>
+<td>get()</td>
+<td>get request</td>
+</tr>
+<tr>
+<td>options()</td>
+<td>options request</td>
+</tr>
+<tr>
+<td>patch()</td>
+<td>patch reqeust</td>
+</tr>
+<tr>
+<td>post()</td>
+<td>post request</td>
+</tr>
+<tr>
+<td>put()</td>
+<td>put request</td>
+</tr>
+<tr>
+<td>request()</td>
+<td>issue 任何 type 的 request</td>
+</tr>
+</tbody></table>
+<br>
+
+<h6 id="HTTP-Request-Tags"><a href="#HTTP-Request-Tags" class="headerlink" title="# HTTP Request Tags"></a># HTTP Request Tags</h6><ul>
+<li>k6 會自動給每個 request 上 tag, 可以利用 tag 來 filter 結果作分析</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>tags</th>
+<th>解釋</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>expected_response</td>
+<td>預設 200~399 為 true, 可使用 <a target="_blank" rel="noopener" href="https://k6.io/docs/javascript-api/k6-http/setresponsecallback-callback">setResponseCallback</a> 修改</td>
+</tr>
+<tr>
+<td>group</td>
+<td>如果 request 運行在某個 group 內, 那此 tag 為該 group name, 預設為 empty</td>
+</tr>
+<tr>
+<td>name</td>
+<td>預設為 url, 下面會講怎麼修改</td>
+</tr>
+<tr>
+<td>method</td>
+<td>使用的 HTTP method</td>
+</tr>
+<tr>
+<td>scenario</td>
+<td>如果 request 運行在某個 group 內, 那此 tag 為該 group name, 預設為 default</td>
+</tr>
+<tr>
+<td>status</td>
+<td>response status</td>
+</tr>
+<tr>
+<td>url</td>
+<td>default 為 request url</td>
+</tr>
+</tbody></table>
+<ul>
+<li>範例 response 如下：<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-punctuation">&#123;</span></span><br><span class="line">  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Point&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">  <span class="hljs-attr">&quot;metric&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http_req_duration&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;time&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2017-06-02T23:10:29.52444541+02:00&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">586.831127</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;tags&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">      <span class="hljs-attr">&quot;expected_response&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;true&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">      <span class="hljs-attr">&quot;group&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">      <span class="hljs-attr">&quot;method&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;GET&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://test.k6.io&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">      <span class="hljs-attr">&quot;scenario&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;default&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">      <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;200&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">      <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://test.k6.io&quot;</span></span><br><span class="line">    <span class="hljs-punctuation">&#125;</span></span><br><span class="line">  <span class="hljs-punctuation">&#125;</span></span><br><span class="line"><span class="hljs-punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h6 id="URL-Grouping"><a href="#URL-Grouping" class="headerlink" title="# URL Grouping"></a># URL Grouping</h6><ul>
+<li><p>預設, name tag 值為 url, 如下：</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> id = <span class="hljs-number">1</span>; id &lt;= <span class="hljs-number">100</span>; id++) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">`http://example.com/posts/<span class="hljs-subst">$&#123;id&#125;</span>`</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// tags.name=\&quot;http://example.com/posts/1\&quot;,</span></span><br><span class="line"><span class="hljs-comment">// tags.name=\&quot;http://example.com/posts/2\&quot;,</span></span><br></pre></td></tr></table></figure></li>
+<li><p>然而, 可自定義, 不然一個 url 一個 name tag 會不好 filter</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> id = <span class="hljs-number">1</span>; id &lt;= <span class="hljs-number">100</span>; id++) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">`http://example.com/posts/<span class="hljs-subst">$&#123;id&#125;</span>`</span>, &#123;</span><br><span class="line">    <span class="hljs-attr">tags</span>: &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;PostsItemURL&#x27;</span> &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// tags.name=\&quot;PostsItemURL\&quot;,</span></span><br><span class="line"><span class="hljs-comment">// tags.name=\&quot;PostsItemURL\&quot;,</span></span><br></pre></td></tr></table></figure></li>
+<li><p>output 如下:</p>
+<figure class="highlight json hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;Point&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;metric&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;http_req_duration&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">        <span class="hljs-attr">&quot;time&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2017-06-02T23:10:29.52444541+02:00&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">586.831127</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;tags&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">            <span class="hljs-attr">&quot;method&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;GET&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;PostsItemURL&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;200&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;http://example.com/1&quot;</span></span><br><span class="line">        <span class="hljs-punctuation">&#125;</span></span><br><span class="line">    <span class="hljs-punctuation">&#125;</span></span><br><span class="line"><span class="hljs-punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// and</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-punctuation">&#123;</span></span><br><span class="line">    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;Point&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;metric&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;http_req_duration&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">        <span class="hljs-attr">&quot;time&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2017-06-02T23:10:29.58582529+02:00&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">580.839273</span><span class="hljs-punctuation">,</span></span><br><span class="line">        <span class="hljs-attr">&quot;tags&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span></span><br><span class="line">            <span class="hljs-attr">&quot;method&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;GET&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;PostsItemURL&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;200&quot;</span><span class="hljs-punctuation">,</span></span><br><span class="line">            <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;http://example.com/2&quot;</span></span><br><span class="line">        <span class="hljs-punctuation">&#125;</span></span><br><span class="line">    <span class="hljs-punctuation">&#125;</span></span><br><span class="line"><span class="hljs-punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Metrics"><a href="#Metrics" class="headerlink" title="# Metrics"></a># Metrics</h3><h6 id="內建-metrics"><a href="#內建-metrics" class="headerlink" title="# 內建 metrics"></a># 內建 metrics</h6><ul>
+<li><p>預設輸出如下</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">          /\      |‾‾| /‾‾/   /‾‾/</span><br><span class="line">     /\  /  \     |  |/  /   /  /</span><br><span class="line">    /  \/    \    |     (   /   ‾‾\</span><br><span class="line">   /          \   |  |\  \ |  (‾)  |</span><br><span class="line">  / __________ \  |__| \__\ \_____/ .io</span><br><span class="line"></span><br><span class="line">  execution: local</span><br><span class="line">     script: http_get.js</span><br><span class="line">     output: -</span><br><span class="line"></span><br><span class="line">  scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):</span><br><span class="line">           * default: 1 iterations for each of 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">running (00m03.8s), 0/1 VUs, 1 complete and 0 interrupted iterations</span><br><span class="line">default ✓ [======================================] 1 VUs  00m03.8s/10m0s  1/1 iters, 1 per VU</span><br><span class="line"></span><br><span class="line">     data_received..................: 22 kB 5.7 kB/s</span><br><span class="line">     data_sent......................: 742 B 198 B/s</span><br><span class="line">     http_req_blocked...............: avg=1.05s    min=1.05s    med=1.05s    max=1.05s    p(90)=1.05s    p(95)=1.05s</span><br><span class="line">     http_req_connecting............: avg=334.26ms min=334.26ms med=334.26ms max=334.26ms p(90)=334.26ms p(95)=334.26ms</span><br><span class="line">     http_req_duration..............: avg=2.7s     min=2.7s     med=2.7s     max=2.7s     p(90)=2.7s     p(95)=2.7s</span><br><span class="line">       &#123; expected_response:true &#125;...: avg=2.7s     min=2.7s     med=2.7s     max=2.7s     p(90)=2.7s     p(95)=2.7s</span><br><span class="line">     http_req_failed................: 0.00% ✓ 0        ✗ 1</span><br><span class="line">     http_req_receiving.............: avg=112.41µs min=112.41µs med=112.41µs max=112.41µs p(90)=112.41µs p(95)=112.41µs</span><br><span class="line">     http_req_sending...............: avg=294.48µs min=294.48µs med=294.48µs max=294.48µs p(90)=294.48µs p(95)=294.48µs</span><br><span class="line">     http_req_tls_handshaking.......: avg=700.6ms  min=700.6ms  med=700.6ms  max=700.6ms  p(90)=700.6ms  p(95)=700.6ms</span><br><span class="line">     http_req_waiting...............: avg=2.7s     min=2.7s     med=2.7s     max=2.7s     p(90)=2.7s     p(95)=2.7s</span><br><span class="line">     http_reqs......................: 1     0.266167/s</span><br><span class="line">     iteration_duration.............: avg=3.75s    min=3.75s    med=3.75s    max=3.75s    p(90)=3.75s    p(95)=3.75s</span><br><span class="line">     iterations.....................: 1     0.266167/s</span><br><span class="line">     vus............................: 1     min=1      max=1</span><br><span class="line">     vus_max........................: 1     min=1      max=1</span><br></pre></td></tr></table></figure></li>
+<li><p>預設 metrics 敘述</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>METRIC NAME</th>
+<th>TYPE</th>
+<th>敘述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>vus</td>
+<td>Gauge</td>
+<td>Current number of active virtual users</td>
+</tr>
+<tr>
+<td>vus_max</td>
+<td>Gauge</td>
+<td>Max possible number of virtual users (VU resources are pre-allocated, to ensure performance will not be affected when scaling up the load level)</td>
+</tr>
+<tr>
+<td>iterations</td>
+<td>Counter</td>
+<td>VUs 總共執行 default function 幾次, 不是單一 VU 執行的次數, 而是總數</td>
+</tr>
+<tr>
+<td>iteration_duration</td>
+<td>Trend</td>
+<td>執行完畢 default function 所耗費的時間</td>
+</tr>
+<tr>
+<td>dropped_iterations</td>
+<td>Counter</td>
+<td>無法開始的 iteration 數量, 可能因為缺少 VUs, 或缺少時間</td>
+</tr>
+<tr>
+<td>data_received</td>
+<td>Counter</td>
+<td>收到的檔案數量, <a target="_blank" rel="noopener" href="https://k6.io/docs/examples/track-transmitted-data-per-url">example</a> 來 track 特定的 request 的 data_received</td>
+</tr>
+<tr>
+<td>data_sent</td>
+<td>Counter</td>
+<td>發出的檔案數量, 可參考 <a target="_blank" rel="noopener" href="https://k6.io/docs/examples/track-transmitted-data-per-url">example</a> 來 track 特定的 request 的 data_sent</td>
+</tr>
+<tr>
+<td>checks</td>
+<td>Rate</td>
+<td>The rate of successful checks.</td>
+</tr>
+</tbody></table>
+<ul>
+<li>HTTP-specific 預設 metrics 敘述</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>METRIC NAME</th>
+<th>TYPE</th>
+<th>敘述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>http_reqs</td>
+<td>Counter</td>
+<td>k6 共產生多少 HTTP request, 總數</td>
+</tr>
+<tr>
+<td>http_req_blocked</td>
+<td>Trend</td>
+<td>block 的時間, 即開始一個 request 前, 等待可用的 TCP connection slot 的時間</td>
+</tr>
+<tr>
+<td>http_req_connection</td>
+<td>Trend</td>
+<td>與 remote host 建立 TCP connection 所耗費的時間</td>
+</tr>
+<tr>
+<td>http_req_tls_handshaking</td>
+<td>Trend</td>
+<td>與 remote host tls handshaking 所耗費的時間</td>
+</tr>
+<tr>
+<td>http_req_sending</td>
+<td>Trend</td>
+<td>傳送 data 到 remote host 所耗費的時間</td>
+</tr>
+<tr>
+<td>http_req_waiting</td>
+<td>Trend</td>
+<td>從 remote host 收到第一筆資料所等待的時間</td>
+</tr>
+<tr>
+<td>http_req_receiving</td>
+<td>Trend</td>
+<td>從 remote host 接收資料, 從第一筆到完整結束所耗費的時間</td>
+</tr>
+<tr>
+<td>http_req_duration</td>
+<td>Trend</td>
+<td>http_req_sending + http_req_waiting + http_req_receiving 的時間, 即發出一個 request 到完整接收 response 完畢所耗費的時間</td>
+</tr>
+<tr>
+<td>http_req_failed</td>
+<td>Rate</td>
+<td>failed request rate</td>
+</tr>
+</tbody></table>
+<h6 id="取得指定-request-的-HTTP-metric"><a href="#取得指定-request-的-HTTP-metric" class="headerlink" title="# 取得指定 request 的 HTTP metric"></a># 取得指定 request 的 HTTP metric</h6><ul>
+<li>可使用 <code>res.timings</code> object, 有以下的 method 可以用：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>METHOD NAME</th>
+<th>敘述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>blocked</td>
+<td>同 http_req_blocked</td>
+</tr>
+<tr>
+<td>connecting</td>
+<td>同 http_req_connection</td>
+</tr>
+<tr>
+<td>tls_handshaking</td>
+<td>同 http_req_tls_handshaking</td>
+</tr>
+<tr>
+<td>sending</td>
+<td>同 http_req_sending</td>
+</tr>
+<tr>
+<td>waiting</td>
+<td>同 http_req_waiting</td>
+</tr>
+<tr>
+<td>receiving</td>
+<td>同 http_req_receiving</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>同 http_req_duration</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>script 範例如下：</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://httpbin.org&#x27;</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="hljs-string">&#x27;Response time was &#x27;</span> + <span class="title class_">String</span>(res.<span class="hljs-property">timings</span>.<span class="hljs-property">duration</span>) + <span class="hljs-string">&#x27; ms&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>輸出範例</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  INFO[0001] Response time was 337.962473 ms               source=console</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Custom-metrics"><a href="#Custom-metrics" class="headerlink" title="# Custom metrics"></a># Custom metrics</h6><ul>
+<li><p>script example:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Trend</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> myTrend = <span class="hljs-keyword">new</span> <span class="title class_">Trend</span>(<span class="hljs-string">&#x27;waiting_time&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> r = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://httpbin.org&#x27;</span>);</span><br><span class="line">  myTrend.<span class="title function_">add</span>(r.<span class="hljs-property">timings</span>.<span class="hljs-property">waiting</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(myTrend.<span class="hljs-property">name</span>); <span class="hljs-comment">// waiting_time</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>output example:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  INFO[0001] waiting_time                                  source=console</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  iteration_duration.............: avg=1.15s    min=1.15s    med=1.15s    max=1.15s    p(90)=1.15s    p(95)=1.15s</span><br><span class="line">  iterations.....................: 1     0.864973/s</span><br><span class="line">  waiting_time...................: avg=265.245396 min=265.245396 med=265.245396 max=265.245396 p(90)=265.245396 p(95)=265.245396</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="Metric-types"><a href="#Metric-types" class="headerlink" title="# Metric types"></a># Metric types</h6><ul>
+<li>類型</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>METRIC TYPE</th>
+<th>敘述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Counter</td>
+<td>會將值累計相加</td>
+</tr>
+<tr>
+<td>Gauge</td>
+<td>存最小及最大值, 以及最後一個值</td>
+</tr>
+<tr>
+<td>Rate</td>
+<td>計算 non-zero 的累計 percentage</td>
+</tr>
+<tr>
+<td>Trend</td>
+<td>計算累計值取得統計資料, min, max, average, percentiles</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>counter script example</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Counter</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> myCounter = <span class="hljs-keyword">new</span> <span class="title class_">Counter</span>(<span class="hljs-string">&#x27;my_counter&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  myCounter.<span class="title function_">add</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  myCounter.<span class="title function_">add</span>(<span class="hljs-number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>counter 輸出 example</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  iteration_duration...: avg=16.48µs min=16.48µs med=16.48µs max=16.48µs p(90)=16.48µs p(95)=16.48µs</span><br><span class="line">  iterations...........: 1   1327.67919/s</span><br><span class="line">  my_counter...........: 3   3983.037571/s</span><br></pre></td></tr></table></figure></li>
+<li><p>Gauge script example</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Gauge</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> myGauge = <span class="hljs-keyword">new</span> <span class="title class_">Gauge</span>(<span class="hljs-string">&#x27;my_gauge&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  myGauge.<span class="title function_">add</span>(<span class="hljs-number">3</span>);</span><br><span class="line">  myGauge.<span class="title function_">add</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  myGauge.<span class="title function_">add</span>(<span class="hljs-number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Gauge output example:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  iteration_duration...: avg=21.74µs min=21.74µs med=21.74µs max=21.74µs p(90)=21.74µs p(95)=21.74µs</span><br><span class="line">  iterations...........: 1   1293.475322/s</span><br><span class="line">  my_gauge.............: 2   min=1         max=3</span><br></pre></td></tr></table></figure></li>
+<li><p>Trend script example:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Trend</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> myTrend = <span class="hljs-keyword">new</span> <span class="title class_">Trend</span>(<span class="hljs-string">&#x27;my_trend&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  myTrend.<span class="title function_">add</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  myTrend.<span class="title function_">add</span>(<span class="hljs-number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Trend output example:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  iteration_duration...: avg=20.78µs min=20.78µs med=20.78µs max=20.78µs p(90)=20.78µs p(95)=20.78µs</span><br><span class="line">  iterations...........: 1   1217.544821/s</span><br><span class="line">  my_trend.............: avg=1.5     min=1       med=1.5     max=2       p(90)=1.9     p(95)=1.95</span><br></pre></td></tr></table></figure></li>
+<li><p>Rate script example:</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Rate</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">const</span> myRate = <span class="hljs-keyword">new</span> <span class="title class_">Rate</span>(<span class="hljs-string">&#x27;my_rate&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  myRate.<span class="title function_">add</span>(<span class="hljs-literal">true</span>);</span><br><span class="line">  myRate.<span class="title function_">add</span>(<span class="hljs-literal">false</span>);</span><br><span class="line">  myRate.<span class="title function_">add</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  myRate.<span class="title function_">add</span>(<span class="hljs-number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Rate output example:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  iteration_duration...: avg=22.12µs min=22.12µs med=22.12µs max=22.12µs p(90)=22.12µs p(95)=22.12µs</span><br><span class="line">  iterations...........: 1      1384.362792/s</span><br><span class="line">  my_rate..............: 50.00% ✓ 2           ✗ 2</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Checks"><a href="#Checks" class="headerlink" title="# Checks"></a># Checks</h3><p>checks 跟 assertion 類似, 不同之處在於它不會停止, 而是會記下 check 結果, 並繼續執行</p>
+<ul>
+<li><p>檢查 HTTP response code</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; check &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://test.k6.io/&#x27;</span>);</span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;is status 200&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">status</span> === <span class="hljs-number">200</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>檢查 response body</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; check &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://test.k6.io/&#x27;</span>);</span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;verify homepage text&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span></span><br><span class="line">      r.<span class="hljs-property">body</span>.<span class="title function_">includes</span>(<span class="hljs-string">&#x27;Collection of simple web-pages suitable for load testing&#x27;</span>),</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>檢查 body size</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; check &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://test.k6.io/&#x27;</span>);</span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;body size is 11,105 bytes&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">body</span>.<span class="hljs-property">length</span> == <span class="hljs-number">11105</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>check output example:</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run script.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">    ✓ is status 200</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  checks.........................: 100.00% ✓ 1        ✗ 0</span><br><span class="line">  data_received..................: 11 kB   12 kB/s</span><br></pre></td></tr></table></figure></li>
+<li><p>檢查多項</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> &#123; check &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://test.k6.io/&#x27;</span>);</span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;is status 200&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">status</span> === <span class="hljs-number">200</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;body size is 11,105 bytes&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">body</span>.<span class="hljs-property">length</span> == <span class="hljs-number">11105</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>output example</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">k6 run checks.js</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">    ✓ is status 200</span><br><span class="line">    ✓ body size is 11,105 bytes</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  checks.........................: 100.00% ✓ 2        ✗ 0</span><br><span class="line">  data_received..................: 11 kB   20 kB/s</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Thresholds"><a href="#Thresholds" class="headerlink" title="# Thresholds"></a># Thresholds</h3><p>若有任一 threshold 失敗, 則該 test 被視為 failed</p>
+<ul>
+<li><p>threshold script example</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-attr">http_req_failed</span>: [<span class="hljs-string">&#x27;rate&lt;0.01&#x27;</span>], <span class="hljs-comment">// http errors should be less than 1%</span></span><br><span class="line">    <span class="hljs-attr">http_req_duration</span>: [<span class="hljs-string">&#x27;p(95)&lt;200&#x27;</span>], <span class="hljs-comment">// 95% of requests should be below 200ms</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>threshold output example, 若上面的兩個 thresholds 有任何一個失敗, 則 http_req_failed 會等於 1</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">✓ http_req_duration..............: avg=151.06ms min=151.06ms med=151.06ms max=151.06ms p(90)=151.06ms p(95)=151.06ms</span><br><span class="line">    &#123; expected_response:true &#125;...: avg=151.06ms min=151.06ms med=151.06ms max=151.06ms p(90)=151.06ms p(95)=151.06ms</span><br><span class="line">✓ http_req_failed................: 0.00%  ✓ 0 ✗ 1</span><br></pre></td></tr></table></figure></li>
+<li><p>example, 90% 的 request 必須在 400ms 內結束</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-comment">// 90% of requests must finish within 400ms.</span></span><br><span class="line">    <span class="hljs-attr">http_req_duration</span>: [<span class="hljs-string">&#x27;p(90) &lt; 400&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>);</span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>example, error rate 必須在 1% 以下</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-comment">// During the whole test execution, the error rate must be lower than 1%.</span></span><br><span class="line">    <span class="hljs-comment">// `http_req_failed` metric is available since v0.31.0</span></span><br><span class="line">    <span class="hljs-attr">http_req_failed</span>: [<span class="hljs-string">&#x27;rate&lt;0.01&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>);</span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>example, 90% request 必須在 400ms 完成, 95% 在 800ms 完成, 99.9% 在 2s 內完成</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-comment">// 90% of requests must finish within 400ms, 95% within 800, and 99.9% within 2s.</span></span><br><span class="line">    <span class="hljs-attr">http_req_duration</span>: [<span class="hljs-string">&#x27;p(90) &lt; 400&#x27;</span>, <span class="hljs-string">&#x27;p(95) &lt; 800&#x27;</span>, <span class="hljs-string">&#x27;p(99.9) &lt; 2000&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res1 = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>);</span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>example, 指定 group 內的 request 必須平均在 200ms 內完成</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; group, sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;group_duration&#123;group:::individualRequests&#125;&#x27;</span>: [<span class="hljs-string">&#x27;avg &lt; 200&#x27;</span>],</span><br><span class="line">    <span class="hljs-string">&#x27;group_duration&#123;group:::batchRequests&#125;&#x27;</span>: [<span class="hljs-string">&#x27;avg &lt; 200&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="hljs-attr">vus</span>: <span class="hljs-number">1</span>,</span><br><span class="line">  <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;10s&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="title function_">group</span>(<span class="hljs-string">&#x27;individualRequests&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">    http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>);</span><br><span class="line">    http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/2/&#x27;</span>);</span><br><span class="line">    http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/3/&#x27;</span>);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">group</span>(<span class="hljs-string">&#x27;batchRequests&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">    http.<span class="title function_">batch</span>([</span><br><span class="line">      [<span class="hljs-string">&#x27;GET&#x27;</span>, <span class="hljs-string">`https://test-api.k6.io/public/crocodiles/1/`</span>],</span><br><span class="line">      [<span class="hljs-string">&#x27;GET&#x27;</span>, <span class="hljs-string">`https://test-api.k6.io/public/crocodiles/2/`</span>],</span><br><span class="line">      [<span class="hljs-string">&#x27;GET&#x27;</span>, <span class="hljs-string">`https://test-api.k6.io/public/crocodiles/3/`</span>],</span><br><span class="line">    ]);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Syntax example</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Trend</span>, <span class="title class_">Rate</span>, <span class="title class_">Counter</span>, <span class="title class_">Gauge</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這邊定義各個 custom metric 的名稱, 以及其 type</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="title class_">TrendRTT</span> = <span class="hljs-keyword">new</span> <span class="title class_">Trend</span>(<span class="hljs-string">&#x27;RTT&#x27;</span>);</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="title class_">RateContentOK</span> = <span class="hljs-keyword">new</span> <span class="title class_">Rate</span>(<span class="hljs-string">&#x27;Content OK&#x27;</span>);</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="title class_">GaugeContentSize</span> = <span class="hljs-keyword">new</span> <span class="title class_">Gauge</span>(<span class="hljs-string">&#x27;ContentSize&#x27;</span>);</span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="title class_">CounterErrors</span> = <span class="hljs-keyword">new</span> <span class="title class_">Counter</span>(<span class="hljs-string">&#x27;Errors&#x27;</span>);</span><br><span class="line"><span class="hljs-comment">// 這裡用上面定義的 custom metric 來定義 thresholds</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-comment">// 99% request response time 需低於 300 ms, 70% &lt; 250 ms, avg &lt; 200 ms, median &lt; 150 ms, min &lt; 100 ms</span></span><br><span class="line">    <span class="hljs-string">&#x27;RTT&#x27;</span>: [<span class="hljs-string">&#x27;p(99)&lt;300&#x27;</span>, <span class="hljs-string">&#x27;p(70)&lt;250&#x27;</span>, <span class="hljs-string">&#x27;avg&lt;200&#x27;</span>, <span class="hljs-string">&#x27;med&lt;150&#x27;</span>, <span class="hljs-string">&#x27;min&lt;100&#x27;</span>],</span><br><span class="line">    <span class="hljs-comment">// content 正確率必須 &gt; 95%</span></span><br><span class="line">    <span class="hljs-string">&#x27;Content OK&#x27;</span>: [<span class="hljs-string">&#x27;rate&gt;0.95&#x27;</span>],</span><br><span class="line">    <span class="hljs-comment">// returned content &lt; 4000 bytes</span></span><br><span class="line">    <span class="hljs-string">&#x27;ContentSize&#x27;</span>: [<span class="hljs-string">&#x27;value&lt;4000&#x27;</span>],</span><br><span class="line">    <span class="hljs-comment">// content can&#x27;t have been bad more than 99 times</span></span><br><span class="line">    <span class="hljs-string">&#x27;Errors&#x27;</span>: [<span class="hljs-string">&#x27;count&lt;100&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 在 default function 中, 實際對 custom metric 做操作</span></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>);</span><br><span class="line">  <span class="hljs-keyword">const</span> contentOK = res.<span class="title function_">json</span>(<span class="hljs-string">&#x27;name&#x27;</span>) === <span class="hljs-string">&#x27;Bert&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title class_">TrendRTT</span>.<span class="title function_">add</span>(res.<span class="hljs-property">timings</span>.<span class="hljs-property">duration</span>);</span><br><span class="line">  <span class="title class_">RateContentOK</span>.<span class="title function_">add</span>(contentOK);</span><br><span class="line">  <span class="title class_">GaugeContentSize</span>.<span class="title function_">add</span>(res.<span class="hljs-property">body</span>.<span class="hljs-property">length</span>);</span><br><span class="line">  <span class="title class_">CounterErrors</span>.<span class="title function_">add</span>(!contentOK);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Thresholads on tags</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; <span class="title class_">Rate</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/metrics&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-comment">// 使用 tag 定義 thresholds</span></span><br><span class="line">    <span class="hljs-string">&#x27;http_req_duration&#123;type:API&#125;&#x27;</span>: [<span class="hljs-string">&#x27;p(95)&lt;500&#x27;</span>], <span class="hljs-comment">// threshold on API requests only</span></span><br><span class="line">    <span class="hljs-string">&#x27;http_req_duration&#123;type:staticContent&#125;&#x27;</span>: [<span class="hljs-string">&#x27;p(95)&lt;200&#x27;</span>], <span class="hljs-comment">// threshold on static content only</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-comment">// 定義 tags</span></span><br><span class="line">  <span class="hljs-keyword">const</span> res1 = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/1/&#x27;</span>, &#123;</span><br><span class="line">    <span class="hljs-attr">tags</span>: &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;API&#x27;</span> &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="hljs-comment">// 定義 tags</span></span><br><span class="line">  <span class="hljs-keyword">const</span> res2 = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;https://test-api.k6.io/public/crocodiles/2/&#x27;</span>, &#123;</span><br><span class="line">    <span class="hljs-attr">tags</span>: &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;API&#x27;</span> &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">const</span> responses = http.<span class="title function_">batch</span>([</span><br><span class="line">  <span class="hljs-comment">// 定義 tags</span></span><br><span class="line">    [<span class="hljs-string">&#x27;GET&#x27;</span>, <span class="hljs-string">&#x27;https://test-api.k6.io/static/favicon.ico&#x27;</span>, <span class="hljs-literal">null</span>, &#123; <span class="hljs-attr">tags</span>: &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;staticContent&#x27;</span> &#125; &#125;],</span><br><span class="line">  <span class="hljs-comment">// 定義 tags</span></span><br><span class="line">    [</span><br><span class="line">      <span class="hljs-string">&#x27;GET&#x27;</span>,</span><br><span class="line">      <span class="hljs-string">&#x27;https://test-api.k6.io/static/css/site.css&#x27;</span>,</span><br><span class="line">      <span class="hljs-literal">null</span>,</span><br><span class="line">      &#123; <span class="hljs-attr">tags</span>: &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;staticContent&#x27;</span> &#125; &#125;,</span><br><span class="line">    ],</span><br><span class="line">  ]);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>當 threshold 達標, 停止 test, abortOnFail 為 boolean, 代表達標時是否 abort, delayAbortEval 代表達標後, delay 多少時間才 abort</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-attr">metric_name</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="hljs-attr">threshold</span>: <span class="hljs-string">&#x27;p(99) &lt; 10&#x27;</span>, <span class="hljs-comment">// string</span></span><br><span class="line">        <span class="hljs-attr">abortOnFail</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// boolean</span></span><br><span class="line">        <span class="hljs-attr">delayAbortEval</span>: <span class="hljs-string">&#x27;10s&#x27;</span>, <span class="hljs-comment">// string</span></span><br><span class="line">        <span class="hljs-comment">/*...*/</span></span><br><span class="line">      &#125;,</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>使用 checks 搭配 thresholds 來 fail test, 若 checks 沒通過, 則該 request 視為 failed request</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; check, sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">vus</span>: <span class="hljs-number">50</span>,</span><br><span class="line">  <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;10s&#x27;</span>,</span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-comment">// the rate of successful checks should be higher than 90%</span></span><br><span class="line">    <span class="hljs-attr">checks</span>: [<span class="hljs-string">&#x27;rate&gt;0.9&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">const</span> res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://httpbin.org&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;status is 500&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">status</span> == <span class="hljs-number">500</span>,</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>給 checks 定義 tag, 在用 tag 來定義 thresholds 也行</p>
+<figure class="highlight javascript hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> http <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6/http&#x27;</span>;</span><br><span class="line"><span class="hljs-keyword">import</span> &#123; check, sleep &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;k6&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> options = &#123;</span><br><span class="line">  <span class="hljs-attr">vus</span>: <span class="hljs-number">50</span>,</span><br><span class="line">  <span class="hljs-attr">duration</span>: <span class="hljs-string">&#x27;10s&#x27;</span>,</span><br><span class="line">  <span class="hljs-comment">// 使用 tag 定義的 thresholds</span></span><br><span class="line">  <span class="hljs-attr">thresholds</span>: &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;checks&#123;myTag:hola&#125;&#x27;</span>: [<span class="hljs-string">&#x27;rate&gt;0.9&#x27;</span>],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="line">  <span class="hljs-keyword">let</span> res;</span><br><span class="line"></span><br><span class="line">  res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://httpbin.org&#x27;</span>);</span><br><span class="line">  <span class="title function_">check</span>(res, &#123;</span><br><span class="line">    <span class="hljs-string">&#x27;status is 500&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">status</span> == <span class="hljs-number">500</span>,</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  res = http.<span class="title function_">get</span>(<span class="hljs-string">&#x27;http://httpbin.org&#x27;</span>);</span><br><span class="line">  <span class="hljs-comment">// 給 check 上一個 tag</span></span><br><span class="line">  <span class="title function_">check</span>(</span><br><span class="line">    res,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="hljs-string">&#x27;status is 200&#x27;</span>: <span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.<span class="hljs-property">status</span> == <span class="hljs-number">200</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123; <span class="hljs-attr">myTag</span>: <span class="hljs-string">&#x27;hola&#x27;</span> &#125;</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="title function_">sleep</span>(<span class="hljs-number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/k6/">#k6</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/laravel-high-concurrency/">Laravel - 高併發</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/data-structure-heap-php-implememtation/">資料結構 - Heap - PHP 實作</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/k6/';
+        this.page.identifier = 'zh-tw/k6/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

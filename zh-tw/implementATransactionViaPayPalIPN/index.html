@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>利用 PayPal 付款標準版 (PayPal Payment Standard) 以及 PayPal 即時付款通知 (PayPal IPN) 方式結帳付款 - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="前言有嘗試串接過 PayPal 的人都知道， PayPal 提供了好幾種方式供使用者串接使用。本篇記錄了：  如何使用 PayPal 付款標準版 (PayPal Payment Standard) 來付款結帳。 如用使用 PayPal 即時付款通知 (PayPal IPN) 來驗證付款結果。 如何在 PayPal 付款標準版 (PayPal Payment Standard) 中，自定義多個商品以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用 PayPal 付款標準版 (PayPal Payment Standard) 以及 PayPal 即時付款通知 (PayPal IPN) 方式結帳付款">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/implementATransactionViaPayPalIPN/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言有嘗試串接過 PayPal 的人都知道， PayPal 提供了好幾種方式供使用者串接使用。本篇記錄了：  如何使用 PayPal 付款標準版 (PayPal Payment Standard) 來付款結帳。 如用使用 PayPal 即時付款通知 (PayPal IPN) 來驗證付款結果。 如何在 PayPal 付款標準版 (PayPal Payment Standard) 中，自定義多個商品以">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/oCOCdLi.png">
+<meta property="og:image" content="https://i.imgur.com/FQ90eUB.png">
+<meta property="og:image" content="https://i.imgur.com/EAPA4y3.png">
+<meta property="og:image" content="https://i.imgur.com/RY4BEJ1.png">
+<meta property="og:image" content="https://i.imgur.com/rs3VIBN.png">
+<meta property="og:image" content="https://i.imgur.com/NfzG9Cj.png">
+<meta property="og:image" content="https://i.imgur.com/ZCmPwAd.png">
+<meta property="article:published_time" content="2019-03-04T03:18:09.000Z">
+<meta property="article:modified_time" content="2019-10-04T01:29:32.792Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="PayPal Payment Standard">
+<meta property="article:tag" content="PayPal IPN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/oCOCdLi.png">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/implementATransactionViaPayPalIPN/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="前言有嘗試串接過 PayPal 的人都知道， PayPal 提供了好幾種方式供使用者串接使用。本篇記錄了：  如何使用 PayPal 付款標準版 (PayPal Payment Standard) 來付款結帳。 如用使用 PayPal 即時付款通知 (PayPal IPN) 來驗證付款結果。 如何在 PayPal 付款標準版 (PayPal Payment Standard) 中，自定義多個商品以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用 PayPal 付款標準版 (PayPal Payment Standard) 以及 PayPal 即時付款通知 (PayPal IPN) 方式結帳付款">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/implementATransactionViaPayPalIPN/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="前言有嘗試串接過 PayPal 的人都知道， PayPal 提供了好幾種方式供使用者串接使用。本篇記錄了：  如何使用 PayPal 付款標準版 (PayPal Payment Standard) 來付款結帳。 如用使用 PayPal 即時付款通知 (PayPal IPN) 來驗證付款結果。 如何在 PayPal 付款標準版 (PayPal Payment Standard) 中，自定義多個商品以">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/oCOCdLi.png">
+<meta property="og:image" content="https://i.imgur.com/FQ90eUB.png">
+<meta property="og:image" content="https://i.imgur.com/EAPA4y3.png">
+<meta property="og:image" content="https://i.imgur.com/RY4BEJ1.png">
+<meta property="og:image" content="https://i.imgur.com/rs3VIBN.png">
+<meta property="og:image" content="https://i.imgur.com/NfzG9Cj.png">
+<meta property="og:image" content="https://i.imgur.com/ZCmPwAd.png">
+<meta property="article:published_time" content="2019-03-04T03:18:09.000Z">
+<meta property="article:modified_time" content="2019-10-04T01:29:32.792Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="PayPal Payment Standard">
+<meta property="article:tag" content="PayPal IPN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/oCOCdLi.png">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b>前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#驗證">2&nbsp;&nbsp;<b>驗證</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#收集必要資訊">3&nbsp;&nbsp;<b>收集必要資訊</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#分流點">4&nbsp;&nbsp;<b>分流點</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建金流訂單">5&nbsp;&nbsp;<b>建金流訂單</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#建立提交付款申請的-URL">6&nbsp;&nbsp;<b>建立提交付款申請的 URL</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#使用者付款">7&nbsp;&nbsp;<b>使用者付款</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#驗證付款狀態">8&nbsp;&nbsp;<b>驗證付款狀態</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#結語">9&nbsp;&nbsp;<b>結語</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/implementATransactionViaPayPalIPN/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/implementATransactionViaPayPalIPN/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            利用 PayPal 付款標準版 (PayPal Payment Standard) 以及 PayPal 即時付款通知 (PayPal IPN) 方式結帳付款
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-03-04T03:18:09.000Z" itemprop="datePublished">3月 4 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/%E9%87%91%E6%B5%81/">金流</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            22 分钟 讀完 (大概 3353 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有嘗試串接過 PayPal 的人都知道， PayPal 提供了好幾種方式供使用者串接使用。<br>本篇記錄了：</p>
+<ol>
+<li>如何使用 PayPal 付款標準版 (PayPal Payment Standard) 來付款結帳。</li>
+<li>如用使用 PayPal 即時付款通知 (PayPal IPN) 來驗證付款結果。</li>
+<li>如何在 PayPal 付款標準版 (PayPal Payment Standard) 中，自定義多個商品以及每個商品的明細，包含名稱、單價、數量。<span id="more"></span></li>
+</ol>
+<p>在本文章中，我使用的是PHP的框架，Laravel<br>因為此篇文章主要紀錄我這個專案大概的一個流程，雖說主題是金流部分，但難免會記錄到一些跟金流無關的部分。<br>可以直接從’建金流訂單’的部分開始看即可。</p>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>此節是整個流程的一個程序，跟金流較無關係，可以跳過。</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-variable">$toBeValidatedCondition</span> = [</span><br><span class="line">    <span class="hljs-string">&#x27;order_id&#x27;</span> =&gt; <span class="hljs-string">&#x27;required|array&#x27;</span>,</span><br><span class="line">];</span><br><span class="line"><span class="hljs-variable">$failMessage</span> = <span class="title class_">Helpers</span>::<span class="title function_ invoke__">validation</span>(<span class="hljs-variable">$toBeValidatedCondition</span>, <span class="hljs-variable">$request</span>);</span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="hljs-variable">$failMessage</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-variable">$failMessage</span>, <span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (!<span class="title class_">Helpers</span>::<span class="title function_ invoke__">checkIfIDExists</span>(<span class="hljs-variable">$request</span>, <span class="hljs-keyword">new</span> <span class="title class_">Order</span>(), <span class="hljs-string">&#x27;order_id&#x27;</span>))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-string">&#x27;The orders doesn\&#x27;t exist&#x27;</span>, <span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (!<span class="title class_">Helpers</span>::<span class="title function_ invoke__">checkIfBelongToTheUser</span>(<span class="hljs-variable">$request</span>, <span class="hljs-keyword">new</span> <span class="title class_">Order</span>(), <span class="hljs-string">&#x27;order_id&#x27;</span>))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-string">&#x27;The order doesn\&#x27;t belong to this user&#x27;</span>, <span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$orders</span> = <span class="title class_">Order</span>::<span class="title function_ invoke__">whereIn</span>(<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-variable">$request</span>-&gt;order_id)-&gt;<span class="title function_ invoke__">get</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="title class_">Order</span>::<span class="title function_ invoke__">checkIfOrderPaid</span>(<span class="hljs-variable">$orders</span>))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-string">&#x27;The order has already been paid&#x27;</span>, <span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="title class_">Order</span>::<span class="title function_ invoke__">checkIfOrderExpired</span>(<span class="hljs-variable">$orders</span>))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-string">&#x27;The order has expired&#x27;</span>, <span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="hljs-variable">$recipient</span>-&gt;user_id !== <span class="title class_">User</span>::<span class="title function_ invoke__">getUserID</span>(<span class="hljs-variable">$request</span>))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-string">&#x27;The recipient doesn\&#x27;t belong to the user&#x27;</span>, <span class="hljs-number">400</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="收集必要資訊"><a href="#收集必要資訊" class="headerlink" title="收集必要資訊"></a>收集必要資訊</h2><p>因為我在做這個專案時，前端的時間比較吃緊一點，所以後端這邊決定除必要資訊之外，後端這邊將所有資訊搞定，盡量讓前端帶最少的資料，做最多的事。</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-variable">$toBeSavedInfo</span> = [</span><br><span class="line">    <span class="hljs-string">&#x27;total_amount&#x27;</span> =&gt; <span class="title class_">Order</span>::<span class="title function_ invoke__">getTotalAmountForPayments</span>(<span class="hljs-variable">$orders</span>),</span><br><span class="line">    <span class="hljs-string">&#x27;orders_name&#x27;</span> =&gt; <span class="title class_">Order</span>::<span class="title function_ invoke__">getOrdersNameForPayments</span>(<span class="hljs-variable">$orders</span>),</span><br><span class="line">    <span class="hljs-string">&#x27;merchant_trade_no&#x27;</span> =&gt; <span class="title function_ invoke__">time</span>() . <span class="title class_">Helpers</span>::<span class="title function_ invoke__">createAUniqueNumber</span>(),</span><br><span class="line">    <span class="hljs-string">&#x27;merchant_trade_date&#x27;</span> =&gt; <span class="title function_ invoke__">date</span>(<span class="hljs-string">&#x27;Y/m/d H:i:s&#x27;</span>),</span><br><span class="line">    <span class="hljs-string">&#x27;trade_desc&#x27;</span> =&gt; <span class="hljs-string">&#x27;BuyBuyGo&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;quantity&#x27;</span> =&gt; <span class="hljs-number">1</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;user_id&#x27;</span> =&gt; <span class="title class_">User</span>::<span class="title function_ invoke__">getUserID</span>(<span class="hljs-variable">$request</span>),</span><br><span class="line">    <span class="hljs-string">&#x27;payment_service&#x27;</span> =&gt; <span class="hljs-variable">$thirdPartyPaymentService</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;expiry_time&#x27;</span> =&gt; (<span class="hljs-keyword">new</span> <span class="title class_">Carbon</span>())-&gt;<span class="title function_ invoke__">now</span>()-&gt;<span class="title function_ invoke__">addDay</span>(<span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">toDateTimeString</span>(),</span><br><span class="line">    <span class="hljs-string">&#x27;orders&#x27;</span> =&gt; <span class="hljs-variable">$orders</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;mc_currency&#x27;</span> =&gt; <span class="hljs-string">&#x27;TWD&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;ClientBackURL&#x27;</span> =&gt; <span class="hljs-variable">$request</span>-&gt;ClientBackURL</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<h2 id="分流點"><a href="#分流點" class="headerlink" title="分流點"></a>分流點</h2><p>因為這個專案接了兩家金流，所以會需要一個地方來判定金流服務商</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">switch</span> (<span class="hljs-variable">$thirdPartyPaymentService</span>-&gt;id)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:</span><br><span class="line">        <span class="hljs-variable">$error</span> = (<span class="hljs-keyword">new</span> <span class="title class_">AllPay</span>)-&gt;<span class="title function_ invoke__">make</span>(<span class="hljs-variable">$toBeSavedInfo</span>, <span class="hljs-variable">$request</span>, <span class="hljs-variable">$recipient</span>);</span><br><span class="line">        <span class="hljs-keyword">if</span>(<span class="hljs-variable">$error</span>)</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-variable">$error</span>,<span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> (<span class="hljs-keyword">new</span> <span class="title class_">AllPay</span>())-&gt;<span class="title function_ invoke__">send</span>(<span class="hljs-variable">$toBeSavedInfo</span>, <span class="hljs-variable">$request</span>);</span><br><span class="line">        <span class="hljs-keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:</span><br><span class="line">        <span class="hljs-variable">$error</span> = (<span class="hljs-keyword">new</span> <span class="title class_">PayPal</span>)-&gt;<span class="title function_ invoke__">make</span>(<span class="hljs-variable">$toBeSavedInfo</span>, <span class="hljs-variable">$request</span>, <span class="hljs-variable">$recipient</span>);</span><br><span class="line">        <span class="hljs-keyword">if</span>(<span class="hljs-variable">$error</span>)</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">false</span>, <span class="hljs-variable">$error</span>, <span class="hljs-number">400</span>);</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$url</span> = (<span class="hljs-keyword">new</span> <span class="title class_">PayPal</span>)-&gt;<span class="title function_ invoke__">send</span>(<span class="hljs-variable">$toBeSavedInfo</span>, <span class="hljs-variable">$request</span>, <span class="hljs-variable">$recipient</span>);</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="title class_">Helpers</span>::<span class="title function_ invoke__">result</span>(<span class="hljs-literal">true</span>, <span class="hljs-variable">$url</span>, <span class="hljs-number">200</span>);</span><br><span class="line">        <span class="hljs-keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="建金流訂單"><a href="#建金流訂單" class="headerlink" title="建金流訂單"></a>建金流訂單</h2><p>在使用者按下付款之後，一張臨時的金流訂單會被建立。此訂單只介於你與你與 PayPal 之間，使用者不會接觸到這張訂單。<br>因為會一次性的寫入兩張 table ，所以這邊會特別使用 Laravel 的 Transaction 來將資料處理，如果對 Laravel Transaction 有興趣的，可以參考我在另外一篇文章中，有一<a href="https://tn710617.github.io/zh-tw/AllPayPaymentService/#%E5%BB%BA%E7%AB%8B%E9%87%91%E6%B5%81%E8%A8%82%E5%96%AE-%E9%80%99%E9%83%A8%E5%88%86%E5%B1%AC%E5%80%8B%E4%BA%BA%E8%A1%A8%E6%A0%BC%E8%A8%AD%E8%A8%88%EF%BC%8C%E5%B8%B6%E5%85%A5%E5%8F%83%E6%95%B8%E6%AF%8F%E5%80%8B%E4%BA%BA%E9%83%BD%E4%B8%8D%E5%90%8C">小段</a>針對 Laravel Transaction 的解說</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">make</span>(<span class="hljs-params">Array <span class="hljs-variable">$toBeSavedInfo</span>, Request <span class="hljs-variable">$request</span>, Recipient <span class="hljs-variable">$recipient</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    DB::<span class="title function_ invoke__">beginTransaction</span>();</span><br><span class="line">    <span class="hljs-keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-variable">$PayPal</span> = <span class="hljs-keyword">new</span> <span class="hljs-built_in">self</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;user_id = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;user_id&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;payment_service_id = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;payment_service&#x27;</span>]-&gt;id;</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;expiry_time = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;expiry_time&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;merchant_trade_no = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;merchant_trade_no&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;total_amount = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;total_amount&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;trade_desc = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;trade_desc&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;item_name = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;orders_name&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;mc_currency = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;mc_currency&#x27;</span>];</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;recipient_id = <span class="hljs-variable">$recipient</span>-&gt;id;</span><br><span class="line">        <span class="hljs-variable">$PayPal</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;orders&#x27;</span>] <span class="hljs-keyword">as</span> <span class="hljs-variable">$order</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-variable">$order_relations</span> = <span class="hljs-keyword">new</span> <span class="title class_">OrderRelations</span>();</span><br><span class="line">            <span class="hljs-variable">$order_relations</span>-&gt;payment_service_id = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;payment_service&#x27;</span>]-&gt;id;</span><br><span class="line">            <span class="hljs-variable">$order_relations</span>-&gt;payment_service_order_id = <span class="hljs-variable">$PayPal</span>-&gt;id;</span><br><span class="line">            <span class="hljs-variable">$order_relations</span>-&gt;order_id = <span class="hljs-variable">$order</span>-&gt;id;</span><br><span class="line">            <span class="hljs-variable">$order_relations</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="hljs-keyword">catch</span> (<span class="hljs-built_in">Exception</span> <span class="hljs-variable">$e</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        DB::<span class="title function_ invoke__">rollBack</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;something went wrong with DB&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    DB::<span class="title function_ invoke__">commit</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="建立提交付款申請的-URL"><a href="#建立提交付款申請的-URL" class="headerlink" title="建立提交付款申請的 URL"></a>建立提交付款申請的 URL</h2><p>這邊會用到很多 PayPal 付款標準版 (PayPal Payment Standard) 的 變量 (variable)，各種變量的使用可以參考這篇<a href="https://tn710617.github.io/zh-tw/submitMultipleItemsInPayPalIPNmethod/">文章</a><br>另外，因為 Ray 在做這個案子時，前端的時間上比較吃緊，所以 Ray 將所以非必要的資料全部由後端這邊處理，前端只帶入先前已建立的使用者訂單，後端從資料庫內調出所有的資料並提供給 PayPal</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">send</span>(<span class="hljs-params">Array <span class="hljs-variable">$toBeSavedInfo</span>, Request <span class="hljs-variable">$request</span>, Recipient <span class="hljs-variable">$recipient</span></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;   </span><br><span class="line">    <span class="hljs-comment">// 如果你是使用測試環境的話，請選 true </span></span><br><span class="line">    <span class="hljs-variable">$enableSandbox</span> = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_ENABLESANDBOX&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-variable">$paypalUrl</span> = <span class="hljs-variable">$enableSandbox</span> ? <span class="hljs-string">&#x27;https://www.sandbox.paypal.com/cgi-bin/webscr&#x27;</span> : <span class="hljs-string">&#x27;https://www.paypal.com/cgi-bin/webscr&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-variable">$data</span> = [];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 設定PayPal 帳號, 請先到以下網址申請測試者帳號，商家跟一般用戶都要申請，這邊填入的是商家的帳號，所以買家付款後，金額會直接匯入這個帳號</span></span><br><span class="line">    <span class="hljs-comment">// https://developer.paypal.com/developer/accounts/</span></span><br><span class="line">    <span class="hljs-comment">// Set the PayPal account</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;business&#x27;</span>] = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_MAIL&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 此數值為前端帶入，使用者完成付款後，將可以經由此URL返回原本的服務中</span></span><br><span class="line">    <span class="hljs-comment">// Set the PayPal return addresses, after the transaction is completed, the user could be back via this URL.</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;return&#x27;</span>] = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;ClientBackURL&#x27;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 在付款過程中，使用者可以選擇取消，並且經由此URL回到我們的服務</span></span><br><span class="line">    <span class="hljs-comment">// During the transaction process on PayPal&#x27;s site, the user could cancel the transaction and go back via this URL.</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;cancel_return&#x27;</span>] = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_CANCEL_URL&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 在使用者完成交易之後， PayPal 會發一封 IPN 到我們在這邊指定的 listener ，然後我們可以依據此 IPN 來判定付款是否成功，然後做相對應的事</span></span><br><span class="line">    <span class="hljs-comment">// After the transaction is completed, PayPal will send IPN message to this URL.</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;notify_url&#x27;</span>] = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_NOFITY_URL&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 這邊我們指定了每一樣商品的明細，包含單價，名稱，數量。 這邊要將這些明細顯示在 PayPal 的付款頁面上</span></span><br><span class="line">    <span class="hljs-comment">// Set the details about the products being purchased, including the price for every individual</span></span><br><span class="line">    <span class="hljs-comment">// and currency so that these aren&#x27;t overridden by the form data.</span></span><br><span class="line">    <span class="hljs-variable">$i</span> = <span class="hljs-number">1</span>;</span><br><span class="line">    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;orders&#x27;</span>] <span class="hljs-keyword">as</span> <span class="hljs-variable">$order</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="hljs-variable">$data</span>[<span class="hljs-string">&quot;item_name_<span class="hljs-subst">$i</span>&quot;</span>] = <span class="hljs-variable">$order</span>-&gt;item_name;</span><br><span class="line">        <span class="hljs-variable">$data</span>[<span class="hljs-string">&quot;item_number_<span class="hljs-subst">$i</span>&quot;</span>] = <span class="hljs-variable">$order</span>-&gt;quantity;</span><br><span class="line">        <span class="hljs-variable">$data</span>[<span class="hljs-string">&quot;amount_<span class="hljs-subst">$i</span>&quot;</span>] = <span class="hljs-variable">$order</span>-&gt;total_amount;</span><br><span class="line">        <span class="hljs-variable">$i</span>++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 這邊指定了幣別，細節部分可以參考官網資料</span></span><br><span class="line">    <span class="hljs-comment">// https://developer.paypal.com/docs/classic/api/currency_codes/</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;currency_code&#x27;</span>] = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;mc_currency&#x27;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 這邊我們可以帶一個任何我們想要的值過去給 PayPal ，然後 PayPal 會再回傳 IPN 時一併帶回來，以本篇例子，我帶入的是我金流訂單的編號</span></span><br><span class="line">    <span class="hljs-comment">// Add any custom fields for the query string.</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;custom&#x27;</span>] = <span class="hljs-variable">$toBeSavedInfo</span>[<span class="hljs-string">&#x27;merchant_trade_no&#x27;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 這邊我指定了收件人，否則 PayPal 會顯示測試帳號上的假的收件人資料。 在這邊設定後，我們可以在 PayPal 上顯示任何我們想要的收件人資料</span></span><br><span class="line">    <span class="hljs-comment">// Add recipient&#x27;s information</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;address_override&#x27;</span>] = <span class="hljs-number">1</span>;</span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;country&#x27;</span>] = <span class="hljs-variable">$recipient</span>-&gt;country_code;</span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;city&#x27;</span>] = <span class="hljs-variable">$recipient</span>-&gt;city;</span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;address1&#x27;</span>] = <span class="hljs-variable">$recipient</span>-&gt;others;</span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;zip&#x27;</span>] = <span class="hljs-variable">$recipient</span>-&gt;postcode;</span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;first_name&#x27;</span>] = <span class="hljs-variable">$recipient</span>-&gt;name;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 這邊的設定允許了我們上傳多個商品到 PayPal 的購物車裡面，所以可以分成多個商品並且一次性結帳。</span></span><br><span class="line">    <span class="hljs-comment">// This setting allow to add multiple items with IPN method</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;upload&#x27;</span>] = <span class="hljs-string">&#x27;1&#x27;</span>;</span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;cmd&#x27;</span>] = <span class="hljs-string">&quot;_cart&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// Add charset</span></span><br><span class="line">    <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;charset&#x27;</span>] = <span class="hljs-string">&#x27;utf-8&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 產生 query string</span></span><br><span class="line">    <span class="hljs-comment">// Build the query string from the data.</span></span><br><span class="line">    <span class="hljs-variable">$queryString</span> = <span class="title function_ invoke__">http_build_query</span>(<span class="hljs-variable">$data</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 產生最終的要在 PayPal 建立付款請求的 URL，我們只需要將此URL回傳給前端，前端就可以直接利用這個 URL 將使用者導向付款頁面</span></span><br><span class="line">    <span class="hljs-comment">// Build the URL to PayPal</span></span><br><span class="line">    <span class="hljs-variable">$url</span> = <span class="hljs-variable">$paypalUrl</span> . <span class="hljs-string">&#x27;?&#x27;</span> . <span class="hljs-variable">$queryString</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$url</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用者付款"><a href="#使用者付款" class="headerlink" title="使用者付款"></a>使用者付款</h2><ol>
+<li>使用者經由我們上面產出的 URL 到達 PayPal 付款頁面，這邊請先去<a target="_blank" rel="noopener" href="https://developer.paypal.com/developer/accounts/">申請測試帳號</a></li>
+</ol>
+<p><img src="https://i.imgur.com/oCOCdLi.png"></p>
+<ol start="2">
+<li><p>到達付款頁面<br><img src="https://i.imgur.com/FQ90eUB.png"></p>
+</li>
+<li><p>這邊可以看到我們指定的商品明細，以及金額，選擇繼續<br><img src="https://i.imgur.com/EAPA4y3.png"></p>
+</li>
+<li><p>這邊可以看到我們指定的住址<br><img src="https://i.imgur.com/RY4BEJ1.png"></p>
+</li>
+<li><p>交易成功，這邊可以看到全部的細節<br><img src="https://i.imgur.com/rs3VIBN.png"></p>
+</li>
+</ol>
+<h2 id="驗證付款狀態"><a href="#驗證付款狀態" class="headerlink" title="驗證付款狀態"></a>驗證付款狀態</h2><p>使用者完成付款程序後， PayPal 會發一封 IPN 給我們，有關於 IPN 的規格可以參考<a target="_blank" rel="noopener" href="https://developer.paypal.com/docs/classic/products/instant-payment-notification/">官方文件</a></p>
+<ol>
+<li><p>首先，我們先安裝 PayPal 的 官方 <a target="_blank" rel="noopener" href="https://github.com/paypal/ipn-code-samples">IPN CODE SAMPLES</a></p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/paypal/ipn-code-samples</span><br></pre></td></tr></table></figure></li>
+<li><p>進到 <code>php</code> 的資料夾內</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">cd ipn-code-samples/php</span><br></pre></td></tr></table></figure></li>
+<li><p>接下來，我們複製<code>PaypalIPN.php</code>到我們的專案內， Ray 是把它放到 <code>App</code> 底下。</p>
+</li>
+<li><p>接著，在把 <code>ipn-code-samples</code> 裡頭的 <code>cert</code> 整個資料夾也放到 <code>App</code> 底下，大概如下圖<br><img src="https://i.imgur.com/NfzG9Cj.png"></p>
+</li>
+<li><p>再來，我們到<code>composer.json</code>檔案中，在<code>autoload-dev</code>底下的<code>files</code>加入<code>PaypalIPN.php</code>這個檔案，如果沒有<code>files</code>的可能要自己建一個</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">&quot;autoload-dev&quot;</span>: &#123;</span><br><span class="line">    <span class="hljs-string">&quot;psr-4&quot;</span>: &#123;</span><br><span class="line">        <span class="hljs-string">&quot;Tests\\&quot;</span>: <span class="hljs-string">&quot;tests/&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="hljs-string">&quot;files&quot;</span>: [</span><br><span class="line">        <span class="hljs-string">&quot;app/Helpers.php&quot;</span>,</span><br><span class="line">        <span class="hljs-string">&quot;app/AllPay.Payment.Integration.php&quot;</span>,</span><br><span class="line">        <span class="hljs-string">&quot;app/PaypalIPN.php&quot;</span></span><br><span class="line">    ]</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></li>
+<li><p>重新執行<code>composer</code>，在<code>terminal</code>的專案資料夾底下，執行</p>
+<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">composer install</span><br></pre></td></tr></table></figure></li>
+<li><p>萬事俱備，只欠東風！ 接下來讓我們將<code>example_usage_advanced.php</code>的檔案裡頭的內容複製到你想要的地方，可以是你的Controller，也可以是你的某個class下面的一個function，如下：<br>下面的 code 有點長，可以不必全看，除了我中文有特別解釋的地方之外，大概跟原本的sample一樣。</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">listen</span>(<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// 因為官方sample是去接 $_POST，所以這邊直接將Laravel的輸入轉成 POST ，想要自己改的人也可以哦</span></span><br><span class="line">        <span class="hljs-variable">$_POST</span> = <span class="hljs-variable">$request</span>-&gt;<span class="title function_ invoke__">post</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 這個資訊代表是否該交易已付款</span></span><br><span class="line">        <span class="hljs-variable">$payment_status</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;payment_status&#x27;</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 還記得我們之前帶過去的金流訂單號碼嗎？</span></span><br><span class="line">        <span class="hljs-variable">$merchant_trade_no</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;custom&#x27;</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 很重要，等等會用到</span></span><br><span class="line">        <span class="hljs-variable">$txn_id</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;txn_id&#x27;</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-variable">$txn_type</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;txn_type&#x27;</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 付款時間</span></span><br><span class="line">        <span class="hljs-variable">$payment_date</span> = <span class="title class_">Carbon</span>::<span class="title function_ invoke__">parse</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;payment_date&#x27;</span>])-&gt;<span class="title function_ invoke__">setTimezone</span>(<span class="hljs-string">&#x27;UTC&#x27;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 總付款金額</span></span><br><span class="line">        <span class="hljs-variable">$mc_gross</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;mc_gross&#x27;</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 幣別</span></span><br><span class="line">        <span class="hljs-variable">$mc_currency</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;mc_currency&#x27;</span>];</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$enable_sandbox</span> = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_ENABLESANDBOX&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這邊表示收款人的email，如果IPN裡頭的收款人不在這個清單裡面的話，驗證將會失敗</span></span><br><span class="line"><span class="hljs-comment">// Use this to specify all of the email addresses that you have attached to paypal:</span></span><br><span class="line">        <span class="hljs-variable">$my_email_addresses</span> = <span class="hljs-keyword">array</span>(<span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_MAIL&#x27;</span>));</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Set this to true to send a confirmation email:</span></span><br><span class="line">        <span class="hljs-variable">$send_confirmation_email</span> = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_SEND_CONFIRMATION_EMAIL&#x27;</span>);</span><br><span class="line">        <span class="hljs-variable">$confirmation_email_address</span> = <span class="hljs-string">&quot;buybuybuygogo@gmail.com&quot;</span>;</span><br><span class="line">        <span class="hljs-variable">$from_email_address</span> = <span class="hljs-string">&quot;test@gmail.com&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 選true的話，會自動記log</span></span><br><span class="line"><span class="hljs-comment">// Set this to true to save a log file:</span></span><br><span class="line">        <span class="hljs-variable">$save_log_file</span> = <span class="title function_ invoke__">env</span>(<span class="hljs-string">&#x27;PAYPAL_SANDBOX_SAVE_LOG_FILE&#x27;</span>);</span><br><span class="line">        <span class="hljs-variable">$log_file_dir</span> = <span class="title function_ invoke__">storage_path</span>() . <span class="hljs-string">&quot;/app/payment_logs&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Here is some information on how to configure sendmail:</span></span><br><span class="line"><span class="hljs-comment">// http://php.net/manual/en/function.mail.php#118210</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這邊就是主要驗證的function</span></span><br><span class="line">        <span class="hljs-variable">$ipn</span> = <span class="hljs-keyword">new</span> <span class="title function_ invoke__">PaypalIPN</span>();</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$enable_sandbox</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-variable">$ipn</span>-&gt;<span class="title function_ invoke__">useSandbox</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-variable">$verified</span> = <span class="hljs-variable">$ipn</span>-&gt;<span class="title function_ invoke__">verifyIPN</span>();</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$data_text</span> = <span class="hljs-string">&quot;&quot;</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$_POST</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$key</span> =&gt; <span class="hljs-variable">$value</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-variable">$data_text</span> .= <span class="hljs-variable">$key</span> . <span class="hljs-string">&quot; = &quot;</span> . <span class="hljs-variable">$value</span> . <span class="hljs-string">&quot;\r\n&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$test_text</span> = <span class="hljs-string">&quot;&quot;</span>;</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&quot;test_ipn&quot;</span>] == <span class="hljs-number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-variable">$test_text</span> = <span class="hljs-string">&quot;Test &quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 上面提到的mail，就在這邊確認</span></span><br><span class="line"><span class="hljs-comment">// Check the receiver email to see if it matches your list of paypal email addresses</span></span><br><span class="line">        <span class="hljs-variable">$receiver_email_found</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">        <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$my_email_addresses</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$a</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">if</span> (<span class="title function_ invoke__">strtolower</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&quot;receiver_email&quot;</span>]) == <span class="title function_ invoke__">strtolower</span>(<span class="hljs-variable">$a</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="hljs-variable">$receiver_email_found</span> = <span class="hljs-literal">true</span>;</span><br><span class="line">                <span class="hljs-keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title function_ invoke__">date_default_timezone_set</span>(<span class="hljs-string">&quot;America/Los_Angeles&quot;</span>);</span><br><span class="line">        <span class="hljs-keyword">list</span>(<span class="hljs-variable">$year</span>, <span class="hljs-variable">$month</span>, <span class="hljs-variable">$day</span>, <span class="hljs-variable">$hour</span>, <span class="hljs-variable">$minute</span>, <span class="hljs-variable">$second</span>, <span class="hljs-variable">$timezone</span>) = <span class="title function_ invoke__">explode</span>(<span class="hljs-string">&quot;:&quot;</span>, <span class="title function_ invoke__">date</span>(<span class="hljs-string">&quot;Y:m:d:H:i:s:T&quot;</span>));</span><br><span class="line">        <span class="hljs-variable">$date</span> = <span class="hljs-variable">$year</span> . <span class="hljs-string">&quot;-&quot;</span> . <span class="hljs-variable">$month</span> . <span class="hljs-string">&quot;-&quot;</span> . <span class="hljs-variable">$day</span>;</span><br><span class="line">        <span class="hljs-variable">$timestamp</span> = <span class="hljs-variable">$date</span> . <span class="hljs-string">&quot; &quot;</span> . <span class="hljs-variable">$hour</span> . <span class="hljs-string">&quot;:&quot;</span> . <span class="hljs-variable">$minute</span> . <span class="hljs-string">&quot;:&quot;</span> . <span class="hljs-variable">$second</span> . <span class="hljs-string">&quot; &quot;</span> . <span class="hljs-variable">$timezone</span>;</span><br><span class="line">        <span class="hljs-variable">$dated_log_file_dir</span> = <span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/&quot;</span> . <span class="hljs-variable">$year</span> . <span class="hljs-string">&quot;/&quot;</span> . <span class="hljs-variable">$month</span>;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$paypal_ipn_status</span> = <span class="hljs-string">&quot;VERIFICATION FAILED&quot;</span>;</span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$verified</span>)</span><br><span class="line">        &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// 進到下面的if之後，表示已經驗證成功了，我們可以在驗證成功之後做一些該做的事</span></span><br><span class="line">            <span class="hljs-variable">$paypal_ipn_status</span> = <span class="hljs-string">&quot;RECEIVER EMAIL MISMATCH&quot;</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$receiver_email_found</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="hljs-variable">$paypal_ipn_status</span> = <span class="hljs-string">&quot;Completed Successfully&quot;</span>;</span><br><span class="line"></span><br><span class="line">                <span class="hljs-variable">$PayPal</span> = (<span class="hljs-keyword">new</span> <span class="title class_">PayPal</span>())-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;merchant_trade_no&#x27;</span>, <span class="hljs-variable">$merchant_trade_no</span>)-&gt;<span class="title function_ invoke__">first</span>();</span><br><span class="line"></span><br><span class="line">                <span class="hljs-comment">// 這邊檢查了幾項，大概如下：</span></span><br><span class="line">                <span class="hljs-comment">// 1. 檢查txn_id，為了避免這筆交易之前就已經有處理過。所以資料庫裡面如果已經有這個txn_id，將不予理會</span></span><br><span class="line">                <span class="hljs-comment">// 2. 檢查mc_gross，總金額必須與我們金流訂單裡頭的金額相等</span></span><br><span class="line">                <span class="hljs-comment">// 3. 檢查幣別，幣別必須與我們金流訂單裡頭的幣別相同</span></span><br><span class="line">                <span class="hljs-comment">// 4. 檢查payment_status，該交易必需已經付款完成</span></span><br><span class="line">                <span class="hljs-keyword">if</span> ((!<span class="title class_">PayPal</span>::<span class="title function_ invoke__">checkIfTxnIdExists</span>(<span class="hljs-variable">$txn_id</span>)) &amp;&amp; (<span class="hljs-variable">$mc_gross</span> == <span class="hljs-variable">$PayPal</span>-&gt;total_amount) &amp;&amp; (<span class="hljs-variable">$mc_currency</span> == <span class="hljs-variable">$PayPal</span>-&gt;mc_currency) &amp;&amp; (<span class="hljs-variable">$payment_status</span> == <span class="hljs-string">&#x27;Completed&#x27;</span>))</span><br><span class="line">                &#123;</span><br><span class="line">                <span class="hljs-comment">// 將該txd_id新增到該金流訂單內，並更新該訂單數據，主要可被識別為已結單。</span></span><br><span class="line">                    <span class="hljs-variable">$PayPal</span>-&gt;<span class="title function_ invoke__">update</span>([<span class="hljs-string">&#x27;txn_id&#x27;</span> =&gt; <span class="hljs-variable">$txn_id</span>, <span class="hljs-string">&#x27;txn_type&#x27;</span> =&gt; <span class="hljs-variable">$txn_type</span>, <span class="hljs-string">&#x27;payment_date&#x27;</span> =&gt; <span class="hljs-variable">$payment_date</span>, <span class="hljs-string">&#x27;status&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;expiry_time&#x27;</span> =&gt; <span class="hljs-literal">null</span>]);</span><br><span class="line">                    <span class="hljs-variable">$recipient</span> = <span class="hljs-variable">$PayPal</span>-&gt;recipient;</span><br><span class="line"></span><br><span class="line">                    <span class="hljs-variable">$orderRelations</span> = <span class="hljs-variable">$PayPal</span>-&gt;orderRelations-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;payment_service_id&#x27;</span>, <span class="hljs-number">2</span>);</span><br><span class="line"></span><br><span class="line">                <span class="hljs-comment">// 更新完金流訂單後，根據該金流訂單取得相對應的使用者訂單，並更新使用者訂單狀態。</span></span><br><span class="line">                    <span class="title class_">Order</span>::<span class="title function_ invoke__">updateStatus</span>(<span class="hljs-variable">$orderRelations</span>, <span class="hljs-variable">$recipient</span>);</span><br><span class="line"></span><br><span class="line">                <span class="hljs-comment">// 付款完成，寄mail通知使用者</span></span><br><span class="line">                    <span class="title class_">Helpers</span>::<span class="title function_ invoke__">mailWhenPaid</span>(<span class="hljs-variable">$PayPal</span>, <span class="hljs-variable">$orderRelations</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="hljs-keyword">elseif</span> (<span class="hljs-variable">$enable_sandbox</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&quot;test_ipn&quot;</span>] != <span class="hljs-number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="hljs-variable">$paypal_ipn_status</span> = <span class="hljs-string">&quot;RECEIVED FROM LIVE WHILE SANDBOXED&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="hljs-keyword">elseif</span> (<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&quot;test_ipn&quot;</span>] == <span class="hljs-number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-variable">$paypal_ipn_status</span> = <span class="hljs-string">&quot;RECEIVED FROM SANDBOX WHILE LIVE&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$save_log_file</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-comment">// Create log file directory</span></span><br><span class="line">            <span class="hljs-keyword">if</span> (!<span class="title function_ invoke__">is_dir</span>(<span class="hljs-variable">$dated_log_file_dir</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="hljs-keyword">if</span> (!<span class="title function_ invoke__">file_exists</span>(<span class="hljs-variable">$dated_log_file_dir</span>))</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="title function_ invoke__">mkdir</span>(<span class="hljs-variable">$dated_log_file_dir</span>, <span class="hljs-number">0777</span>, <span class="hljs-literal">true</span>);</span><br><span class="line">                    <span class="hljs-keyword">if</span> (!<span class="title function_ invoke__">is_dir</span>(<span class="hljs-variable">$dated_log_file_dir</span>))</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="hljs-variable">$save_log_file</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="hljs-keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="hljs-variable">$save_log_file</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="hljs-comment">// Restrict web access to files in the log file directory</span></span><br><span class="line">            <span class="hljs-variable">$htaccess_body</span> = <span class="hljs-string">&quot;RewriteEngine On&quot;</span> . <span class="hljs-string">&quot;\r\n&quot;</span> . <span class="hljs-string">&quot;RewriteRule .* - [L,R=404]&quot;</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$save_log_file</span> &amp;&amp; (!<span class="title function_ invoke__">is_file</span>(<span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/.htaccess&quot;</span>) || <span class="title function_ invoke__">file_get_contents</span>(<span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/.htaccess&quot;</span>) !== <span class="hljs-variable">$htaccess_body</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="hljs-keyword">if</span> (!<span class="title function_ invoke__">is_dir</span>(<span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/.htaccess&quot;</span>))</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="title function_ invoke__">file_put_contents</span>(<span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/.htaccess&quot;</span>, <span class="hljs-variable">$htaccess_body</span>);</span><br><span class="line">                    <span class="hljs-keyword">if</span> (!<span class="title function_ invoke__">is_file</span>(<span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/.htaccess&quot;</span>) || <span class="title function_ invoke__">file_get_contents</span>(<span class="hljs-variable">$log_file_dir</span> . <span class="hljs-string">&quot;/.htaccess&quot;</span>) !== <span class="hljs-variable">$htaccess_body</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="hljs-variable">$save_log_file</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="hljs-keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="hljs-variable">$save_log_file</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$save_log_file</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="hljs-comment">// Save data to text file</span></span><br><span class="line">                <span class="title function_ invoke__">file_put_contents</span>(<span class="hljs-variable">$dated_log_file_dir</span> . <span class="hljs-string">&quot;/&quot;</span> . <span class="hljs-variable">$test_text</span> . <span class="hljs-string">&quot;paypal_ipn_&quot;</span> . <span class="hljs-variable">$date</span> . <span class="hljs-string">&quot;.txt&quot;</span>, <span class="hljs-string">&quot;paypal_ipn_status = &quot;</span> . <span class="hljs-variable">$paypal_ipn_status</span> . <span class="hljs-string">&quot;\r\n&quot;</span> . <span class="hljs-string">&quot;paypal_ipn_date = &quot;</span> . <span class="hljs-variable">$timestamp</span> . <span class="hljs-string">&quot;\r\n&quot;</span> . <span class="hljs-variable">$data_text</span> . <span class="hljs-string">&quot;\r\n&quot;</span>, FILE_APPEND);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$send_confirmation_email</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="hljs-comment">// Send confirmation email</span></span><br><span class="line">            <span class="title function_ invoke__">mail</span>(<span class="hljs-variable">$confirmation_email_address</span>, <span class="hljs-variable">$test_text</span> . <span class="hljs-string">&quot;PayPal IPN : &quot;</span> . <span class="hljs-variable">$paypal_ipn_status</span>, <span class="hljs-string">&quot;paypal_ipn_status = &quot;</span> . <span class="hljs-variable">$paypal_ipn_status</span> . <span class="hljs-string">&quot;\r\n&quot;</span> . <span class="hljs-string">&quot;paypal_ipn_date = &quot;</span> . <span class="hljs-variable">$timestamp</span> . <span class="hljs-string">&quot;\r\n&quot;</span> . <span class="hljs-variable">$data_text</span>, <span class="hljs-string">&quot;From: &quot;</span> . <span class="hljs-variable">$from_email_address</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Reply with an empty 200 response to indicate to paypal the IPN was received correctly</span></span><br><span class="line">        <span class="title function_ invoke__">header</span>(<span class="hljs-string">&quot;HTTP/1.1 200 OK&quot;</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>以上大概就是整個利用 PayPal 付款標準版 (Payment Standard) 來付款 ，然後經由 IPN 驗證的流程，<br>流程大概如下：<br><img src="https://i.imgur.com/ZCmPwAd.png"></p>
+<ol>
+<li>買家完成付款</li>
+<li>PayPal 發送 IPN Message 到 Listener</li>
+<li>Listener 回饋 HTTP 200 Response 到 PayPal</li>
+<li>Listener 將剛剛收到的 IPN Message 原封不動的回傳到 PayPal</li>
+<li>PayPal 驗證無誤後，回傳 Verified ，若驗證失敗，回傳 Invalid</li>
+</ol>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/PayPal-Payment-Standard/">#PayPal Payment Standard</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/PayPal-IPN/">#PayPal IPN</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/PayPalRestAPI/">PayPal REST API 串接金流好簡單</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/submitMultipleItemsInPayPalIPNmethod/">在 PayPal 的 IPN 方式中，提交多個商品</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/implementATransactionViaPayPalIPN/';
+        this.page.identifier = 'zh-tw/implementATransactionViaPayPalIPN/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

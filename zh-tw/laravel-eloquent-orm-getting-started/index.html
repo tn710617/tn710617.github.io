@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - Eloquent ORM - Getting Started - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Eloquent ORM - Getting Started">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-eloquent-orm-getting-started/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-10-20T08:31:10.000Z">
+<meta property="article:modified_time" content="2021-04-27T11:49:08.599Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Eloquent ORM">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-eloquent-orm-getting-started/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Eloquent ORM - Getting Started">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-eloquent-orm-getting-started/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-10-20T08:31:10.000Z">
+<meta property="article:modified_time" content="2021-04-27T11:49:08.599Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Eloquent ORM">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Models">2&nbsp;&nbsp;<b># Defining Models</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Eloquent-Model-Conventions">2.1&nbsp;&nbsp;# Eloquent Model Conventions</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Table-Names">2.1.1&nbsp;&nbsp;# Table Names</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Primary-Keys">2.1.2&nbsp;&nbsp;# Primary Keys</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Timestamps">2.1.3&nbsp;&nbsp;# Timestamps</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Database-Connection">2.1.4&nbsp;&nbsp;# Database Connection</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Default-Attribute-Values">2.2&nbsp;&nbsp;# Default Attribute Values</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-Models">3&nbsp;&nbsp;<b># Retrieving Models</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Adding-Additional-Constraints">3.1.1&nbsp;&nbsp;# Adding Additional Constraints</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Refreshing-Models">3.1.2&nbsp;&nbsp;# Refreshing Models</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Collections">3.2&nbsp;&nbsp;# Collections</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Chunking-Results">3.3&nbsp;&nbsp;# Chunking Results</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Advanced-Subqueries">3.4&nbsp;&nbsp;# Advanced Subqueries</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-Single-Models-Aggregates">4&nbsp;&nbsp;<b># Retrieving Single Models / Aggregates</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Not-Found-Exceptions">4.1&nbsp;&nbsp;# Not Found Exceptions</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-Aggregates">4.2&nbsp;&nbsp;# Retrieving Aggregates</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Inserting-amp-Updating-Models">5&nbsp;&nbsp;<b># Inserting &amp;amp;amp; Updating Models</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Inserts">5.1&nbsp;&nbsp;# Inserts</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Updates">5.2&nbsp;&nbsp;# Updates</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Mass-Updates">5.2.1&nbsp;&nbsp;# Mass Updates</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Examining-Attribute-Changes">5.2.2&nbsp;&nbsp;# Examining Attribute Changes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Mass-Assignment">5.3&nbsp;&nbsp;# Mass Assignment</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Other-Creation-Methods">5.4&nbsp;&nbsp;# Other Creation Methods</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#firstOrCreate-firstOrNew">5.4.1&nbsp;&nbsp;# firstOrCreate / firstOrNew</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#updateOrCreate">5.4.2&nbsp;&nbsp;# updateOrCreate</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Deleting-Models">6&nbsp;&nbsp;<b># Deleting Models</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Deleting-An-Existing-Model-By-Key">6.1.1&nbsp;&nbsp;# Deleting An Existing Model By Key</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Deleting-Models-By-Query">6.1.2&nbsp;&nbsp;# Deleting Models By Query</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Soft-Deleting">6.2&nbsp;&nbsp;# Soft Deleting</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Querying-Soft-Deleted-Models">6.3&nbsp;&nbsp;# Querying Soft Deleted Models</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Including-Soft-Deleted-Models">6.3.1&nbsp;&nbsp;# Including Soft Deleted Models**</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-Only-Soft-Deleted-Models">6.3.2&nbsp;&nbsp;# Retrieving Only Soft Deleted Models</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Restoring-Soft-Deleted-Models">6.3.3&nbsp;&nbsp;# Restoring Soft Deleted Models</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Permanently-Deleting-Models">6.3.4&nbsp;&nbsp;# Permanently Deleting Models</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Replicating-Models">7&nbsp;&nbsp;<b># Replicating Models</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Query-Scopes">8&nbsp;&nbsp;<b># Query Scopes</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Global-Scopes">8.1&nbsp;&nbsp;# Global Scopes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Writing-Global-Scopes">8.1.1&nbsp;&nbsp;# Writing Global Scopes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Applying-Global-Scopes">8.1.2&nbsp;&nbsp;# Applying Global Scopes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Anonymous-Global-Scopes">8.1.3&nbsp;&nbsp;# Anonymous Global Scopes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Removing-Global-Scopes">8.1.4&nbsp;&nbsp;# Removing Global Scopes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Local-Scopes">8.2&nbsp;&nbsp;# Local Scopes</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Utilizing-Local-Scope">8.2.1&nbsp;&nbsp;# Utilizing Local Scope</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Dynamic-Scopes">8.2.2&nbsp;&nbsp;# Dynamic Scopes</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Comparing-Models">9&nbsp;&nbsp;<b># Comparing Models</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Events">10&nbsp;&nbsp;<b># Events</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Using-Closures">10.1&nbsp;&nbsp;# Using Closures</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Observers">10.2&nbsp;&nbsp;# Observers</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Muting-Events">10.3&nbsp;&nbsp;# Muting Events</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Saving-A-Single-Model-Without-Event">10.3.1&nbsp;&nbsp;# Saving A Single Model Without Event</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Additional">11&nbsp;&nbsp;<b># Additional</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-eloquent-orm-getting-started/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-eloquent-orm-getting-started/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Eloquent ORM - Getting Started
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-10-20T08:31:10.000Z" itemprop="datePublished">10月 20 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            37 分钟 讀完 (大概 5494 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Defining-Models"><a href="#Defining-Models" class="headerlink" title="# Defining Models"></a># Defining Models</h2><h6 id="以下的-Laravel-command-的意思是？"><a href="#以下的-Laravel-command-的意思是？" class="headerlink" title="以下的 Laravel command 的意思是？"></a><strong>以下的 Laravel command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:model Flight</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個名為 Flight 的 model</li>
+</ul>
+<h6 id="以下的-Laravel-command-的意思是？-1"><a href="#以下的-Laravel-command-的意思是？-1" class="headerlink" title="以下的 Laravel command 的意思是？"></a><strong>以下的 Laravel command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:model Flight --migration</span><br><span class="line"></span><br><span class="line">php artisan make:model Flight -m</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">// 建立一個名為 Flight 的 model, 並建立其 migration</span><br><span class="line">php artisan make:model Flight --migration</span><br><span class="line"></span><br><span class="line">// 同上</span><br><span class="line">php artisan make:model Flight -m</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-command-的意思是？-2"><a href="#以下的-Laravel-command-的意思是？-2" class="headerlink" title="以下的 Laravel command 的意思是？"></a><strong>以下的 Laravel command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:model Flight --factory</span><br><span class="line">php artisan make:model Flight -f</span><br><span class="line"></span><br><span class="line">php artisan make:model Flight --seed</span><br><span class="line">php artisan make:model Flight -s</span><br><span class="line"></span><br><span class="line">php artisan make:model Flight --controller</span><br><span class="line">php artisan make:model Flight -c</span><br><span class="line"></span><br><span class="line">php artisan make:model Flight -mfsc</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">// 建立 Flight model, 並建立其 Factory</span><br><span class="line">php artisan make:model Flight --factory</span><br><span class="line">// 同上</span><br><span class="line">php artisan make:model Flight -f</span><br><span class="line"></span><br><span class="line">// 建立 Flight model, 並建立其 seeder</span><br><span class="line">php artisan make:model Flight --seed</span><br><span class="line">// 同上</span><br><span class="line">php artisan make:model Flight -s</span><br><span class="line"></span><br><span class="line">// 建立 Flight model, 並建立其 controlelr</span><br><span class="line">php artisan make:model Flight --controller</span><br><span class="line">// 同上</span><br><span class="line">php artisan make:model Flight -c</span><br><span class="line"></span><br><span class="line">// 建立 Flight model, 並建立其 migraiton, factory, seeder, 以及 controller</span><br><span class="line">php artisan make:model Flight -mfsc</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Eloquent-Model-Conventions"><a href="#Eloquent-Model-Conventions" class="headerlink" title="# Eloquent Model Conventions"></a># Eloquent Model Conventions</h3><h6 id="Laravel-中-假設-model-name-為-AirTrafficController-根據-Laravel-Model-Convention-table-name-應為？"><a href="#Laravel-中-假設-model-name-為-AirTrafficController-根據-Laravel-Model-Convention-table-name-應為？" class="headerlink" title="Laravel 中, 假設 model name 為 AirTrafficController, 根據 Laravel Model Convention, table name 應為？"></a><strong>Laravel 中, 假設 model name 為 AirTrafficController, 根據 Laravel Model Convention, table name 應為？</strong></h6><p>air_traffic_controllers</p>
+<br>
+
+<h4 id="Table-Names"><a href="#Table-Names" class="headerlink" title="# Table Names"></a># Table Names</h4><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$table</span> = <span class="hljs-string">&#x27;my_flights&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>指定該 model 所對應的 table</li>
+</ul>
+<br>
+
+<h4 id="Primary-Keys"><a href="#Primary-Keys" class="headerlink" title="# Primary Keys"></a># Primary Keys</h4><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$primaryKey</span> = <span class="hljs-string">&#x27;flight_id&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>primary key 預設為 <code>id</code>, 可以特別指定</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$incrementing</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 預設 primary key 為 id, 且為 auto-incrementing, 會 cast 成 int, 若要使用 non-numeric 或 non-incrementing 的 primary key 的話, 要特別指定為 false</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$keyType</span> = <span class="hljs-string">&#x27;string&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 預設 primary key 為 id, 且為 auto-incrementing, 會 cast 成 int, 若 primary key 不是 int, 需特別指定 type</li>
+</ul>
+<br>
+
+<h4 id="Timestamps"><a href="#Timestamps" class="headerlink" title="# Timestamps"></a># Timestamps</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$timestamps</span> = <span class="hljs-literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel Eloquent 預設會自動管理 <code>created_at</code> 以及 <code>updated_at</code> 欄位, 若不需 Eloquent 自動管理, 可設為 false</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Flight extends Model</span><br><span class="line">&#123;</span><br><span class="line">    protected $dateFormat = &#x27;U&#x27;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 預設 timestamps 有其固定格式, 可特別指定格式, 格式決定儲存在資料庫中的格式以及 serialized 之後的格式</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-6"><a href="#以下的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">class Flight extends Model</span><br><span class="line">&#123;</span><br><span class="line">    const CREATED_AT = &#x27;creation_date&#x27;;</span><br><span class="line">    const UPDATED_AT = &#x27;last_update&#x27;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 中, 預設儲存 timestamps 的 column 分別是 created_at 以及 updated_at, 可使用以上 example 來自定義</li>
+</ul>
+<br>
+
+<h4 id="Database-Connection"><a href="#Database-Connection" class="headerlink" title="# Database Connection"></a># Database Connection</h4><h6 id="以下的-Laravel-example-code-的意思是？-7"><a href="#以下的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Flight extends Model</span><br><span class="line">&#123;</span><br><span class="line">    protected $connection = &#x27;connection-name&#x27;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 中, Eloquent Model 會使用預設的 Database connection, 可使用上面的 example 自定義</li>
+</ul>
+<br>
+
+<h3 id="Default-Attribute-Values"><a href="#Default-Attribute-Values" class="headerlink" title="# Default Attribute Values"></a># Default Attribute Values</h3><h6 id="以下的-Laravel-example-code-的意思是？-8"><a href="#以下的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Flight extends Model</span><br><span class="line">&#123;</span><br><span class="line">    protected $attributes = [</span><br><span class="line">        &#x27;delayed&#x27; =&gt; false,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>設定 Eloquent Model attribute 的預設值</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Retrieving-Models"><a href="#Retrieving-Models" class="headerlink" title="# Retrieving Models"></a># Retrieving Models</h2><h4 id="Adding-Additional-Constraints"><a href="#Adding-Additional-Constraints" class="headerlink" title="# Adding Additional Constraints"></a># Adding Additional Constraints</h4><h6 id="以下的-Laravel-example-code-的意思是？-9"><a href="#以下的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">all</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$flights</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$flight</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$flight</span>-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>all() 可取得該 model 的所有 records, 也可使用 query constraints 之後, 使用 get() 取得結果</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-10"><a href="#以下的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">               -&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;desc&#x27;</span>)</span><br><span class="line">               -&gt;<span class="title function_ invoke__">take</span>(<span class="hljs-number">10</span>)</span><br><span class="line">               -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>where()-&gt;orderBy()-&gt;take() 為 constraints, 最後使用 get() 取得資料, 若無 constraints, 可直接使用 all() 取得資料</li>
+</ul>
+<br>
+
+<h4 id="Refreshing-Models"><a href="#Refreshing-Models" class="headerlink" title="# Refreshing Models"></a># Refreshing Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-11"><a href="#以下的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;number&#x27;</span>, <span class="hljs-string">&#x27;FR 900&#x27;</span>)-&gt;<span class="title function_ invoke__">first</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$freshFlight</span> = <span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">fresh</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>fresh() 會從 model 重新取得資料, 不影響 $flight 的內容</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-12"><a href="#以下的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;number&#x27;</span>, <span class="hljs-string">&#x27;FR 900&#x27;</span>)-&gt;<span class="title function_ invoke__">first</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;number = <span class="hljs-string">&#x27;FR 456&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">refresh</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;number; <span class="hljs-comment">// &quot;FR 900&quot;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>refresh() 會使用 fresh() 取得的 data 將原本的替換掉, 包括 relationship</li>
+</ul>
+<br>
+
+<h3 id="Collections"><a href="#Collections" class="headerlink" title="# Collections"></a># Collections</h3><h6 id="以下的-Laravel-example-code-的意思是？-13"><a href="#以下的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span> = <span class="hljs-variable">$flights</span>-&gt;<span class="title function_ invoke__">reject</span>(function (<span class="hljs-variable">$flight</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$flight</span>-&gt;cancelled;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 cancelled 的 model 從 $flights 這個 collection 中移除, 並取代 $flights<br>也可使用 <figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span>-&gt;<span class="title function_ invoke__">forget</span>(function (<span class="hljs-variable">$flight</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$flight</span>-&gt;cancelled;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-中-可以-foreach-collection-嗎？"><a href="#以下的-Laravel-中-可以-foreach-collection-嗎？" class="headerlink" title="以下的 Laravel 中, 可以 foreach collection 嗎？"></a><strong>以下的 Laravel 中, 可以 foreach collection 嗎？</strong></h6><p>可以</p>
+<br>
+
+<h3 id="Chunking-Results"><a href="#Chunking-Results" class="headerlink" title="# Chunking Results"></a># Chunking Results</h3><h6 id="以下的-Laravel-example-code-的意思是？-14"><a href="#以下的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Flight</span>::<span class="title function_ invoke__">chunk</span>(<span class="hljs-number">200</span>, function (<span class="hljs-variable">$flights</span>) &#123;</span><br><span class="line">    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$flights</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$flight</span>) &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>會將 collections 分成 1 個 chunk 200 筆資料, 所以共有幾個 chunk 視乎該 collection 共有幾筆資料, 再將每個 chunk 丟入 closure 執行, 如此一來, 當處理資料數量龐大的 collection 時, 可節省記憶體單次調用量</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-15"><a href="#以下的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;departed&#x27;</span>, <span class="hljs-literal">true</span>)-&gt;<span class="title function_ invoke__">chunkById</span>(<span class="hljs-number">200</span>, function (<span class="hljs-variable">$flights</span>) &#123;</span><br><span class="line">    <span class="hljs-variable">$flights</span>-&gt;each-&gt;<span class="title function_ invoke__">update</span>([<span class="hljs-string">&#x27;departed&#x27;</span> =&gt; <span class="hljs-literal">false</span>]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>一次只取 200 筆 update 以節省 memory, chunkById 會記住上一次 chunk 的 last_id, 並加上 orderById, 下一次只會從 last_id 之後取值; 若只使用 chunk 的話, 會是 offset … limit …, 後者遇到數據量大時, 效能會很差, 前者可以很明顯地增進效能</li>
+</ul>
+<br>
+
+<h3 id="Advanced-Subqueries"><a href="#Advanced-Subqueries" class="headerlink" title="# Advanced Subqueries"></a># Advanced Subqueries</h3><h6 id="以下的-Laravel-example-code-的意思是？-16"><a href="#以下的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title class_">Destination</span>::<span class="title function_ invoke__">addSelect</span>([<span class="hljs-string">&#x27;last_flight&#x27;</span> =&gt; <span class="title class_">Flight</span>::<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;name&#x27;</span>)</span><br><span class="line">    -&gt;<span class="title function_ invoke__">whereColumn</span>(<span class="hljs-string">&#x27;destination_id&#x27;</span>, <span class="hljs-string">&#x27;destinations.id&#x27;</span>)</span><br><span class="line">    -&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;arrived_at&#x27;</span>, <span class="hljs-string">&#x27;desc&#x27;</span>)</span><br><span class="line">    -&gt;<span class="title function_ invoke__">limit</span>(<span class="hljs-number">1</span>)</span><br><span class="line">])-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 新增 last_flight column, 其值為 query Flight table 得來</span></span><br><span class="line"><span class="hljs-keyword">return</span> <span class="title class_">Destination</span>::<span class="title function_ invoke__">addSelect</span>([<span class="hljs-string">&#x27;last_flight&#x27;</span> =&gt; <span class="title class_">Flight</span>::<span class="title function_ invoke__">select</span>(<span class="hljs-string">&#x27;name&#x27;</span>)</span><br><span class="line">    // 這行主要定義, 哪些 last_flight 會對應到哪一個 Destination row</span><br><span class="line">    -&gt;<span class="title function_ invoke__">whereColumn</span>(<span class="hljs-string">&#x27;destination_id&#x27;</span>, <span class="hljs-string">&#x27;destinations.id&#x27;</span>)</span><br><span class="line">    // 依照 arrived_at 排序</span><br><span class="line">    -&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;arrived_at&#x27;</span>, <span class="hljs-string">&#x27;desc&#x27;</span>)</span><br><span class="line">    // 只取一筆, 即最近的航班</span><br><span class="line">    -&gt;<span class="title function_ invoke__">limit</span>(<span class="hljs-number">1</span>)</span><br><span class="line">])-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Retrieving-Single-Models-Aggregates"><a href="#Retrieving-Single-Models-Aggregates" class="headerlink" title="# Retrieving Single Models / Aggregates"></a># Retrieving Single Models / Aggregates</h2><h6 id="以下的-Laravel-example-code-的意思是？-17"><a href="#以下的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">first</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstWhere</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 取得符合 primary key 的 model</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 取得符合 where constraint 的第一個 model</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">first</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// where(&#x27;active&#x27;, 1)-&gt;first() 的縮寫</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstWhere</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-18"><a href="#以下的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">find</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 primary key 符合 array 的 model</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-19"><a href="#以下的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$model</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;legs&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">firstOr</span>([<span class="hljs-string">&#x27;id&#x27;</span>, <span class="hljs-string">&#x27;legs&#x27;</span>], function () &#123;</span><br><span class="line">                <span class="hljs-comment">// ...</span></span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得符合 (‘legs’, ‘&gt;’, 100) 條件的第一個 model 的 ‘id’ 及 ‘legs’ column, 如果該 model 不可得, 則執行 closure 內的動作</li>
+</ul>
+<br>
+
+<h3 id="Not-Found-Exceptions"><a href="#Not-Found-Exceptions" class="headerlink" title="# Not Found Exceptions"></a># Not Found Exceptions</h3><h6 id="以下的-Laravel-example-code-的意思是？-20"><a href="#以下的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$model</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">findOrFail</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$model</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;legs&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">firstOrFail</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 取得 primary key 為 1 的 model, 如果沒找到, 則 throw &#x27;ModelNotFoundException&#x27;</span></span><br><span class="line"><span class="hljs-comment">// 如果該 exception 沒有被 caught, 則會回傳 404 給 user</span></span><br><span class="line"><span class="hljs-variable">$model</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">findOrFail</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 取得符合 (&#x27;legs&#x27;, &#x27;&gt;&#x27;, 100) 條件的第一個 model, 如果沒找到, 則 throw &#x27;ModelNotFoundException&#x27;</span></span><br><span class="line"><span class="hljs-comment">// 如果該 exception 沒有被 caught, 則會回傳 404 給 user</span></span><br><span class="line"><span class="hljs-variable">$model</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;legs&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>)-&gt;<span class="title function_ invoke__">firstOrFail</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Retrieving-Aggregates"><a href="#Retrieving-Aggregates" class="headerlink" title="# Retrieving Aggregates"></a># Retrieving Aggregates</h3><h6 id="以下的-Laravel-example-code-的意思是？-21"><a href="#以下的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$count</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">count</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$max</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">max</span>(<span class="hljs-string">&#x27;price&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 取得符合 where(&#x27;active&#x27;, 1) 條件的 model 數量</span></span><br><span class="line"><span class="hljs-variable">$count</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">count</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 取得符合 where(&#x27;active&#x27;, 1) 條件的 model 中, price column 的最大值</span></span><br><span class="line"><span class="hljs-variable">$max</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)-&gt;<span class="title function_ invoke__">max</span>(<span class="hljs-string">&#x27;price&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Inserting-amp-Updating-Models"><a href="#Inserting-amp-Updating-Models" class="headerlink" title="# Inserting &amp; Updating Models"></a># Inserting &amp; Updating Models</h2><h3 id="Inserts"><a href="#Inserts" class="headerlink" title="# Inserts"></a># Inserts</h3><h6 id="以下的-Laravel-example-code-的意思是？-22"><a href="#以下的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Http</span>\<span class="title class_">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FlightController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Controller</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">store</span>(<span class="hljs-params">Request <span class="hljs-variable">$request</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">// Validate the request...</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$flight</span> = <span class="hljs-keyword">new</span> <span class="title class_">Flight</span>;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$flight</span>-&gt;name = <span class="hljs-variable">$request</span>-&gt;name;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從 $request 取得 name, 在 assign 到 $flight model 的 name attribute, 在執行 save() 存到資料庫<br>created_at 以及 updated_at 會自動建立</li>
+</ul>
+<br>
+
+<h3 id="Updates"><a href="#Updates" class="headerlink" title="# Updates"></a># Updates</h3><h6 id="以下的-Laravel-example-code-的意思是？-23"><a href="#以下的-Laravel-example-code-的意思是？-23" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;name = <span class="hljs-string">&#x27;New Flight Name&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 primary key 為 1 的 model, 再用 save() 更新其 name attribute, updated_at 欄位會自動更新</li>
+</ul>
+<br>
+
+<h4 id="Mass-Updates"><a href="#Mass-Updates" class="headerlink" title="# Mass Updates"></a># Mass Updates</h4><h6 id="以下的-Laravel-example-code-的意思是？-24"><a href="#以下的-Laravel-example-code-的意思是？-24" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">          -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;destination&#x27;</span>, <span class="hljs-string">&#x27;San Diego&#x27;</span>)</span><br><span class="line">          -&gt;<span class="title function_ invoke__">update</span>([<span class="hljs-string">&#x27;delayed&#x27;</span> =&gt; <span class="hljs-number">1</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得符合 where(‘active’, 1), 以及 where(‘destination’, ‘San Diego’) 的 models, 並更新 delayed column 為 1</li>
+</ul>
+<h6 id="Laravel-中-當使用-Eloquent-實施-mass-update-時-model-events-像是-saving-saved-updating-updated-會被觸發嗎？"><a href="#Laravel-中-當使用-Eloquent-實施-mass-update-時-model-events-像是-saving-saved-updating-updated-會被觸發嗎？" class="headerlink" title="Laravel 中, 當使用 Eloquent 實施 mass update 時, model events 像是 saving, saved, updating, updated 會被觸發嗎？"></a><strong>Laravel 中, 當使用 Eloquent 實施 mass update 時, model events 像是 saving, saved, updating, updated 會被觸發嗎？</strong></h6><p>不會</p>
+<br>
+
+<h4 id="Examining-Attribute-Changes"><a href="#Examining-Attribute-Changes" class="headerlink" title="# Examining Attribute Changes"></a># Examining Attribute Changes</h4><h6 id="以下的-Laravel-example-code-的意思是？-25"><a href="#以下的-Laravel-example-code-的意思是？-25" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">create</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;first_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;last_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Otwell&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;title&#x27;</span> =&gt; <span class="hljs-string">&#x27;Developer&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;title = <span class="hljs-string">&#x27;Painter&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(<span class="hljs-string">&#x27;title&#x27;</span>); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>); <span class="hljs-comment">// true or false</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(<span class="hljs-string">&#x27;title&#x27;</span>); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>); <span class="hljs-comment">// true or true</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(); <span class="hljs-comment">// true or false</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">create</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;first_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;last_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Otwell&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;title&#x27;</span> =&gt; <span class="hljs-string">&#x27;Developer&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這裡變更了 $user model 的 title attribute, 但尚未更動資料庫</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;title = <span class="hljs-string">&#x27;Painter&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// $user model 的 title attribute 變了, 所以 true</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(); <span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// 同上</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(<span class="hljs-string">&#x27;title&#x27;</span>); <span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// first_name attribute 並未更動, 所以 false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>); <span class="hljs-comment">// false</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// $user model 已有變更, 所以非 clean</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(); <span class="hljs-comment">// false</span></span><br><span class="line"><span class="hljs-comment">// title attribute 已變更, 所以非 clean</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(<span class="hljs-string">&#x27;title&#x27;</span>); <span class="hljs-comment">// false</span></span><br><span class="line"><span class="hljs-comment">// first_name attribute 並未更動, 所以 clean</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>); <span class="hljs-comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這邊才真正更動資料庫</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 更動後, model 跟資料庫已同步, 所以 isDirty 為 false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isDirty</span>(); <span class="hljs-comment">// false</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 更動後, model 跟資料庫已同步, 所以是 clean 的</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">isClean</span>(); <span class="hljs-comment">// true</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-26"><a href="#以下的-Laravel-example-code-的意思是？-26" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">create</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;first_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;last_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Otwell&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;title&#x27;</span> =&gt; <span class="hljs-string">&#x27;Developer&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;title = <span class="hljs-string">&#x27;Painter&#x27;</span>;</span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">wasChanged</span>(); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">wasChanged</span>(<span class="hljs-string">&#x27;title&#x27;</span>); <span class="hljs-comment">// true or false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">wasChanged</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>); <span class="hljs-comment">// true or false</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">create</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;first_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Taylor&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;last_name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Otwell&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;title&#x27;</span> =&gt; <span class="hljs-string">&#x27;Developer&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這邊更動了資料庫</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;title = <span class="hljs-string">&#x27;Painter&#x27;</span>;</span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 資料庫在當次 request cycle 有更動, 故為 true</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">wasChanged</span>(); <span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// title 有更動, 故為 true</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">wasChanged</span>(<span class="hljs-string">&#x27;title&#x27;</span>); <span class="hljs-comment">// true</span></span><br><span class="line"><span class="hljs-comment">// first_name 並沒有更動, 所以為 false</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">wasChanged</span>(<span class="hljs-string">&#x27;first_name&#x27;</span>); <span class="hljs-comment">// false</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-27"><a href="#以下的-Laravel-example-code-的意思是？-27" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name; <span class="hljs-comment">// John</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;email; <span class="hljs-comment">// john@example.com</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name = <span class="hljs-string">&quot;Jack&quot;</span>;</span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name; <span class="hljs-comment">// Jack</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">getOriginal</span>(<span class="hljs-string">&#x27;name&#x27;</span>); <span class="hljs-comment">// 這裡是？</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">getOriginal</span>(); <span class="hljs-comment">// 這裡是？</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name; <span class="hljs-comment">// John</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;email; <span class="hljs-comment">// john@example.com</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 這裡變更了 $user model, 但尚未更動資料庫</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name = <span class="hljs-string">&quot;Jack&quot;</span>;</span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name; <span class="hljs-comment">// Jack</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 取得變更前的 $user model 的 name attribute</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">getOriginal</span>(<span class="hljs-string">&#x27;name&#x27;</span>); <span class="hljs-comment">// John</span></span><br><span class="line"><span class="hljs-comment">// 取得變更前的 $user model</span></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">getOriginal</span>(); <span class="hljs-comment">// 為更動前的 model array</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Mass-Assignment"><a href="#Mass-Assignment" class="headerlink" title="# Mass Assignment"></a># Mass Assignment</h3><h6 id="以下的-Laravel-example-code-的意思是？-28"><a href="#以下的-Laravel-example-code-的意思是？-28" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$fillable</span> = [<span class="hljs-string">&#x27;name&#x27;</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>允許 name column 可以批量 assign, 防止有心人士自帶預料外的參數 assign 到預料外的欄位</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-29"><a href="#以下的-Laravel-example-code-的意思是？-29" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">create</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一筆資料, 並取得該 model</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-30"><a href="#以下的-Laravel-example-code-的意思是？-30" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">fill</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 22&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>assign ‘Flight 22’ 到 $flight model 的 name attribute<br>相當於 $flight-&gt;name = ‘Flight 22’;</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-31"><a href="#以下的-Laravel-example-code-的意思是？-31" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$fillable</span> = [</span><br><span class="line">    <span class="hljs-string">&#x27;options-&gt;enabled&#x27;</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>允許 nested JSON attribute “options-&gt;enabled” 可被批量 assign</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-32"><a href="#以下的-Laravel-example-code-的意思是？-32" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$guarded</span> = [];</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>該 model 內的所有 attribute 都允許 mass assignment</li>
+</ul>
+<br>
+
+<h3 id="Other-Creation-Methods"><a href="#Other-Creation-Methods" class="headerlink" title="# Other Creation Methods"></a># Other Creation Methods</h3><h4 id="firstOrCreate-firstOrNew"><a href="#firstOrCreate-firstOrNew" class="headerlink" title="# firstOrCreate / firstOrNew"></a># <code>firstOrCreate</code> / <code>firstOrNew</code></h4><h6 id="以下的-Laravel-example-code-的意思是？-33"><a href="#以下的-Laravel-example-code-的意思是？-33" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrCreate</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrCreate</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;delayed&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;arrival_time&#x27;</span> =&gt; <span class="hljs-string">&#x27;11:30&#x27;</span>]</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrNew</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrNew</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;delayed&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;arrival_time&#x27;</span> =&gt; <span class="hljs-string">&#x27;11:30&#x27;</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用條件 [&#x27;name&#x27; =&gt; &#x27;Flight 10&#x27;] 從資料庫尋找, 若找到則回傳該 model, </span></span><br><span class="line"><span class="hljs-comment">// 若沒找到, 則使用 [&#x27;name&#x27; =&gt; &#x27;Flight 10&#x27;] 建立該筆資料並回傳該 model</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrCreate</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 使用條件 [&#x27;name&#x27; =&gt; &#x27;Flight 10&#x27;] 從資料庫尋找, 若找到則回傳該 model, </span></span><br><span class="line"><span class="hljs-comment">// 若沒找到, 則使用 [&#x27;name =&gt; &#x27;Flight 10&#x27;, &#x27;delayed&#x27; =&gt; 1, &#x27;arrival_time&#x27; =&gt; &#x27;11:30&#x27;]</span></span><br><span class="line"><span class="hljs-comment">// 建立該筆資料並回傳該 model</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrCreate</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;delayed&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;arrival_time&#x27;</span> =&gt; <span class="hljs-string">&#x27;11:30&#x27;</span>]</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 使用條件 [&#x27;name&#x27; =&gt; &#x27;Flight 10&#x27;] 從資料庫尋找, 若找到則回傳該 model, </span></span><br><span class="line"><span class="hljs-comment">// 若沒找到, 則使用 [&#x27;name&#x27; =&gt; &#x27;Flight 10&#x27;] 回傳並建立該 model, 但尚未</span></span><br><span class="line"><span class="hljs-comment">// 更新資料庫</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrNew</span>([<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 使用條件 [&#x27;name&#x27; =&gt; &#x27;Flight 10&#x27;] 從資料庫尋找, 若找到則回傳該 model, </span></span><br><span class="line"><span class="hljs-comment">// 若沒找到, 則使用 [&#x27;name =&gt; &#x27;Flight 10&#x27;, &#x27;delayed&#x27; =&gt; 1, &#x27;arrival_time&#x27; =&gt; &#x27;11:30&#x27;]</span></span><br><span class="line"><span class="hljs-comment">// 建立該 model, 但尚未更新資料庫</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">firstOrNew</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;name&#x27;</span> =&gt; <span class="hljs-string">&#x27;Flight 10&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;delayed&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;arrival_time&#x27;</span> =&gt; <span class="hljs-string">&#x27;11:30&#x27;</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="updateOrCreate"><a href="#updateOrCreate" class="headerlink" title="# updateOrCreate"></a># <code>updateOrCreate</code></h4><h6 id="以下的-Laravel-example-code-的意思是？-34"><a href="#以下的-Laravel-example-code-的意思是？-34" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">updateOrCreate</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;departure&#x27;</span> =&gt; <span class="hljs-string">&#x27;Oakland&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span> =&gt; <span class="hljs-string">&#x27;San Diego&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;price&#x27;</span> =&gt; <span class="hljs-number">99</span>, <span class="hljs-string">&#x27;discounted&#x27;</span> =&gt; <span class="hljs-number">1</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 使用條件 [&#x27;departure&#x27; =&gt; &#x27;Oasland&#x27;, &#x27;destination&#x27; =&gt; &#x27;San Diego&#x27;] 尋找</span></span><br><span class="line"><span class="hljs-comment">// 如果有找到, 更新 [&#x27;price&#x27; =&gt; 99, &#x27;discounted&#x27; =&gt; 1], 如果沒找到, merge 上面</span></span><br><span class="line"><span class="hljs-comment">// 兩個 array 並建立該筆資料</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">updateOrCreate</span>(</span><br><span class="line">    [<span class="hljs-string">&#x27;departure&#x27;</span> =&gt; <span class="hljs-string">&#x27;Oakland&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span> =&gt; <span class="hljs-string">&#x27;San Diego&#x27;</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;price&#x27;</span> =&gt; <span class="hljs-number">99</span>, <span class="hljs-string">&#x27;discounted&#x27;</span> =&gt; <span class="hljs-number">1</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-35"><a href="#以下的-Laravel-example-code-的意思是？-35" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">upsert</span>([</span><br><span class="line">    [<span class="hljs-string">&#x27;departure&#x27;</span> =&gt; <span class="hljs-string">&#x27;Oakland&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span> =&gt; <span class="hljs-string">&#x27;San Diego&#x27;</span>, <span class="hljs-string">&#x27;price&#x27;</span> =&gt; <span class="hljs-number">99</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;departure&#x27;</span> =&gt; <span class="hljs-string">&#x27;Chicago&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span> =&gt; <span class="hljs-string">&#x27;New York&#x27;</span>, <span class="hljs-string">&#x27;price&#x27;</span> =&gt; <span class="hljs-number">150</span>]</span><br><span class="line">], [<span class="hljs-string">&#x27;departure&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span>], [<span class="hljs-string">&#x27;price&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 尋找第一個 arg 中的兩筆 record [[&#x27;departure&#x27; =&gt; &#x27;Oakland&#x27;, &#x27;destination&#x27; =&gt; &#x27;San Diego&#x27;, &#x27;price&#x27; =&gt; 99], [array 2]]</span></span><br><span class="line"><span class="hljs-comment">// 如果沒找到, 則以上面 array 中的資料建立, 如果有找到, 即 duplicate record, 那就更新第三個 arg 中的</span></span><br><span class="line"><span class="hljs-comment">// price column, 則判斷是否 exist 的 unique 欄位為第二個 array 中的 [&#x27;departure&#x27;, &#x27;destination&#x27;]</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">upsert</span>([</span><br><span class="line">    [<span class="hljs-string">&#x27;departure&#x27;</span> =&gt; <span class="hljs-string">&#x27;Oakland&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span> =&gt; <span class="hljs-string">&#x27;San Diego&#x27;</span>, <span class="hljs-string">&#x27;price&#x27;</span> =&gt; <span class="hljs-number">99</span>],</span><br><span class="line">    [<span class="hljs-string">&#x27;departure&#x27;</span> =&gt; <span class="hljs-string">&#x27;Chicago&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span> =&gt; <span class="hljs-string">&#x27;New York&#x27;</span>, <span class="hljs-string">&#x27;price&#x27;</span> =&gt; <span class="hljs-number">150</span>]</span><br><span class="line">], [<span class="hljs-string">&#x27;departure&#x27;</span>, <span class="hljs-string">&#x27;destination&#x27;</span>], [<span class="hljs-string">&#x27;price&#x27;</span>]);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Deleting-Models"><a href="#Deleting-Models" class="headerlink" title="# Deleting Models"></a># Deleting Models</h2><h6 id="以下的-Laravel-example-code-的意思是？-36"><a href="#以下的-Laravel-example-code-的意思是？-36" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">delete</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 primary key 為 1 的 model, 並 delete</li>
+</ul>
+<br>
+
+<h4 id="Deleting-An-Existing-Model-By-Key"><a href="#Deleting-An-Existing-Model-By-Key" class="headerlink" title="# Deleting An Existing Model By Key"></a># Deleting An Existing Model By Key</h4><h6 id="以下的-Laravel-example-code-的意思是？-37"><a href="#以下的-Laravel-example-code-的意思是？-37" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="title function_ invoke__">collect</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]));</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 刪除 primary key 為 1 的 model</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 同上</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 同上</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 同上</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="title function_ invoke__">collect</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]));</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-deleting-以及-deleted-event-會被觸發嗎？"><a href="#以下的-Laravel-example-code-deleting-以及-deleted-event-會被觸發嗎？" class="headerlink" title="以下的 Laravel example code, deleting 以及 deleted event 會被觸發嗎？"></a><strong>以下的 Laravel example code, <code>deleting</code> 以及 <code>deleted</code> event 會被觸發嗎？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">destroy</span>(<span class="title function_ invoke__">collect</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]));</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>會的, 因為 destroy 會分別載入每個 model, 並呼叫 delete method</li>
+</ul>
+<br>
+
+<h4 id="Deleting-Models-By-Query"><a href="#Deleting-Models-By-Query" class="headerlink" title="# Deleting Models By Query"></a># Deleting Models By Query</h4><h6 id="以下的-Laravel-example-code-的意思是？-38"><a href="#以下的-Laravel-example-code-的意思是？-38" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$deletedRows</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">0</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>刪除符合 where(‘active’, 0) 的 model</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-deleting-以及-deleted-event-會被觸發嗎？-1"><a href="#以下的-Laravel-example-code-deleting-以及-deleted-event-會被觸發嗎？-1" class="headerlink" title="以下的 Laravel example code, deleting 以及 deleted event 會被觸發嗎？"></a><strong>以下的 Laravel example code, <code>deleting</code> 以及 <code>deleted</code> event 會被觸發嗎？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$deletedRows</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">0</span>)-&gt;<span class="title function_ invoke__">delete</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>不會, 因為實際上 model 並沒有被 retrieve</li>
+</ul>
+<br>
+
+<h3 id="Soft-Deleting"><a href="#Soft-Deleting" class="headerlink" title="# Soft Deleting"></a># Soft Deleting</h3><h6 id="以下的-Laravel-example-code-的意思是？-39"><a href="#以下的-Laravel-example-code-的意思是？-39" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">SoftDeletes</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Flight</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">use</span> <span class="hljs-title">SoftDeletes</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>啟用 soft delete, 啟用後當執行 delete(), model 並不會真正被刪除, 而是會在 deleted_at column 增加一筆時間, 如果 deleted_at column 不是 null, 那就代表該筆資料已被 soft deleted</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-40"><a href="#以下的-Laravel-example-code-的意思是？-40" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">up</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="title class_">Schema</span>::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;flights&#x27;</span>, function (Blueprint <span class="hljs-variable">$table</span>) &#123;</span><br><span class="line">        <span class="hljs-variable">$table</span>-&gt;<span class="title function_ invoke__">softDeletes</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">down</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="title class_">Schema</span>::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;flights&#x27;</span>, function (Blueprint <span class="hljs-variable">$table</span>) &#123;</span><br><span class="line">        <span class="hljs-variable">$table</span>-&gt;<span class="title function_ invoke__">dropSoftDeletes</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">up</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 增加 deleted_at column</span></span><br><span class="line">    <span class="title class_">Schema</span>::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;flights&#x27;</span>, function (Blueprint <span class="hljs-variable">$table</span>) &#123;</span><br><span class="line">        <span class="hljs-variable">$table</span>-&gt;<span class="title function_ invoke__">softDeletes</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">down</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 刪除 deleted_at column</span></span><br><span class="line">    <span class="title class_">Schema</span>::<span class="title function_ invoke__">table</span>(<span class="hljs-string">&#x27;flights&#x27;</span>, function (Blueprint <span class="hljs-variable">$table</span>) &#123;</span><br><span class="line">        <span class="hljs-variable">$table</span>-&gt;<span class="title function_ invoke__">dropSoftDeletes</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-41"><a href="#以下的-Laravel-example-code-的意思是？-41" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">trashed</span>()) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>確認該 model 是否被 soft deleted</li>
+</ul>
+<br>
+
+<h3 id="Querying-Soft-Deleted-Models"><a href="#Querying-Soft-Deleted-Models" class="headerlink" title="# Querying Soft Deleted Models"></a># Querying Soft Deleted Models</h3><h4 id="Including-Soft-Deleted-Models"><a href="#Including-Soft-Deleted-Models" class="headerlink" title="# Including Soft Deleted Models**"></a># Including Soft Deleted Models**</h4><h6 id="以下的-Laravel-example-code-的意思是？-42"><a href="#以下的-Laravel-example-code-的意思是？-42" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">withTrashed</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;account_id&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當 model 被 soft deleted, 預設會被自動從 query 結果中排除, 如果要取得 soft deleted 的 model, 可以使用 <code>withTrashed()</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-43"><a href="#以下的-Laravel-example-code-的意思是？-43" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">history</span>()-&gt;<span class="title function_ invoke__">withTrashed</span>()-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>取得 $flight model 的所有 history relation model, 包含 soft deleted</li>
+</ul>
+<br>
+
+<h4 id="Retrieving-Only-Soft-Deleted-Models"><a href="#Retrieving-Only-Soft-Deleted-Models" class="headerlink" title="# Retrieving Only Soft Deleted Models"></a># Retrieving Only Soft Deleted Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-44"><a href="#以下的-Laravel-example-code-的意思是？-44" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flights</span> = <span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">onlyTrashed</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;airline_id&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>只取得符合 where(‘airline_id’, 1) 條件的 <code>soft deleted</code> model</li>
+</ul>
+<br>
+
+<h4 id="Restoring-Soft-Deleted-Models"><a href="#Restoring-Soft-Deleted-Models" class="headerlink" title="# Restoring Soft Deleted Models"></a># Restoring Soft Deleted Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-45"><a href="#以下的-Laravel-example-code-的意思是？-45" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">restore</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 $flight soft deleted model 復原, 換言之, 將 deleted_at column 設為 null</li>
+</ul>
+<br>
+<br>
+
+<h6 id="以下的-Laravel-example-code-的意思是？-46"><a href="#以下的-Laravel-example-code-的意思是？-46" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">App\Models\Flight</span>::<span class="title function_ invoke__">withTrashed</span>()</span><br><span class="line">        -&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;airline_id&#x27;</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        -&gt;<span class="title function_ invoke__">restore</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>restore 符合 where(‘airline_id’, 1) 的所有 model, 即把 deleted_at column 設為 null</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-47"><a href="#以下的-Laravel-example-code-的意思是？-47" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">history</span>()-&gt;<span class="title function_ invoke__">restore</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>restore $flight model 的 relation history 上的所有 soft deleted model</li>
+</ul>
+<br>
+
+<h4 id="Permanently-Deleting-Models"><a href="#Permanently-Deleting-Models" class="headerlink" title="# Permanently Deleting Models"></a># Permanently Deleting Models</h4><h6 id="以下的-Laravel-example-code-的意思是？-48"><a href="#以下的-Laravel-example-code-的意思是？-48" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">forceDelete</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">history</span>()-&gt;<span class="title function_ invoke__">forceDelete</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 強制刪除 $flight, 即真正的刪除這筆資料</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">forceDelete</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 強制刪除 relation history 上的所有 model, 這裡不包含 soft-deleted</span></span><br><span class="line"><span class="hljs-comment">// 如果要取得 soft-deleted 需加上 withTrashed()</span></span><br><span class="line"><span class="hljs-variable">$flight</span>-&gt;<span class="title function_ invoke__">history</span>()-&gt;<span class="title function_ invoke__">forceDelete</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Replicating-Models"><a href="#Replicating-Models" class="headerlink" title="# Replicating Models"></a># Replicating Models</h2><h6 id="以下的-Laravel-example-code-的意思是？-49"><a href="#以下的-Laravel-example-code-的意思是？-49" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$shipping</span> = <span class="title class_">App\Models\Address</span>::<span class="title function_ invoke__">create</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;type&#x27;</span> =&gt; <span class="hljs-string">&#x27;shipping&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;line_1&#x27;</span> =&gt; <span class="hljs-string">&#x27;123 Example Street&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;city&#x27;</span> =&gt; <span class="hljs-string">&#x27;Victorville&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;state&#x27;</span> =&gt; <span class="hljs-string">&#x27;CA&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;postcode&#x27;</span> =&gt; <span class="hljs-string">&#x27;90001&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$billing</span> = <span class="hljs-variable">$shipping</span>-&gt;<span class="title function_ invoke__">replicate</span>()-&gt;<span class="title function_ invoke__">fill</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;type&#x27;</span> =&gt; <span class="hljs-string">&#x27;billing&#x27;</span></span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$billing</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 建立一筆資料, 並 assign 到 $shipping</span></span><br><span class="line"><span class="hljs-variable">$shipping</span> = <span class="title class_">App\Models\Address</span>::<span class="title function_ invoke__">create</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;type&#x27;</span> =&gt; <span class="hljs-string">&#x27;shipping&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;line_1&#x27;</span> =&gt; <span class="hljs-string">&#x27;123 Example Street&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;city&#x27;</span> =&gt; <span class="hljs-string">&#x27;Victorville&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;state&#x27;</span> =&gt; <span class="hljs-string">&#x27;CA&#x27;</span>,</span><br><span class="line">    <span class="hljs-string">&#x27;postcode&#x27;</span> =&gt; <span class="hljs-string">&#x27;90001&#x27;</span>,</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 複製 $shipping model, 將 type 替換為 &#x27;billing&#x27;, 並 assign 到 $billing</span></span><br><span class="line"><span class="hljs-comment">// replicate 只是複製 model, 並未真正變動資料庫</span></span><br><span class="line"><span class="hljs-variable">$billing</span> = <span class="hljs-variable">$shipping</span>-&gt;<span class="title function_ invoke__">replicate</span>()-&gt;<span class="title function_ invoke__">fill</span>([</span><br><span class="line">    <span class="hljs-string">&#x27;type&#x27;</span> =&gt; <span class="hljs-string">&#x27;billing&#x27;</span></span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 將 $billing 真正的存進資料庫</span></span><br><span class="line"><span class="hljs-variable">$billing</span>-&gt;<span class="title function_ invoke__">save</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Query-Scopes"><a href="#Query-Scopes" class="headerlink" title="# Query Scopes"></a># Query Scopes</h2><h6 id="Laravel-中-當我新增-global-scope-constraint-時-需要考慮到-soft-deleted-嗎？"><a href="#Laravel-中-當我新增-global-scope-constraint-時-需要考慮到-soft-deleted-嗎？" class="headerlink" title="Laravel 中, 當我新增 global scope constraint 時, 需要考慮到 soft-deleted 嗎？"></a><strong>Laravel 中, 當我新增 global scope constraint 時, 需要考慮到 soft-deleted 嗎？</strong></h6><p>不需要, Laravel 會自動處理好</p>
+<br>
+
+<h3 id="Global-Scopes"><a href="#Global-Scopes" class="headerlink" title="# Global Scopes"></a># Global Scopes</h3><h4 id="Writing-Global-Scopes"><a href="#Writing-Global-Scopes" class="headerlink" title="# Writing Global Scopes"></a># Writing Global Scopes</h4><h6 id="以下的-Laravel-example-code-的意思是？-50"><a href="#以下的-Laravel-example-code-的意思是？-50" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Scopes</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Scope</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AgeScope</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Scope</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">apply</span>(<span class="hljs-params">Builder <span class="hljs-variable">$builder</span>, Model <span class="hljs-variable">$model</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$builder</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;age&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">200</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>新增一個 global scope constraint, 可以在 model 的 booted method 中加入各種新增的 global scope constraint, 加入後, 該 model 取得的 query 都會自動附加 where(‘age’, ‘&gt;’, 200) constraint</li>
+</ul>
+<br>
+
+<h4 id="Applying-Global-Scopes"><a href="#Applying-Global-Scopes" class="headerlink" title="# Applying Global Scopes"></a># Applying Global Scopes</h4><h6 id="以下的-Laravel-example-code-的意思是？-51"><a href="#以下的-Laravel-example-code-的意思是？-51" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Scopes</span>\<span class="hljs-title">AgeScope</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-built_in">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">booted</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-built_in">static</span>::<span class="title function_ invoke__">addGlobalScope</span>(<span class="hljs-keyword">new</span> <span class="title class_">AgeScope</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 model 的 booted method 中, 可以將客制好的 global scope constraint <code>AgeScope</code> 附加到該 model, 如此一來, 之後使用 User model 的 query builder 都會自動附加 <code>AgeScope</code> 所定義的 constraint</li>
+</ul>
+<br>
+
+<h4 id="Anonymous-Global-Scopes"><a href="#Anonymous-Global-Scopes" class="headerlink" title="# Anonymous Global Scopes"></a># Anonymous Global Scopes</h4><h6 id="以下的-Laravel-example-code-的意思是？-52"><a href="#以下的-Laravel-example-code-的意思是？-52" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Builder</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-built_in">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">booted</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-built_in">static</span>::<span class="title function_ invoke__">addGlobalScope</span>(<span class="hljs-string">&#x27;age&#x27;</span>, function (Builder <span class="hljs-variable">$builder</span>) &#123;</span><br><span class="line">            <span class="hljs-variable">$builder</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;age&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">200</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>利用 closure 來附加 global scope constraint, 這樣就不必另外定義一個 scope class, 適用於較簡單的 global scope</li>
+</ul>
+<br>
+
+<h4 id="Removing-Global-Scopes"><a href="#Removing-Global-Scopes" class="headerlink" title="# Removing Global Scopes"></a># Removing Global Scopes</h4><h6 id="以下的-Laravel-example-code-的意思是？-53"><a href="#以下的-Laravel-example-code-的意思是？-53" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">User</span>::<span class="title function_ invoke__">withoutGlobalScope</span>(<span class="title class_">AgeScope</span>::<span class="variable language_">class</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從當次 query 的結果中, 移除 <code>AgeScope</code> 這個 global scope constraints</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-54"><a href="#以下的-Laravel-example-code-的意思是？-54" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">User</span>::<span class="title function_ invoke__">withoutGlobalScope</span>(<span class="hljs-string">&#x27;age&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>從當次 query 的結果中, 移除 <code>age</code> 這個 global scope constraints, age 為 closure 方式直接在 model 的 booted method 中定義的</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-55"><a href="#以下的-Laravel-example-code-的意思是？-55" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">User</span>::<span class="title function_ invoke__">withoutGlobalScopes</span>()-&gt;<span class="title function_ invoke__">get</span>();</span><br><span class="line"></span><br><span class="line"><span class="title class_">User</span>::<span class="title function_ invoke__">withoutGlobalScopes</span>([</span><br><span class="line">    <span class="title class_">FirstScope</span>::<span class="variable language_">class</span>, <span class="title class_">SecondScope</span>::<span class="variable language_">class</span></span><br><span class="line">])-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 從當次 User model 的 query 當中移除所有 global scopes</span></span><br><span class="line"><span class="title class_">User</span>::<span class="title function_ invoke__">withoutGlobalScopes</span>()-&gt;<span class="title function_ invoke__">get</span>();</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 從當次 User model 的 query 當中移除 array 中的 global scope</span></span><br><span class="line"><span class="title class_">User</span>::<span class="title function_ invoke__">withoutGlobalScopes</span>([</span><br><span class="line">    <span class="title class_">FirstScope</span>::<span class="variable language_">class</span>, <span class="title class_">SecondScope</span>::<span class="variable language_">class</span></span><br><span class="line">])-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Local-Scopes"><a href="#Local-Scopes" class="headerlink" title="# Local Scopes"></a># Local Scopes</h3><h6 id="以下的-Laravel-example-code-的意思是？-56"><a href="#以下的-Laravel-example-code-的意思是？-56" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopePopular</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeActive</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 local scope, 簡單來說, 當我使用 $query-&gt;popular() 就會等於 $query-&gt;where(‘votes’, ‘&gt;’, 100), 而 $query-&gt;active() 便會等於 $query-&gt;where(‘active’, 1)</li>
+</ul>
+<br>
+
+<h4 id="Utilizing-Local-Scope"><a href="#Utilizing-Local-Scope" class="headerlink" title="# Utilizing Local Scope"></a># Utilizing Local Scope</h4><h6 id="以下的-Laravel-example-code-的意思是？-57"><a href="#以下的-Laravel-example-code-的意思是？-57" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopePopular</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeActive</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">popular</span>()-&gt;<span class="title function_ invoke__">active</span>()-&gt;<span class="title function_ invoke__">orderBy</span>(<span class="hljs-string">&#x27;created_at&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>popular() 以及 active() 為 local scope, 會使用定義於該 local scope 內 query</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-58"><a href="#以下的-Laravel-example-code-的意思是？-58" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopePopular</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeActive</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">popular</span>()-&gt;<span class="title function_ invoke__">orWhere</span>(function (Builder <span class="hljs-variable">$query</span>) &#123;</span><br><span class="line">    <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">active</span>();</span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>相當於 <code>$query-&gt;where(...)-&gt;orWhere(...)</code> constraints, 只不過對象換成了 local scope, 像是 <code>$query-&gt;popular()-&gt;orActive()</code>, 注意後者語法只是比喻, Laravel 目前沒有提供這樣的用法, 也可使用 <code>orWhere-&gt;</code></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-59"><a href="#以下的-Laravel-example-code-的意思是？-59" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopePopular</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;votes&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeActive</span>(<span class="hljs-params"><span class="hljs-variable">$query</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;active&#x27;</span>, <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">popular</span>()-&gt;orWhere-&gt;<span class="title function_ invoke__">active</span>()-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>相當於 <code>$query-&gt;where(...)-&gt;orWhere(...)</code> constraints, 只不過對象換成了 local scope, 像是 <code>$query-&gt;popular()-&gt;orActive()</code>, 注意後者語法只是比喻, Laravel 目前沒有提供這樣的用法, 也可使用 closure 方式帶入 orWhere()</li>
+</ul>
+<br>
+
+<h4 id="Dynamic-Scopes"><a href="#Dynamic-Scopes" class="headerlink" title="# Dynamic Scopes"></a># Dynamic Scopes</h4><h6 id="以下的-Laravel-example-code-的意思是？-60"><a href="#以下的-Laravel-example-code-的意思是？-60" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scopeOfType</span>(<span class="hljs-params"><span class="hljs-variable">$query</span>, <span class="hljs-variable">$type</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-variable">$query</span>-&gt;<span class="title function_ invoke__">where</span>(<span class="hljs-string">&#x27;type&#x27;</span>, <span class="hljs-variable">$type</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">ofType</span>(<span class="hljs-string">&#x27;admin&#x27;</span>)-&gt;<span class="title function_ invoke__">get</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>dynamic scopes 概念, 可以動態的帶入參數到 scope 內, 所以 <code>User::ofType(&#39;admin&#39;)-&gt;get()</code>, 就相當於 <code>User::where(&#39;type&#39;, &#39;admin&#39;)-&gt;get()</code></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Comparing-Models"><a href="#Comparing-Models" class="headerlink" title="# Comparing Models"></a># Comparing Models</h2><h6 id="以下的-Laravel-example-code-的意思是？-61"><a href="#以下的-Laravel-example-code-的意思是？-61" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="hljs-variable">$post</span>-&gt;<span class="title function_ invoke__">is</span>(<span class="hljs-variable">$anotherPost</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>比較兩個 model 是否有相同的 <strong>primary_key</strong>, <strong>table</strong>, <strong>database connection</strong></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-62"><a href="#以下的-Laravel-example-code-的意思是？-62" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">if</span> (<span class="hljs-variable">$post</span>-&gt;<span class="title function_ invoke__">author</span>()-&gt;<span class="title function_ invoke__">is</span>(<span class="hljs-variable">$user</span>)) &#123;</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>比較 $post model 的 author relation model 是否跟 $user model 有相同的 <strong>primary_key</strong>, <strong>table</strong>, <strong>database connection</strong></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Events"><a href="#Events" class="headerlink" title="# Events"></a># Events</h2><h6 id="Laravel-Eloquent-Model-中-retrieved-event-什麼時候會被觸發？"><a href="#Laravel-Eloquent-Model-中-retrieved-event-什麼時候會被觸發？" class="headerlink" title="Laravel Eloquent Model 中, retrieved event 什麼時候會被觸發？"></a><strong>Laravel Eloquent Model 中, retrieved event 什麼時候會被觸發？</strong></h6><p>當有一個現存 model 從 database 被 retrieve 時</p>
+<h6 id="Laravel-Eloquent-Model-中-creating-created-event-什麼時候會被觸發？"><a href="#Laravel-Eloquent-Model-中-creating-created-event-什麼時候會被觸發？" class="headerlink" title="Laravel Eloquent Model 中, creating/created event 什麼時候會被觸發？"></a><strong>Laravel Eloquent Model 中, creating/created event 什麼時候會被觸發？</strong></h6><p>當一個 model 第一次被儲存在資料庫時, 只有第一次會觸發</p>
+<h6 id="Laravel-Eloquent-Model-中-updating-updated-event-什麼時候會被觸發？"><a href="#Laravel-Eloquent-Model-中-updating-updated-event-什麼時候會被觸發？" class="headerlink" title="Laravel Eloquent Model 中, updating/updated event 什麼時候會被觸發？"></a><strong>Laravel Eloquent Model 中, updating/updated event 什麼時候會被觸發？</strong></h6><p>當現存的 model 被更新且呼叫 save()</p>
+<h6 id="Laravel-Eloquent-Model-中-saving-saved-event-什麼時候會被觸發？"><a href="#Laravel-Eloquent-Model-中-saving-saved-event-什麼時候會被觸發？" class="headerlink" title="Laravel Eloquent Model 中, saving/saved event 什麼時候會被觸發？"></a><strong>Laravel Eloquent Model 中, saving/saved event 什麼時候會被觸發？</strong></h6><p>當 model 被建立或更新都會觸發</p>
+<br>
+
+<h3 id="Using-Closures"><a href="#Using-Closures" class="headerlink" title="# Using Closures"></a># Using Closures</h3><h6 id="以下的-Laravel-example-code-的意思是？-63"><a href="#以下的-Laravel-example-code-的意思是？-63" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-built_in">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">booted</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-built_in">static</span>::<span class="title function_ invoke__">created</span>(function (<span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">            <span class="hljs-comment">//</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 closure 來定義當 created model event 被觸發後所做的事</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-64"><a href="#以下的-Laravel-example-code-的意思是？-64" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Database</span>\<span class="hljs-title">Eloquent</span>\<span class="hljs-title">Model</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-keyword">function</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Events</span>\<span class="hljs-title">queueable</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Model</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-built_in">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">booted</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-built_in">static</span>::<span class="title function_ invoke__">created</span>(<span class="title function_ invoke__">queueable</span>(function (<span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">            //</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 closure 來定義當 created model event 被觸發後所做的事, 並 queue 被觸發的 closure listener</li>
+</ul>
+<br>
+
+<h3 id="Observers"><a href="#Observers" class="headerlink" title="# Observers"></a># Observers</h3><h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan make:observer UserObserver --model=User</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 observer, 名為 UserObserver, 對應的 model 為 User model, 可定義一系列 User model 的各種 model event 的 Listener</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-65"><a href="#以下的-Laravel-example-code-的意思是？-65" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Observers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserObserver</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">created</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updated</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleted</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">forceDeleted</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Observers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserObserver</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 當 created model event 被觸發後要做的事</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">created</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 當 updated model event 被觸發後要做的事</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updated</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 當 deleted model event 被觸發後要做的事</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleted</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// 當 forceDeleted model event 被觸發後要做的事</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">forceDeleted</span>(<span class="hljs-params">User <span class="hljs-variable">$user</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-66"><a href="#以下的-Laravel-example-code-的意思是？-66" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Observers</span>\<span class="hljs-title">UserObserver</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppServiceProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ServiceProvider</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">register</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">boot</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="title class_">User</span>::<span class="title function_ invoke__">observe</span>(<span class="title class_">UserObserver</span>::<span class="variable language_">class</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 AppServiceProvider 中註冊 UserObserver, 註冊後 UserObserver 後, 定義於 UserObserver 的 Listener 會開始監聽 User model event</li>
+</ul>
+<br>
+
+<h3 id="Muting-Events"><a href="#Muting-Events" class="headerlink" title="# Muting Events"></a># Muting Events</h3><h6 id="以下的-Laravel-example-code-的意思是？-67"><a href="#以下的-Laravel-example-code-的意思是？-67" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">withoutEvents</span>(function () <span class="hljs-keyword">use</span> () &#123;</span><br><span class="line">    <span class="hljs-title">User</span>::<span class="hljs-title">findOrFail</span>(1)-&gt;<span class="hljs-title">delete</span>();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="title class_">User</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-number">2</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>withoutEvent method 只接受 closure 為參數, 在這個 closure 內執行的任何 code 都不會觸發 model event<br>範例中刪除 primary key 為 1 的 User model, 但不會觸發任何 model event</li>
+</ul>
+<br>
+
+<h4 id="Saving-A-Single-Model-Without-Event"><a href="#Saving-A-Single-Model-Without-Event" class="headerlink" title="# Saving A Single Model Without Event"></a># Saving A Single Model Without Event</h4><h6 id="以下的-Laravel-example-code-的意思是？-68"><a href="#以下的-Laravel-example-code-的意思是？-68" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$user</span> = <span class="title class_">User</span>::<span class="title function_ invoke__">findOrFail</span>(<span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;name = <span class="hljs-string">&#x27;Victoria Faith&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$user</span>-&gt;<span class="title function_ invoke__">saveQuietly</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>修改 primary key 為 1 的 User model, 且不觸發任何 model event</li>
+</ul>
+<br>
+
+<h2 id="Additional"><a href="#Additional" class="headerlink" title="# Additional"></a># Additional</h2><h6 id="在-Laravel-中-如何得到與該-model-相關的-table-的名字"><a href="#在-Laravel-中-如何得到與該-model-相關的-table-的名字" class="headerlink" title="在 Laravel 中, 如何得到與該 model 相關的 table 的名字?"></a><strong>在 Laravel 中, 如何得到與該 model 相關的 table 的名字?</strong></h6><figure class="highlight plaintext hljs"><table><tr><td class="code"><pre><span class="line">model-&gt;getTable()</span><br><span class="line">// string</span><br></pre></td></tr></table></figure>
+
+
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Eloquent-ORM/">#Laravel Eloquent ORM</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/difference-between-self-this-static-in-php/">Self, this, static 在 PHP 中的差異</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/laravel-database-seeding/">Laravel - Database - Seeding</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-eloquent-orm-getting-started/';
+        this.page.identifier = 'zh-tw/laravel-eloquent-orm-getting-started/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

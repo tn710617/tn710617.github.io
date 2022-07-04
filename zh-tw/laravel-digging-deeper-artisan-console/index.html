@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯) - Learn or Die</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-artisan-console/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-11-25T01:59:52.000Z">
+<meta property="article:modified_time" content="2020-11-30T04:20:07.237Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Artisan Console">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+    <link href="/laravel-digging-deeper-artisan-console/" rel="alternate"
+          hreflang="en"/>
+
+
+
+
+
+
+
+
+    <meta name="description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯)">
+<meta property="og:url" content="https://tn710617.github.io/zh-tw/laravel-digging-deeper-artisan-console/index.html">
+<meta property="og:site_name" content="Learn or Die">
+<meta property="og:description" content="# 前言學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 使用方法; 先學習怎麼使用這個前人造的輪子, 再學習怎麼樣造一個輪子。所以本篇文章重點在於細讀官方文件, 並將內容理解後以 Q&amp;A 的方式記錄下來, 加速學習以及查詢。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-11-25T01:59:52.000Z">
+<meta property="article:modified_time" content="2020-11-30T04:20:07.237Z">
+<meta property="article:author" content="Ray">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Laravel Documentation">
+<meta property="article:tag" content="Laravel Artisan Console">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+    <link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/sunburst.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135063928-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135063928-1');
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/zh-tw">
+                
+                    
+                    不學會死
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/zh-tw/archives">歸檔</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/categories">分類</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/tags">標籤</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/schedule">行程</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/about">關於</a>
+            
+            <a class="navbar-item "
+               href="/zh-tw/japanese">日語</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜尋" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目錄">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#前言">1&nbsp;&nbsp;<b># 前言</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Introduction">2&nbsp;&nbsp;<b># Introduction</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Tinker-RPEL">2.1&nbsp;&nbsp;# Tinker (RPEL)</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Installation">2.1.1&nbsp;&nbsp;# Installation</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Usage">2.1.2&nbsp;&nbsp;# Usage</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Command-Whitelist">2.1.3&nbsp;&nbsp;# Command Whitelist</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Classes-That-Should-Not-Be-Aliased">2.1.4&nbsp;&nbsp;Classes That Should Not Be Aliased</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Writing-Command">3&nbsp;&nbsp;<b># Writing Command</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Generating-Commands">3.1&nbsp;&nbsp;# Generating Commands</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Command-Structure">3.2&nbsp;&nbsp;# Command Structure</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Closure-Commands">3.3&nbsp;&nbsp;# Closure Commands</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Type-Hinting-Dependencies">3.3.1&nbsp;&nbsp;# Type-Hinting Dependencies</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Closure-Command-Descriptions">3.3.2&nbsp;&nbsp;# Closure Command Descriptions</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Defining-Input-Expectation">4&nbsp;&nbsp;<b># Defining Input Expectation</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Arguments">4.1&nbsp;&nbsp;# Arguments</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Options">4.2&nbsp;&nbsp;# Options</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Options-With-Values">4.2.1&nbsp;&nbsp;# Options With Values</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Options-Shortcuts">4.2.2&nbsp;&nbsp;# Options Shortcuts</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Input-Arrays">4.3&nbsp;&nbsp;# Input Arrays</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Input-Descriptions">4.4&nbsp;&nbsp;# Input Descriptions</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Command-I-O">5&nbsp;&nbsp;<b># Command I/O</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Retrieving-Input">5.1&nbsp;&nbsp;# Retrieving Input</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Prompting-For-Input">5.2&nbsp;&nbsp;# Prompting For Input</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Asking-For-Confirmation">5.2.1&nbsp;&nbsp;# Asking For Confirmation</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Auto-Completion">5.2.2&nbsp;&nbsp;# Auto-Completion</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Multiple-Choice-Questions">5.2.3&nbsp;&nbsp;# Multiple Choice Questions</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Writing-Output">5.3&nbsp;&nbsp;# Writing Output</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Table-Layouts">5.3.1&nbsp;&nbsp;# Table Layouts</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Progress-Bars">5.3.2&nbsp;&nbsp;# Progress Bars</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Registering-Command">6&nbsp;&nbsp;<b># Registering Command</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Programmatically-Executing-Commands">7&nbsp;&nbsp;<b># Programmatically Executing Commands</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Passing-Array-Values">7.1.1&nbsp;&nbsp;# Passing Array Values</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Passing-Boolean-Values">7.1.2&nbsp;&nbsp;# Passing Boolean Values</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#Calling-Commands-From-Other-Commands">7.2&nbsp;&nbsp;Calling Commands From Other Commands</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Stub-Customization">8&nbsp;&nbsp;<b># Stub Customization</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Events">9&nbsp;&nbsp;<b># Events</b></a>
+                    
+                </div>
+            </div>
+            
+
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>繁體中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu" style="top:100%">
+            <div class="dropdown-content">
+            
+                <a href="/laravel-digging-deeper-artisan-console/" class="dropdown-item">
+                    English
+                </a>
+            
+                <a href="/zh-tw/laravel-digging-deeper-artisan-console/" class="dropdown-item">
+                    繁體中文
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Laravel - Digging Deeper - Artisan Console (官方文件原子化翻譯)
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-11-25T01:59:52.000Z" itemprop="datePublished">11月 25 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/zh-tw/categories/Dev/">Dev</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            21 分钟 讀完 (大概 3217 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h2 id="前言"><a href="#前言" class="headerlink" title="# 前言"></a># 前言</h2><p>學習一個框架, Ray 的想法是, 在深入理解底層實作的原理之前, 應該先知道這個框架的 <code>使用方法</code>; 先學習怎麼<strong>使用</strong>這個前人造的輪子, 再學習怎麼樣<strong>造</strong>一個輪子。<br>所以本篇文章重點在於細讀<strong>官方文件</strong>, 並將內容理解後以 <strong>Q&amp;A</strong> 的方式記錄下來, 加速學習以及查詢。</p>
+<span id="more"></span>
+
+<br>
+<br>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><h6 id="以下的-Laravel-example-command-的意思是？"><a href="#以下的-Laravel-example-command-的意思是？" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan list</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>列出可用的 Artisan commands</li>
+</ul>
+<h6 id="以下的-Laravel-example-command-的意思是？-1"><a href="#以下的-Laravel-example-command-的意思是？-1" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan <span class="hljs-built_in">help</span> migrate</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>詳述 migrate command 的用法, 將 help 至於 command 前方可列出 command 詳細用法</li>
+</ul>
+<br>
+
+<h3 id="Tinker-RPEL"><a href="#Tinker-RPEL" class="headerlink" title="# Tinker (RPEL)"></a># Tinker (RPEL)</h3><h4 id="Installation"><a href="#Installation" class="headerlink" title="# Installation"></a># Installation</h4><h6 id="以下的-Laravel-example-code-的意思是？"><a href="#以下的-Laravel-example-code-的意思是？" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">composer require laravel/tinker</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>安裝 Laravel tinker, tinker 預設就已安裝, 但如果有手動安裝的需求, 可以執行上面 composer 指令</li>
+</ul>
+<br>
+
+<h4 id="Usage"><a href="#Usage" class="headerlink" title="# Usage"></a># Usage</h4><h6 id="以下的-Laravel-example-command-的意思是？-2"><a href="#以下的-Laravel-example-command-的意思是？-2" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan tinker</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>進入 tinker 環境</li>
+</ul>
+<h6 id="以下的-Laravel-example-command-的意思是？-3"><a href="#以下的-Laravel-example-command-的意思是？-3" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight bash hljs"><table><tr><td class="code"><pre><span class="line">php artisan vendor:publish --provider=<span class="hljs-string">&quot;Laravel\Tinker\TinkerServiceProvider&quot;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>發布 tinker 的設定檔</li>
+</ul>
+<h6 id="Laravel-Tinker-中-若要-dispatch-a-job-or-queue-該使用哪些-method？"><a href="#Laravel-Tinker-中-若要-dispatch-a-job-or-queue-該使用哪些-method？" class="headerlink" title="Laravel Tinker 中, 若要 dispatch a job or queue, 該使用哪些 method？"></a><strong>Laravel Tinker 中, 若要 dispatch a job or queue, 該使用哪些 method？</strong></h6><ul>
+<li><strong>Bus::dispatch</strong></li>
+<li><strong>Queue:push</strong></li>
+</ul>
+<br>
+
+<h4 id="Command-Whitelist"><a href="#Command-Whitelist" class="headerlink" title="# Command Whitelist"></a># Command Whitelist</h4><h6 id="以下位於-tinker-php-的-Laravel-example-code-的意思是？"><a href="#以下位於-tinker-php-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 tinker.php 的 Laravel example code 的意思是？"></a><strong>以下位於 tinker.php 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-string">&#x27;commands&#x27;</span> =&gt; [</span><br><span class="line">    <span class="hljs-comment">// App\Console\Commands\ExampleCommand::class,</span></span><br><span class="line">],</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Tinker 使用白名單來決定哪些 Artisan commands 允許在 Tinker shell 中執行, 預設可以執行 <code>clear-compiled</code>, <code>down</code>, <code>env</code>, <code>inspire</code>, <code>migrate</code>, <code>optimize</code>, <code>up</code> 這些 command, 如果想要允許更多 command, 可加入上面的 example commands array 中</li>
+</ul>
+<br>
+
+<h4 id="Classes-That-Should-Not-Be-Aliased"><a href="#Classes-That-Should-Not-Be-Aliased" class="headerlink" title="Classes That Should Not Be Aliased"></a>Classes That Should Not Be Aliased</h4><h6 id="以下位於-tinker-php-的-Laravel-example-code-的意思是？-1"><a href="#以下位於-tinker-php-的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下位於 tinker.php 的 Laravel example code 的意思是？"></a><strong>以下位於 tinker.php 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-string">&#x27;dont_alias&#x27;</span> =&gt; [</span><br><span class="line">    <span class="title class_">App\Models\User</span>::<span class="variable language_">class</span>,</span><br><span class="line">],</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Tinker 預設會自動 alias class, 如果有些 class 你希望 tinker 不要 alias, 可加在以上的 example ‘dont_alias’ array 中</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Writing-Command"><a href="#Writing-Command" class="headerlink" title="# Writing Command"></a># Writing Command</h2><h6 id="Laravel-custom-command-會被置於哪個資料夾？"><a href="#Laravel-custom-command-會被置於哪個資料夾？" class="headerlink" title="Laravel custom command 會被置於哪個資料夾？"></a><strong>Laravel custom command 會被置於哪個資料夾？</strong></h6><p><code>app/Console/Commands</code></p>
+<br>
+
+<h3 id="Generating-Commands"><a href="#Generating-Commands" class="headerlink" title="# Generating Commands"></a># Generating Commands</h3><h6 id="以下的-Laravel-example-command-的意思是？-4"><a href="#以下的-Laravel-example-command-的意思是？-4" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan make:command SendEmails</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 custom command, 並置於 <code>app/Console/Commands</code></li>
+</ul>
+<br>
+
+<h3 id="Command-Structure"><a href="#Command-Structure" class="headerlink" title="# Command Structure"></a># Command Structure</h3><h6 id="以下的-Laravel-example-command-的意思是？-5"><a href="#以下的-Laravel-example-command-的意思是？-5" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Console</span>\<span class="title class_">Commands</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">DripEmailer</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Command</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SendEmails</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Command</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$description</span> = <span class="hljs-string">&#x27;Send drip e-mails to a user&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">__construct</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params">DripEmailer <span class="hljs-variable">$drip</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$drip</span>-&gt;<span class="title function_ invoke__">send</span>(<span class="title class_">User</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-variable">$this</span>-&gt;<span class="title function_ invoke__">argument</span>(<span class="hljs-string">&#x27;user&#x27;</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Console</span>\<span class="title class_">Commands</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">DripEmailer</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Command</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SendEmails</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Command</span></span></span><br><span class="line"><span class="hljs-class"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// command 的名字</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// command 的描述</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$description</span> = <span class="hljs-string">&#x27;Send drip e-mails to a user&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-built_in">parent</span>::<span class="title function_ invoke__">__construct</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// handle 裡頭就是執行此 command 的邏輯, args 可以用  type hint 的方式 inject 任何 class</span></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params">DripEmailer <span class="hljs-variable">$drip</span></span>)</span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        <span class="hljs-variable">$drip</span>-&gt;<span class="title function_ invoke__">send</span>(<span class="title class_">User</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-variable">$this</span>-&gt;<span class="title function_ invoke__">argument</span>(<span class="hljs-string">&#x27;user&#x27;</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Closure-Commands"><a href="#Closure-Commands" class="headerlink" title="# Closure Commands"></a># Closure Commands</h3><h6 id="以下位於-…-routes-console-php-的-Laravel-example-code-的意思是？"><a href="#以下位於-…-routes-console-php-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 …/routes/console.php 的 Laravel example code 的意思是？"></a><strong>以下位於 …/routes/console.php 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Artisan</span>::<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;build &#123;project&#125;&#x27;</span>, function (<span class="hljs-variable">$project</span>) &#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">info</span>(<span class="hljs-string">&quot;Building <span class="hljs-subst">&#123;$project&#125;</span>!&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 closure based command<br>closure based command 之於 class command, 就相當於 route closure 之於 controller<br>build 為帶入的 args, 所以輸入 <code>php artisan build hello</code>, 就會顯示 <code>Building hello!</code></li>
+</ul>
+<br>
+
+<h4 id="Type-Hinting-Dependencies"><a href="#Type-Hinting-Dependencies" class="headerlink" title="# Type-Hinting Dependencies"></a># Type-Hinting Dependencies</h4><h6 id="以下位於-…-routes-console-php-的-Laravel-example-code-的意思是？-1"><a href="#以下位於-…-routes-console-php-的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下位於 …/routes/console.php 的 Laravel example code 的意思是？"></a><strong>以下位於 …/routes/console.php 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Models</span>\<span class="hljs-title">User</span>;</span><br><span class="line"><span class="hljs-keyword">use</span> <span class="hljs-title">App</span>\<span class="hljs-title">Support</span>\<span class="hljs-title">DripEmailer</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Artisan</span>::<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;email:send &#123;user&#125;&#x27;</span>, function (DripEmailer <span class="hljs-variable">$drip</span>, <span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">    <span class="hljs-variable">$drip</span>-&gt;<span class="title function_ invoke__">send</span>(<span class="title class_">User</span>::<span class="title function_ invoke__">find</span>(<span class="hljs-variable">$user</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 closure based command<br>closure based command 之於 class command, 就相當於 route closure 之於 controller<br>輸入 <code>php artisan email:send 3</code>, 就會執行 <strong>$drip-&gt;send(User::find($user))</strong><br>在 closure 內可以 type hint 任何有用到的 class</li>
+</ul>
+<br>
+
+<h4 id="Closure-Command-Descriptions"><a href="#Closure-Command-Descriptions" class="headerlink" title="# Closure Command Descriptions"></a># Closure Command Descriptions</h4><h6 id="以下位於-…-routes-console-php-的-Laravel-example-code-的意思是？-2"><a href="#以下位於-…-routes-console-php-的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下位於 …/routes/console.php 的 Laravel example code 的意思是？"></a><strong>以下位於 …/routes/console.php 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Artisan</span>::<span class="title function_ invoke__">command</span>(<span class="hljs-string">&#x27;build &#123;project&#125;&#x27;</span>, function (<span class="hljs-variable">$project</span>) &#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">info</span>(<span class="hljs-string">&quot;Building <span class="hljs-subst">&#123;$project&#125;</span>!&quot;</span>);</span><br><span class="line">&#125;)-&gt;<span class="title function_ invoke__">describe</span>(<span class="hljs-string">&#x27;Build the project&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>建立一個 closure based command<br>closure based command 之於 class command, 就相當於 route closure 之於 controller<br>build 為帶入的 args, 所以輸入 <code>php artisan build hello</code>, 就會顯示 <code>Building hello!</code><br>describe 為該 command 的敘述, 當執行 <code>php artisan list</code> 或 <code>php artisan help</code> 時會顯示出來</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Defining-Input-Expectation"><a href="#Defining-Input-Expectation" class="headerlink" title="# Defining Input Expectation"></a># Defining Input Expectation</h2><h3 id="Arguments"><a href="#Arguments" class="headerlink" title="# Arguments"></a># Arguments</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user?&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user=foo&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 例如輸入 &#x27;php artisan email:send Ray&#x27;, 那 Ray 就會等於 &#123;user&#125;, 這個 argument 是 required</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 例如輸入 &#x27;php artisan email:send Ray&#x27;, 那 Ray 就會等於 &#123;user&#125;, 這個 argument 是 optional</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user?&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 例如輸入 &#x27;php artisan email:send Ray&#x27;, 那 Ray 就會等於 &#123;user&#125;, 這個 argument 是 optional, 且 default value 為 foo</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user=foo&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Options"><a href="#Options" class="headerlink" title="# Options"></a># Options</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-1"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--queue&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 Artisan command 的 format<br>{user} 為 argument, {–queue} 為可有可無的 options, 有帶為 true, 反之為 false<br>輸入: ‘php artisan email:send 4 –queue’, 那 {user} = 4, ‘–queue’ 有帶的話, 為 true, 反之為 false</li>
+</ul>
+<br>
+
+<h4 id="Options-With-Values"><a href="#Options-With-Values" class="headerlink" title="# Options With Values"></a># Options With Values</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-2"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--queue=&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--queue=default&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 定義 Artisan command 的 format</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// &#123;user&#125; 為 argument, &#123;--queue&#125; 為可傳入值的 options</span></span><br><span class="line"><span class="hljs-comment">// 輸入: &#x27;php artisan email:send 4 --queue=highPriority&#x27;, 那 &#123;user&#125; = 4, &#x27;--queue&#x27;</span></span><br><span class="line"><span class="hljs-comment">// 的值為 &#x27;highPriority&#x27;</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--queue=&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// 給予 &#x27;--queue&#x27; 一個 default 值, 若沒帶則為 &#x27;default&#x27;</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--queue=default&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h4 id="Options-Shortcuts"><a href="#Options-Shortcuts" class="headerlink" title="# Options Shortcuts"></a># Options Shortcuts</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-3"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--Q|queue&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 定義 Artisan command 的 format</span></span><br><span class="line"><span class="hljs-comment">// &#123;user&#125; 為 argument, &#123;--queue&#125; 為可有可無的 options, 有帶為 true, 無則為 false</span></span><br><span class="line"><span class="hljs-comment">// &#x27;--Q&#x27; 為 &#x27;--queue&#x27; 的縮寫, 兩者都可用</span></span><br><span class="line"><span class="hljs-comment">// 輸入: &#x27;php artisan email:send 4 --queue&#x27;, 那 &#123;user&#125; = 4, &#x27;--queue&#x27;</span></span><br><span class="line"><span class="hljs-comment">// 為 true</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user&#125; &#123;--Q|queue&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+
+<h3 id="Input-Arrays"><a href="#Input-Arrays" class="headerlink" title="# Input Arrays"></a># Input Arrays</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-4"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send &#123;user*&#125;;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 Artisan command 的 format<br>{user*} 為 array input<br>例如輸入 ‘php artisan email:send foo bar’, 則 {user*} 的值為 [‘foo’, ‘bar’]</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-5"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">email:send &#123;user&#125; &#123;--id=*&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 Artisan command 的 format<br>{user} 為單一 input<br>例如輸入 ‘php artisan email:send bar –id=1 –i=2 –id=3’則 {user} 的值為 ‘bar’, 而 ‘–id’ 的值為 [‘1’, ‘2’, ‘3’]</li>
+</ul>
+<br>
+
+<h3 id="Input-Descriptions"><a href="#Input-Descriptions" class="headerlink" title="# Input Descriptions"></a># Input Descriptions</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-6"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-6" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-variable">$signature</span> = <span class="hljs-string">&#x27;email:send</span></span><br><span class="line"><span class="hljs-string">                        &#123;user : The ID of the user&#125;</span></span><br><span class="line"><span class="hljs-string">                        &#123;--queue= : Whether the job should be queued&#125;&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>定義 Artisan command 的 format<br>{user} 為單一 input, –queue= 為單一 input<br>例如輸入 ‘php artisan email:send bar –queue=highPriority’, 則 {user} 的值為 ‘bar’, 而 ‘–queue’ 的值為 ‘highPriority’, colon 後的 string 為 args 及 options 的 description</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Command-I-O"><a href="#Command-I-O" class="headerlink" title="# Command I/O"></a># Command I/O</h2><h3 id="Retrieving-Input"><a href="#Retrieving-Input" class="headerlink" title="# Retrieving Input"></a># Retrieving Input</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-7"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-7" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$userId</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">argument</span>(<span class="hljs-string">&#x27;user&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-variable">$arguments</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">arguments</span>();</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:</li>
+</ul>
+<ol>
+<li>取得 command signature 中定義的 argument, 例如 signature 為 ‘email:send {user}’</li>
+<li>取得所有 arguments, 以 array 的方式取得, 例如 signature 為 ‘email:send {user} {shop}’, 則輸出為 [‘user’ =&gt; {user}, ‘shop’ =&gt; {shop}]</li>
+</ol>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-8"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-8" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$queueName</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">option</span>(<span class="hljs-string">&#x27;queue&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="hljs-variable">$options</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">options</span>();</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:</li>
+</ul>
+<ol>
+<li>取得 command signature 中定義的 option, 例如 signature 為 ‘email:send {user} {–queue=}’</li>
+<li>取得所有 options, 以 array 的方式取得, 例如 signature 為 ‘email:send {–id=} {–wd=}, 則輸出為 [‘id’ =&gt; {id}, ‘wd’ =&gt; {wd}], 若 options 為 array, 即 {–id=*}, 則輸出為 nested array</li>
+</ol>
+<br>
+
+<h3 id="Prompting-For-Input"><a href="#Prompting-For-Input" class="headerlink" title="# Prompting For Input"></a># Prompting For Input</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-9"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-9" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$name</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">ask</span>(<span class="hljs-string">&#x27;What is your name?&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用者輸入 command 時會跳出詢問視窗, 讓 user 輸入</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-10"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-10" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$password</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">secret</span>(<span class="hljs-string">&#x27;What is the password?&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用者輸入 command 時會跳出詢問視窗, 讓 user 輸入, 與 ask() 不同之處在於 secret() 會隱藏使用者的輸入</li>
+</ul>
+<br>
+
+<h4 id="Asking-For-Confirmation"><a href="#Asking-For-Confirmation" class="headerlink" title="# Asking For Confirmation"></a># Asking For Confirmation</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-11"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-11" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">confirm</span>(<span class="hljs-string">&#x27;Do you wish to continue?&#x27;</span>)) &#123;</span><br><span class="line">        <span class="hljs-comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用者輸入 command 時跳出詢問視窗, 讓使用者輸入, 默認為 false, 若輸入 y or yes 則為 true</li>
+</ul>
+<br>
+
+<h4 id="Auto-Completion"><a href="#Auto-Completion" class="headerlink" title="# Auto-Completion"></a># Auto-Completion</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-12"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-12" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$name</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">anticipate</span>(<span class="hljs-string">&#x27;What is your name?&#x27;</span>, [<span class="hljs-string">&#x27;Taylor&#x27;</span>, <span class="hljs-string">&#x27;Dayle&#x27;</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用者輸入 command 時會跳出詢問視窗, 讓使用者輸入, 當使用者輸入 T 會自動提示 Taylor, 輸入 D 則自動提示 Dayle, 使用者可輸入其他, arg2 只是提示功能</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-13"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-13" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$name</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">anticipate</span>(<span class="hljs-string">&#x27;What is your name?&#x27;</span>, function() &#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用者輸入 command 時會跳出詢問視窗, 讓使用者輸入, 使用者每輸入一個字, 都會 pass 到 closure, 並依照 closure 內的邏輯輸出提示詞</li>
+</ul>
+<br>
+
+<h4 id="Multiple-Choice-Questions"><a href="#Multiple-Choice-Questions" class="headerlink" title="# Multiple Choice Questions"></a># Multiple Choice Questions</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-14"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-14" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$name</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">choice</span>(</span><br><span class="line">        <span class="hljs-string">&#x27;What is your name?&#x27;</span>,</span><br><span class="line">        [<span class="hljs-string">&#x27;Taylor&#x27;</span>, <span class="hljs-string">&#x27;Dayle&#x27;</span>],</span><br><span class="line">        <span class="hljs-variable">$defaultIndex</span>,</span><br><span class="line">        <span class="hljs-variable">$maxAttempts</span> = <span class="hljs-literal">null</span>,</span><br><span class="line">        <span class="hljs-variable">$allowMultipleSelections</span> = <span class="hljs-literal">false</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當使用者輸入 command 時會跳出 arg2 的選項讓使用者輸入, 即 Taylor 或 Dayle<br>可設定 default index, 當使用者沒輸入時, 會將 default 值設為指定的 index<br>$maxAttempts 顧名思義, 最大嘗試次數<br>$allowMultipleSelections 即可選取多個選項</li>
+</ul>
+<br>
+
+<h3 id="Writing-Output"><a href="#Writing-Output" class="headerlink" title="# Writing Output"></a># Writing Output</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-15"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-15" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">info</span>(<span class="hljs-string">&#x27;Display this on the screen&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>顯示文字到 console, 文字為綠色</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-16"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-16" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">error</span>(<span class="hljs-string">&#x27;Something went wrong!&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>顯示文字到 console, 文字為紅色</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-17"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-17" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">line</span>(<span class="hljs-string">&#x27;Display this on the screen&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>顯示文字到 console, 文字為 plain text</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-18"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-18" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">newLine</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// Write three blank lines...</span></span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">newLine</span>(<span class="hljs-number">3</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>顯示空行<br>顯示 3 個空行</li>
+</ul>
+<br>
+
+<h4 id="Table-Layouts"><a href="#Table-Layouts" class="headerlink" title="# Table Layouts"></a># Table Layouts</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-19"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-19" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$headers</span> = [<span class="hljs-string">&#x27;Name&#x27;</span>, <span class="hljs-string">&#x27;Email&#x27;</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">all</span>([<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;email&#x27;</span>])-&gt;<span class="title function_ invoke__">toArray</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">table</span>(<span class="hljs-variable">$headers</span>, <span class="hljs-variable">$users</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>當執行 console command 時, 以 table 的方式顯示訊息在 console, 使用 table method, arg1 為欄位名稱, arg2 為欄位內容</li>
+</ul>
+<br>
+
+<h4 id="Progress-Bars"><a href="#Progress-Bars" class="headerlink" title="# Progress Bars"></a># Progress Bars</h4><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-20"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-20" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">all</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-variable">$bar</span> = <span class="variable language_">$this</span>-&gt;output-&gt;<span class="title function_ invoke__">createProgressBar</span>(<span class="title function_ invoke__">count</span>(<span class="hljs-variable">$users</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-variable">$bar</span>-&gt;<span class="title function_ invoke__">start</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$users</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">performTask</span>(<span class="hljs-variable">$user</span>);</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-variable">$bar</span>-&gt;<span class="title function_ invoke__">advance</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-variable">$bar</span>-&gt;<span class="title function_ invoke__">finish</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>更多 progress bar 的應用, 可以參閱<br><a target="_blank" rel="noopener" href="https://symfony.com/doc/current/components/console/helpers/progressbar.html">Symfony Progress Bar component 文件</a><figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-comment">// 當使用者執行 console command 時, 可以用 process bar 顯示進度</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-variable">$users</span> = <span class="title class_">App\Models\User</span>::<span class="title function_ invoke__">all</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// 這邊建立了 progress bar, 並指定有幾個 steps</span></span><br><span class="line">    <span class="hljs-variable">$bar</span> = <span class="variable language_">$this</span>-&gt;output-&gt;<span class="title function_ invoke__">createProgressBar</span>(<span class="title function_ invoke__">count</span>(<span class="hljs-variable">$users</span>));</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// progress bar 開始</span></span><br><span class="line">    <span class="hljs-variable">$bar</span>-&gt;<span class="title function_ invoke__">start</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$users</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$user</span>) &#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">performTask</span>(<span class="hljs-variable">$user</span>);</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-comment">// 每跑過一個 user, 都 advance 一次</span></span><br><span class="line">        <span class="hljs-variable">$bar</span>-&gt;<span class="title function_ invoke__">advance</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">// progress bar 結束</span></span><br><span class="line">    <span class="hljs-variable">$bar</span>-&gt;<span class="title function_ invoke__">finish</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Registering-Command"><a href="#Registering-Command" class="headerlink" title="# Registering Command"></a># Registering Command</h2><h6 id="以下位於-…-app-console-kernel-的-Laravel-example-code-的意思是？"><a href="#以下位於-…-app-console-kernel-的-Laravel-example-code-的意思是？" class="headerlink" title="以下位於 …/app/console/kernel 的 Laravel example code 的意思是？"></a><strong>以下位於 …/app/console/kernel 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">commands</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">load</span>(<span class="hljs-keyword">__DIR__</span>.<span class="hljs-string">&#x27;/Commands&#x27;</span>);</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">load</span>(<span class="hljs-keyword">__DIR__</span>.<span class="hljs-string">&#x27;/MoreCommands&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>預設會註冊 <strong>app/Console/Commands</strong> 資料夾內的 command, 如果 command 是寫在其他資料夾, 也可以加在 kernel class 中的 commands method 內</li>
+</ul>
+<h6 id="以下位於-…-app-console-kernel-的-Laravel-example-code-的意思是？-1"><a href="#以下位於-…-app-console-kernel-的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下位於 …/app/console/kernel 的 Laravel example code 的意思是？"></a><strong>以下位於 …/app/console/kernel 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$commands</span> = [</span><br><span class="line">        <span class="title class_">Commands\SendEmails</span>::<span class="variable language_">class</span></span><br><span class="line">    ];</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Laravel 預設會註冊位於 Console/Commands 資料夾內的 command, 除了新增註冊的資料夾位址外, 也可以在 Kernel class 的 commands property 中註冊單一 command</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Programmatically-Executing-Commands"><a href="#Programmatically-Executing-Commands" class="headerlink" title="# Programmatically Executing Commands"></a># Programmatically Executing Commands</h2><h6 id="以下的-Laravel-example-code-的意思是？-1"><a href="#以下的-Laravel-example-code-的意思是？-1" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/foo&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-variable">$exitCode</span> = <span class="title class_">Artisan</span>::<span class="title function_ invoke__">call</span>(<span class="hljs-string">&#x27;email:send&#x27;</span>, [</span><br><span class="line">        <span class="hljs-string">&#x27;user&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;--queue&#x27;</span> =&gt; <span class="hljs-string">&#x27;default&#x27;</span></span><br><span class="line">    ]);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>可以從 CLI 之外的地方執行 artisan command, 使用 Artisan facade 的 call method, arg1 為 command name 或 class name 都可, arg2 為帶入該 command 的 parameters</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-2"><a href="#以下的-Laravel-example-code-的意思是？-2" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/foo&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-variable">$exitCode</span> = <span class="title class_">Artisan</span>::<span class="title function_ invoke__">call</span>(<span class="hljs-string">&#x27;email:send 1 --queue=default&#x27;</span>);</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>可以從 CLI 之外的地方執行 artisan command, 使用 Artisan facade 的 call method, 可使用 arg2 來帶入該 command 的 parameters, 也可直接在 arg1 輸入全部 command, 就像在 CLI 輸入一樣</li>
+</ul>
+<h6 id="以下的-Laravel-example-code-的意思是？-3"><a href="#以下的-Laravel-example-code-的意思是？-3" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/foo&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="title class_">Artisan</span>::<span class="title function_ invoke__">queue</span>(<span class="hljs-string">&#x27;email:send&#x27;</span>, [</span><br><span class="line">        <span class="hljs-string">&#x27;user&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;--queue&#x27;</span> =&gt; <span class="hljs-string">&#x27;default&#x27;</span></span><br><span class="line">    ])-&gt;<span class="title function_ invoke__">onConnection</span>(<span class="hljs-string">&#x27;redis&#x27;</span>)-&gt;<span class="title function_ invoke__">onQueue</span>(<span class="hljs-string">&#x27;commands&#x27;</span>);</span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>將 Artisan command 排入 queue, 由 queue worker 去執行, 並指定 connection 以及 queue name</li>
+</ul>
+<br>
+
+<h4 id="Passing-Array-Values"><a href="#Passing-Array-Values" class="headerlink" title="# Passing Array Values"></a># Passing Array Values</h4><h6 id="以下的-Laravel-example-code-的意思是？-4"><a href="#以下的-Laravel-example-code-的意思是？-4" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="title class_">Route</span>::<span class="title function_ invoke__">get</span>(<span class="hljs-string">&#x27;/foo&#x27;</span>, function () &#123;</span><br><span class="line">    <span class="hljs-variable">$exitCode</span> = <span class="title class_">Artisan</span>::<span class="title function_ invoke__">call</span>(<span class="hljs-string">&#x27;email:send&#x27;</span>, [</span><br><span class="line">        <span class="hljs-string">&#x27;user&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;--id&#x27;</span> =&gt; [<span class="hljs-number">5</span>, <span class="hljs-number">13</span>]</span><br><span class="line">    ]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>使用 Artisan facade 在 CLI 之外的地方執行 command<br>如果該 command 定義了 array options 或 array arguments, 可使用 array 的方式帶入</li>
+</ul>
+<br>
+
+<h4 id="Passing-Boolean-Values"><a href="#Passing-Boolean-Values" class="headerlink" title="# Passing Boolean Values"></a># Passing Boolean Values</h4><h6 id="以下的-Laravel-example-code-的意思是？-5"><a href="#以下的-Laravel-example-code-的意思是？-5" class="headerlink" title="以下的 Laravel example code 的意思是？"></a><strong>以下的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-variable">$exitCode</span> = <span class="title class_">Artisan</span>::<span class="title function_ invoke__">call</span>(<span class="hljs-string">&#x27;migrate:refresh&#x27;</span>, [</span><br><span class="line">    <span class="hljs-string">&#x27;--force&#x27;</span> =&gt; <span class="hljs-literal">true</span>,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>如果 command 的 options 為 boolean 類型, 可透過 ‘options’ =&gt; ‘boolean’ 的方式帶入</li>
+</ul>
+<br>
+
+<h3 id="Calling-Commands-From-Other-Commands"><a href="#Calling-Commands-From-Other-Commands" class="headerlink" title="Calling Commands From Other Commands"></a>Calling Commands From Other Commands</h3><h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-21"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-21" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">call</span>(<span class="hljs-string">&#x27;email:send&#x27;</span>, [</span><br><span class="line">        <span class="hljs-string">&#x27;user&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;--queue&#x27;</span> =&gt; <span class="hljs-string">&#x27;default&#x27;</span></span><br><span class="line">    ]);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 custom command 中, 利用 call() 執行另外一個 command</li>
+</ul>
+<h6 id="以下位於-custom-command-class-的-Laravel-example-code-的意思是？-22"><a href="#以下位於-custom-command-class-的-Laravel-example-code-的意思是？-22" class="headerlink" title="以下位於 custom command class 的 Laravel example code 的意思是？"></a><strong>以下位於 custom command class 的 Laravel example code 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handle</span>(<span class="hljs-params"></span>)</span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">callSilent</span>(<span class="hljs-string">&#x27;email:send&#x27;</span>, [</span><br><span class="line">        <span class="hljs-string">&#x27;user&#x27;</span> =&gt; <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;--queue&#x27;</span> =&gt; <span class="hljs-string">&#x27;default&#x27;</span></span><br><span class="line">    ]);</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>在 custom command 中, 利用 call() 執行另外一個 command, 並且不顯示其輸出</li>
+</ul>
+<br>
+<br>
+
+<h2 id="Stub-Customization"><a href="#Stub-Customization" class="headerlink" title="# Stub Customization"></a># Stub Customization</h2><h6 id="以下的-Laravel-example-command-的意思是？-6"><a href="#以下的-Laravel-example-command-的意思是？-6" class="headerlink" title="以下的 Laravel example command 的意思是？"></a><strong>以下的 Laravel example command 的意思是？</strong></h6><ul>
+<li><strong>Example</strong>:<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line">php artisan stub:publish</span><br></pre></td></tr></table></figure></li>
+<li><strong>Answer</strong>:<br>Artisan console <strong>make</strong> command 被用來建立不同的 class, 像是 controllers, jobs, migrations, 以及 tests, Laravel 會根據你所輸入的 input, 使用 “stub” file 來產生這些 class<br>如果你希望可以對 stub 檔案做更動的話, 可使用 <strong>stub:publish</strong></li>
+</ul>
+<br>
+<br>
+
+<h2 id="Events"><a href="#Events" class="headerlink" title="# Events"></a># Events</h2><h6 id="Laravel-Artisan-中-會產生哪三個-event"><a href="#Laravel-Artisan-中-會產生哪三個-event" class="headerlink" title="Laravel Artisan 中, 會產生哪三個 event?"></a><strong>Laravel Artisan 中, 會產生哪三個 event?</strong></h6><ul>
+<li>ArtisanStarting</li>
+<li>CommandStarting</li>
+<li>CommandFinished</li>
+</ul>
+<h6 id="Laravel-Artisan-event-中-ArtisanStarting-什麼時候觸發"><a href="#Laravel-Artisan-event-中-ArtisanStarting-什麼時候觸發" class="headerlink" title="Laravel Artisan event 中, ArtisanStarting 什麼時候觸發?"></a><strong>Laravel Artisan event 中, ArtisanStarting 什麼時候觸發?</strong></h6><p>當 Artisan 開始執行時</p>
+<h6 id="Laravel-Artisan-event-中-CommandStarting-什麼時候觸發"><a href="#Laravel-Artisan-event-中-CommandStarting-什麼時候觸發" class="headerlink" title="Laravel Artisan event 中, CommandStarting 什麼時候觸發?"></a><strong>Laravel Artisan event 中, CommandStarting 什麼時候觸發?</strong></h6><p>在 command 執行之前</p>
+<h6 id="Laravel-Artisan-event-中-CommandFinished-什麼時候觸發"><a href="#Laravel-Artisan-event-中-CommandFinished-什麼時候觸發" class="headerlink" title="Laravel Artisan event 中, CommandFinished 什麼時候觸發?"></a><strong>Laravel Artisan event 中, CommandFinished 什麼時候觸發?</strong></h6><p>當 command 結束執行時</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel/">#Laravel</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Documentation/">#Laravel Documentation</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/zh-tw/tags/Laravel-Artisan-Console/">#Laravel Artisan Console</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh-tw/mysql-documentation-table-of-contents/">MySQL - 官方文件原子化翻譯 - 目錄</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh-tw/introduction-on-tree/">Tree 資料結構簡介</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="sharethis-inline-share-buttons"></div>
+<script type='text/javascript' src='//platform-api.sharethis.com/js/sharethis.js#property=5c72643b9ea706001139fd89&amp;product=inline-share-buttons' async='async'></script>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">留言</h3>
+    
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://tn710617.github.io/zh-tw/laravel-digging-deeper-artisan-console/';
+        this.page.identifier = 'zh-tw/laravel-digging-deeper-artisan-console/';
+        
+        this.language = 'zh';
+        
+    };
+    (function() {
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'rayscodingjourney' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<div id="disqus_thread">
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 Ray&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+            <script>
+                mermaid.initialize({ theme: 'default' });
+            </script>
+
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/tn710617">
+                
+                    <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Medium" target="_blank" rel="noopener" href="https://medium.com/@raycodingjourney">
+                
+                    <i class="fab fa-medium"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/ray-lee-99315315a">
+                
+                    <i class="fab fa-linkedin"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=100001626039430">
+                
+                    <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="CakeResume" target="_blank" rel="noopener" href="https://www.cakeresume.com/resumes/ray-6edaef/edit">
+                
+                    <i class="far fa-address-card"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="E-Mail" href="mailto:tn710617@gmail.com">
+                
+                    <i class="far fa-envelope"></i>
+                
+            </a>
+            
+            <a class="navbar-item" title="Skype" href="skype:adad0310?call|chat">
+                
+                    <i class="fab fa-skype"></i>
+                
+            </a>
+            
+            
+
+        </div>
+    </div>
+</footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {matchFontHeight: false},
+        SVG: {matchFontHeight: false},
+        CommonHTML: {matchFontHeight: false}
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站內搜尋" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '頁面',
+                CATEGORIES: '分類',
+                TAGS: '標籤',
+                UNTITLED: '(無標題)',
+            },
+            CONTENT_URL: '/content.zh-tw.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>
