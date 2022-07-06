@@ -4,22 +4,23 @@
     <meta charset="utf-8">
 <title>資料結構 - Heap - PHP 實作 - Learn or Die</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="# IntroductionHeap 資料結構相關筆記">
+<meta name="description" content="# Introduction最近在解 Leetcode Top K Frequent Elements 題目時, 會需要使用到 priorityqueue, 而 priority queue 的實作便是使用 Heap, 因此就有了這一篇">
 <meta property="og:type" content="article">
 <meta property="og:title" content="資料結構 - Heap - PHP 實作">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/data-structure-heap-php-implememtation/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="# IntroductionHeap 資料結構相關筆記">
+<meta property="og:description" content="# Introduction最近在解 Leetcode Top K Frequent Elements 題目時, 會需要使用到 priorityqueue, 而 priority queue 的實作便是使用 Heap, 因此就有了這一篇">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLV3cSfmV8Nn4qjgVWc3XLFIHDlKEvwoNTSq1iilT3A4rn_geiVvdHjgB2L0qISceA06tCwREKH0WF86MRLxDrJb8e6lzn7iLakVO1mbqppxIj1cAvyb7hJPr7xGZsg3FX4ADkpR_mMII6fD1y9MOwXfeg=w334-h392-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLUZEfXVdpQ5Rf0meEwanvoCY-SRy7gjf7ZdzzUi5jpeUwn2DhILYJu9XIAzLJc1v1B4hav111kwf77S6JH_NPHsuOU9Tp7IrH_crNz6e0nvuPw85_F-XwGCVXiJfikWUFvpIY1BKIqqSD2km2-qTdnUlA=w1030-h424-no?authuser=0">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0">
-<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0">
-<meta property="article:published_time" content="2021-08-15T02:46:26.000Z">
-<meta property="article:modified_time" content="2021-08-15T04:58:12.138Z">
+<meta property="article:published_time" content="2022-07-06T02:17:39.000Z">
+<meta property="article:modified_time" content="2022-07-06T03:00:51.557Z">
 <meta property="article:author" content="Ray">
 <meta property="article:tag" content="PHP">
 <meta property="article:tag" content="Heap">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/AM-JKLV3cSfmV8Nn4qjgVWc3XLFIHDlKEvwoNTSq1iilT3A4rn_geiVvdHjgB2L0qISceA06tCwREKH0WF86MRLxDrJb8e6lzn7iLakVO1mbqppxIj1cAvyb7hJPr7xGZsg3FX4ADkpR_mMII6fD1y9MOwXfeg=w334-h392-no?authuser=0">
 
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -35,22 +36,23 @@
 
 
 
-    <meta name="description" content="# IntroductionHeap 資料結構相關筆記">
+    <meta name="description" content="# Introduction最近在解 Leetcode Top K Frequent Elements 題目時, 會需要使用到 priorityqueue, 而 priority queue 的實作便是使用 Heap, 因此就有了這一篇">
 <meta property="og:type" content="article">
 <meta property="og:title" content="資料結構 - Heap - PHP 實作">
 <meta property="og:url" content="https://tn710617.github.io/zh-tw/data-structure-heap-php-implememtation/index.html">
 <meta property="og:site_name" content="Learn or Die">
-<meta property="og:description" content="# IntroductionHeap 資料結構相關筆記">
+<meta property="og:description" content="# Introduction最近在解 Leetcode Top K Frequent Elements 題目時, 會需要使用到 priorityqueue, 而 priority queue 的實作便是使用 Heap, 因此就有了這一篇">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLV3cSfmV8Nn4qjgVWc3XLFIHDlKEvwoNTSq1iilT3A4rn_geiVvdHjgB2L0qISceA06tCwREKH0WF86MRLxDrJb8e6lzn7iLakVO1mbqppxIj1cAvyb7hJPr7xGZsg3FX4ADkpR_mMII6fD1y9MOwXfeg=w334-h392-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLUZEfXVdpQ5Rf0meEwanvoCY-SRy7gjf7ZdzzUi5jpeUwn2DhILYJu9XIAzLJc1v1B4hav111kwf77S6JH_NPHsuOU9Tp7IrH_crNz6e0nvuPw85_F-XwGCVXiJfikWUFvpIY1BKIqqSD2km2-qTdnUlA=w1030-h424-no?authuser=0">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0">
-<meta property="og:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0">
-<meta property="article:published_time" content="2021-08-15T02:46:26.000Z">
-<meta property="article:modified_time" content="2021-08-15T04:58:12.138Z">
+<meta property="article:published_time" content="2022-07-06T02:17:39.000Z">
+<meta property="article:modified_time" content="2022-07-06T03:00:51.557Z">
 <meta property="article:author" content="Ray">
 <meta property="article:tag" content="PHP">
 <meta property="article:tag" content="Heap">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/AM-JKLV3cSfmV8Nn4qjgVWc3XLFIHDlKEvwoNTSq1iilT3A4rn_geiVvdHjgB2L0qISceA06tCwREKH0WF86MRLxDrJb8e6lzn7iLakVO1mbqppxIj1cAvyb7hJPr7xGZsg3FX4ADkpR_mMII6fD1y9MOwXfeg=w334-h392-no?authuser=0">
 
 
 
@@ -164,31 +166,45 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#特性介紹">2&nbsp;&nbsp;<b># 特性介紹</b></a>
+                    <a class="navbar-item" href="#概念">2&nbsp;&nbsp;<b># 概念</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#一些-heap-的核心操作">3&nbsp;&nbsp;<b># 一些 heap 的核心操作</b></a>
+                    <a class="navbar-item" href="#實作-binary-heap">3&nbsp;&nbsp;<b># 實作 binary heap</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#create-amp-insert">3.1&nbsp;&nbsp;# create &amp;amp;amp; insert</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#取出最小值">3.2&nbsp;&nbsp;# 取出最小值:</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Questions-and-Answers">4&nbsp;&nbsp;<b># Questions and Answers</b></a>
+                    <a class="navbar-item" href="#binary-heap-時間-amp-空間複雜度">4&nbsp;&nbsp;<b># binary heap 時間 &amp;amp;amp; 空間複雜度</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#Questions-and-Answers">5&nbsp;&nbsp;<b># Questions and Answers</b></a>
                     
                     
                     
-                    <a class="navbar-item" href="#以下的-image-是屬於哪一種資料結構？">4.1&nbsp;&nbsp;以下的 image 是屬於哪一種資料結構？</a>
+                    <a class="navbar-item" href="#以下的-image-是屬於哪一種資料結構？">5.1.1&nbsp;&nbsp;以下的 image 是屬於哪一種資料結構？</a>
                     
                     
                     
-                    <a class="navbar-item" href="#heap-資料結構中-如果-root-小於-child-nodes-又稱為？">4.2&nbsp;&nbsp;heap 資料結構中, 如果 root 小於 child nodes, 又稱為？</a>
+                    <a class="navbar-item" href="#heap-資料結構中-如果-root-小於-child-nodes-又稱為？">5.1.2&nbsp;&nbsp;heap 資料結構中, 如果 root 小於 child nodes, 又稱為？</a>
                     
                     
                     
-                    <a class="navbar-item" href="#heap-資料結構中-如果-root-大於-child-nodes-又稱為？">4.3&nbsp;&nbsp;heap 資料結構中, 如果 root 大於 child nodes, 又稱為？</a>
+                    <a class="navbar-item" href="#heap-資料結構中-如果-root-大於-child-nodes-又稱為？">5.1.3&nbsp;&nbsp;heap 資料結構中, 如果 root 大於 child nodes, 又稱為？</a>
                     
                 </div>
             </div>
@@ -238,7 +254,7 @@
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
-            <time datetime="2021-08-15T02:46:26.000Z" itemprop="datePublished">8月 15 2021</time>
+            <time datetime="2022-07-06T02:17:39.000Z" itemprop="datePublished">7月 6 2022</time>
         </span>
         
         <span class="column is-narrow article-category">
@@ -250,35 +266,38 @@
         <span class="column is-narrow">
             
             
-            2 分钟 讀完 (大概 243 字)
+            5 分钟 讀完 (大概 758 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>Heap 資料結構相關筆記</p>
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="# Introduction"></a># Introduction</h2><p>最近在解 Leetcode <a target="_blank" rel="noopener" href="https://leetcode.com/problems/top-k-frequent-elements/">Top K Frequent Elements</a> 題目時, 會需要使用到 priority<br>queue, 而 priority queue 的實作便是使用 Heap, 因此就有了這一篇</p>
 <span id="more"></span>
 
-<br>
-
-<h2 id="特性介紹"><a href="#特性介紹" class="headerlink" title="# 特性介紹"></a># 特性介紹</h2><p><img src="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0"></p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="# 概念"></a># 概念</h2><p><img src="https://lh3.googleusercontent.com/pw/AM-JKLV3cSfmV8Nn4qjgVWc3XLFIHDlKEvwoNTSq1iilT3A4rn_geiVvdHjgB2L0qISceA06tCwREKH0WF86MRLxDrJb8e6lzn7iLakVO1mbqppxIj1cAvyb7hJPr7xGZsg3FX4ADkpR_mMII6fD1y9MOwXfeg=w334-h392-no?authuser=0"></p>
+<p>Heap 的概念大概如上圖, 主要規則如下：</p>
 <ul>
-<li>Heap 是一種特別形式的 tree</li>
-<li>root 比所有 child nodes 都大的話, 稱為 max-heap</li>
-<li>root 比所有 child nodes 都小的話, 稱為 min-heap</li>
-<li>binary-heap 是一種 complete binary tree</li>
-<li>binary-heap 的所有 inner level 都需填滿</li>
-<li>binary-heap 的 last level 可全填會部分填</li>
+<li>root 為 index 0 的位置</li>
+<li>parent 比 child 小的稱為 Min Heap, 而 parent 比 child 大的稱為 Max Heap, 比如上圖的 root 0 的值為 1, 小於 3 以及 6, 以此往下類推, index 1 值為 3 小於 5<br>以及 9</li>
+<li>Heap 必須是一個 complete binary tree</li>
+<li>child 的 index 會剛好等於 <code>parent index * 2</code> or <code>parent index * 2 + 1</code>, 比如上圖中的 index 0, 其 child 剛好等於 1, 2</li>
 </ul>
+<h2 id="實作-binary-heap"><a href="#實作-binary-heap" class="headerlink" title="# 實作 binary heap"></a># 實作 binary heap</h2><h4 id="create-amp-insert"><a href="#create-amp-insert" class="headerlink" title="# create &amp; insert"></a># create &amp; insert</h4><ul>
+<li><p>先建立一個 class, 建立一個 array 代表 heap, 一個 count 代表目前 heap 內有多少 node, 這邊可以看到, 為什麼是 $size + 1 呢？ 因為我們要讓 heap 的 index 是從 1 開始的, 這樣才能使用 2n &amp; 2n+1 來取得 left &amp; right child</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MinHeap</span> </span>&#123; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$heap</span>; </span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$count</span>; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> <span class="hljs-variable">$size</span></span>) </span>&#123; </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;heap = <span class="title function_ invoke__">array_fill</span>(<span class="hljs-number">0</span>, <span class="hljs-variable">$size</span> + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>); </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;count = <span class="hljs-number">0</span>; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接下來實作 create &amp; insert, 簡單來說, 當我們新增一個 node 到 heap 中, 我們首先將它置於 heap 的最後一個 index, 然後我們開始拿它跟它的 parent 比較, 如果它小於它的 parent, 則把兩個位置互換, 重複這個動作, 直到該 node 被置於正確的位置 (符合上面介紹的 heap 的規則)</p>
+<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span>(<span class="hljs-params"><span class="hljs-keyword">array</span> <span class="hljs-variable">$arr</span> = []</span>) </span>&#123; </span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$arr</span>) &#123; </span><br><span class="line">        <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$arr</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$val</span>) &#123; </span><br><span class="line">            <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">insert</span>(<span class="hljs-variable">$val</span>); </span><br><span class="line">        &#125; </span><br><span class="line">    &#125; </span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">insert</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> <span class="hljs-variable">$i</span></span>) </span>&#123; </span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="variable language_">$this</span>-&gt;count == <span class="hljs-number">0</span>) &#123; </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-number">1</span>] = <span class="hljs-variable">$i</span>; </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;count = <span class="hljs-number">2</span>; </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="hljs-keyword">else</span> &#123; </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;heap[<span class="variable language_">$this</span>-&gt;count++] = <span class="hljs-variable">$i</span>; </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">siftUp</span>(); </span><br><span class="line">    &#125; </span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">siftUp</span>(<span class="hljs-params"></span>) </span>&#123; </span><br><span class="line">    <span class="hljs-variable">$currentPos</span> = <span class="variable language_">$this</span>-&gt;count - <span class="hljs-number">1</span>; </span><br><span class="line">    <span class="hljs-variable">$parentPos</span> = <span class="title function_ invoke__">intval</span>(<span class="hljs-variable">$currentPos</span> / <span class="hljs-number">2</span>); </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">while</span> (<span class="hljs-variable">$currentPos</span> &gt; <span class="hljs-number">0</span> &amp;&amp;  </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$parentPos</span>] &gt; <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$currentPos</span>]) &#123; </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">swap</span>(<span class="hljs-variable">$currentPos</span>, <span class="hljs-variable">$parentPos</span>); </span><br><span class="line">        <span class="hljs-variable">$currentPos</span> = <span class="title function_ invoke__">intval</span>(<span class="hljs-variable">$parentPosPos</span> / <span class="hljs-number">2</span>); </span><br><span class="line">        <span class="hljs-variable">$parentPos</span> = <span class="title function_ invoke__">intval</span>(<span class="hljs-variable">$currentPos</span> / <span class="hljs-number">2</span>); </span><br><span class="line">    &#125; </span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">swap</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> <span class="hljs-variable">$a</span>, <span class="hljs-keyword">int</span> <span class="hljs-variable">$b</span></span>) </span>&#123; </span><br><span class="line">    <span class="hljs-variable">$parentPos</span> = <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$a</span>]; </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$a</span>] = <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$b</span>]; </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$b</span>] = <span class="hljs-variable">$parentPos</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="取出最小值"><a href="#取出最小值" class="headerlink" title="# 取出最小值:"></a># 取出最小值:</h4><ul>
+<li>取得 root index 的值, 並將原先排在 heap 最後 index 的值拉到第一個</li>
+<li>然後依序檢查新的 root index 的值是否有小於兩個 children</li>
+<li>把 root index 換成三個 node 裡面最小的值</li>
+<li>然後回到與之交換的 child, 重複上面的步驟, 直到整個 heap 符合規則<figure class="highlight php hljs"><table><tr><td class="code"><pre><span class="line"><span class="hljs-meta">&lt;?php</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">extractMin</span>(<span class="hljs-params"></span>) </span>&#123; </span><br><span class="line">    <span class="hljs-variable">$min</span> = <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-number">1</span>]; </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-number">1</span>] = <span class="variable language_">$this</span>-&gt;heap[<span class="variable language_">$this</span>-&gt;count - <span class="hljs-number">1</span>]; </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;heap[--<span class="variable language_">$this</span>-&gt;count] = <span class="hljs-number">0</span>; </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">siftDown</span>(<span class="hljs-number">1</span>); </span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-variable">$min</span>; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">siftDown</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> <span class="hljs-variable">$k</span></span>) </span>&#123; </span><br><span class="line">    <span class="hljs-variable">$smallest</span> = <span class="hljs-variable">$k</span>; </span><br><span class="line">    <span class="hljs-variable">$left</span> = <span class="hljs-number">2</span> * <span class="hljs-variable">$k</span>; </span><br><span class="line">    <span class="hljs-variable">$right</span> = <span class="hljs-number">2</span> * <span class="hljs-variable">$k</span> + <span class="hljs-number">1</span>; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$left</span> &lt; <span class="variable language_">$this</span>-&gt;count &amp;&amp;  </span><br><span class="line">    <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$smallest</span>] &gt; <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$left</span>]) &#123; </span><br><span class="line">        <span class="hljs-variable">$smallest</span> = <span class="hljs-variable">$left</span>; </span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$right</span> &lt; <span class="variable language_">$this</span>-&gt;count &amp;&amp; <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$smallest</span>] &gt; <span class="variable language_">$this</span>-&gt;heap[<span class="hljs-variable">$right</span>]) &#123; </span><br><span class="line">        <span class="hljs-variable">$smallest</span> = <span class="hljs-variable">$right</span>; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$smallest</span> != <span class="hljs-variable">$k</span>) &#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">swap</span>(<span class="hljs-variable">$k</span>, <span class="hljs-variable">$smallest</span>); </span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">siftDown</span>(<span class="hljs-variable">$smallest</span>); </span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="binary-heap-時間-amp-空間複雜度"><a href="#binary-heap-時間-amp-空間複雜度" class="headerlink" title="# binary heap 時間 &amp; 空間複雜度"></a># binary heap 時間 &amp; 空間複雜度</h2><p><img src="https://lh3.googleusercontent.com/pw/AM-JKLUZEfXVdpQ5Rf0meEwanvoCY-SRy7gjf7ZdzzUi5jpeUwn2DhILYJu9XIAzLJc1v1B4hav111kwf77S6JH_NPHsuOU9Tp7IrH_crNz6e0nvuPw85_F-XwGCVXiJfikWUFvpIY1BKIqqSD2km2-qTdnUlA=w1030-h424-no?authuser=0"></p>
 <br>
 
-<h2 id="一些-heap-的核心操作"><a href="#一些-heap-的核心操作" class="headerlink" title="# 一些 heap 的核心操作"></a># 一些 heap 的核心操作</h2><ul>
-<li>建立 heap</li>
-<li>插入新的值</li>
-<li>從 heap 取得最大或最小值 </li>
-<li>刪除一個值</li>
-<li>交換</li>
-</ul>
 <h2 id="Questions-and-Answers"><a href="#Questions-and-Answers" class="headerlink" title="# Questions and Answers"></a># Questions and Answers</h2><h6 id="以下的-image-是屬於哪一種資料結構？"><a href="#以下的-image-是屬於哪一種資料結構？" class="headerlink" title="以下的 image 是屬於哪一種資料結構？"></a><strong>以下的 image 是屬於哪一種資料結構？</strong></h6><ul>
 <li><strong>Example</strong>:<br><img src="https://lh3.googleusercontent.com/pw/AM-JKLXNKF6q6iwuZQaSW146tbl70vtw4dUifpmfAlfXyNXLF5I8ObYLESqCP5e1nLeBFxRkPZT-1CsmxzsHqLUZbgd2v3BNfctZ-dn_mXamvWWg0AJOx0JjhFJi95pLUWcB2AUUY2vDg5TFKa04dlIFmI4hSA=w501-h371-no?authuser=0"></li>
 <li><strong>Answer</strong>:<br>max-heap</li>
@@ -299,14 +318,12 @@
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
-            
-            <a href="/zh-tw/k6/">k6 - 使用筆記</a>
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh-tw/laravel-packages-socialite/">Laravel - Packages - Socialite</a>
+            <a href="/zh-tw/leetcode-note/">Leetcode 筆記</a>
             
         </span>
     </div>
